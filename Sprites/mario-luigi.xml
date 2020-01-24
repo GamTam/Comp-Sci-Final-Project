@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:d4a7915baac0bbbf59fb1021523e3f8f:8b4cbcad29c843a2d8fbc5ee132e130c:af4b8e950537b1efabfd97e55b9f4b77$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="mario-luigi.png" width="500" height="1118">
+    <sprite n="mario-luigi/mario_standing_down.png" x="338" y="748" w="50" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_standing_downleft.png" x="208" y="1022" w="42" h="94" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_standing_downright.png" x="290" y="1022" w="42" h="94" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_standing_left.png" x="412" y="1022" w="40" h="96" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_standing_right.png" x="372" y="1022" w="40" h="96" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_standing_up.png" x="140" y="838" w="50" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_standing_upleft.png" x="250" y="1022" w="40" h="94" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_standing_upright.png" x="332" y="1022" w="40" h="94" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_1.png" x="268" y="662" w="78" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_2.png" x="428" y="242" w="62" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_3.png" x="378" y="242" w="50" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_4.png" x="248" y="80" w="46" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_5.png" x="344" y="324" w="62" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_6.png" x="356" y="838" w="76" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_7.png" x="190" y="662" w="78" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_8.png" x="316" y="242" w="62" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_9.png" x="0" y="324" w="50" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_10.png" x="74" y="160" w="46" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_11.png" x="296" y="408" w="62" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_down_12.png" x="0" y="930" w="76" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_1.png" x="452" y="748" w="38" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_2.png" x="104" y="80" w="52" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_3.png" x="256" y="0" w="62" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_4.png" x="64" y="0" w="64" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_5.png" x="98" y="324" w="58" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_6.png" x="50" y="324" w="48" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_7.png" x="458" y="0" w="40" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_8.png" x="220" y="324" w="64" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_9.png" x="346" y="662" w="78" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_10.png" x="56" y="576" w="78" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_11.png" x="290" y="838" w="66" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downleft_12.png" x="210" y="930" w="48" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_1.png" x="208" y="80" w="40" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_2.png" x="216" y="492" w="64" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_3.png" x="402" y="576" w="78" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_4.png" x="74" y="492" w="78" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_5.png" x="298" y="930" w="66" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_6.png" x="0" y="1022" w="48" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_7.png" x="252" y="838" w="38" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_8.png" x="52" y="80" w="52" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_9.png" x="128" y="0" w="62" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_10.png" x="0" y="0" w="64" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_11.png" x="66" y="242" w="58" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_downright_12.png" x="312" y="160" w="48" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_1.png" x="48" y="1022" w="40" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_2.png" x="364" y="930" w="62" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_3.png" x="360" y="160" w="70" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_4.png" x="384" y="0" w="74" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_5.png" x="124" y="242" w="66" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_6.png" x="160" y="160" w="50" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_7.png" x="120" y="160" w="40" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_8.png" x="0" y="408" w="52" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_9.png" x="424" y="662" w="70" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_10.png" x="46" y="662" w="74" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_11.png" x="388" y="748" w="64" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_left_12.png" x="88" y="1022" w="48" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_1.png" x="210" y="160" w="40" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_2.png" x="52" y="408" w="52" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_3.png" x="120" y="662" w="70" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_4.png" x="328" y="576" w="74" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_5.png" x="0" y="838" w="64" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_6.png" x="426" y="930" w="48" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_7.png" x="258" y="930" w="40" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_8.png" x="148" y="930" w="62" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_9.png" x="430" y="160" w="70" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_10.png" x="0" y="160" w="74" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_11.png" x="0" y="242" w="66" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_right_12.png" x="294" y="80" w="50" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_1.png" x="104" y="408" w="72" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_2.png" x="190" y="838" w="62" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_3.png" x="0" y="662" w="46" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_4.png" x="344" y="80" w="42" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_5.png" x="190" y="242" w="62" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_6.png" x="134" y="576" w="74" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_7.png" x="406" y="324" w="72" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_8.png" x="276" y="748" w="62" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_9.png" x="208" y="576" w="46" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_10.png" x="386" y="80" w="42" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_11.png" x="250" y="160" w="62" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_up_12.png" x="254" y="576" w="74" h="86" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_1.png" x="224" y="748" w="52" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_2.png" x="136" y="1022" w="72" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_3.png" x="148" y="748" w="76" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_4.png" x="414" y="492" w="74" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_5.png" x="280" y="492" w="74" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_6.png" x="152" y="492" w="64" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_7.png" x="156" y="80" w="52" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_8.png" x="0" y="576" w="56" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_9.png" x="156" y="324" w="64" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_10.png" x="318" y="0" w="66" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_11.png" x="354" y="492" w="60" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upleft_12.png" x="0" y="748" w="48" h="88" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_1.png" x="0" y="80" w="52" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_2.png" x="176" y="408" w="56" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_3.png" x="252" y="242" w="64" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_4.png" x="190" y="0" w="66" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_5.png" x="284" y="324" w="60" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_6.png" x="48" y="748" w="48" h="88" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_7.png" x="96" y="748" w="52" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_8.png" x="76" y="930" w="72" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_9.png" x="64" y="838" w="76" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_10.png" x="358" y="408" w="74" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_11.png" x="0" y="492" w="74" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="mario-luigi/mario_walking_upright_12.png" x="232" y="408" w="64" h="84" pX="0.5" pY="0.5"/>
+</TextureAtlas>

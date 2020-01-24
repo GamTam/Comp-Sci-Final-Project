@@ -3,7 +3,7 @@ height = 720
 
 fps = 60
 
-playerSpeed = 10
+playerSpeed = 7.5
 
 white = (255, 255, 255)
 black = (0, 0, 0)
