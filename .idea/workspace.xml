@@ -85,25 +85,45 @@
       <screen x="0" y="23" width="1440" height="830" />
     </state>
     <state x="458" y="192" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.1440.830@0.23.1440.830" timestamp="1579532059399" />
-    <state width="1419" height="211" key="GridCell.Tab.0.bottom" timestamp="1579881797059">
+    <state width="1419" height="210" key="GridCell.Tab.0.bottom" timestamp="1580154098828">
       <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1419" height="211" key="GridCell.Tab.0.bottom/0.23.1440.830@0.23.1440.830" timestamp="1579881797059" />
-    <state width="1419" height="211" key="GridCell.Tab.0.center" timestamp="1579881797059">
+    <state width="1419" height="210" key="GridCell.Tab.0.bottom/0.23.1440.830@0.23.1440.830" timestamp="1580154098828" />
+    <state width="1419" height="210" key="GridCell.Tab.0.center" timestamp="1580154098827">
       <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1419" height="211" key="GridCell.Tab.0.center/0.23.1440.830@0.23.1440.830" timestamp="1579881797059" />
-    <state width="1419" height="211" key="GridCell.Tab.0.left" timestamp="1579881797058">
+    <state width="1419" height="210" key="GridCell.Tab.0.center/0.23.1440.830@0.23.1440.830" timestamp="1580154098827" />
+    <state width="1419" height="210" key="GridCell.Tab.0.left" timestamp="1580154098826">
       <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1419" height="211" key="GridCell.Tab.0.left/0.23.1440.830@0.23.1440.830" timestamp="1579881797058" />
-    <state width="1419" height="211" key="GridCell.Tab.0.right" timestamp="1579881797059">
+    <state width="1419" height="210" key="GridCell.Tab.0.left/0.23.1440.830@0.23.1440.830" timestamp="1580154098826" />
+    <state width="1419" height="210" key="GridCell.Tab.0.right" timestamp="1580154098828">
       <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state width="1419" height="211" key="GridCell.Tab.0.right/0.23.1440.830@0.23.1440.830" timestamp="1579881797059" />
-    <state x="229" y="77" key="SettingsEditor" timestamp="1579532797830">
+    <state width="1419" height="210" key="GridCell.Tab.0.right/0.23.1440.830@0.23.1440.830" timestamp="1580154098828" />
+    <state width="1419" height="262" key="GridCell.Tab.1.bottom" timestamp="1580153747793">
       <screen x="0" y="23" width="1440" height="830" />
     </state>
-    <state x="229" y="77" key="SettingsEditor/0.23.1440.830@0.23.1440.830" timestamp="1579532797830" />
+    <state width="1419" height="262" key="GridCell.Tab.1.bottom/0.23.1440.830@0.23.1440.830" timestamp="1580153747793" />
+    <state width="1419" height="262" key="GridCell.Tab.1.center" timestamp="1580153747793">
+      <screen x="0" y="23" width="1440" height="830" />
+    </state>
+    <state width="1419" height="262" key="GridCell.Tab.1.center/0.23.1440.830@0.23.1440.830" timestamp="1580153747793" />
+    <state width="1419" height="262" key="GridCell.Tab.1.left" timestamp="1580153747792">
+      <screen x="0" y="23" width="1440" height="830" />
+    </state>
+    <state width="1419" height="262" key="GridCell.Tab.1.left/0.23.1440.830@0.23.1440.830" timestamp="1580153747792" />
+    <state width="1419" height="262" key="GridCell.Tab.1.right" timestamp="1580153747793">
+      <screen x="0" y="23" width="1440" height="830" />
+    </state>
+    <state width="1419" height="262" key="GridCell.Tab.1.right/0.23.1440.830@0.23.1440.830" timestamp="1580153747793" />
+    <state x="229" y="77" key="SettingsEditor" timestamp="1580154078825">
+      <screen x="0" y="23" width="1440" height="830" />
+    </state>
+    <state x="229" y="77" key="SettingsEditor/0.23.1440.830@0.23.1440.830" timestamp="1580154078825" />
+    <state x="386" y="177" width="670" height="676" key="search.everywhere.popup" timestamp="1580069262072">
+      <screen x="0" y="23" width="1440" height="830" />
+    </state>
+    <state x="386" y="177" width="670" height="676" key="search.everywhere.popup/0.23.1440.830@0.23.1440.830" timestamp="1580069262072" />
   </component>
 </project>
