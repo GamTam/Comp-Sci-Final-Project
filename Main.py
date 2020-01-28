@@ -34,10 +34,11 @@ class loadMap:
         self.width = self.image.get_width()
         self.height = self.image.get_height()
         self.rect = self.image.get_rect()
+        self.collision = pg.image.load("sprites/maps/" + mapname + "_collision.png").convert_alpha()
+        self.mask = pg.mask.from_surface(self.collision)
 
         if foreground:
             self.foreground = pg.image.load("sprites/maps/" + mapname + "_foreground.png").convert_alpha()
-            self.foregroundRect = self.foreground.get_rect()
 
 
 
@@ -72,6 +73,7 @@ class Game:
     def loadTeeheeValleyBattle(self):
         self.loadData()
         self.sprites = []
+        self.collision = []
         self.firstLoop = True
         self.player = Mario(self, 422, 1228)
         self.follower = Luigi(self, 422, 1228)
@@ -79,6 +81,7 @@ class Game:
         self.sprites.append(self.player)
         self.follower.stepSound = self.sandSound
         self.map = loadMap("teehee valley battle", True)
+        self.collision.append(self.map)
         self.camera = Camera(self.map.width, self.map.height)
         self.teeheeValleyBattle()
 
@@ -114,7 +117,8 @@ class Game:
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
             self.screen.blit(sprite.image, self.camera.offset(sprite.rect))
-        self.screen.blit(self.map.foreground, self.camera.offset(self.map.foregroundRect))
+        self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
+
 
         pg.display.flip()
 

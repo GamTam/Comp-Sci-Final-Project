@@ -1,7 +1,7 @@
 width = 1280
 height = 720
 
-fps = 120
+fps = 60
 title = "Super Mario & Luigi"
 
 playerSpeed = 7.5

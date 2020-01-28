@@ -41,6 +41,7 @@ class Mario(pg.sprite.Sprite):
         # self.image.fill(red)
         self.lastUpdate = 0
         self.currentFrame = 0
+        self.speed = playerSpeed
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.pos = vec(x, y)
@@ -166,32 +167,32 @@ class Mario(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         if keys[pg.K_w] and keys[pg.K_d]:
             self.facing = "upright"
-            self.pos.y -= playerSpeed
-            self.pos.x += playerSpeed
+            self.pos.y -= self.speed
+            self.pos.x += self.speed
         elif keys[pg.K_w] and keys[pg.K_a]:
             self.facing = "upleft"
-            self.pos.y -= playerSpeed
-            self.pos.x -= playerSpeed
+            self.pos.y -= self.speed
+            self.pos.x -= self.speed
         elif keys[pg.K_s] and keys[pg.K_d]:
             self.facing = "downright"
-            self.pos.y += playerSpeed
-            self.pos.x += playerSpeed
+            self.pos.y += self.speed
+            self.pos.x += self.speed
         elif keys[pg.K_s] and keys[pg.K_a]:
             self.facing = "downleft"
-            self.pos.y += playerSpeed
-            self.pos.x -= playerSpeed
+            self.pos.y += self.speed
+            self.pos.x -= self.speed
         elif keys[pg.K_w]:
             self.facing = "up"
-            self.pos.y -= playerSpeed
+            self.pos.y -= self.speed
         elif keys[pg.K_a]:
             self.facing = "left"
-            self.pos.x -= playerSpeed
+            self.pos.x -= self.speed
         elif keys[pg.K_s]:
             self.facing = "down"
-            self.pos.y += playerSpeed
+            self.pos.y += self.speed
         elif keys[pg.K_d]:
             self.facing = "right"
-            self.pos.x += playerSpeed
+            self.pos.x += self.speed
 
         if self.pos.x > self.game.map.width + 60:
             self.pos.x = -60
@@ -363,7 +364,7 @@ class Luigi(pg.sprite.Sprite):
             self.moveQueue.put(self.game.player.pos.x)
             self.moveQueue.put(self.game.player.pos.y)
             self.moveQueue.put(self.game.player.facing)
-            if self.moveQueue.qsize() > (fps / 5):
+            if self.moveQueue.qsize() > (fps / 2.5):
                 self.pos.x = self.moveQueue.get()
                 self.pos.y = self.moveQueue.get()
                 self.facing = self.moveQueue.get()
