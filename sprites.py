@@ -38,12 +38,15 @@ class Mario(pg.sprite.Sprite):
         self.loadImages()
         # self.image = pg.Surface((40, 40))
         self.image = self.standingFrames[0]
+        self.shadow = self.shadowFrame
         # self.image.fill(red)
         self.lastUpdate = 0
         self.currentFrame = 0
         self.speed = playerSpeed
-        self.rect = self.image.get_rect()
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
         self.rect.center = (x, y)
+        self.imgRect.center = (x, y - 35)
         self.pos = vec(x, y)
 
     def loadImages(self):
@@ -162,37 +165,21 @@ class Mario(pg.sprite.Sprite):
                                     sheet.getImageName("mario_walking_upleft_11.png"),
                                     sheet.getImageName("mario_walking_upleft_12.png")]
 
+        self.shadowFrame = sheet.getImageName("shadow.png")
+
     def update(self):
         self.animate()
         keys = pg.key.get_pressed()
-        if keys[pg.K_w] and keys[pg.K_d]:
-            self.facing = "upright"
-            self.pos.y -= self.speed
-            self.pos.x += self.speed
-        elif keys[pg.K_w] and keys[pg.K_a]:
-            self.facing = "upleft"
-            self.pos.y -= self.speed
-            self.pos.x -= self.speed
-        elif keys[pg.K_s] and keys[pg.K_d]:
-            self.facing = "downright"
-            self.pos.y += self.speed
-            self.pos.x += self.speed
-        elif keys[pg.K_s] and keys[pg.K_a]:
-            self.facing = "downleft"
-            self.pos.y += self.speed
-            self.pos.x -= self.speed
-        elif keys[pg.K_w]:
-            self.facing = "up"
-            self.pos.y -= self.speed
-        elif keys[pg.K_a]:
-            self.facing = "left"
-            self.pos.x -= self.speed
-        elif keys[pg.K_s]:
-            self.facing = "down"
-            self.pos.y += self.speed
-        elif keys[pg.K_d]:
-            self.facing = "right"
-            self.pos.x += self.speed
+        collide = pg.sprite.collide_mask(self, self.game.map)
+
+        if keys[pg.K_w]:
+            self.pos.y -= playerSpeed
+        if keys[pg.K_a]:
+            self.pos.x -= playerSpeed
+        if keys[pg.K_s]:
+            self.pos.y += playerSpeed
+        if keys[pg.K_d]:
+            self.pos.x += playerSpeed
 
         if self.pos.x > self.game.map.width + 60:
             self.pos.x = -60
@@ -204,22 +191,27 @@ class Mario(pg.sprite.Sprite):
             self.pos.y = self.game.map.height + 100
 
         self.rect.center = self.pos
+        self.imgRect.bottom = self.pos.y + 9
+        self.imgRect.centerx = self.pos.x
+        self.collisionMask = pg.mask.from_surface(self.shadow)
 
     def animate(self):
         now = pg.time.get_ticks()
         keys = pg.key.get_pressed()
         if keys[pg.K_w] and keys[pg.K_d]:
+            self.facing = "upright"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesUpright):
                     self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUpright))
                 else:
                     self.currentFrame = 0
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.walkingFramesUpright[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         elif keys[pg.K_w] and keys[pg.K_a]:
+            self.facing = "upleft"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesUpleft):
@@ -228,9 +220,10 @@ class Mario(pg.sprite.Sprite):
                     self.currentFrame = 0
                 center = self.rect.center
                 self.image = self.walkingFramesUpleft[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         elif keys[pg.K_s] and keys[pg.K_d]:
+            self.facing = "downright"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesDownright):
@@ -239,9 +232,10 @@ class Mario(pg.sprite.Sprite):
                     self.currentFrame = 0
                 center = self.rect.center
                 self.image = self.walkingFramesDownright[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         elif keys[pg.K_s] and keys[pg.K_a]:
+            self.facing = "downleft"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesDownleft):
@@ -250,9 +244,10 @@ class Mario(pg.sprite.Sprite):
                     self.currentFrame = 0
                 center = self.rect.center
                 self.image = self.walkingFramesDownleft[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         elif keys[pg.K_w]:
+            self.facing = "up"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesUp):
@@ -261,9 +256,10 @@ class Mario(pg.sprite.Sprite):
                     self.currentFrame = 0
                 center = self.rect.center
                 self.image = self.walkingFramesUp[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         elif keys[pg.K_a]:
+            self.facing = "left"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesLeft):
@@ -272,9 +268,10 @@ class Mario(pg.sprite.Sprite):
                     self.currentFrame = 0
                 center = self.rect.center
                 self.image = self.walkingFramesLeft[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         elif keys[pg.K_s]:
+            self.facing = "down"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesDown):
@@ -283,60 +280,61 @@ class Mario(pg.sprite.Sprite):
                     self.currentFrame = 0
                 center = self.rect.center
                 self.image = self.walkingFramesDown[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         elif keys[pg.K_d]:
+            self.facing = "right"
             if now - self.lastUpdate > 25:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.walkingFramesRight):
                     self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
                 else:
                     self.currentFrame = 0
-                center = self.rect.center
-                self.image = self.walkingFramesRight[self.currentFrame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+            center = self.imgRect.center
+            self.image = self.walkingFramesRight[self.currentFrame]
+            self.imgRect = self.image.get_rect()
+            self.imgRect.center = center
         else:
             if self.facing == "up":
                 center = self.rect.center
                 self.image = self.standingFrames[0]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "down":
                 center = self.rect.center
                 self.image = self.standingFrames[1]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "left":
                 center = self.rect.center
                 self.image = self.standingFrames[2]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "right":
                 center = self.rect.center
                 self.image = self.standingFrames[3]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "downright":
                 center = self.rect.center
                 self.image = self.standingFrames[4]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "upright":
                 center = self.rect.center
                 self.image = self.standingFrames[5]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "downleft":
                 center = self.rect.center
                 self.image = self.standingFrames[6]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "upleft":
                 center = self.rect.center
                 self.image = self.standingFrames[7]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
 
             self.currentFrame = 0
 
@@ -353,7 +351,9 @@ class Luigi(pg.sprite.Sprite):
         self.currentFrame = 0
         self.walking = False
         self.image = self.standingFrames[0]
-        self.rect = self.image.get_rect()
+        self.shadow = self.shadowFrame
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
         self.rect.center = (x, y)
         self.pos = vec(x, y)
 
@@ -373,9 +373,13 @@ class Luigi(pg.sprite.Sprite):
             self.walking = False
 
         self.rect.center = self.pos
+        self.imgRect.bottom = self.pos.y + 9
+        self.imgRect.centerx = self.pos.x
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
+
+        self.shadowFrame = sheet.getImageName("shadow.png")
 
         self.standingFrames = [sheet.getImageName("luigi_standing_up.png"),
                                sheet.getImageName("luigi_standing_down.png"),
@@ -500,10 +504,10 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUpright))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesUpright[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             elif self.facing == "upleft":
                 if now - self.lastUpdate > 25:
                     self.lastUpdate = now
@@ -511,10 +515,10 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUpleft))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesUpleft[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             elif self.facing == "downright":
                 if now - self.lastUpdate > 25:
                     self.lastUpdate = now
@@ -522,10 +526,10 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDownright))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesDownright[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             elif self.facing == "downleft":
                 if now - self.lastUpdate > 25:
                     self.lastUpdate = now
@@ -533,10 +537,10 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDownleft))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesDownleft[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             elif self.facing == "up":
                 if now - self.lastUpdate > 25:
                     self.lastUpdate = now
@@ -544,10 +548,10 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesUp[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             elif self.facing == "left":
                 if now - self.lastUpdate > 25:
                     self.lastUpdate = now
@@ -555,10 +559,10 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesLeft[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             elif self.facing == "down":
                 if now - self.lastUpdate > 25:
                     self.lastUpdate = now
@@ -566,10 +570,10 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesDown[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             elif self.facing == "right":
                 if now - self.lastUpdate > 25:
                     self.lastUpdate = now
@@ -577,51 +581,51 @@ class Luigi(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
                     else:
                         self.currentFrame = 0
-                    center = self.rect.center
+                    center = self.imgRect.center
                     self.image = self.walkingFramesRight[self.currentFrame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+                    self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
         else:
             if self.facing == "up":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[0]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "down":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[1]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "left":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[2]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "right":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[3]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "downright":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[4]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "upright":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[5]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "downleft":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[6]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             if self.facing == "upleft":
-                center = self.rect.center
+                center = self.imgRect.center
                 self.image = self.standingFrames[7]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
             self.currentFrame = 11
 
         if self.walking and (self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:

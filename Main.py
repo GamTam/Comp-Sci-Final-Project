@@ -36,6 +36,7 @@ class loadMap:
         self.rect = self.image.get_rect()
         self.collision = pg.image.load("sprites/maps/" + mapname + "_collision.png").convert_alpha()
         self.mask = pg.mask.from_surface(self.collision)
+        self.maskList = self.mask.outline()
 
         if foreground:
             self.foreground = pg.image.load("sprites/maps/" + mapname + "_foreground.png").convert_alpha()
@@ -116,7 +117,8 @@ class Game:
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
-            self.screen.blit(sprite.image, self.camera.offset(sprite.rect))
+            self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+            self.screen.blit(sprite.image, self.camera.offset(sprite.imgRect))
         self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
 
 
