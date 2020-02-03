@@ -4,8 +4,8 @@ height = 720
 fps = 60
 title = "Super Mario & Luigi"
 
-playerSpeed = 7
-jumpHeight = 10
+playerSpeed = 5
+jumpHeight = 11
 airTime = 3
 
 white = (255, 255, 255)

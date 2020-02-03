@@ -1,6 +1,8 @@
-import pygame as pg
 import queue as Q
 import xml.etree.ElementTree as ET
+
+import pygame as pg
+
 from settings import *
 
 
@@ -183,23 +185,27 @@ class Mario(pg.sprite.Sprite):
                 if vx > 0:
                     self.rect.right = wall.rect.left
                     self.vx = 0
+                    self.walking = False
                 if vx < 0:
                     self.rect.left = wall.rect.right
                     self.vx = 0
+                    self.walking = False
                 if vy < 0:
                     self.rect.top = wall.rect.bottom
                     self.vy = 0
+                    self.walking = False
                 if vy > 0:
                     self.rect.bottom = wall.rect.top
                     self.vy = 0
+                    self.walking = False
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
-            self.jumpTimer += 1.5
+            self.jumpTimer += 0.9
         elif self.jumpTimer >= jumpHeight:
             self.airTimer += 1
         if self.airTimer >= airTime and self.jumpTimer != 0:
-            self.jumpTimer -= 1.5
+            self.jumpTimer -= 0.9
         if self.jumpTimer <= 0 and self.airTimer != 0:
             self.jumping = False
         jumpOffset = self.jumpTimer * jumpHeight
@@ -525,11 +531,11 @@ class Luigi(pg.sprite.Sprite):
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
-            self.jumpTimer += 1.5
+            self.jumpTimer += 0.9
         elif self.jumpTimer >= jumpHeight:
             self.airTimer += 1
         if self.airTimer >= airTime and self.jumpTimer != 0:
-            self.jumpTimer -= 1.5
+            self.jumpTimer -= 0.9
         if self.jumpTimer <= 0 and self.airTimer != 0:
             self.jumping = False
         jumpOffset = self.jumpTimer * jumpHeight
@@ -538,11 +544,11 @@ class Luigi(pg.sprite.Sprite):
     def update(self):
         self.animate()
         self.walking = self.game.player.walking
-        if self.walking:
+        if self.walking or self.game.player.vx != 0 or self.game.player.vy != 0:
             self.moveQueue.put(self.game.player.rect.x)
             self.moveQueue.put(self.game.player.rect.y)
             self.moveQueue.put(self.game.player.facing)
-            if self.moveQueue.qsize() > (fps / 2.5):
+            if self.moveQueue.qsize() > (fps / 2):
                 self.rect.x = self.moveQueue.get()
                 self.rect.y = self.moveQueue.get()
                 self.facing = self.moveQueue.get()
@@ -684,7 +690,7 @@ class Luigi(pg.sprite.Sprite):
     def animate(self):
         now = pg.time.get_ticks()
         if not self.jumping:
-            if self.walking:
+            if self.walking or self.game.player.vx != 0 or self.game.player.vy != 0:
                 if self.facing == "upright":
                     if now - self.lastUpdate > 25:
                         self.lastUpdate = now
@@ -857,7 +863,8 @@ class Luigi(pg.sprite.Sprite):
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
 
-        if self.walking and (self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
+        if (self.walking or self.game.player.vx != 0 or self.game.player.vy != 0) and (
+                self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
             self.stepSound.stop()
             pg.mixer.Sound.play(self.stepSound)
 
