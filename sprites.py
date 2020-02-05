@@ -29,6 +29,32 @@ class spritesheet:
         return self.spritesheet.subsurface(rect)
 
 
+class MarioCollision(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.collision.append(self)
+        self.rect = self.game.player.imgRect
+        self.rect.center = self.game.player.imgRect.center
+
+    def update(self):
+        self.rect = self.game.player.imgRect
+        self.rect.center = self.game.player.imgRect.center
+
+
+class LuigiCollision(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.collision.append(self)
+        self.rect = self.game.follower.imgRect
+        self.rect.center = self.game.follower.imgRect.center
+
+    def update(self):
+        self.rect = self.game.follower.imgRect
+        self.rect.center = self.game.follower.imgRect.center
+
+
 class Mario(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         pg.sprite.Sprite.__init__(self)
@@ -49,8 +75,10 @@ class Mario(pg.sprite.Sprite):
         self.imgRect = self.image.get_rect()
         self.rect = self.shadow.get_rect()
         self.rect.center = (x, y)
-        self.imgRect.center = (x, y - 35)
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.left = x
         self.vx, self.vy = 0, 0
+        self.mask = pg.mask.from_surface(self.image)
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -245,6 +273,8 @@ class Mario(pg.sprite.Sprite):
         else:
             self.jump()
             self.imgRect.centerx = self.rect.centerx
+
+        self.mask = pg.mask.from_surface(self.image)
 
     def animate(self):
         now = pg.time.get_ticks()
@@ -881,3 +911,162 @@ class Wall(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x
         self.rect.y = y
+
+
+class Goomba(pg.sprite.Sprite):
+    def __init__(self, game, x, y, vx, vy, facing="down"):
+        self.groups = game.enemies
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.vx = vx
+        self.vy = vy
+        self.game = game
+        self.going = True
+        self.game.sprites.append(self)
+        self.loadImages()
+        self.image = self.walkingFramesDown[0]
+        self.currentFrame = 0
+        self.lastUpdate = 0
+        self.facing = facing
+        self.shadow = self.shadowFrame
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = (x, y)
+        self.mask = pg.mask.from_surface(self.image)
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
+
+        self.walkingFramesUp = [sheet.getImageName("goomba_walking_up_1.png"),
+                                sheet.getImageName("goomba_walking_up_2.png"),
+                                sheet.getImageName("goomba_walking_up_3.png"),
+                                sheet.getImageName("goomba_walking_up_4.png"),
+                                sheet.getImageName("goomba_walking_up_5.png"),
+                                sheet.getImageName("goomba_walking_up_6.png"),
+                                sheet.getImageName("goomba_walking_up_7.png"),
+                                sheet.getImageName("goomba_walking_up_8.png")]
+
+        self.walkingFramesDown = [sheet.getImageName("goomba_walking_down_1.png"),
+                                  sheet.getImageName("goomba_walking_down_2.png"),
+                                  sheet.getImageName("goomba_walking_down_3.png"),
+                                  sheet.getImageName("goomba_walking_down_4.png"),
+                                  sheet.getImageName("goomba_walking_down_5.png"),
+                                  sheet.getImageName("goomba_walking_down_6.png"),
+                                  sheet.getImageName("goomba_walking_down_7.png"),
+                                  sheet.getImageName("goomba_walking_down_8.png")]
+
+        self.walkingFramesLeft = [sheet.getImageName("goomba_walking_left_1.png"),
+                                  sheet.getImageName("goomba_walking_left_2.png"),
+                                  sheet.getImageName("goomba_walking_left_3.png"),
+                                  sheet.getImageName("goomba_walking_left_4.png"),
+                                  sheet.getImageName("goomba_walking_left_5.png"),
+                                  sheet.getImageName("goomba_walking_left_6.png"),
+                                  sheet.getImageName("goomba_walking_left_7.png"),
+                                  sheet.getImageName("goomba_walking_left_8.png")]
+
+        self.walkingFramesRight = [sheet.getImageName("goomba_walking_right_1.png"),
+                                  sheet.getImageName("goomba_walking_right_2.png"),
+                                  sheet.getImageName("goomba_walking_right_3.png"),
+                                  sheet.getImageName("goomba_walking_right_4.png"),
+                                  sheet.getImageName("goomba_walking_right_5.png"),
+                                  sheet.getImageName("goomba_walking_right_6.png"),
+                                  sheet.getImageName("goomba_walking_right_7.png"),
+                                  sheet.getImageName("goomba_walking_right_8.png")]
+
+        self.shadowFrame = sheet.getImageName("shadow.png")
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.facing == "down":
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.walkingFramesDown):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.walkingFramesDown[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.facing == "up":
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.walkingFramesUp):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.walkingFramesUp[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.facing == "left":
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.walkingFramesLeft):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.walkingFramesLeft[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.facing == "right":
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.walkingFramesRight):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.walkingFramesRight[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+
+    def update(self):
+        self.animate()
+        hits = pg.sprite.collide_rect(self, self.game.player)
+        luigiHits = pg.sprite.collide_rect(self, self.game.follower)
+        if not hits and not luigiHits:
+            self.going = True
+            self.image.set_alpha(255)
+            self.shadow.set_alpha(255)
+
+        for wall in self.game.walls:
+            if pg.sprite.collide_rect(self, wall):
+                if self.facing == "up":
+                    self.rect.top = wall.rect.bottom
+                    self.rect.y -= self.vy
+                    self.facing = "down"
+                elif self.facing == "down":
+                    self.rect.bottom = wall.rect.top
+                    self.rect.y += self.vy
+                    self.facing = "up"
+                elif self.facing == "left":
+                    self.rect.left = wall.rect.right
+                    self.rect.x -= self.vx
+                    self.facing = "right"
+                elif self.facing == "right":
+                    self.rect.right = wall.rect.left
+                    self.rect.x += self.vx
+                    self.facing = "left"
+
+        if self.going:
+            if self.facing == "down":
+                self.rect.y += self.vy
+            elif self.facing == "up":
+                self.rect.y -= self.vy
+            elif self.facing == "left":
+                self.rect.x -= self.vx
+            elif self.facing == "right":
+                self.rect.x += self.vx
+
+        if self.rect.x > self.game.map.width + 60:
+            self.rect.x = -60
+        if self.rect.x < -60:
+            self.rect.x = self.game.map.width + 60
+        if self.rect.y > self.game.map.height + 100:
+            self.rect.y = -100
+        if self.rect.y < -100:
+            self.rect.y = self.game.map.height + 100
+
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx

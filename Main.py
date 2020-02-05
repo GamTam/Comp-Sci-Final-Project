@@ -71,10 +71,21 @@ class Game:
     def loadTeeheeValleyBattle(self):
         self.loadData()
         self.sprites = []
+        self.collision = []
         self.walls = pg.sprite.Group()
+        self.enemies = pg.sprite.Group()
         self.firstLoop = True
         self.player = Mario(self, 422, 1228)
+        self.playerCol = MarioCollision(self)
         self.follower = Luigi(self, 422, 1228)
+        self.followerCol = LuigiCollision(self)
+        self.goomba = Goomba(self, 722, 1228, 5, 5, "left")
+        self.goomba2 = Goomba(self, 722, 1228, 5, 5, "up")
+        self.goomba3 = Goomba(self, 702, 1378, 5, 5, "right")
+        self.goomba4 = Goomba(self, 720, 1100, 1, 1, "right")
+        self.goomba5 = Goomba(self, 200, 1200, 5, 5, "down")
+        self.goomba6 = Goomba(self, 1400, 1275, 5, 5, "up")
+        self.goomba7 = Goomba(self, 1300, 1275, 1, 5, "left")
 
         # Top Half Collision
         Wall(self, 96, 1090, 384, 62)
@@ -113,7 +124,8 @@ class Game:
         self.playing = True
 
         while self.playing:
-            self.playSong(14.764, 42.501, "Teehee Valley")
+            # self.playSong(14.764, 42.501, "Teehee Valley")
+            self.playSong(7.01, 139.132, "battle")
             self.clock.tick(fps)
             self.events()
             self.update()
@@ -129,8 +141,6 @@ class Game:
                     self.playing = False
                 self.running = False
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_p:
-                    print(self.player.rect.x, self.player.rect.y)
                 if event.key == pg.K_m:
                     if not self.player.jumping:
                         self.player.jumping = True
@@ -158,23 +168,61 @@ class Game:
 
     def update(self):
         [sprite.update() for sprite in self.sprites]
+        [col.update() for col in self.collision]
         self.camera.update(self.player.rect)
+
+        hits = pg.sprite.spritecollideany(self.player, self.enemies)
+        if hits:
+            hitsRound2 = pg.sprite.collide_rect(self.playerCol, hits)
+            if hitsRound2:
+                hits.going = False
+                hits.image.set_alpha(0)
+                hits.shadow.set_alpha(0)
+            else:
+                hits.going = True
+                hits.image.set_alpha(255)
+                hits.shadow.set_alpha(255)
+
+        luigiHits = pg.sprite.spritecollideany(self.follower, self.enemies)
+        if luigiHits:
+            hitsRound2 = pg.sprite.collide_rect(self.followerCol, luigiHits)
+            if hitsRound2:
+                luigiHits.going = False
+            else:
+                luigiHits.going = True
+
 
     def draw(self):
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
             self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+        for sprite in self.sprites:
             self.screen.blit(sprite.image, self.camera.offset(sprite.imgRect))
         if self.map.foreground:
             self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
-
-
         pg.display.flip()
 
     def sortByYPos(self, element):
         return element.rect.bottom
 
+    def drawTextIU(self, text, size, color, x, y, font, hilight=False):
+        fnt = pg.font.Font("fonts/" + font, size)
+        textSurface = fnt.render(text, True, color)
+        textRect = textSurface.get_rect()
+        textRect.midtop = (int(x), int(y))
+        if hilight:
+            pg.draw.rect(self.screen, black, self.camera.offset(textRect))
+        self.screen.blit(textSurface, self.camera.offset(textRect))
+
+    def drawTextUI(self, text, size, color, x, y, font, hilight=False):
+        fnt = pg.font.Font("fonts/" + font, size)
+        textSurface = fnt.render(text, True, color)
+        textRect = textSurface.get_rect()
+        textRect.midtop = (int(x), int(y))
+        if hilight:
+            pg.draw.rect(self.screen, black, textRect)
+        self.screen.blit(textSurface, textRect)
 
 game = Game()
 
