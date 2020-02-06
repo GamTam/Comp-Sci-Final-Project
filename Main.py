@@ -45,6 +45,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.song_playing = ""
         self.running = True
+        self.fullscreen = False
 
     def playSong(self, introLength, loopLength, song, loop=True):
         if self.song_playing != "playing":
@@ -68,24 +69,77 @@ class Game:
         self.sandSound = pg.mixer.Sound("sounds/sand footsteps.ogg")
         self.jumpSound = pg.mixer.Sound("sounds/jump.ogg")
 
-    def loadTeeheeValleyBattle(self):
+    def loadTeeheeValleyBattle15G(self):
         self.loadData()
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
         self.firstLoop = True
-        self.player = Mario(self, 422, 1228)
+        self.player = Mario(self, width / 2, 1278)
         self.playerCol = MarioCollision(self)
-        self.follower = Luigi(self, 422, 1228)
+        self.follower = Luigi(self, width / 2, 1278)
         self.followerCol = LuigiCollision(self)
-        self.goomba = Goomba(self, 722, 1228, 5, 5, "left")
-        self.goomba2 = Goomba(self, 722, 1228, 5, 5, "up")
-        self.goomba3 = Goomba(self, 702, 1378, 5, 5, "right")
-        self.goomba4 = Goomba(self, 720, 1100, 1, 1, "right")
-        self.goomba5 = Goomba(self, 200, 1200, 5, 5, "down")
-        self.goomba6 = Goomba(self, 1400, 1275, 5, 5, "up")
-        self.goomba7 = Goomba(self, 1300, 1275, 1, 5, "left")
+        Goomba(self, 722, 1228, 4, 4, "left")
+        Goomba(self, 722, 1228, 4, 4, "up")
+        Goomba(self, 702, 1378, 4, 4, "right")
+        Goomba(self, 702, 1378, 4, 4, "right")
+        Goomba(self, 700, 1328, 4, 4, "right")
+        Goomba(self, 720, 1398, 4, 4, "right")
+        Goomba(self, 602, 1380, 4, 4, "right")
+        Goomba(self, 720, 1100, 1, 1, "right")
+        Goomba(self, 200, 1200, 4, 4, "down")
+        Goomba(self, 1400, 1275, 4, 4, "up")
+        Goomba(self, 1300, 1275, 1, 5, "left")
+        Goomba(self, 1500, 1275, 4, 4, "down")
+        Goomba(self, 500, 1275, 4, 4, "up")
+        Goomba(self, 400, 1275, 4, 4, "up")
+        Goomba(self, 800, 1275, 4, 4, "up")
+
+        # Top Half Collision
+        Wall(self, 96, 1090, 384, 62)
+        Wall(self, 552, 1064, 136, 88)
+        Wall(self, -60, 1028, 706, 76)
+        Wall(self, 640, 1014, 243, 42)
+        Wall(self, 750, 1015, 98, 73)
+        Wall(self, 808, 1052, 92, 72)
+        Wall(self, 896, 1037, 213, 61)
+        Wall(self, 1026, 1098, 42, 42)
+        Wall(self, 1104, 1083, 480, 69)
+        Wall(self, 1572, 1055, 126, 45)
+
+        # Bottom Half Collision
+        Wall(self, -70, 1455, 300, 70)
+        Wall(self, 229, 1486, 72, 22)
+        Wall(self, 300, 1455, 170, 100)
+        Wall(self, 454, 1522, 188, 32)
+        Wall(self, 642, 1552, 68, 32)
+        Wall(self, 704, 1522, 120, 32)
+        Wall(self, 792, 1455, 186, 72)
+        Wall(self, 975, 1522, 70, 72)
+        Wall(self, 1038, 1455, 374, 72)
+        Wall(self, 1407, 1486, 116, 72)
+        Wall(self, 1522, 1455, 200, 72)
+
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        self.map = loadMap("teehee valley battle", True)
+        self.camera = Camera(self.map.width, self.map.height)
+        self.teeheeValleyBattle()
+
+    def loadTeeheeValleyBattleEm(self):
+        self.loadData()
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = pg.sprite.Group()
+        self.firstLoop = True
+        self.player = Mario(self, width / 2, 1278)
+        self.playerCol = MarioCollision(self)
+        self.follower = Luigi(self, width / 2, 1278)
+        self.followerCol = LuigiCollision(self)
 
         # Top Half Collision
         Wall(self, 96, 1090, 384, 62)
@@ -122,15 +176,12 @@ class Game:
 
     def teeheeValleyBattle(self):
         self.playing = True
-
         while self.playing:
-            # self.playSong(14.764, 42.501, "Teehee Valley")
             self.playSong(7.01, 139.132, "battle")
             self.clock.tick(fps)
             self.events()
             self.update()
             self.draw()
-
         self.playing = False
 
     def events(self):
@@ -141,6 +192,12 @@ class Game:
                     self.playing = False
                 self.running = False
             if event.type == pg.KEYDOWN:
+                if event.key == pg.K_F4:
+                    if self.fullscreen:
+                        self.screen = pg.display.set_mode((width, height))
+                    else:
+                        self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
+                    self.fullscreen = not self.fullscreen
                 if event.key == pg.K_m:
                     if not self.player.jumping:
                         self.player.jumping = True
@@ -165,8 +222,10 @@ class Game:
                         self.follower.airTimer = 0
                         self.jumpSound.play()
 
-
     def update(self):
+        keys = pg.key.get_pressed()
+        doubleDamageM = False
+        doubleDamageL = False
         [sprite.update() for sprite in self.sprites]
         [col.update() for col in self.collision]
         self.camera.update(self.player.rect)
@@ -174,33 +233,58 @@ class Game:
         hits = pg.sprite.spritecollideany(self.player, self.enemies)
         if hits:
             hitsRound2 = pg.sprite.collide_rect(self.playerCol, hits)
+            if keys[pg.K_m] and self.player.going == "down" and self.player.imgRect.bottom <= hits.imgRect.top + 50:
+                doubleDamageM = True
             if hitsRound2:
-                hits.going = False
-                hits.image.set_alpha(0)
-                hits.shadow.set_alpha(0)
-            else:
-                hits.going = True
-                hits.image.set_alpha(255)
-                hits.shadow.set_alpha(255)
+                if self.player.imgRect.bottom - 50 <= hits.imgRect.top and self.player.going == "down" and self.player.jumping and hits.hp > 0:
+                    if doubleDamageM:
+                        hits.hp -= 2 * (self.player.pow - hits.defense)
+                    else:
+                        hits.hp -= (self.player.pow - hits.defense)
+                    self.player.airTimer = 0
 
         luigiHits = pg.sprite.spritecollideany(self.follower, self.enemies)
         if luigiHits:
             hitsRound2 = pg.sprite.collide_rect(self.followerCol, luigiHits)
+            if keys[pg.K_l] and self.follower.going == "down" and self.follower.imgRect.bottom <= luigiHits.imgRect.top + 50:
+                doubleDamageL = True
             if hitsRound2:
-                luigiHits.going = False
-            else:
-                luigiHits.going = True
+                if self.follower.imgRect.bottom - 50 <= luigiHits.imgRect.top and self.follower.going == "down" and self.follower.jumping  and luigiHits.hp > 0:
+                    if doubleDamageL:
+                        luigiHits.hp -= 2 * (self.follower.pow - luigiHits.defense)
+                    else:
+                        luigiHits.hp -= (self.follower.pow - luigiHits.defense)
+                    self.follower.airTimer = 0
 
+    def blit_alpha(self, target, source, location, opacity):
+        x = location[0]
+        y = location[1]
+        temp = pg.Surface((source.get_width(), source.get_height())).convert()
+        temp.blit(target, (-x, -y))
+        temp.blit(source, (0, 0))
+        temp.set_alpha(opacity)
+        target.blit(temp, location)
 
     def draw(self):
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
             self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+
         for sprite in self.sprites:
-            self.screen.blit(sprite.image, self.camera.offset(sprite.imgRect))
+            self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+
         if self.map.foreground:
             self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
+
+        for enemy in self.enemies:
+            if enemy.hp != enemy.maxHP:
+                if enemy.hp >= 0:
+                    pg.draw.rect(self.screen, red, self.camera.offset(
+                        pg.Rect(enemy.rect.left, enemy.imgRect.top - 12, (enemy.rect.width * (enemy.hp / enemy.maxHP)), 10)))
+                pg.draw.rect(self.screen, black,
+                             self.camera.offset(pg.Rect(enemy.rect.left, enemy.imgRect.top - 12, enemy.rect.width, 10)), 1)
+
         pg.display.flip()
 
     def sortByYPos(self, element):
@@ -224,9 +308,10 @@ class Game:
             pg.draw.rect(self.screen, black, textRect)
         self.screen.blit(textSurface, textRect)
 
+
 game = Game()
 
 while game.running:
-    game.loadTeeheeValleyBattle()
+    game.loadTeeheeValleyBattle15G()
 
 pg.quit()

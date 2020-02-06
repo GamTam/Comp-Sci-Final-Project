@@ -59,6 +59,7 @@ class Mario(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         pg.sprite.Sprite.__init__(self)
         self.game = game
+        self.alpha = 255
         self.stepSound = pg.mixer.Sound("sounds/coin.ogg")
         self.walking = False
         self.jumping = False
@@ -66,11 +67,13 @@ class Mario(pg.sprite.Sprite):
         self.airTimer = 0
         self.facing = "right"
         self.colFace = "right"
+        self.going = "irrelevent"
         self.loadImages()
         self.image = self.standingFrames[0]
         self.shadow = self.shadowFrame
         self.lastUpdate = 0
         self.currentFrame = 0
+        self.victim = None
         self.speed = playerSpeed
         self.imgRect = self.image.get_rect()
         self.rect = self.shadow.get_rect()
@@ -79,6 +82,15 @@ class Mario(pg.sprite.Sprite):
         self.imgRect.left = x
         self.vx, self.vy = 0, 0
         self.mask = pg.mask.from_surface(self.image)
+
+        # Stats
+        self.maxHP = 10
+        self.maxBP = 5
+        self.pow = 2
+        self.defense = 0
+        self.stache = 3
+        self.currentHP = 10
+        self.currentBP = 5
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -230,10 +242,12 @@ class Mario(pg.sprite.Sprite):
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
             self.jumpTimer += 0.9
+            self.going = "up"
         elif self.jumpTimer >= jumpHeight:
             self.airTimer += 1
         if self.airTimer >= airTime and self.jumpTimer != 0:
             self.jumpTimer -= 0.9
+            self.going = "down"
         if self.jumpTimer <= 0 and self.airTimer != 0:
             self.jumping = False
         jumpOffset = self.jumpTimer * jumpHeight
@@ -544,6 +558,7 @@ class Luigi(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.stepSound = pg.mixer.Sound("sounds/coin.ogg")
         self.moveQueue = Q.Queue()
+        self.alpha = 255
         self.game = game
         self.loadImages()
         self.facing = "right"
@@ -551,6 +566,7 @@ class Luigi(pg.sprite.Sprite):
         self.currentFrame = 0
         self.walking = False
         self.jumping = False
+        self.victim = None
         self.jumpTimer = 0
         self.airTimer = 0
         self.image = self.standingFrames[0]
@@ -558,14 +574,26 @@ class Luigi(pg.sprite.Sprite):
         self.imgRect = self.image.get_rect()
         self.rect = self.shadow.get_rect()
         self.rect.center = (x, y)
+        self.going = "irrelevent"
+
+        # Stats
+        self.maxHP = 13
+        self.maxBP = 5
+        self.pow = 1
+        self.defense = 0
+        self.stache = 3
+        self.currentHP = 13
+        self.currentBP = 5
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
             self.jumpTimer += 0.9
+            self.going = "up"
         elif self.jumpTimer >= jumpHeight:
             self.airTimer += 1
         if self.airTimer >= airTime and self.jumpTimer != 0:
             self.jumpTimer -= 0.9
+            self.going = "down"
         if self.jumpTimer <= 0 and self.airTimer != 0:
             self.jumping = False
         jumpOffset = self.jumpTimer * jumpHeight
@@ -931,7 +959,13 @@ class Goomba(pg.sprite.Sprite):
         self.imgRect = self.image.get_rect()
         self.rect = self.shadow.get_rect()
         self.rect.center = (x, y)
+        self.alpha = 255
         self.mask = pg.mask.from_surface(self.image)
+
+        # Stats
+        self.maxHP = 4
+        self.hp = 4
+        self.defense = 0
 
     def loadImages(self):
         sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
@@ -1023,12 +1057,13 @@ class Goomba(pg.sprite.Sprite):
 
     def update(self):
         self.animate()
-        hits = pg.sprite.collide_rect(self, self.game.player)
-        luigiHits = pg.sprite.collide_rect(self, self.game.follower)
-        if not hits and not luigiHits:
-            self.going = True
-            self.image.set_alpha(255)
-            self.shadow.set_alpha(255)
+        if self.hp <= 0:
+            self.going = False
+            self.alpha -= 10
+
+        if self.alpha <= 0:
+            self.kill()
+            self.game.sprites.remove(self)
 
         for wall in self.game.walls:
             if pg.sprite.collide_rect(self, wall):
