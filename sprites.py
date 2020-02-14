@@ -59,6 +59,7 @@ class Mario(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         pg.sprite.Sprite.__init__(self)
         self.game = game
+        self.hit = False
         self.alpha = 255
         self.stepSound = pg.mixer.Sound("sounds/coin.ogg")
         self.walking = False
@@ -66,7 +67,6 @@ class Mario(pg.sprite.Sprite):
         self.jumpTimer = 0
         self.airTimer = 0
         self.facing = "right"
-        self.colFace = "right"
         self.going = "irrelevent"
         self.loadImages()
         self.image = self.standingFrames[0]
@@ -83,14 +83,7 @@ class Mario(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0
         self.mask = pg.mask.from_surface(self.image)
 
-        # Stats
-        self.maxHP = 10
-        self.maxBP = 5
-        self.pow = 2
-        self.defense = 0
-        self.stache = 3
-        self.currentHP = 10
-        self.currentBP = 5
+        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 10, "bp": 5}
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -216,6 +209,24 @@ class Mario(pg.sprite.Sprite):
                                 sheet.getImageName("mario_jumping_up_upright.png"),
                                 sheet.getImageName("mario_jumping_up_downleft.png"),
                                 sheet.getImageName("mario_jumping_up_downright.png")]
+
+        self.jumpingDownFrames = [sheet.getImageName("mario_jumping_down_up.png"),
+                                  sheet.getImageName("mario_jumping_down_down.png"),
+                                  sheet.getImageName("mario_jumping_down_left.png"),
+                                  sheet.getImageName("mario_jumping_down_right.png"),
+                                  sheet.getImageName("mario_jumping_down_upleft.png"),
+                                  sheet.getImageName("mario_jumping_down_upright.png"),
+                                  sheet.getImageName("mario_jumping_down_downleft.png"),
+                                  sheet.getImageName("mario_jumping_down_downright.png")]
+
+        self.hitFrames = [sheet.getImageName("mario_hit_up.png"),
+                          sheet.getImageName("mario_hit_down.png"),
+                          sheet.getImageName("mario_hit_left.png"),
+                          sheet.getImageName("mario_hit_right.png"),
+                          sheet.getImageName("mario_hit_downright.png"),
+                          sheet.getImageName("mario_hit_upright.png"),
+                          sheet.getImageName("mario_hit_downleft.png"),
+                          sheet.getImageName("mario_hit_upleft.png")]
 
         self.shadowFrame = sheet.getImageName("shadow.png")
 
@@ -443,110 +454,216 @@ class Mario(pg.sprite.Sprite):
                 self.currentFrame = 0
                 self.walking = False
         else:
-            if keys[pg.K_w] and keys[pg.K_d]:
-                self.facing = "upright"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[5]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif keys[pg.K_w] and keys[pg.K_a]:
-                self.facing = "upleft"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[4]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif keys[pg.K_s] and keys[pg.K_d]:
-                self.facing = "downright"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[7]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif keys[pg.K_s] and keys[pg.K_a]:
-                self.facing = "downleft"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[6]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif keys[pg.K_w]:
-                self.facing = "up"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[0]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif keys[pg.K_s]:
-                self.facing = "down"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[1]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif keys[pg.K_a]:
-                self.facing = "left"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[2]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif keys[pg.K_d]:
-                self.facing = "right"
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[3]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = True
-            elif self.facing == "upright":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[5]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
-            elif self.facing == "upleft":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[4]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
-            elif self.facing == "downright":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[7]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
-            elif self.facing == "downleft":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[6]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
-            elif self.facing == "up":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[0]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
-            elif self.facing == "down":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[1]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
-            elif self.facing == "left":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[2]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
-            elif self.facing == "right":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[3]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-                self.walking = False
+            if self.going == "up":
+                if keys[pg.K_w] and keys[pg.K_d]:
+                    self.facing = "upright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w] and keys[pg.K_a]:
+                    self.facing = "upleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_d]:
+                    self.facing = "downright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_a]:
+                    self.facing = "downleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w]:
+                    self.facing = "up"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s]:
+                    self.facing = "down"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_a]:
+                    self.facing = "left"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_d]:
+                    self.facing = "right"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif self.facing == "upright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "upleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "up":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "down":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "left":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "right":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+            else:
+                if keys[pg.K_w] and keys[pg.K_d]:
+                    self.facing = "upright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w] and keys[pg.K_a]:
+                    self.facing = "upleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_d]:
+                    self.facing = "downright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_a]:
+                    self.facing = "downleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w]:
+                    self.facing = "up"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s]:
+                    self.facing = "down"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_a]:
+                    self.facing = "left"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_d]:
+                    self.facing = "right"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif self.facing == "upright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "upleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "up":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "down":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "left":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "right":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
 
         if self.walking and (self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
             self.stepSound.stop()
@@ -576,14 +693,7 @@ class Luigi(pg.sprite.Sprite):
         self.rect.center = (x, y)
         self.going = "irrelevent"
 
-        # Stats
-        self.maxHP = 13
-        self.maxBP = 5
-        self.pow = 1
-        self.defense = 0
-        self.stache = 3
-        self.currentHP = 13
-        self.currentBP = 5
+        self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "stache": 3, "hp": 13, "bp": 5}
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
@@ -631,6 +741,15 @@ class Luigi(pg.sprite.Sprite):
                                 sheet.getImageName("luigi_jumping_up_upright.png"),
                                 sheet.getImageName("luigi_jumping_up_downleft.png"),
                                 sheet.getImageName("luigi_jumping_up_downright.png")]
+
+        self.jumpingDownFrames = [sheet.getImageName("luigi_jumping_down_up.png"),
+                                  sheet.getImageName("luigi_jumping_down_down.png"),
+                                  sheet.getImageName("luigi_jumping_down_left.png"),
+                                  sheet.getImageName("luigi_jumping_down_right.png"),
+                                  sheet.getImageName("luigi_jumping_down_upleft.png"),
+                                  sheet.getImageName("luigi_jumping_down_upright.png"),
+                                  sheet.getImageName("luigi_jumping_down_downleft.png"),
+                                  sheet.getImageName("luigi_jumping_down_downright.png")]
 
         self.standingFrames = [sheet.getImageName("luigi_standing_up.png"),
                                sheet.getImageName("luigi_standing_down.png"),
@@ -745,8 +864,18 @@ class Luigi(pg.sprite.Sprite):
                                     sheet.getImageName("luigi_walking_upleft_11.png"),
                                     sheet.getImageName("luigi_walking_upleft_12.png")]
 
+        self.hitFrames = [sheet.getImageName("luigi_hit_up.png"),
+                          sheet.getImageName("luigi_hit_down.png"),
+                          sheet.getImageName("luigi_hit_left.png"),
+                          sheet.getImageName("luigi_hit_right.png"),
+                          sheet.getImageName("luigi_hit_downright.png"),
+                          sheet.getImageName("luigi_hit_upright.png"),
+                          sheet.getImageName("luigi_hit_downleft.png"),
+                          sheet.getImageName("luigi_hit_upleft.png")]
+
     def animate(self):
         now = pg.time.get_ticks()
+        keys = pg.key.get_pressed()
         if not self.jumping:
             if self.walking or self.game.player.vx != 0 or self.game.player.vy != 0:
                 if self.facing == "upright":
@@ -880,46 +1009,216 @@ class Luigi(pg.sprite.Sprite):
                     self.imgRect.center = center
                 self.currentFrame = 11
         else:
-            if self.facing == "upright":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[5]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "upleft":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[4]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "downright":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[7]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "downleft":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[6]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "up":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[0]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "down":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[1]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "left":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[2]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "right":
-                center = self.imgRect.center
-                self.image = self.jumpingUpFrames[3]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
+            if self.going == "up":
+                if keys[pg.K_w] and keys[pg.K_d]:
+                    self.facing = "upright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w] and keys[pg.K_a]:
+                    self.facing = "upleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_d]:
+                    self.facing = "downright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_a]:
+                    self.facing = "downleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w]:
+                    self.facing = "up"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s]:
+                    self.facing = "down"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_a]:
+                    self.facing = "left"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_d]:
+                    self.facing = "right"
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif self.facing == "upright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "upleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "up":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "down":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "left":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "right":
+                    center = self.imgRect.center
+                    self.image = self.jumpingUpFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+            else:
+                if keys[pg.K_w] and keys[pg.K_d]:
+                    self.facing = "upright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w] and keys[pg.K_a]:
+                    self.facing = "upleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_d]:
+                    self.facing = "downright"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s] and keys[pg.K_a]:
+                    self.facing = "downleft"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_w]:
+                    self.facing = "up"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_s]:
+                    self.facing = "down"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_a]:
+                    self.facing = "left"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif keys[pg.K_d]:
+                    self.facing = "right"
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = True
+                elif self.facing == "upright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[5]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "upleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[4]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downright":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[7]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "downleft":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[6]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "up":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[0]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "down":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[1]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "left":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[2]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
+                elif self.facing == "right":
+                    center = self.imgRect.center
+                    self.image = self.jumpingDownFrames[3]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+                    self.walking = False
 
         if (self.walking or self.game.player.vx != 0 or self.game.player.vy != 0) and (
                 self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
@@ -963,9 +1262,7 @@ class Goomba(pg.sprite.Sprite):
         self.mask = pg.mask.from_surface(self.image)
 
         # Stats
-        self.maxHP = 4
-        self.hp = 4
-        self.defense = 0
+        self.stats = {"maxHP": 4, "hp": 4, "pow": 3, "def": 0, "exp": 2}
 
     def loadImages(self):
         sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
@@ -998,13 +1295,13 @@ class Goomba(pg.sprite.Sprite):
                                   sheet.getImageName("goomba_walking_left_8.png")]
 
         self.walkingFramesRight = [sheet.getImageName("goomba_walking_right_1.png"),
-                                  sheet.getImageName("goomba_walking_right_2.png"),
-                                  sheet.getImageName("goomba_walking_right_3.png"),
-                                  sheet.getImageName("goomba_walking_right_4.png"),
-                                  sheet.getImageName("goomba_walking_right_5.png"),
-                                  sheet.getImageName("goomba_walking_right_6.png"),
-                                  sheet.getImageName("goomba_walking_right_7.png"),
-                                  sheet.getImageName("goomba_walking_right_8.png")]
+                                   sheet.getImageName("goomba_walking_right_2.png"),
+                                   sheet.getImageName("goomba_walking_right_3.png"),
+                                   sheet.getImageName("goomba_walking_right_4.png"),
+                                   sheet.getImageName("goomba_walking_right_5.png"),
+                                   sheet.getImageName("goomba_walking_right_6.png"),
+                                   sheet.getImageName("goomba_walking_right_7.png"),
+                                   sheet.getImageName("goomba_walking_right_8.png")]
 
         self.shadowFrame = sheet.getImageName("shadow.png")
 
@@ -1057,13 +1354,13 @@ class Goomba(pg.sprite.Sprite):
 
     def update(self):
         self.animate()
-        if self.hp <= 0:
+        if self.stats["hp"] <= 0:
             self.going = False
             self.alpha -= 10
 
         if self.alpha <= 0:
-            self.kill()
             self.game.sprites.remove(self)
+            self.kill()
 
         for wall in self.game.walls:
             if pg.sprite.collide_rect(self, wall):
@@ -1105,3 +1402,107 @@ class Goomba(pg.sprite.Sprite):
 
         self.imgRect.bottom = self.rect.bottom - 5
         self.imgRect.centerx = self.rect.centerx
+
+
+class GoombaO(pg.sprite.Sprite):
+    def __init__(self, game, x, y, battle="THBEM"):
+        self.groups = game.enemies
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.newID = False
+        self.game = game
+        self.ID = -12
+        self.game.sprites.append(self)
+        self.alpha = 255
+        sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
+        self.image = sheet.getImageName("goomba_walking_down_1.png")
+        self.shadow = sheet.getImageName("shadow.png")
+        self.rect = self.shadow.get_rect()
+        self.imgRect = self.image.get_rect()
+        self.battle = battle
+        self.rect.center = (x, y)
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+
+    def update(self):
+        if not self.newID:
+            if self.ID in self.game.despawnList:
+                self.game.sprites.remove(self)
+            self.newID = True
+        if self in self.game.sprites:
+            hits = pg.sprite.collide_rect(self, self.game.player)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.playerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    print(self.game.despawnList)
+                    self.game.loadBattle(self.battle)
+
+            hits = pg.sprite.collide_rect(self, self.game.follower)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.followerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    print(self.game.despawnList)
+                    self.game.loadBattle(self.battle)
+
+
+class BattleTransition(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.groups = game.effects
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.offset = False
+        self.loadImages()
+        self.lastUpdate = 0
+        self.currentFrame = -1
+        self.alpha = 255
+        self.room = self.game.room
+        self.image = self.sprites[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = (width / 2, height / 2)
+
+    def loadImages(self):
+        self.sprites = [pg.image.load("sprites/battle intro/battle_transition_1.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_2.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_3.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_4.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_5.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_6.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_7.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_8.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_9.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_10.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_11.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_12.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_13.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_14.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_15.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_16.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_17.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_18.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_19.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_20.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_21.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_22.png"),
+                        pg.image.load("sprites/battle intro/battle_transition_23.png")]
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 60:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.sprites) - 1:
+                self.currentFrame = (self.currentFrame + 1)
+            center = self.rect.center
+            self.image = self.sprites[self.currentFrame]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
+
+        if self.currentFrame == len(self.sprites) - 1 and self.room != self.game.room:
+            self.alpha -= 20
+
+        if self.alpha <= 0:
+            self.kill()
