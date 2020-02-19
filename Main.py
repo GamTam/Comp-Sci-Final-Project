@@ -1,6 +1,8 @@
 import pygame as pg
 from settings import *
-from sprites import *
+from Overworld import *
+from UI import *
+from Enemies import *
 
 pg.mixer.pre_init(44100, -16, 2, 2048)
 pg.init()
@@ -44,7 +46,10 @@ class Game:
         self.screen = pg.display.set_mode((width, height))
         self.clock = pg.time.Clock()
         self.effects = pg.sprite.Group()
+        self.ui = pg.sprite.Group()
         self.loadData()
+        MarioUI(self)
+        LuigiUI(self)
         self.song_playing = ""
         self.storeData = {}
         self.despawnList = []
@@ -127,16 +132,25 @@ class Game:
         self.bowserCastle()
 
     def bowserCastle(self):
+        if not self.running:
+            return
+        if self.player.stats["hp"] == 0:
+            self.player.dead = False
+            self.player.stats["hp"] = 1
+        if self.follower.stats["hp"] == 0:
+            self.follower.dead = False
+            self.follower.stats["hp"] = 1
         self.playing = True
         while self.playing:
             self.playSong(17.235, 64.755, "cackletta battle")
             self.clock.tick(fps)
             self.events()
             self.updateOverworld()
+            self.screen.fill(black)
             self.drawOverworld()
 
     def loadTeeheeValleyBattle15G(self):
-        self.room = "THB15G"
+        self.room = "THB15lG"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
@@ -150,14 +164,13 @@ class Game:
         Goomba(self, 722, 1228, 4, 4, "left")
         Goomba(self, 722, 1228, 4, 4, "up")
         Goomba(self, 702, 1378, 4, 4, "right")
-        Goomba(self, 702, 1378, 4, 4, "right")
         Goomba(self, 700, 1328, 4, 4, "right")
         Goomba(self, 720, 1398, 4, 4, "right")
         Goomba(self, 602, 1380, 4, 4, "right")
-        Goomba(self, 720, 1100, 1, 1, "right")
+        # Goomba(self, 720, 1100, 1, 1, "right")
         Goomba(self, 200, 1200, 4, 4, "down")
         Goomba(self, 1400, 1275, 4, 4, "up")
-        Goomba(self, 1300, 1275, 1, 5, "left")
+        # Goomba(self, 1300, 1275, 1, 5, "left")
         Goomba(self, 1500, 1275, 4, 4, "down")
         Goomba(self, 500, 1275, 4, 4, "up")
         Goomba(self, 400, 1275, 4, 4, "up")
@@ -321,7 +334,11 @@ class Game:
             self.clock.tick(fps)
             self.events()
             self.updateBattle()
+            self.screen.fill(black)
             self.drawBattle()
+            # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
+            #     self.playing = False
+            #     self.running = False
             if len(self.enemies) == 0:
                 self.room = self.prevRoom
                 self.storeData["mario stats"] = self.player.stats
@@ -350,11 +367,6 @@ class Game:
         while going:
             trans.update()
             self.drawOverworld()
-            for event in pg.event.get():
-                if event.type == pg.QUIT or self.keys[pg.K_ESCAPE]:
-                    if self.playing:
-                        self.playing = False
-                    self.running = False
 
             if trans.currentFrame == len(trans.sprites) - 1:
                 if room == "THB1G":
@@ -372,6 +384,21 @@ class Game:
                     self.playing = False
                 self.running = False
             if event.type == pg.KEYDOWN:
+                if event.key == pg.K_f:
+                    self.player.stats["hp"] = self.player.stats["maxHP"]
+                    if self.player.dead:
+                        self.player.dead = False
+                        self.player.shadow = self.player.shadowFrames["normal"]
+                        center = self.player.rect.center
+                        self.player.rect = self.player.shadow.get_rect()
+                        self.player.rect.center = center
+                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                    if self.follower.dead:
+                        self.follower.dead = False
+                        center = self.follower.rect.center
+                        self.follower.shadow = self.follower.shadowFrames["normal"]
+                        self.follower.rect = self.follower.shadow.get_rect()
+                        self.follower.rect.center = center
                 if event.key == pg.K_F4:
                     if self.fullscreen:
                         self.screen = pg.display.set_mode((width, height))
@@ -379,67 +406,43 @@ class Game:
                         self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
                     self.fullscreen = not self.fullscreen
                 if event.key == pg.K_m:
-                    if not self.player.jumping:
+                    if not self.player.jumping and not self.player.hit and not self.player.dead:
                         self.player.jumping = True
                         self.player.jumpTimer = 1
                         self.player.airTimer = 0
                         self.jumpSound.play()
                 if event.key == pg.K_l:
-                    if not self.follower.jumping:
+                    if not self.follower.jumping and not self.follower.hit and not self.follower.dead:
                         self.follower.jumping = True
                         self.follower.jumpTimer = 1
                         self.follower.airTimer = 0
                         self.jumpSound.play()
                 if event.key == pg.K_SPACE:
-                    if not self.player.jumping:
+                    if not self.player.jumping and not self.player.hit and not self.player.dead:
                         self.player.jumping = True
                         self.player.jumpTimer = 1
                         self.player.airTimer = 0
                         self.jumpSound.play()
-                    if not self.follower.jumping:
+                    if not self.follower.jumping and not self.follower.hit and not self.follower.dead:
                         self.follower.jumping = True
                         self.follower.jumpTimer = 1
                         self.follower.airTimer = 0
                         self.jumpSound.play()
 
     def updateBattle(self):
-        keys = pg.key.get_pressed()
-        doubleDamageM = False
-        doubleDamageL = False
         self.effects.update()
         [sprite.update() for sprite in self.sprites]
+        self.ui.update()
         [col.update() for col in self.collision]
-        self.camera.update(self.player.rect)
-
-        hits = pg.sprite.spritecollideany(self.player, self.enemies)
-        if hits:
-            hitsRound2 = pg.sprite.collide_rect(self.playerCol, hits)
-            if keys[pg.K_m] and self.player.going == "down" and self.player.imgRect.bottom <= hits.imgRect.top + 50:
-                doubleDamageM = True
-            if hitsRound2:
-                if self.player.imgRect.bottom - 50 <= hits.imgRect.top and self.player.going == "down" and self.player.jumping and hits.stats["hp"] > 0:
-                    if doubleDamageM:
-                        hits.stats["hp"] -= 2 * (self.player.stats["pow"] - hits.stats["def"])
-                    else:
-                        hits.stats["hp"] -= (self.player.stats["pow"] - hits.stats["def"])
-                    self.player.airTimer = 0
-
-        luigiHits = pg.sprite.spritecollideany(self.follower, self.enemies)
-        if luigiHits:
-            hitsRound2 = pg.sprite.collide_rect(self.followerCol, luigiHits)
-            if keys[pg.K_l] and self.follower.going == "down" and self.follower.imgRect.bottom <= luigiHits.imgRect.top + 50:
-                doubleDamageL = True
-            if hitsRound2:
-                if self.follower.imgRect.bottom - 50 <= luigiHits.imgRect.top and self.follower.going == "down" and self.follower.jumping and luigiHits.stats["hp"] > 0:
-                    if doubleDamageL:
-                        luigiHits.stats["hp"] -= 2 * (self.follower.stats["pow"] - luigiHits.stats["def"])
-                    else:
-                        luigiHits.stats["hp"] -= (self.follower.stats["pow"] - luigiHits.stats["def"])
-                    self.follower.airTimer = 0
+        if not self.player.dead:
+            self.camera.update(self.player.rect)
+        else:
+            self.camera.update(self.follower.rect)
 
     def updateOverworld(self):
         self.effects.update()
         self.enemies.update()
+        self.ui.update()
         [sprite.update() for sprite in self.sprites]
         [col.update() for col in self.collision]
         self.camera.update(self.player.rect)
@@ -460,7 +463,12 @@ class Game:
             self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
 
         for sprite in self.sprites:
-            self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+            if sprite.dead:
+                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+
+        for sprite in self.sprites:
+            if not sprite.dead:
+                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
 
         try:
             self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
@@ -476,6 +484,8 @@ class Game:
                 pg.draw.rect(self.screen, black,
                              self.camera.offset(pg.Rect(enemy.rect.left, enemy.imgRect.top - 12, enemy.rect.width, 10)),
                              1)
+
+        [ui.draw() for ui in self.ui]
 
         for fx in self.effects:
             if fx.offset:
@@ -498,6 +508,8 @@ class Game:
             self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
         except:
             pass
+
+        [ui.draw() for ui in self.ui]
 
         for fx in self.effects:
             if fx.offset:

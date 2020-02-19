@@ -4,6 +4,7 @@ height = 720
 fps = 60
 title = "Super Mario & Luigi"
 paperMarioFont = 'PMF.otf'
+superMario256 = "SuperMario256.ttf"
 
 playerSpeed = 5
 jumpHeight = 11
