@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import pygame as pg
+import pytweening as pt
 from UI import *
 from settings import *
 

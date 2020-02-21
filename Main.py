@@ -1,4 +1,5 @@
 import pygame as pg
+import math
 from settings import *
 from Overworld import *
 from UI import *
@@ -47,6 +48,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.effects = pg.sprite.Group()
         self.ui = pg.sprite.Group()
+        self.textbox = None
         self.loadData()
         MarioUI(self)
         LuigiUI(self)
@@ -79,6 +81,9 @@ class Game:
         self.stoneSound = pg.mixer.Sound("sounds/stone footsteps.ogg")
         self.jumpSound = pg.mixer.Sound("sounds/jump.ogg")
         self.battleSound = pg.mixer.Sound("sounds/startbattle.ogg")
+        self.talkSoundHigh = pg.mixer.Sound("sounds/talkSound_high.ogg")
+        self.talkSoundMed = pg.mixer.Sound("sounds/talkSound_med.ogg")
+        self.talkSoundLow = pg.mixer.Sound("sounds/talkSound_low.ogg")
 
     def loadBowserCastle(self):
         self.room = "BC"
@@ -113,6 +118,7 @@ class Game:
         GoombaO(self, self.map.width / 2 - 100, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 - 700, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 + 700, self.map.height - 500, "THB1G")
+        GoombaT(self, (self.map.width / 2, 1200))
         try:
             self.player.rect.center = self.storeData["mario pos"]
             self.player.stats = self.storeData["mario stats"]
@@ -144,7 +150,8 @@ class Game:
         while self.playing:
             self.playSong(17.235, 64.755, "cackletta battle")
             self.clock.tick(fps)
-            self.events()
+            if self.textbox is None:
+                self.events()
             self.updateOverworld()
             self.screen.fill(black)
             self.drawOverworld()
@@ -167,10 +174,10 @@ class Game:
         Goomba(self, 700, 1328, 4, 4, "right")
         Goomba(self, 720, 1398, 4, 4, "right")
         Goomba(self, 602, 1380, 4, 4, "right")
-        # Goomba(self, 720, 1100, 1, 1, "right")
+        Goomba(self, 720, 1100, 4, 4, "right")
         Goomba(self, 200, 1200, 4, 4, "down")
         Goomba(self, 1400, 1275, 4, 4, "up")
-        # Goomba(self, 1300, 1275, 1, 5, "left")
+        Goomba(self, 1300, 1275, 4, 4, "left")
         Goomba(self, 1500, 1275, 4, 4, "down")
         Goomba(self, 500, 1275, 4, 4, "up")
         Goomba(self, 400, 1275, 4, 4, "up")
@@ -368,7 +375,7 @@ class Game:
             trans.update()
             self.drawOverworld()
 
-            if trans.currentFrame == len(trans.sprites) - 1:
+            if trans.currentFrame == len(trans.sprites) - 1 and not pg.mixer.get_busy():
                 if room == "THB1G":
                     self.loadTeeheeValleyBattle1G()
                     going = False
@@ -378,11 +385,9 @@ class Game:
 
     def events(self):
         for event in pg.event.get():
-            self.keys = pg.key.get_pressed()
-            if event.type == pg.QUIT or self.keys[pg.K_ESCAPE]:
-                if self.playing:
-                    self.playing = False
-                self.running = False
+            keys = pg.key.get_pressed()
+            if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+                pg.quit()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_f:
                     self.player.stats["hp"] = self.player.stats["maxHP"]
@@ -405,29 +410,6 @@ class Game:
                     else:
                         self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
                     self.fullscreen = not self.fullscreen
-                if event.key == pg.K_m:
-                    if not self.player.jumping and not self.player.hit and not self.player.dead:
-                        self.player.jumping = True
-                        self.player.jumpTimer = 1
-                        self.player.airTimer = 0
-                        self.jumpSound.play()
-                if event.key == pg.K_l:
-                    if not self.follower.jumping and not self.follower.hit and not self.follower.dead:
-                        self.follower.jumping = True
-                        self.follower.jumpTimer = 1
-                        self.follower.airTimer = 0
-                        self.jumpSound.play()
-                if event.key == pg.K_SPACE:
-                    if not self.player.jumping and not self.player.hit and not self.player.dead:
-                        self.player.jumping = True
-                        self.player.jumpTimer = 1
-                        self.player.airTimer = 0
-                        self.jumpSound.play()
-                    if not self.follower.jumping and not self.follower.hit and not self.follower.dead:
-                        self.follower.jumping = True
-                        self.follower.jumpTimer = 1
-                        self.follower.airTimer = 0
-                        self.jumpSound.play()
 
     def updateBattle(self):
         self.effects.update()
@@ -522,28 +504,8 @@ class Game:
     def sortByYPos(self, element):
         return element.rect.bottom
 
-    def drawTextIU(self, text, size, color, x, y, font, hilight=False):
-        fnt = pg.font.Font("fonts/" + font, size)
-        textSurface = fnt.render(text, True, color)
-        textRect = textSurface.get_rect()
-        textRect.midtop = (int(x), int(y))
-        if hilight:
-            pg.draw.rect(self.screen, black, self.camera.offset(textRect))
-        self.screen.blit(textSurface, self.camera.offset(textRect))
-
-    def drawTextUI(self, text, size, color, x, y, font, hilight=False):
-        fnt = pg.font.Font("fonts/" + font, size)
-        textSurface = fnt.render(text, True, color)
-        textRect = textSurface.get_rect()
-        textRect.midtop = (int(x), int(y))
-        if hilight:
-            pg.draw.rect(self.screen, black, textRect)
-        self.screen.blit(textSurface, textRect)
-
 
 game = Game()
 
 while game.running:
     game.loadBowserCastle()
-
-pg.quit()

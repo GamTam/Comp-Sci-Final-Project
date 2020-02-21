@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import pygame as pg
+
 from settings import *
 
 
@@ -200,9 +200,6 @@ class MarioUI(pg.sprite.Sprite):
             self.numberRect2.centery = self.rect.bottom - 25
             self.numberRect1.centery = self.rect.bottom - 25
             self.numberRect1.right = self.numberRect2.left
-
-
-
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
@@ -588,12 +585,17 @@ class HitNumbers(pg.sprite.Sprite):
         if len(self.number) == 1:
             self.game.blit_alpha(self.game.screen, self.numberImg, self.game.camera.offset(self.numberRect), self.alpha)
         elif len(self.number) == 2:
-            self.game.blit_alpha(self.game.screen, self.numberImg1, self.game.camera.offset(self.numberRect1), self.alpha)
-            self.game.blit_alpha(self.game.screen, self.numberImg2, self.game.camera.offset(self.numberRect2), self.alpha)
+            self.game.blit_alpha(self.game.screen, self.numberImg1, self.game.camera.offset(self.numberRect1),
+                                 self.alpha)
+            self.game.blit_alpha(self.game.screen, self.numberImg2, self.game.camera.offset(self.numberRect2),
+                                 self.alpha)
         elif len(self.number) == 3:
-            self.game.blit_alpha(self.game.screen, self.numberImg1, self.game.camera.offset(self.numberRect1), self.alpha)
-            self.game.blit_alpha(self.game.screen, self.numberImg2, self.game.camera.offset(self.numberRect2), self.alpha)
-            self.game.blit_alpha(self.game.screen, self.numberImg3, self.game.camera.offset(self.numberRect3), self.alpha)
+            self.game.blit_alpha(self.game.screen, self.numberImg1, self.game.camera.offset(self.numberRect1),
+                                 self.alpha)
+            self.game.blit_alpha(self.game.screen, self.numberImg2, self.game.camera.offset(self.numberRect2),
+                                 self.alpha)
+            self.game.blit_alpha(self.game.screen, self.numberImg3, self.game.camera.offset(self.numberRect3),
+                                 self.alpha)
 
     def update(self):
         self.counter += 1
