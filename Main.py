@@ -84,6 +84,8 @@ class Game:
         self.talkSoundHigh = pg.mixer.Sound("sounds/talkSound_high.ogg")
         self.talkSoundMed = pg.mixer.Sound("sounds/talkSound_med.ogg")
         self.talkSoundLow = pg.mixer.Sound("sounds/talkSound_low.ogg")
+        self.textBoxOpenSound = pg.mixer.Sound("sounds/textboxopen.ogg")
+        self.textBoxCloseSound = pg.mixer.Sound("sounds/textboxclose.ogg")
 
     def loadBowserCastle(self):
         self.room = "BC"

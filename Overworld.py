@@ -2192,6 +2192,7 @@ class TextBox(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, game.ui)
         self.speed = 20
         self.game = game
+        self.game.textBoxOpenSound.play()
         self.game.player.canMove = False
         self.game.follower.canMove = False
         self.parent = parent
@@ -2267,9 +2268,9 @@ class TextBox(pg.sprite.Sprite):
                 else:
                     if self.playSound == 1:
                         pitch = random.randrange(0, 3)
-                        if pitch == 1:
+                        if pitch == 0:
                             self.game.talkSoundLow.play()
-                        elif pitch == 2:
+                        elif pitch == 1:
                             self.game.talkSoundMed.play()
                         else:
                             self.game.talkSoundHigh.play()
@@ -2292,5 +2293,6 @@ class TextBox(pg.sprite.Sprite):
                                                           self.game.camera.offset(self.parent.imgRect).centery,
                                                           (i / self.speed)))
                                 self.counter = 0
+                                self.game.textBoxCloseSound.play()
                                 self.closing = True
 
