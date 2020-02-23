@@ -86,7 +86,7 @@ class Mario(pg.sprite.Sprite):
         self.imgRect.left = x
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 10, "bp": 5}
+        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 10, "bp": 5, "exp": 0}
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -915,7 +915,7 @@ class Luigi(pg.sprite.Sprite):
         self.going = "irrelevent"
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "stache": 3, "hp": 13, "bp": 5}
+        self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "stache": 3, "hp": 13, "bp": 5, "exp": 0}
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
@@ -2113,7 +2113,173 @@ class Luigi(pg.sprite.Sprite):
             pg.mixer.Sound.play(self.stepSound)
 
 
-class GoombaT(pg.sprite.Sprite):
+class MarioBattleComplete(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.alpha = 255
+        self.speed = 50
+        self.counter = 0
+        self.currentFrame = 0
+        self.lastUpdate = 0
+        self.dead = False
+        self.pose = False
+        self.newXP = 0
+        self.points = []
+        self.loadImages()
+        self.image = self.spinningFrames[0]
+        self.rect = self.image.get_rect()
+        self.rect.bottom = self.game.player.imgRect.bottom
+        self.rect.centerx = self.game.player.imgRect.centerx
+        self.game.sprites.remove(self.game.player)
+        for i in range(self.speed + 1):
+            self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, 400,
+                                                300, (i / self.speed)))
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
+
+        self.spinningFrames = [sheet.getImageName("mario_spinning_1.png"),
+                               sheet.getImageName("mario_spinning_2.png"),
+                               sheet.getImageName("mario_spinning_3.png"),
+                               sheet.getImageName("mario_spinning_4.png"),
+                               sheet.getImageName("mario_spinning_5.png"),
+                               sheet.getImageName("mario_spinning_6.png"),
+                               sheet.getImageName("mario_spinning_7.png"),
+                               sheet.getImageName("mario_spinning_8.png")]
+
+        self.poseFrames = [sheet.getImageName("mario_winpose_1.png"),
+                           sheet.getImageName("mario_winpose_2.png"),
+                           sheet.getImageName("mario_winpose_3.png"),]
+
+    def update(self):
+        self.animate()
+        if self.counter < len(self.points) - 1:
+            self.counter += 1
+        else:
+            if self.newXP != self.game.battleXp:
+                self.game.player.stats["exp"] += 1
+                self.newXP += 1
+            elif self.image == self.spinningFrames[-1]:
+                self.currentFrame = 0
+                self.pose = True
+
+        self.rect.center = self.points[self.counter]
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 45:
+            self.lastUpdate = now
+            if self.newXP != self.game.battleXp:
+                if self.currentFrame < len(self.spinningFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.spinningFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.rect.center
+                self.image = self.spinningFrames[self.currentFrame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+            else:
+                if self.currentFrame < len(self.spinningFrames) and not self.pose:
+                    if self.currentFrame < len(self.spinningFrames) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    center = self.rect.center
+                    self.image = self.spinningFrames[self.currentFrame]
+                    self.rect = self.image.get_rect()
+                    self.rect.center = center
+                else:
+                    if self.currentFrame < len(self.poseFrames) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                        center = self.rect.center
+                        self.image = self.poseFrames[self.currentFrame]
+                        self.rect = self.image.get_rect()
+                        self.rect.center = center
+
+
+class LuigiBattleComplete(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.alpha = 255
+        self.speed = 50
+        self.counter = 0
+        self.currentFrame = 0
+        self.lastUpdate = 0
+        self.dead = False
+        self.pose = False
+        self.newXP = 0
+        self.points = []
+        self.loadImages()
+        self.image = self.spinningFrames[0]
+        self.rect = self.image.get_rect()
+        self.rect.bottom = self.game.follower.imgRect.bottom
+        self.rect.centerx = self.game.follower.imgRect.centerx
+        self.game.sprites.remove(self.game.follower)
+        for i in range(self.speed + 1):
+            self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, 400,
+                                                500, (i / self.speed)))
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
+
+        self.spinningFrames = [sheet.getImageName("luigi_spinning_1.png"),
+                               sheet.getImageName("luigi_spinning_2.png"),
+                               sheet.getImageName("luigi_spinning_3.png"),
+                               sheet.getImageName("luigi_spinning_4.png"),
+                               sheet.getImageName("luigi_spinning_5.png"),
+                               sheet.getImageName("luigi_spinning_6.png"),
+                               sheet.getImageName("luigi_spinning_7.png"),
+                               sheet.getImageName("luigi_spinning_8.png")]
+
+        self.poseFrames = [sheet.getImageName("luigi_winpose_1.png"),
+                           sheet.getImageName("luigi_winpose_2.png"),
+                           sheet.getImageName("luigi_winpose_3.png"),]
+
+    def update(self):
+        self.animate()
+        if self.counter < len(self.points) - 1:
+            self.counter += 1
+        else:
+            if self.newXP != self.game.battleXp:
+                self.game.follower.stats["exp"] += 1
+                self.newXP += 1
+            elif self.image == self.spinningFrames[-1]:
+                self.currentFrame = 0
+                self.pose = True
+
+        self.rect.center = self.points[self.counter]
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 45:
+            self.lastUpdate = now
+            if self.newXP != self.game.battleXp:
+                if self.currentFrame < len(self.spinningFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.spinningFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.rect.center
+                self.image = self.spinningFrames[self.currentFrame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+            else:
+                if self.currentFrame < len(self.spinningFrames) and not self.pose:
+                    if self.currentFrame < len(self.spinningFrames) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    center = self.rect.center
+                    self.image = self.spinningFrames[self.currentFrame]
+                    self.rect = self.image.get_rect()
+                    self.rect.center = center
+                else:
+                    if self.currentFrame < len(self.poseFrames) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                        center = self.rect.center
+                        self.image = self.poseFrames[self.currentFrame]
+                        self.rect = self.image.get_rect()
+                        self.rect.center = center
+
+
+class GoombaKing(pg.sprite.Sprite):
     def __init__(self, game, start):
         pg.sprite.Sprite.__init__(self, game.npcs)
         self.text = []
@@ -2238,11 +2404,12 @@ class CountBleck(pg.sprite.Sprite):
             if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and (
                     keys[pg.K_m] or keys[pg.K_l] or keys[pg.K_SPACE]):
                 if not self.game.player.jumping:
-                    pg.mixer.music.fadeout(10000)
+                    pg.mixer.music.fadeout(200)
                     self.game.playsong = False
                     self.textbox = TextBox(self.game, self, self.text)
         elif self.textbox != "complete":
-            # self.game.playSong(17.235, 64.755, "cackletta battle")
+            if not pg.mixer.music.get_busy() or self.textbox.rect.center == self.textbox.points[-1]:
+                self.game.playSong(10.314, 32.016, "the evil count bleck")
             pg.event.clear()
         else:
             self.textbox = None
@@ -2263,7 +2430,6 @@ class CountBleck(pg.sprite.Sprite):
             self.imgRect = self.image.get_rect()
             self.imgRect.bottom = bottom
             self.imgRect.left = left
-
 
 
 class Wall(pg.sprite.Sprite):
@@ -2448,7 +2614,7 @@ class TextBox(pg.sprite.Sprite):
         self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
         if self.scale >= 1:
             text, pos = ptext.draw(character, (self.textx, self.texty), fontname=dialogueFont, color=black, fontsize=35, lineheight=0.8, surf=None)
-            self.game.screen.set_clip((self.rect.left, self.rect.top + 20, 1000, 250))
+            self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 250))
             self.game.screen.blit(text, pos)
             self.game.screen.set_clip(None)
             if self.pause <= 0:
@@ -2492,11 +2658,11 @@ class TextBox(pg.sprite.Sprite):
                         if event.type == pg.KEYDOWN:
                             if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
                                 if self.page < len(self.text) - 1:
+                                    if not self.advancing: self.game.talkAdvanceSound.play()
                                     self.advancing = True
                                     self.pTimes = 0
                                     self.PTimes = 0
                                     self.numTimes = 0
-                                    self.game.talkAdvanceSound.play()
                                 else:
                                     self.points = []
                                     for i in range(self.speed + 1):

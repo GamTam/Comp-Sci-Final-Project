@@ -7,6 +7,7 @@ fps = 60
 title = "Super Mario & Luigi"
 dialogueFont = 'fonts/PMF.otf'
 superMario256 = "fonts/SuperMario256.ttf"
+expNumbers = "fonts/expnumbers.ttf"
 
 playerSpeed = 5
 jumpHeight = 11
@@ -50,3 +51,5 @@ battleTransitionSprites = [pg.image.load("sprites/battle intro/battle_transition
 talkAdvanceSprite = pg.image.load("sprites/textboxadvance.png").convert_alpha()
 
 textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png")}
+
+fadeout = pg.image.load("sprites/fadeout.png")

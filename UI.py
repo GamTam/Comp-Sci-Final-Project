@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-
+import ptext
 from settings import *
 
 
@@ -606,4 +606,65 @@ class HitNumbers(pg.sprite.Sprite):
                 self.kill()
 
         if self.game.room != self.room:
+            self.kill()
+
+
+class MarioExpNumbers(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.game.battleEndUI.append(self)
+        self.offset = False
+        self.image = pg.image.load("sprites/exp collection_mario.png")
+        self.rect = self.image.get_rect()
+        self.alpha = 255
+        self.room = self.game.room
+        self.rect.center = (700, 300)
+
+    def update(self):
+        if self.room != self.game.room:
+            self.kill()
+
+    def draw(self):
+        self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
+        ptext.draw(str(self.game.player.stats["exp"]), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+
+
+class LuigiExpNumbers(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.game.battleEndUI.append(self)
+        self.offset = False
+        self.image = pg.image.load("sprites/exp collection_luigi.png")
+        self.rect = self.image.get_rect()
+        self.alpha = 255
+        self.room = self.game.room
+        self.rect.center = (700, 500)
+
+    def update(self):
+        if self.room != self.game.room:
+            self.kill()
+
+    def draw(self):
+        self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
+        ptext.draw(str(self.game.follower.stats["exp"]), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+
+
+class Fadeout(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self, game.fadeout)
+        self.game = game
+        self.image = fadeout
+        self.rect = self.image.get_rect()
+        self.alpha = 1
+        self.room = self.game.room
+
+    def update(self):
+        if self.room == self.game.room and self.alpha < 255:
+            self.alpha += 20
+        else:
+            self.alpha -= 20
+
+        if self.alpha < 0:
             self.kill()

@@ -48,6 +48,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.effects = pg.sprite.Group()
         self.ui = pg.sprite.Group()
+        self.fadeout = pg.sprite.Group()
         self.loadData()
         MarioUI(self)
         LuigiUI(self)
@@ -98,7 +99,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
-        if self.song_playing != "count bleck's plan":
+        if self.song_playing != "castle bleck":
             self.firstLoop = True
         self.player = Mario(self, width / 2, 1278)
         self.playerCol = MarioCollision(self)
@@ -110,7 +111,7 @@ class Game:
         self.player.stepSound = self.stoneSound
         self.map = loadMap("Bowser's Castle")
         self.camera = Camera(self.map.width, self.map.height)
-        # GoombaO(self, self.map.width / 2, self.map.height - 620, "THB15G")
+        # GoombaKing(self, (self.map.width / 2 - 5, self.map.height - 620))
         GoombaO(self, self.map.width / 2 + 500, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 - 500, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 + 400, self.map.height - 500, "THB1G")
@@ -125,7 +126,7 @@ class Game:
         GoombaO(self, self.map.width / 2 - 100, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 - 700, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 + 700, self.map.height - 500, "THB1G")
-        self.CB = CountBleck(self, (self.map.width / 2, self.map.height - 620))
+        CountBleck(self, (self.map.width / 2 - 5, self.map.height - 620))
         try:
             self.player.rect.center = self.storeData["mario pos"]
             self.player.stats = self.storeData["mario stats"]
@@ -154,7 +155,7 @@ class Game:
         self.playing = True
         while self.playing:
             if self.playsong:
-                self.playSong(5.793, 51.7, "count bleck's plan")
+                self.playSong(6.749, 102.727, "castle bleck")
             self.clock.tick(fps)
             self.events()
             self.updateOverworld()
@@ -230,10 +231,11 @@ class Game:
         self.teeheeValleyBattle()
 
     def loadTeeheeValleyBattle1G(self):
-        self.room = "THB1G"
+        self.room = "THB15lG"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
         self.playsong = True
         if self.song_playing != "battle":
@@ -284,8 +286,6 @@ class Game:
         self.teeheeValleyBattle()
 
     def teeheeValleyBattle(self):
-        if not self.running:
-            return
         self.playing = True
         while self.playing:
             if self.playsong:
@@ -296,21 +296,16 @@ class Game:
             self.screen.fill(black)
             self.drawBattle()
             # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
-            #     self.playing = False
-            #     self.running = False
+            #     self.gameOver()
             if len(self.enemies) == 0:
-                self.room = self.prevRoom
-                self.storeData["mario stats"] = self.player.stats
-                self.storeData["luigi stats"] = self.follower.stats
-                self.gotoPrevRoom()
+                self.battleOver()
 
     def gotoPrevRoom(self):
-        if self.prevRoom == "THBEM":
-            self.loadTeeheeValleyBattleEm()
-        elif self.prevRoom == "BC":
+        if self.prevRoom == "BC":
             self.loadBowserCastle()
 
     def loadBattle(self, room):
+        self.battleXp = 0
         pg.mixer.music.stop()
         self.battleSound.play()
         trans = BattleTransition(self)
@@ -335,6 +330,59 @@ class Game:
                 elif room == "THB15G":
                     self.loadTeeheeValleyBattle15G()
                     going = False
+
+    def battleOver(self):
+        pg.mixer.music.stop()
+        self.battleEndUI = []
+        self.storeData["mario stats"] = self.player.stats.copy()
+        self.storeData["luigi stats"] = self.follower.stats.copy()
+        self.map.rect.center = self.camera.offset(self.map.rect).center
+        self.player.imgRect.center = self.camera.offset(self.player.imgRect).center
+        self.player.rect.center = self.camera.offset(self.player.rect).center
+        self.follower.imgRect.center = self.camera.offset(self.follower.imgRect).center
+        self.follower.rect.center = self.camera.offset(self.follower.rect).center
+        MarioExpNumbers(self)
+        LuigiExpNumbers(self)
+        if not self.player.dead:
+            self.marioBattleOver = MarioBattleComplete(self)
+            self.sprites.append(self.marioBattleOver)
+        if not self.follower.dead:
+            self.luigiBattleOver = LuigiBattleComplete(self)
+            self.sprites.append(self.luigiBattleOver)
+        self.dimBackground = fadeout.get_rect()
+        while True:
+            self.playSong(5.44, 36.708, "battle victory")
+            self.clock.tick(fps)
+            self.events()
+            self.updateBattleOver()
+            self.screen.fill(black)
+            self.drawBattleOver()
+            keys = pg.key.get_pressed()
+            if keys[pg.K_m] or keys[pg.K_l] or keys[pg.K_SPACE]:
+                break
+
+        if not self.player.dead:
+            self.storeData["mario stats"]["exp"] += self.battleXp
+            self.player.stats = self.storeData["mario stats"]
+        if not self.follower.dead:
+            self.storeData["luigi stats"]["exp"] += self.battleXp
+            self.follower.stats = self.storeData["luigi stats"]
+        fade = Fadeout(self)
+        pg.mixer.music.fadeout(1000)
+        while True:
+            self.clock.tick(fps)
+            self.events()
+            self.updateBattleOver()
+            self.screen.fill(black)
+            self.drawBattleOver()
+            if fade.alpha >= 255:
+                break
+        if not self.player.dead:
+            self.sprites.remove(self.marioBattleOver)
+        if not self.follower.dead:
+            self.sprites.remove(self.luigiBattleOver)
+        self.room = self.prevRoom
+        self.gotoPrevRoom()
 
     def events(self):
         for event in pg.event.get():
@@ -364,7 +412,20 @@ class Game:
                         self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
                     self.fullscreen = not self.fullscreen
 
+    def updateBattleOver(self):
+        self.fadeout.update()
+        self.effects.update()
+        for sprite in self.sprites:
+            if sprite == self.player or sprite == self.follower:
+                pass
+            else:
+                sprite.update()
+        self.ui.update()
+        [col.update() for col in self.collision]
+        self.camera.update(pg.Rect(width / 2, height / 2, 0, 0))
+
     def updateBattle(self):
+        self.fadeout.update()
         self.effects.update()
         [sprite.update() for sprite in self.sprites]
         self.ui.update()
@@ -375,6 +436,7 @@ class Game:
             self.camera.update(self.follower.rect)
 
     def updateOverworld(self):
+        self.fadeout.update()
         self.npcs.update()
         self.effects.update()
         self.enemies.update()
@@ -392,11 +454,33 @@ class Game:
         temp.set_alpha(opacity)
         target.blit(temp, location)
 
+    def drawBattleOver(self):
+        self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+        for sprite in self.sprites:
+            if sprite.dead:
+                self.screen.blit(sprite.shadow, sprite.rect)
+                self.screen.blit(sprite.image, sprite.imgRect)
+        self.blit_alpha(self.screen, fadeout, self.dimBackground, 125)
+        for ui in self.battleEndUI:
+                ui.draw()
+        self.sprites.sort(key=self.sortByYPos)
+
+        for sprite in self.sprites:
+            if not sprite.dead:
+                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.rect), sprite.alpha)
+
+        [self.blit_alpha(self.screen, fad.image, fad.rect, fad.alpha) for fad in self.fadeout]
+
+        pg.display.flip()
+
     def drawBattle(self):
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
-            self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+            try:
+                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+            except:
+                pass
 
         for sprite in self.sprites:
             if sprite.dead:
@@ -429,6 +513,8 @@ class Game:
             else:
                 self.blit_alpha(self.screen, fx.image, fx.rect, fx.alpha)
 
+        [self.blit_alpha(self.screen, fad.image, fad.rect, fad.alpha) for fad in self.fadeout]
+
         pg.display.flip()
 
     def drawOverworld(self):
@@ -452,6 +538,8 @@ class Game:
                 self.blit_alpha(self.screen, fx.image, self.camera.offset(fx.rect), fx.alpha)
             else:
                 self.blit_alpha(self.screen, fx.image, fx.rect, fx.alpha)
+
+        [self.blit_alpha(self.screen, fad.image, fad.rect, fad.alpha) for fad in self.fadeout]
 
         pg.display.flip()
 

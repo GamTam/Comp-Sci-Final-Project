@@ -60,7 +60,6 @@ class GoombaO(pg.sprite.Sprite):
                     self.game.despawnList.append(self.ID)
                     if len(self.game.despawnList) > 13:
                         self.game.despawnList.remove(self.game.despawnList[0])
-                    print(self.game.despawnList)
                     self.game.loadBattle(self.battle)
 
             hits = pg.sprite.collide_rect(self, self.game.follower)
@@ -70,7 +69,6 @@ class GoombaO(pg.sprite.Sprite):
                     self.game.despawnList.append(self.ID)
                     if len(self.game.despawnList) > 13:
                         self.game.despawnList.remove(self.game.despawnList[0])
-                    print(self.game.despawnList)
                     self.game.loadBattle(self.battle)
 
 
@@ -196,6 +194,7 @@ class Goomba(pg.sprite.Sprite):
             self.alpha -= 10
 
         if self.alpha <= 0:
+            self.game.battleXp += self.stats["exp"]
             self.game.sprites.remove(self)
             self.kill()
 
