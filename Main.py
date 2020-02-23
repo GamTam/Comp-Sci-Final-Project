@@ -48,15 +48,14 @@ class Game:
         self.clock = pg.time.Clock()
         self.effects = pg.sprite.Group()
         self.ui = pg.sprite.Group()
-        self.textbox = None
         self.loadData()
         MarioUI(self)
         LuigiUI(self)
         self.song_playing = ""
         self.storeData = {}
         self.despawnList = []
-        self.running = True
         self.fullscreen = False
+        self.running = True
 
     def playSong(self, introLength, loopLength, song, loop=True):
         if self.song_playing != song:
@@ -86,14 +85,20 @@ class Game:
         self.talkSoundLow = pg.mixer.Sound("sounds/talkSound_low.ogg")
         self.textBoxOpenSound = pg.mixer.Sound("sounds/textboxopen.ogg")
         self.textBoxCloseSound = pg.mixer.Sound("sounds/textboxclose.ogg")
+        self.talkAdvanceSound = pg.mixer.Sound("sounds/talkadvance.ogg")
+        self.playerHitSound = pg.mixer.Sound("sounds/playerhit.ogg")
+        self.enemyHitSound = pg.mixer.Sound("sounds/enemyhit.ogg")
+        self.enemyDieSound = pg.mixer.Sound("sounds/enemydie.ogg")
 
     def loadBowserCastle(self):
         self.room = "BC"
+        self.playsong = True
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
-        if self.song_playing != "cackletta battle":
+        self.npcs = pg.sprite.Group()
+        if self.song_playing != "count bleck's plan":
             self.firstLoop = True
         self.player = Mario(self, width / 2, 1278)
         self.playerCol = MarioCollision(self)
@@ -105,7 +110,7 @@ class Game:
         self.player.stepSound = self.stoneSound
         self.map = loadMap("Bowser's Castle")
         self.camera = Camera(self.map.width, self.map.height)
-        GoombaO(self, self.map.width / 2, self.map.height - 620, "THB15G")
+        # GoombaO(self, self.map.width / 2, self.map.height - 620, "THB15G")
         GoombaO(self, self.map.width / 2 + 500, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 - 500, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 + 400, self.map.height - 500, "THB1G")
@@ -120,7 +125,7 @@ class Game:
         GoombaO(self, self.map.width / 2 - 100, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 - 700, self.map.height - 500, "THB1G")
         GoombaO(self, self.map.width / 2 + 700, self.map.height - 500, "THB1G")
-        GoombaT(self, (self.map.width / 2, 1200))
+        self.CB = CountBleck(self, (self.map.width / 2, self.map.height - 620))
         try:
             self.player.rect.center = self.storeData["mario pos"]
             self.player.stats = self.storeData["mario stats"]
@@ -140,8 +145,6 @@ class Game:
         self.bowserCastle()
 
     def bowserCastle(self):
-        if not self.running:
-            return
         if self.player.stats["hp"] == 0:
             self.player.dead = False
             self.player.stats["hp"] = 1
@@ -150,10 +153,10 @@ class Game:
             self.follower.stats["hp"] = 1
         self.playing = True
         while self.playing:
-            self.playSong(17.235, 64.755, "cackletta battle")
+            if self.playsong:
+                self.playSong(5.793, 51.7, "count bleck's plan")
             self.clock.tick(fps)
-            if self.textbox is None:
-                self.events()
+            self.events()
             self.updateOverworld()
             self.screen.fill(black)
             self.drawOverworld()
@@ -163,7 +166,9 @@ class Game:
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
+        self.playsong = True
         if self.song_playing != "battle":
             self.firstLoop = True
         self.player = Mario(self, width / 2, 1278)
@@ -224,69 +229,13 @@ class Game:
         self.camera = Camera(self.map.width, self.map.height)
         self.teeheeValleyBattle()
 
-    def loadTeeheeValleyBattleEm(self):
-        self.room = "THBEM"
-        self.sprites = []
-        self.collision = []
-        self.walls = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
-        if self.song_playing != "battle":
-            self.firstLoop = True
-        Goomba(self, 0, 0, 0, 0)
-        self.player = Mario(self, width / 2, 1278)
-        self.playerCol = MarioCollision(self)
-        self.follower = Luigi(self, width / 2, 1278)
-        self.followerCol = LuigiCollision(self)
-        self.sprites.append(self.follower)
-        self.sprites.append(self.player)
-        try:
-            self.player.rect.center = self.storeData["mario pos"]
-            self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
-            self.follower.stats = self.storeData["luigi stats"]
-            self.follower.moveQueue = self.storeData["luigi move"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
-        except:
-            pass
-
-        # Top Half Collision
-        Wall(self, 96, 1090, 384, 62)
-        Wall(self, 552, 1064, 136, 88)
-        Wall(self, -60, 1028, 706, 76)
-        Wall(self, 640, 1014, 243, 42)
-        Wall(self, 750, 1015, 98, 73)
-        Wall(self, 808, 1052, 92, 72)
-        Wall(self, 896, 1037, 213, 61)
-        Wall(self, 1026, 1098, 42, 42)
-        Wall(self, 1104, 1083, 480, 69)
-        Wall(self, 1572, 1055, 126, 45)
-
-        # Bottom Half Collision
-        Wall(self, -70, 1455, 300, 70)
-        Wall(self, 229, 1486, 72, 22)
-        Wall(self, 300, 1455, 170, 100)
-        Wall(self, 454, 1522, 188, 32)
-        Wall(self, 642, 1552, 68, 32)
-        Wall(self, 704, 1522, 120, 32)
-        Wall(self, 792, 1455, 186, 72)
-        Wall(self, 975, 1522, 70, 72)
-        Wall(self, 1038, 1455, 374, 72)
-        Wall(self, 1407, 1486, 116, 72)
-        Wall(self, 1522, 1455, 200, 72)
-
-        self.follower.stepSound = self.sandSound
-        self.player.stepSound = self.sandSound
-        self.map = loadMap("teehee valley battle", True)
-        self.camera = Camera(self.map.width, self.map.height)
-        self.teeheeValleyBattle()
-
     def loadTeeheeValleyBattle1G(self):
         self.room = "THB1G"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
+        self.playsong = True
         if self.song_playing != "battle":
             self.firstLoop = True
         self.player = Mario(self, width / 2, 1278)
@@ -339,7 +288,8 @@ class Game:
             return
         self.playing = True
         while self.playing:
-            self.playSong(7.01, 139.132, "battle")
+            if self.playsong:
+                self.playSong(7.01, 139.132, "battle")
             self.clock.tick(fps)
             self.events()
             self.updateBattle()
@@ -375,6 +325,7 @@ class Game:
         self.prevRoom = self.room
         while going:
             trans.update()
+            self.screen.fill(black)
             self.drawOverworld()
 
             if trans.currentFrame == len(trans.sprites) - 1 and not pg.mixer.get_busy():
@@ -424,6 +375,7 @@ class Game:
             self.camera.update(self.follower.rect)
 
     def updateOverworld(self):
+        self.npcs.update()
         self.effects.update()
         self.enemies.update()
         self.ui.update()

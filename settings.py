@@ -47,4 +47,6 @@ battleTransitionSprites = [pg.image.load("sprites/battle intro/battle_transition
                            pg.image.load("sprites/battle intro/battle_transition_22.png").convert_alpha(),
                            pg.image.load("sprites/battle intro/battle_transition_23.png").convert_alpha()]
 
+talkAdvanceSprite = pg.image.load("sprites/textboxadvance.png").convert_alpha()
+
 textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png")}

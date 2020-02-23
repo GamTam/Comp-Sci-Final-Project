@@ -262,11 +262,17 @@ class Goomba(pg.sprite.Sprite):
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        (2 * (self.game.player.stats["pow"] - self.stats["def"])))
                             self.stats["hp"] -= 2 * (self.game.player.stats["pow"] - self.stats["def"])
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
                             self.hit = True
                         else:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        (self.game.player.stats["pow"] - self.stats["def"]))
                             self.stats["hp"] -= (self.game.player.stats["pow"] - self.stats["def"])
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
                             self.hit = True
                         self.game.player.airTimer = 0
                     else:
@@ -277,6 +283,7 @@ class Goomba(pg.sprite.Sprite):
                                 self.game.player.stats["hp"] = 0
                                 self.game.player.currentFrame = 0
                             self.game.player.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
                             self.game.player.hit = True
 
         if self.game.follower.stats["hp"] != 0:
@@ -292,11 +299,17 @@ class Goomba(pg.sprite.Sprite):
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        (2 * (self.game.follower.stats["pow"] - self.stats["def"])))
                             self.stats["hp"] -= 2 * (self.game.follower.stats["pow"] - self.stats["def"])
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
                             self.hit = True
                         else:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        (self.game.follower.stats["pow"] - self.stats["def"]))
                             self.stats["hp"] -= (self.game.follower.stats["pow"] - self.stats["def"])
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
                             self.hit = True
                         self.game.follower.airTimer = 0
                     else:
@@ -307,4 +320,5 @@ class Goomba(pg.sprite.Sprite):
                                 self.game.follower.stats["hp"] = 0
                                 self.game.follower.currentFrame = 0
                             self.game.follower.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
                             self.game.follower.hit = True
