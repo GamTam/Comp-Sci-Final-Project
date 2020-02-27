@@ -3,6 +3,8 @@ import pygame as pg
 width = 1280
 height = 720
 
+icon = pg.image.load("sprites/icon.png")
+
 fps = 60
 title = "Super Mario & Luigi"
 dialogueFont = 'fonts/PMF.otf'

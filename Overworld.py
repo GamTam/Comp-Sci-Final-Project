@@ -65,6 +65,9 @@ class Mario(pg.sprite.Sprite):
         self.dead = False
         self.canMove = True
         self.hitTime = 0
+        self.ability = 0
+        self.prevAbility = 12
+        self.abilities = ["jump", "interact", "talk"]
         self.alpha = 255
         self.stepSound = pg.mixer.Sound("sounds/coin.ogg")
         self.walking = False
@@ -310,12 +313,39 @@ class Mario(pg.sprite.Sprite):
                     self.vy = playerSpeed
                 if keys[pg.K_d]:
                     self.vx = playerSpeed
-                if keys[pg.K_m] or keys[pg.K_SPACE]:
-                    if not self.jumping and not self.hit and not self.dead and self.canMove:
-                        self.jumping = True
-                        self.jumpTimer = 1
-                        self.airTimer = 0
-                        self.game.jumpSound.play()
+                for event in self.game.event:
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_m:
+                            if self.ability == 0:
+                                if not self.jumping and not self.hit and not self.dead and self.canMove:
+                                    self.jumping = True
+                                    self.jumpTimer = 1
+                                    self.airTimer = 0
+                                    self.game.jumpSound.play()
+                        if event.key == pg.K_SPACE:
+                            if not self.jumping and not self.hit and not self.dead and self.canMove:
+                                self.jumping = True
+                                self.jumpTimer = 1
+                                self.airTimer = 0
+                                self.game.jumpSound.play()
+                        if event.key == pg.K_LSHIFT:
+                            self.ability = (self.ability + 1) % (len(self.abilities) - 2)
+                            print(self.abilities[self.ability])
+                        if event.key == pg.K_h:
+                            if len(self.abilities) == 3:
+                                self.abilities = ["jump", "hammer", "interact", "talk"]
+                            else:
+                                self.abilities = ["jump", "interact", "talk"]
+
+        if pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1)):
+            if self.prevAbility == 12:
+                self.prevAbility = self.ability
+            self.ability = len(self.abilities) - 1
+        else:
+            if self.prevAbility != 12:
+                self.ability = self.prevAbility
+                self.prevAbility = 12
+
 
         if self.hit:
             if now - self.hitTime > 250:
@@ -898,6 +928,9 @@ class Luigi(pg.sprite.Sprite):
         self.canMove = True
         self.hitTime = 0
         self.alpha = 255
+        self.ability = 0
+        self.prevAbility = 12
+        self.abilities = ["jump", "interact", "talk"]
         self.game = game
         self.loadImages()
         self.facing = "right"
@@ -1000,12 +1033,29 @@ class Luigi(pg.sprite.Sprite):
                 self.rect.y = self.game.map.height + 100
 
         if not self.hit:
-            if keys[pg.K_l] or keys[pg.K_SPACE]:
-                if not self.jumping and not self.hit and not self.dead and self.canMove:
-                    self.jumping = True
-                    self.jumpTimer = 1
-                    self.airTimer = 0
-                    self.game.jumpSound.play()
+            for event in self.game.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_l:
+                        if self.ability == 0:
+                            if not self.jumping and not self.hit and not self.dead and self.canMove:
+                                self.jumping = True
+                                self.jumpTimer = 1
+                                self.airTimer = 0
+                                self.game.jumpSound.play()
+                    if event.key == pg.K_SPACE:
+                        if not self.jumping and not self.hit and not self.dead and self.canMove:
+                            self.jumping = True
+                            self.jumpTimer = 1
+                            self.airTimer = 0
+                            self.game.jumpSound.play()
+                    if event.key == pg.K_RSHIFT:
+                        self.ability = (self.ability + 1) % (len(self.abilities) - 2)
+                        print(self.abilities[self.ability])
+                    if event.key == pg.K_h:
+                        if len(self.abilities) == 3:
+                            self.abilities = ["jump", "hammer", "interact", "talk"]
+                        else:
+                            self.abilities = ["jump", "interact", "talk"]
 
         if self.hit:
             if now - self.hitTime > 250:
@@ -2304,7 +2354,7 @@ class GoombaKing(pg.sprite.Sprite):
     def update(self):
         if self.textbox is None:
             keys = pg.key.get_pressed()
-            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and (keys[pg.K_m] or keys[pg.K_l] or keys[pg.K_SPACE]):
+            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
                 if not self.game.player.jumping:
                     self.textbox = TextBox(self.game, self, self.text)
         elif self.textbox != "complete":
@@ -2401,8 +2451,7 @@ class CountBleck(pg.sprite.Sprite):
         self.animate()
         if self.textbox is None:
             keys = pg.key.get_pressed()
-            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and (
-                    keys[pg.K_m] or keys[pg.K_l] or keys[pg.K_SPACE]):
+            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
                 if not self.game.player.jumping:
                     pg.mixer.music.fadeout(200)
                     self.game.playsong = False
@@ -2619,7 +2668,7 @@ class TextBox(pg.sprite.Sprite):
             self.game.screen.set_clip(None)
             if self.pause <= 0:
                 if self.currentCharacter < len(self.text[self.page]):
-                    for event in pg.event.get():
+                    for event in self.game.event:
                         if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                             pg.quit()
                         if event.type == pg.KEYDOWN:
@@ -2652,7 +2701,7 @@ class TextBox(pg.sprite.Sprite):
                             self.playSound += 1
                         self.currentCharacter += 1
                 else:
-                    for event in pg.event.get():
+                    for event in self.game.event:
                         if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                             pg.quit()
                         if event.type == pg.KEYDOWN:

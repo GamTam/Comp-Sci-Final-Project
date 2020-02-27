@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import pygame as pg
 import pytweening as pt
+import random
 from UI import *
 from settings import *
 
@@ -74,8 +75,7 @@ class GoombaO(pg.sprite.Sprite):
 
 class Goomba(pg.sprite.Sprite):
     def __init__(self, game, x, y, vx, vy, facing="down"):
-        self.groups = game.enemies
-        pg.sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self)
         self.vx = vx
         self.vy = vy
         self.game = game
@@ -84,6 +84,7 @@ class Goomba(pg.sprite.Sprite):
         self.going = True
         self.dead = False
         self.game.sprites.append(self)
+        self.game.enemies.append(self)
         self.loadImages()
         self.image = self.walkingFramesDown[0]
         self.currentFrame = 0
@@ -196,7 +197,7 @@ class Goomba(pg.sprite.Sprite):
         if self.alpha <= 0:
             self.game.battleXp += self.stats["exp"]
             self.game.sprites.remove(self)
-            self.kill()
+            self.game.enemies.remove(self)
 
         for wall in self.game.walls:
             if pg.sprite.collide_rect(self, wall):
@@ -253,7 +254,8 @@ class Goomba(pg.sprite.Sprite):
             hits = pg.sprite.collide_rect(self.game.player, self)
             if hits:
                 hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
-                if keys[pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                if keys[
+                    pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
                     doubleDamageM = True
                 if hitsRound2:
                     if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:

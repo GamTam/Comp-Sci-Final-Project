@@ -42,13 +42,17 @@ class MarioUI(pg.sprite.Sprite):
                         sheet.getImageName("7_hp.png"),
                         sheet.getImageName("8_hp.png"),
                         sheet.getImageName("9_hp.png")]
-        self.sprites = [pg.image.load("sprites/MarioUI.png")]
+        self.sprites = [pg.image.load("sprites/ui/mariojump.png"), pg.image.load("sprites/ui/mariohammer.png")]
         self.image = self.sprites[0]
         self.rect = self.image.get_rect()
         self.rect.left = 0
         self.rect.top = 0
 
     def update(self):
+        if self.game.player.abilities[self.game.player.ability] == "jump":
+            self.image = self.sprites[0]
+        elif self.game.player.abilities[self.game.player.ability] == "hammer":
+            self.image = self.sprites[1]
         self.hp = [int(i) for i in str(self.game.player.stats["hp"])]
 
         if len(self.hp) == 1:
@@ -230,13 +234,17 @@ class LuigiUI(pg.sprite.Sprite):
                         sheet.getImageName("7_hp.png"),
                         sheet.getImageName("8_hp.png"),
                         sheet.getImageName("9_hp.png")]
-        self.sprites = [pg.image.load("sprites/LuigiUI.png")]
+        self.sprites = [pg.image.load("sprites/ui/LuigiJump.png"), pg.image.load("sprites/ui/LuigiHammer.png")]
         self.image = self.sprites[0]
         self.rect = self.image.get_rect()
         self.rect.right = width
         self.rect.top = 0
 
     def update(self):
+        if self.game.follower.abilities[self.game.follower.ability] == "jump":
+            self.image = self.sprites[0]
+        elif self.game.follower.abilities[self.game.follower.ability] == "hammer":
+            self.image = self.sprites[1]
         self.hp = [int(i) for i in str(self.game.follower.stats["hp"])]
 
         if len(self.hp) == 1:
@@ -609,24 +617,51 @@ class HitNumbers(pg.sprite.Sprite):
             self.kill()
 
 
+class ExpNumbers(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.game.battleEndUI.append(self)
+        self.offset = False
+        self.image = pg.image.load("sprites/ui/exp collection_exp.png")
+        self.rect = self.image.get_rect()
+        self.exp = self.game.battleXp
+        self.room = self.game.room
+        self.rect.center = (700, 150)
+
+    def update(self):
+        if not self.game.player.dead:
+            if self.game.marioBattleOver.counter >= len(self.game.marioBattleOver.points) - 1 and self.exp > 0:
+                self.exp -= 1
+        elif not self.game.follower.dead:
+            if self.game.luigiBattleOver.counter == len(self.game.luigiBattleOver.points) - 1 and self.exp > 0:
+                self.exp -= 1
+
+        if self.room != self.game.room:
+            self.game.battleEndUI.remove(self)
+
+    def draw(self):
+        self.game.screen.blit(self.image, self.rect)
+        ptext.draw(str(self.exp), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+
+
 class MarioExpNumbers(pg.sprite.Sprite):
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.game.battleEndUI.append(self)
         self.offset = False
-        self.image = pg.image.load("sprites/exp collection_mario.png")
+        self.image = pg.image.load("sprites/ui/exp collection_mario.png")
         self.rect = self.image.get_rect()
-        self.alpha = 255
         self.room = self.game.room
         self.rect.center = (700, 300)
 
     def update(self):
         if self.room != self.game.room:
-            self.kill()
+            self.game.battleEndUI.remove(self)
 
     def draw(self):
-        self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
+        self.game.screen.blit(self.image, self.rect)
         ptext.draw(str(self.game.player.stats["exp"]), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
@@ -636,18 +671,17 @@ class LuigiExpNumbers(pg.sprite.Sprite):
         self.game = game
         self.game.battleEndUI.append(self)
         self.offset = False
-        self.image = pg.image.load("sprites/exp collection_luigi.png")
+        self.image = pg.image.load("sprites/ui/exp collection_luigi.png")
         self.rect = self.image.get_rect()
-        self.alpha = 255
         self.room = self.game.room
         self.rect.center = (700, 500)
 
     def update(self):
         if self.room != self.game.room:
-            self.kill()
+            self.game.battleEndUI.remove(self)
 
     def draw(self):
-        self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
+        self.game.screen.blit(self.image, self.rect)
         ptext.draw(str(self.game.follower.stats["exp"]), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
