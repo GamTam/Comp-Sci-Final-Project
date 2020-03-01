@@ -72,6 +72,16 @@ class GoombaO(pg.sprite.Sprite):
                         self.game.despawnList.remove(self.game.despawnList[0])
                     self.game.loadBattle(self.battle)
 
+            if self.game.player.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+
 
 class Goomba(pg.sprite.Sprite):
     def __init__(self, game, x, y, vx, vy, facing="down"):
@@ -143,50 +153,51 @@ class Goomba(pg.sprite.Sprite):
 
     def animate(self):
         now = pg.time.get_ticks()
-        if self.facing == "down":
-            if now - self.lastUpdate > 30:
-                self.lastUpdate = now
-                if self.currentFrame < len(self.walkingFramesDown):
-                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
-                else:
-                    self.currentFrame = 0
-                center = self.imgRect.center
-                self.image = self.walkingFramesDown[self.currentFrame]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-        elif self.facing == "up":
-            if now - self.lastUpdate > 30:
-                self.lastUpdate = now
-                if self.currentFrame < len(self.walkingFramesUp):
-                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
-                else:
-                    self.currentFrame = 0
-                center = self.imgRect.center
-                self.image = self.walkingFramesUp[self.currentFrame]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-        elif self.facing == "left":
-            if now - self.lastUpdate > 30:
-                self.lastUpdate = now
-                if self.currentFrame < len(self.walkingFramesLeft):
-                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
-                else:
-                    self.currentFrame = 0
-                center = self.imgRect.center
-                self.image = self.walkingFramesLeft[self.currentFrame]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-        elif self.facing == "right":
-            if now - self.lastUpdate > 30:
-                self.lastUpdate = now
-                if self.currentFrame < len(self.walkingFramesRight):
-                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
-                else:
-                    self.currentFrame = 0
-                center = self.imgRect.center
-                self.image = self.walkingFramesRight[self.currentFrame]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
+        if self.going:
+            if self.facing == "down":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "right":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
 
     def update(self):
         self.animate()
@@ -246,7 +257,9 @@ class Goomba(pg.sprite.Sprite):
 
         if self.hit:
             self.hitTimer += 1
-            if self.hitTimer > 5:
+            self.going = False
+            if self.hitTimer > 20:
+                self.going = True
                 self.hit = False
                 self.hitTimer = 0
 
@@ -323,3 +336,29 @@ class Goomba(pg.sprite.Sprite):
                             self.game.follower.hitTime = pg.time.get_ticks()
                             self.game.playerHitSound.play()
                             self.game.follower.hit = True
+
+        if self.stats["hp"] != 0 and self.game.player.isHammer is not None:
+            hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+            if hammerHits:
+                hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                if hammerHitsRound2 and not self.hit:
+                    HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                               int((self.game.player.stats["pow"] - self.stats["def"]) * 1.5))
+                    self.stats["hp"] -= int((self.game.player.stats["pow"] - self.stats["def"]) * 1.5)
+                    if self.stats["hp"] <= 0:
+                        self.game.enemyDieSound.play()
+                    self.game.enemyHitSound.play()
+                    self.hit = True
+
+        if self.stats["hp"] != 0 and self.game.follower.isHammer is not None:
+            hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+            if hammerHits:
+                hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                if hammerHitsRound2 and not self.hit:
+                    HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                               int((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5))
+                    self.stats["hp"] -= int((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5)
+                    if self.stats["hp"] <= 0:
+                        self.game.enemyDieSound.play()
+                    self.game.enemyHitSound.play()
+                    self.hit = True

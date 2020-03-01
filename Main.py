@@ -48,12 +48,12 @@ class CameraRect:
                 self.counter = 0
             self.prevTarget = target
         elif self.counter != speed:
-            self.rect.center = pt.getPointOnLine(self.rect.centerx, self.rect.centery, target.centerx, target.centery, (self.counter / speed))
+            self.rect.center = pt.getPointOnLine(self.rect.centerx, self.rect.centery, target.centerx, target.centery,
+                                                 (self.counter / speed))
             self.counter += 1
         else:
             self.counter = speed
             self.rect.center = target.center
-
 
 
 class loadMap:
@@ -81,26 +81,44 @@ class Game:
         self.song_playing = ""
         self.storeData = {}
         self.despawnList = []
+        self.currentPoint = 0
+        self.volume = 1
         self.fullscreen = False
         self.running = True
-        self.pause = True
+        self.pause = False
 
-    def playSong(self, introLength, loopLength, song, loop=True):
+    def playSong(self, introLength, loopLength, song, loop=True, cont=False, fadein=False, fadeinSpeed=0.05):
         if self.song_playing != song:
             pg.mixer.music.load("music/" + song + ".ogg")
-            pg.mixer.music.play()
+            if cont:
+                pg.mixer.music.play()
+                pg.mixer.music.set_pos(self.currentPoint)
+            else:
+                pg.mixer.music.play()
             self.song_playing = song
+            if fadein:
+                self.volume = 0
 
-        self.totalLength = introLength + loopLength
-        self.soundPos = pg.mixer.music.get_pos() / 1000
+        totalLength = introLength + loopLength
+        if cont:
+            soundPos = pg.mixer.music.get_pos() / 1000 + self.currentPoint
+        else:
+            soundPos = pg.mixer.music.get_pos() / 1000
+
+        if not self.pause and self.volume < 1:
+            self.volume += fadeinSpeed
+
+        pg.mixer.music.set_volume(self.volume)
 
         if loop:
-            if self.soundPos >= self.totalLength and self.firstLoop:
-                pg.mixer.music.play(0, self.soundPos - loopLength)
+            if soundPos >= totalLength and self.firstLoop:
+                self.currentPoint = 0
+                pg.mixer.music.play(0, soundPos - loopLength)
                 self.firstLoop = False
                 print("YEEEEEEEEE")
-            elif self.soundPos >= loopLength and not self.firstLoop:
-                pg.mixer.music.play(0, self.soundPos + introLength - loopLength)
+            elif soundPos >= loopLength and not self.firstLoop:
+                self.currentPoint = 0
+                pg.mixer.music.play(0, soundPos + introLength - loopLength)
                 print("YOOOOOOOOO")
 
     def loadData(self):
@@ -117,6 +135,7 @@ class Game:
         self.playerHitSound = pg.mixer.Sound("sounds/playerhit.ogg")
         self.enemyHitSound = pg.mixer.Sound("sounds/enemyhit.ogg")
         self.enemyDieSound = pg.mixer.Sound("sounds/enemydie.ogg")
+        self.hammerSound = pg.mixer.Sound("sounds/hammer.ogg")
 
     def loadBowserCastle(self):
         self.room = "BC"
@@ -132,6 +151,8 @@ class Game:
         self.playerCol = MarioCollision(self)
         self.follower = Luigi(self, width / 2, 1278)
         self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
         self.sprites.append(self.follower)
         self.sprites.append(self.player)
         self.follower.stepSound = self.stoneSound
@@ -181,13 +202,14 @@ class Game:
             self.follower.ability = self.storeData["luigi current ability"]
             self.follower.abilities = self.storeData["luigi abilities"]
         except:
-            pass
+            self.playSong(6.749, 102.727, "castle bleck")
         while self.playing:
             if self.playsong:
-                self.playSong(6.749, 102.727, "castle bleck")
+                self.playSong(6.749, 102.727, "castle bleck", cont=True, fadein=True)
             self.clock.tick(fps)
             self.events()
-            self.updateOverworld()
+            if not self.pause:
+                self.updateOverworld()
             self.screen.fill(black)
             self.drawOverworld()
 
@@ -328,12 +350,13 @@ class Game:
         self.follower.ability = self.storeData["luigi current ability"]
         self.follower.abilities = self.storeData["luigi abilities"]
         self.cameraRect = CameraRect()
+        pg.mixer.music.load("music/battle.ogg")
+        pg.mixer.music.play(-1)
         while self.playing:
-            if self.playsong:
-                self.playSong(7.01, 139.132, "battle")
             self.clock.tick(fps)
             self.events()
-            self.updateBattle()
+            if not self.pause:
+                self.updateBattle()
             self.screen.fill(black)
             self.drawBattle()
             # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
@@ -347,6 +370,7 @@ class Game:
 
     def loadBattle(self, room):
         self.battleXp = 0
+        self.currentPoint += pg.mixer.music.get_pos() / 1000
         pg.mixer.music.stop()
         self.battleSound.play()
         trans = BattleTransition(self)
@@ -416,7 +440,8 @@ class Game:
             self.playSong(5.44, 36.708, "battle victory")
             self.clock.tick(fps)
             self.events()
-            self.updateBattleOver()
+            if not self.pause:
+                self.updateBattleOver()
             self.screen.fill(black)
             self.drawBattleOver()
             keys = pg.key.get_pressed()
@@ -435,7 +460,8 @@ class Game:
         while True:
             self.clock.tick(fps)
             self.events()
-            self.updateBattleOver()
+            if not self.pause:
+                self.updateBattleOver()
             self.screen.fill(black)
             self.drawBattleOver()
             if fade.alpha >= 255:
@@ -445,12 +471,15 @@ class Game:
         if not self.follower.dead:
             self.sprites.remove(self.luigiBattleOver)
         self.room = self.prevRoom
-        if self.player.stats["hp"] == 0:
+        self.updateBattleOver()
+        if self.player.dead:
             self.player.dead = False
             self.player.stats["hp"] = 1
-        if self.follower.stats["hp"] == 0:
+        if self.follower.dead:
             self.follower.dead = False
             self.follower.stats["hp"] = 1
+        self.storeData["mario stats"] = self.player.stats
+        self.storeData["luigi stats"] = self.follower.stats
         self.gotoPrevRoom()
 
     def events(self):
@@ -462,6 +491,10 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_p:
                     self.pause = not self.pause
+                    if self.pause:
+                        self.volume = 0.5
+                    else:
+                        self.volume = 1
                 if event.key == pg.K_f:
                     self.player.stats["hp"] = self.player.stats["maxHP"]
                     if self.player.dead:
@@ -499,9 +532,8 @@ class Game:
 
     def updateBattle(self):
         self.fadeout.update()
-        if self.pause:
-            self.effects.update()
-            [sprite.update() for sprite in self.sprites]
+        self.effects.update()
+        [sprite.update() for sprite in self.sprites]
         self.ui.update()
         [col.update() for col in self.collision]
         if not self.player.dead:
@@ -539,7 +571,7 @@ class Game:
                 self.screen.blit(sprite.image, sprite.imgRect)
         self.blit_alpha(self.screen, fadeout, self.dimBackground, 125)
         for ui in self.battleEndUI:
-                ui.draw()
+            ui.draw()
         self.sprites.sort(key=self.sortByYPos)
 
         for sprite in self.sprites:
@@ -598,7 +630,10 @@ class Game:
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
-            self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+            try:
+                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+            except:
+                pass
 
         for sprite in self.sprites:
             self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)

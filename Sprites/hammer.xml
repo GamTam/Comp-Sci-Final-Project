@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:f4f22db22953a55c718170d23ebb5c18:0a51e84e9dae1d8c663dc8ed1edd452d:81b28fef3768de694a514840a3bffd54$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="hammer.png" width="246" height="794">
+    <sprite n="down_1.png" x="92" y="0" w="46" h="60"/>
+    <sprite n="down_2.png" x="138" y="0" w="46" h="60"/>
+    <sprite n="down_3.png" x="0" y="524" w="46" h="76"/>
+    <sprite n="down_4.png" x="0" y="602" w="46" h="80"/>
+    <sprite n="down_5.png" x="50" y="252" w="46" h="64"/>
+    <sprite n="downleft_1.png" x="138" y="188" w="54" h="64"/>
+    <sprite n="downleft_2.png" x="192" y="188" w="54" h="64"/>
+    <sprite n="downleft_3.png" x="46" y="524" w="98" h="78"/>
+    <sprite n="downleft_4.png" x="104" y="688" w="64" h="106"/>
+    <sprite n="downleft_5.png" x="0" y="252" w="50" h="64"/>
+    <sprite n="downright_1.png" x="150" y="252" w="54" h="64"/>
+    <sprite n="downright_2.png" x="96" y="252" w="54" h="64"/>
+    <sprite n="downright_3.png" x="144" y="524" w="98" h="78"/>
+    <sprite n="downright_4.png" x="168" y="688" w="64" h="106"/>
+    <sprite n="downright_5.png" x="180" y="124" w="50" h="64"/>
+    <sprite n="left_1.png" x="120" y="316" w="60" h="66"/>
+    <sprite n="left_2.png" x="180" y="316" w="60" h="66"/>
+    <sprite n="left_3.png" x="0" y="60" w="128" h="64"/>
+    <sprite n="left_4.png" x="142" y="602" w="54" h="86"/>
+    <sprite n="left_5.png" x="128" y="60" w="52" h="64"/>
+    <sprite n="right_1.png" x="60" y="316" w="60" h="66"/>
+    <sprite n="right_2.png" x="0" y="316" w="60" h="66"/>
+    <sprite n="right_3.png" x="0" y="124" w="128" h="64"/>
+    <sprite n="right_4.png" x="0" y="688" w="54" h="86"/>
+    <sprite n="right_5.png" x="128" y="124" w="52" h="64"/>
+    <sprite n="up_1.png" x="46" y="0" w="46" h="60"/>
+    <sprite n="up_2.png" x="0" y="0" w="46" h="60"/>
+    <sprite n="up_3.png" x="0" y="450" w="46" h="70"/>
+    <sprite n="up_4.png" x="46" y="602" w="46" h="80"/>
+    <sprite n="up_5.png" x="0" y="188" w="46" h="64"/>
+    <sprite n="upleft_1.png" x="116" y="382" w="58" h="68"/>
+    <sprite n="upleft_2.png" x="0" y="382" w="58" h="68"/>
+    <sprite n="upleft_3.png" x="46" y="450" w="96" h="74"/>
+    <sprite n="upleft_4.png" x="54" y="688" w="50" h="86"/>
+    <sprite n="upleft_5.png" x="46" y="188" w="46" h="64"/>
+    <sprite n="upright_1.png" x="174" y="382" w="58" h="68"/>
+    <sprite n="upright_2.png" x="58" y="382" w="58" h="68"/>
+    <sprite n="upright_3.png" x="142" y="450" w="96" h="74"/>
+    <sprite n="upright_4.png" x="92" y="602" w="50" h="86"/>
+    <sprite n="upright_5.png" x="92" y="188" w="46" h="64"/>
+</TextureAtlas>

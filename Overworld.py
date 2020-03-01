@@ -31,6 +31,230 @@ class spritesheet:
         return self.spritesheet.subsurface(rect)
 
 
+class HammerCollisionMario(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.collision.append(self)
+        self.rect = pg.rect.Rect(-100, 100, 0, 0)
+
+
+class HammerCollisionLuigi(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.collision.append(self)
+        self.rect = pg.rect.Rect(-100, 100, 0, 0)
+
+
+class Hammer(pg.sprite.Sprite):
+    def __init__(self, game, parent):
+        pg.sprite.Sprite.__init__(self)
+        self.alpha = 255
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.counter = 0
+        self.game = game
+        self.game.hammerSound.play()
+        self.dead = False
+        self.parent = parent
+        self.game.sprites.append(self)
+        self.loadImages()
+        self.image = self.leftFrames[0]
+        self.imgRect = self.image.get_rect()
+        self.imgRect.bottom = self.parent.imgRect.top
+        self.imgRect.centerx = self.parent.imgRect.centerx
+        self.rect = pg.rect.Rect(0, 0, 50, 25)
+        if self.parent.facing == "up":
+            self.rect.centerx = self.parent.rect.centerx
+            self.rect.centery = self.parent.rect.centery - 30
+        elif self.parent.facing == "down":
+            self.rect.centerx = self.parent.rect.centerx
+            self.rect.centery = self.parent.rect.centery + 30
+        elif self.parent.facing == "left":
+            self.rect.centerx = self.parent.rect.centerx - 55
+            self.rect.centery = self.parent.rect.centery
+        elif self.parent.facing == "right":
+            self.rect.centerx = self.parent.rect.centerx + 55
+            self.rect.centery = self.parent.rect.centery
+        elif self.parent.facing == "upleft":
+            self.rect.centerx = self.parent.rect.centerx - 25
+            self.rect.centery = self.parent.rect.centery - 30
+        elif self.parent.facing == "upright":
+            self.rect.centerx = self.parent.rect.centerx + 35
+            self.rect.centery = self.parent.rect.centery - 30
+        elif self.parent.facing == "downleft":
+            self.rect.centerx = self.parent.rect.centerx - 35
+            self.rect.centery = self.parent.rect.centery + 25
+        elif self.parent.facing == "downright":
+            self.rect.centerx = self.parent.rect.centerx + 35
+            self.rect.centery = self.parent.rect.centery + 25
+
+        self.points = []
+        for i in range(2 + 1):
+            self.points.append(pt.getPointOnLine(self.imgRect.centerx, self.imgRect.centery, self.rect.centerx,
+                                                 self.rect.top, (i / 2)))
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/hammer.png", "sprites/hammer.xml")
+
+        self.upFrames = [sheet.getImageName("up_1.png"),
+                         sheet.getImageName("up_2.png"),
+                         sheet.getImageName("up_3.png"),
+                         sheet.getImageName("up_4.png"),
+                         sheet.getImageName("up_5.png")]
+
+        self.downFrames = [sheet.getImageName("down_1.png"),
+                           sheet.getImageName("down_2.png"),
+                           sheet.getImageName("down_3.png"),
+                           sheet.getImageName("down_4.png"),
+                           sheet.getImageName("down_5.png")]
+
+        self.leftFrames = [sheet.getImageName("left_1.png"),
+                           sheet.getImageName("left_2.png"),
+                           sheet.getImageName("left_3.png"),
+                           sheet.getImageName("left_4.png"),
+                           sheet.getImageName("left_5.png")]
+
+        self.rightFrames = [sheet.getImageName("right_1.png"),
+                            sheet.getImageName("right_2.png"),
+                            sheet.getImageName("right_3.png"),
+                            sheet.getImageName("right_4.png"),
+                            sheet.getImageName("right_5.png")]
+
+        self.downleftFrames = [sheet.getImageName("downleft_1.png"),
+                               sheet.getImageName("downleft_2.png"),
+                               sheet.getImageName("downleft_3.png"),
+                               sheet.getImageName("downleft_4.png"),
+                               sheet.getImageName("downleft_5.png")]
+
+        self.downrightFrames = [sheet.getImageName("downright_1.png"),
+                                sheet.getImageName("downright_2.png"),
+                                sheet.getImageName("downright_3.png"),
+                                sheet.getImageName("downright_4.png"),
+                                sheet.getImageName("downright_5.png")]
+
+        self.upleftFrames = [sheet.getImageName("upleft_1.png"),
+                             sheet.getImageName("upleft_2.png"),
+                             sheet.getImageName("upleft_3.png"),
+                             sheet.getImageName("upleft_4.png"),
+                             sheet.getImageName("upleft_5.png")]
+
+        self.uprightFrames = [sheet.getImageName("upright_1.png"),
+                              sheet.getImageName("upright_2.png"),
+                              sheet.getImageName("upright_3.png"),
+                              sheet.getImageName("upright_4.png"),
+                              sheet.getImageName("upright_5.png")]
+
+    def update(self):
+        self.animate()
+        if self.parent == self.game.player:
+            self.game.playerHammer.rect = self.imgRect
+        else:
+            self.game.followerHammer.rect = self.imgRect
+        if self.counter < len(self.points) - 1 and self.currentFrame > 2:
+            self.counter += 1
+        self.imgRect.center = self.points[self.counter]
+        if not self.parent.hammering or self.parent.hit:
+            self.parent.isHammer = None
+            self.game.sprites.remove(self)
+            if self.parent == self.game.player:
+                self.game.playerHammer.rect = pg.rect.Rect(-100, 100, 0, 0)
+            else:
+                self.game.followerHammer.rect = pg.rect.Rect(-100, 100, 0, 0)
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.parent.facing == "up":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.upFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.parent.facing == "down":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.downFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.parent.facing == "left":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.leftFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.parent.facing == "right":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.rightFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.parent.facing == "upleft":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.upleftFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.parent.facing == "upright":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.uprightFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.parent.facing == "downleft":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.downleftFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.parent.facing == "downright":
+            if now - self.lastUpdate > 25:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.upFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.currentFrame = 4
+                center = self.imgRect.center
+                self.image = self.downrightFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+
+
 class MarioCollision(pg.sprite.Sprite):
     def __init__(self, game):
         self.game = game
@@ -63,6 +287,7 @@ class Mario(pg.sprite.Sprite):
         self.game = game
         self.hit = False
         self.dead = False
+        self.hammering = False
         self.canMove = True
         self.hitTime = 0
         self.ability = 0
@@ -72,6 +297,7 @@ class Mario(pg.sprite.Sprite):
         self.stepSound = pg.mixer.Sound("sounds/coin.ogg")
         self.walking = False
         self.jumping = False
+        self.isHammer = None
         self.jumpTimer = 0
         self.airTimer = 0
         self.facing = "right"
@@ -89,7 +315,7 @@ class Mario(pg.sprite.Sprite):
         self.imgRect.left = x
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 10, "bp": 5, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 1, "bp": 5, "exp": 0}
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -245,6 +471,118 @@ class Mario(pg.sprite.Sprite):
                                sheet.getImageName("mario_dead_down_3.png"),
                                sheet.getImageName("mario_dead_down_4.png")]
 
+        self.hammerFramesUp = [sheet.getImageName("mario_hammering_up_1.png"),
+                               sheet.getImageName("mario_hammering_up_2.png"),
+                               sheet.getImageName("mario_hammering_up_3.png"),
+                               sheet.getImageName("mario_hammering_up_4.png"),
+                               sheet.getImageName("mario_hammering_up_5.png"),
+                               sheet.getImageName("mario_hammering_up_6.png"),
+                               sheet.getImageName("mario_hammering_up_7.png"),
+                               sheet.getImageName("mario_hammering_up_8.png"),
+                               sheet.getImageName("mario_hammering_up_9.png"),
+                               sheet.getImageName("mario_hammering_up_10.png"),
+                               sheet.getImageName("mario_hammering_up_11.png"),
+                               sheet.getImageName("mario_hammering_up_12.png"),
+                               sheet.getImageName("mario_hammering_up_13.png")]
+
+        self.hammerFramesDown = [sheet.getImageName("mario_hammering_down_1.png"),
+                                 sheet.getImageName("mario_hammering_down_2.png"),
+                                 sheet.getImageName("mario_hammering_down_3.png"),
+                                 sheet.getImageName("mario_hammering_down_4.png"),
+                                 sheet.getImageName("mario_hammering_down_5.png"),
+                                 sheet.getImageName("mario_hammering_down_6.png"),
+                                 sheet.getImageName("mario_hammering_down_7.png"),
+                                 sheet.getImageName("mario_hammering_down_8.png"),
+                                 sheet.getImageName("mario_hammering_down_9.png"),
+                                 sheet.getImageName("mario_hammering_down_10.png"),
+                                 sheet.getImageName("mario_hammering_down_11.png"),
+                                 sheet.getImageName("mario_hammering_down_12.png"),
+                                 sheet.getImageName("mario_hammering_down_13.png")]
+
+        self.hammerFramesLeft = [sheet.getImageName("mario_hammering_left_1.png"),
+                                 sheet.getImageName("mario_hammering_left_2.png"),
+                                 sheet.getImageName("mario_hammering_left_3.png"),
+                                 sheet.getImageName("mario_hammering_left_4.png"),
+                                 sheet.getImageName("mario_hammering_left_5.png"),
+                                 sheet.getImageName("mario_hammering_left_6.png"),
+                                 sheet.getImageName("mario_hammering_left_7.png"),
+                                 sheet.getImageName("mario_hammering_left_8.png"),
+                                 sheet.getImageName("mario_hammering_left_9.png"),
+                                 sheet.getImageName("mario_hammering_left_10.png"),
+                                 sheet.getImageName("mario_hammering_left_11.png"),
+                                 sheet.getImageName("mario_hammering_left_12.png"),
+                                 sheet.getImageName("mario_hammering_left_13.png")]
+
+        self.hammerFramesRight = [sheet.getImageName("mario_hammering_right_1.png"),
+                                  sheet.getImageName("mario_hammering_right_2.png"),
+                                  sheet.getImageName("mario_hammering_right_3.png"),
+                                  sheet.getImageName("mario_hammering_right_4.png"),
+                                  sheet.getImageName("mario_hammering_right_5.png"),
+                                  sheet.getImageName("mario_hammering_right_6.png"),
+                                  sheet.getImageName("mario_hammering_right_7.png"),
+                                  sheet.getImageName("mario_hammering_right_8.png"),
+                                  sheet.getImageName("mario_hammering_right_9.png"),
+                                  sheet.getImageName("mario_hammering_right_10.png"),
+                                  sheet.getImageName("mario_hammering_right_11.png"),
+                                  sheet.getImageName("mario_hammering_right_12.png"),
+                                  sheet.getImageName("mario_hammering_right_13.png")]
+
+        self.hammerFramesUpleft = [sheet.getImageName("mario_hammering_upleft_1.png"),
+                                   sheet.getImageName("mario_hammering_upleft_2.png"),
+                                   sheet.getImageName("mario_hammering_upleft_3.png"),
+                                   sheet.getImageName("mario_hammering_upleft_4.png"),
+                                   sheet.getImageName("mario_hammering_upleft_5.png"),
+                                   sheet.getImageName("mario_hammering_upleft_6.png"),
+                                   sheet.getImageName("mario_hammering_upleft_7.png"),
+                                   sheet.getImageName("mario_hammering_upleft_8.png"),
+                                   sheet.getImageName("mario_hammering_upleft_9.png"),
+                                   sheet.getImageName("mario_hammering_upleft_10.png"),
+                                   sheet.getImageName("mario_hammering_upleft_11.png"),
+                                   sheet.getImageName("mario_hammering_upleft_12.png"),
+                                   sheet.getImageName("mario_hammering_upleft_13.png")]
+
+        self.hammerFramesUpright = [sheet.getImageName("mario_hammering_upright_1.png"),
+                                    sheet.getImageName("mario_hammering_upright_2.png"),
+                                    sheet.getImageName("mario_hammering_upright_3.png"),
+                                    sheet.getImageName("mario_hammering_upright_4.png"),
+                                    sheet.getImageName("mario_hammering_upright_5.png"),
+                                    sheet.getImageName("mario_hammering_upright_6.png"),
+                                    sheet.getImageName("mario_hammering_upright_7.png"),
+                                    sheet.getImageName("mario_hammering_upright_8.png"),
+                                    sheet.getImageName("mario_hammering_upright_9.png"),
+                                    sheet.getImageName("mario_hammering_upright_10.png"),
+                                    sheet.getImageName("mario_hammering_upright_11.png"),
+                                    sheet.getImageName("mario_hammering_upright_12.png"),
+                                    sheet.getImageName("mario_hammering_upright_13.png")]
+
+        self.hammerFramesDownleft = [sheet.getImageName("mario_hammering_downleft_1.png"),
+                                     sheet.getImageName("mario_hammering_downleft_2.png"),
+                                     sheet.getImageName("mario_hammering_downleft_3.png"),
+                                     sheet.getImageName("mario_hammering_downleft_4.png"),
+                                     sheet.getImageName("mario_hammering_downleft_5.png"),
+                                     sheet.getImageName("mario_hammering_downleft_6.png"),
+                                     sheet.getImageName("mario_hammering_downleft_7.png"),
+                                     sheet.getImageName("mario_hammering_downleft_8.png"),
+                                     sheet.getImageName("mario_hammering_downleft_9.png"),
+                                     sheet.getImageName("mario_hammering_downleft_10.png"),
+                                     sheet.getImageName("mario_hammering_downleft_11.png"),
+                                     sheet.getImageName("mario_hammering_downleft_12.png"),
+                                     sheet.getImageName("mario_hammering_downleft_13.png")]
+
+        self.hammerFramesDownright = [sheet.getImageName("mario_hammering_downright_1.png"),
+                                      sheet.getImageName("mario_hammering_downright_2.png"),
+                                      sheet.getImageName("mario_hammering_downright_3.png"),
+                                      sheet.getImageName("mario_hammering_downright_4.png"),
+                                      sheet.getImageName("mario_hammering_downright_5.png"),
+                                      sheet.getImageName("mario_hammering_downright_6.png"),
+                                      sheet.getImageName("mario_hammering_downright_7.png"),
+                                      sheet.getImageName("mario_hammering_downright_8.png"),
+                                      sheet.getImageName("mario_hammering_downright_9.png"),
+                                      sheet.getImageName("mario_hammering_downright_10.png"),
+                                      sheet.getImageName("mario_hammering_downright_11.png"),
+                                      sheet.getImageName("mario_hammering_downright_12.png"),
+                                      sheet.getImageName("mario_hammering_downright_13.png")]
+
         self.hitFrames = {"up": sheet.getImageName("mario_hit_up.png"),
                           "down": sheet.getImageName("mario_hit_down.png"),
                           "left": sheet.getImageName("mario_hit_left.png"),
@@ -292,8 +630,19 @@ class Mario(pg.sprite.Sprite):
         jumpOffset = self.jumpTimer * jumpHeight
         self.imgRect.bottom = (self.rect.bottom - 5) - jumpOffset
 
+    def hammer(self):
+        if self.isHammer == None:
+            self.isHammer = Hammer(self.game, self)
+        self.walking = False
+        if self.currentFrame < len(self.hammerFramesLeft) - 1:
+            pass
+        else:
+            self.currentFrame = 0
+            self.hammering = False
+
     def update(self):
         self.animate()
+
         if self.stats["hp"] < 0:
             self.stats["hp"] = 0
         if self.stats["hp"] == 0:
@@ -303,8 +652,8 @@ class Mario(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         self.vx, self.vy = 0, 0
 
-        if not self.dead and self.canMove:
-            if not self.hit and not self.game.follower.hit:
+        if not self.dead and self.canMove and not self.hammering:
+            if not self.hit and not self.game.follower.hit and not self.game.follower.hammering:
                 if keys[pg.K_w]:
                     self.vy = -playerSpeed
                 if keys[pg.K_a]:
@@ -322,6 +671,10 @@ class Mario(pg.sprite.Sprite):
                                     self.jumpTimer = 1
                                     self.airTimer = 0
                                     self.game.jumpSound.play()
+                            elif self.ability == 1:
+                                if not self.hammering and not self.hit and not self.dead and self.canMove:
+                                    self.hammering = True
+                                    self.currentFrame = 0
                         if event.key == pg.K_SPACE:
                             if not self.jumping and not self.hit and not self.dead and self.canMove:
                                 self.jumping = True
@@ -346,8 +699,9 @@ class Mario(pg.sprite.Sprite):
                 self.ability = self.prevAbility
                 self.prevAbility = 12
 
-
         if self.hit:
+            if self.hammering:
+                self.hammering = False
             if now - self.hitTime > 250:
                 self.hit = False
 
@@ -375,6 +729,11 @@ class Mario(pg.sprite.Sprite):
         else:
             self.jump()
             self.imgRect.centerx = self.rect.centerx
+        if self.hammering:
+            self.hammer()
+
+        if self.game.follower.hammering:
+            self.walking = False
 
     def animate(self):
         now = pg.time.get_ticks()
@@ -423,6 +782,79 @@ class Mario(pg.sprite.Sprite):
                         self.image = self.hitFrames["upright"]
                         self.imgRect = self.image.get_rect()
                         self.imgRect.center = center
+                elif self.hammering:
+                    if self.facing == "left":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesLeft[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
+                    elif self.facing == "right":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesRight[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
+                    elif self.facing == "up":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesUp[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
+                    elif self.facing == "down":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesDown[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
+                    elif self.facing == "upleft":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesUpleft[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
+                    elif self.facing == "upright":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesUpright[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
+                    elif self.facing == "downleft":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesDownleft[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
+                    elif self.facing == "downright":
+                        if now - self.lastUpdate > 25:
+                            self.lastUpdate = now
+                            if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                                self.currentFrame = (self.currentFrame + 1)
+                            center = self.imgRect.center
+                            self.image = self.hammerFramesDownright[self.currentFrame]
+                            self.imgRect = self.image.get_rect()
+                            self.imgRect.center = center
                 elif not self.jumping:
                     if keys[pg.K_w] and keys[pg.K_d]:
                         self.facing = "upright"
@@ -926,6 +1358,8 @@ class Luigi(pg.sprite.Sprite):
         self.hit = False
         self.dead = False
         self.canMove = True
+        self.hammering = False
+        self.isHammer = None
         self.hitTime = 0
         self.alpha = 255
         self.ability = 0
@@ -949,6 +1383,16 @@ class Luigi(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0
 
         self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "stache": 3, "hp": 13, "bp": 5, "exp": 0}
+
+    def hammer(self):
+        if self.isHammer == None:
+            self.isHammer = Hammer(self.game, self)
+        self.walking = False
+        if self.currentFrame < len(self.hammerFramesLeft) - 1:
+            pass
+        else:
+            self.currentFrame = 0
+            self.hammering = False
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
@@ -1003,7 +1447,7 @@ class Luigi(pg.sprite.Sprite):
                         self.rect.x = self.moveQueue.get()
                         self.rect.y = self.moveQueue.get()
                         self.facing = self.moveQueue.get()
-        elif not self.dead and self.game.player.dead and self.canMove:
+        elif not self.dead and self.game.player.dead and self.canMove and not self.hammering:
             self.moveQueue = Q.Queue()
             self.vx, self.vy = 0, 0
             if not self.hit:
@@ -1032,7 +1476,7 @@ class Luigi(pg.sprite.Sprite):
             if self.rect.y < -100:
                 self.rect.y = self.game.map.height + 100
 
-        if not self.hit:
+        if not self.hit and self.canMove:
             for event in self.game.event:
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_l:
@@ -1042,6 +1486,10 @@ class Luigi(pg.sprite.Sprite):
                                 self.jumpTimer = 1
                                 self.airTimer = 0
                                 self.game.jumpSound.play()
+                        elif self.ability == 1:
+                            if not self.hammering and not self.hit and not self.dead and self.canMove:
+                                self.hammering = True
+                                self.currentFrame = 0
                     if event.key == pg.K_SPACE:
                         if not self.jumping and not self.hit and not self.dead and self.canMove:
                             self.jumping = True
@@ -1058,6 +1506,8 @@ class Luigi(pg.sprite.Sprite):
                             self.abilities = ["jump", "interact", "talk"]
 
         if self.hit:
+            if self.hammering:
+                self.hammering = False
             if now - self.hitTime > 250:
                 self.hit = False
 
@@ -1067,6 +1517,8 @@ class Luigi(pg.sprite.Sprite):
         else:
             self.jump()
             self.imgRect.centerx = self.rect.centerx
+        if self.hammering:
+            self.hammer()
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -1226,6 +1678,118 @@ class Luigi(pg.sprite.Sprite):
                                sheet.getImageName("luigi_dead_down_3.png"),
                                sheet.getImageName("luigi_dead_down_4.png")]
 
+        self.hammerFramesUp = [sheet.getImageName("luigi_hammering_up_1.png"),
+                               sheet.getImageName("luigi_hammering_up_2.png"),
+                               sheet.getImageName("luigi_hammering_up_3.png"),
+                               sheet.getImageName("luigi_hammering_up_4.png"),
+                               sheet.getImageName("luigi_hammering_up_5.png"),
+                               sheet.getImageName("luigi_hammering_up_6.png"),
+                               sheet.getImageName("luigi_hammering_up_7.png"),
+                               sheet.getImageName("luigi_hammering_up_8.png"),
+                               sheet.getImageName("luigi_hammering_up_9.png"),
+                               sheet.getImageName("luigi_hammering_up_10.png"),
+                               sheet.getImageName("luigi_hammering_up_11.png"),
+                               sheet.getImageName("luigi_hammering_up_12.png"),
+                               sheet.getImageName("luigi_hammering_up_13.png")]
+
+        self.hammerFramesDown = [sheet.getImageName("luigi_hammering_down_1.png"),
+                                 sheet.getImageName("luigi_hammering_down_2.png"),
+                                 sheet.getImageName("luigi_hammering_down_3.png"),
+                                 sheet.getImageName("luigi_hammering_down_4.png"),
+                                 sheet.getImageName("luigi_hammering_down_5.png"),
+                                 sheet.getImageName("luigi_hammering_down_6.png"),
+                                 sheet.getImageName("luigi_hammering_down_7.png"),
+                                 sheet.getImageName("luigi_hammering_down_8.png"),
+                                 sheet.getImageName("luigi_hammering_down_9.png"),
+                                 sheet.getImageName("luigi_hammering_down_10.png"),
+                                 sheet.getImageName("luigi_hammering_down_11.png"),
+                                 sheet.getImageName("luigi_hammering_down_12.png"),
+                                 sheet.getImageName("luigi_hammering_down_13.png")]
+
+        self.hammerFramesLeft = [sheet.getImageName("luigi_hammering_left_1.png"),
+                                 sheet.getImageName("luigi_hammering_left_2.png"),
+                                 sheet.getImageName("luigi_hammering_left_3.png"),
+                                 sheet.getImageName("luigi_hammering_left_4.png"),
+                                 sheet.getImageName("luigi_hammering_left_5.png"),
+                                 sheet.getImageName("luigi_hammering_left_6.png"),
+                                 sheet.getImageName("luigi_hammering_left_7.png"),
+                                 sheet.getImageName("luigi_hammering_left_8.png"),
+                                 sheet.getImageName("luigi_hammering_left_9.png"),
+                                 sheet.getImageName("luigi_hammering_left_10.png"),
+                                 sheet.getImageName("luigi_hammering_left_11.png"),
+                                 sheet.getImageName("luigi_hammering_left_12.png"),
+                                 sheet.getImageName("luigi_hammering_left_13.png")]
+
+        self.hammerFramesRight = [sheet.getImageName("luigi_hammering_right_1.png"),
+                                  sheet.getImageName("luigi_hammering_right_2.png"),
+                                  sheet.getImageName("luigi_hammering_right_3.png"),
+                                  sheet.getImageName("luigi_hammering_right_4.png"),
+                                  sheet.getImageName("luigi_hammering_right_5.png"),
+                                  sheet.getImageName("luigi_hammering_right_6.png"),
+                                  sheet.getImageName("luigi_hammering_right_7.png"),
+                                  sheet.getImageName("luigi_hammering_right_8.png"),
+                                  sheet.getImageName("luigi_hammering_right_9.png"),
+                                  sheet.getImageName("luigi_hammering_right_10.png"),
+                                  sheet.getImageName("luigi_hammering_right_11.png"),
+                                  sheet.getImageName("luigi_hammering_right_12.png"),
+                                  sheet.getImageName("luigi_hammering_right_13.png")]
+
+        self.hammerFramesUpleft = [sheet.getImageName("luigi_hammering_upleft_1.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_2.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_3.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_4.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_5.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_6.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_7.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_8.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_9.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_10.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_11.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_12.png"),
+                                   sheet.getImageName("luigi_hammering_upleft_13.png")]
+
+        self.hammerFramesUpright = [sheet.getImageName("luigi_hammering_upright_1.png"),
+                                    sheet.getImageName("luigi_hammering_upright_2.png"),
+                                    sheet.getImageName("luigi_hammering_upright_3.png"),
+                                    sheet.getImageName("luigi_hammering_upright_4.png"),
+                                    sheet.getImageName("luigi_hammering_upright_5.png"),
+                                    sheet.getImageName("luigi_hammering_upright_6.png"),
+                                    sheet.getImageName("luigi_hammering_upright_7.png"),
+                                    sheet.getImageName("luigi_hammering_upright_8.png"),
+                                    sheet.getImageName("luigi_hammering_upright_9.png"),
+                                    sheet.getImageName("luigi_hammering_upright_10.png"),
+                                    sheet.getImageName("luigi_hammering_upright_11.png"),
+                                    sheet.getImageName("luigi_hammering_upright_12.png"),
+                                    sheet.getImageName("luigi_hammering_upright_13.png")]
+
+        self.hammerFramesDownleft = [sheet.getImageName("luigi_hammering_downleft_1.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_2.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_3.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_4.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_5.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_6.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_7.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_8.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_9.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_10.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_11.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_12.png"),
+                                     sheet.getImageName("luigi_hammering_downleft_13.png")]
+
+        self.hammerFramesDownright = [sheet.getImageName("luigi_hammering_downright_1.png"),
+                                      sheet.getImageName("luigi_hammering_downright_2.png"),
+                                      sheet.getImageName("luigi_hammering_downright_3.png"),
+                                      sheet.getImageName("luigi_hammering_downright_4.png"),
+                                      sheet.getImageName("luigi_hammering_downright_5.png"),
+                                      sheet.getImageName("luigi_hammering_downright_6.png"),
+                                      sheet.getImageName("luigi_hammering_downright_7.png"),
+                                      sheet.getImageName("luigi_hammering_downright_8.png"),
+                                      sheet.getImageName("luigi_hammering_downright_9.png"),
+                                      sheet.getImageName("luigi_hammering_downright_10.png"),
+                                      sheet.getImageName("luigi_hammering_downright_11.png"),
+                                      sheet.getImageName("luigi_hammering_downright_12.png"),
+                                      sheet.getImageName("luigi_hammering_downright_13.png")]
+
         self.hitFrames = {"up": sheet.getImageName("luigi_hit_up.png"),
                           "down": sheet.getImageName("luigi_hit_down.png"),
                           "left": sheet.getImageName("luigi_hit_left.png"),
@@ -1280,6 +1844,79 @@ class Luigi(pg.sprite.Sprite):
                     self.image = self.hitFrames["upright"]
                     self.imgRect = self.image.get_rect()
                     self.imgRect.center = center
+            elif self.hammering:
+                if self.facing == "left":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesLeft[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "right":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesRight[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "up":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesUp[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "down":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesDown[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "upleft":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesUpleft[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "upright":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesUpright[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "downleft":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesDownleft[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "downright":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesDownright[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
             elif not self.jumping:
                 if not self.hit and not self.game.player.hit:
                     if self.walking or self.game.player.vx != 0 or self.game.player.vy != 0:
@@ -1667,6 +2304,79 @@ class Luigi(pg.sprite.Sprite):
                     self.image = self.hitFrames["upright"]
                     self.imgRect = self.image.get_rect()
                     self.imgRect.center = center
+            elif self.hammering:
+                if self.facing == "left":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesLeft[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "right":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesRight[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "up":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesUp[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "down":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesDown[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "upleft":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesUpleft[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "upright":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesUpright[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "downleft":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesDownleft[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                elif self.facing == "downright":
+                    if now - self.lastUpdate > 25:
+                        self.lastUpdate = now
+                        if self.currentFrame < len(self.hammerFramesLeft) + 1:
+                            self.currentFrame = (self.currentFrame + 1)
+                        center = self.imgRect.center
+                        self.image = self.hammerFramesDownright[self.currentFrame]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
             elif not self.jumping:
                 if keys[pg.K_w] and keys[pg.K_d]:
                     self.facing = "upright"
@@ -2184,7 +2894,7 @@ class MarioBattleComplete(pg.sprite.Sprite):
         self.game.sprites.remove(self.game.player)
         for i in range(self.speed + 1):
             self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, 400,
-                                                300, (i / self.speed)))
+                                                 300, (i / self.speed)))
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -2200,7 +2910,7 @@ class MarioBattleComplete(pg.sprite.Sprite):
 
         self.poseFrames = [sheet.getImageName("mario_winpose_1.png"),
                            sheet.getImageName("mario_winpose_2.png"),
-                           sheet.getImageName("mario_winpose_3.png"),]
+                           sheet.getImageName("mario_winpose_3.png"), ]
 
     def update(self):
         self.animate()
@@ -2267,7 +2977,7 @@ class LuigiBattleComplete(pg.sprite.Sprite):
         self.game.sprites.remove(self.game.follower)
         for i in range(self.speed + 1):
             self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, 400,
-                                                500, (i / self.speed)))
+                                                 500, (i / self.speed)))
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -2283,7 +2993,7 @@ class LuigiBattleComplete(pg.sprite.Sprite):
 
         self.poseFrames = [sheet.getImageName("luigi_winpose_1.png"),
                            sheet.getImageName("luigi_winpose_2.png"),
-                           sheet.getImageName("luigi_winpose_3.png"),]
+                           sheet.getImageName("luigi_winpose_3.png"), ]
 
     def update(self):
         self.animate()
@@ -2348,7 +3058,8 @@ class GoombaKing(pg.sprite.Sprite):
         self.counter = 0
         self.text.append("WHO DARES DISTURB THE GREAT \nGOOMBA KING?")
         self.text.append("Oh./p It's you.")
-        self.text.append("I have heard about all of your feats\nof strength, and I am telling you\nthat no one is stronger than me!")
+        self.text.append(
+            "I have heard about all of your feats\nof strength, and I am telling you\nthat no one is stronger than me!")
         self.text.append("So,/5/5/5 MARIO!/p LUIGI!/p\nLet the battle of the century.../P\nBEGIN!")
 
     def update(self):
@@ -2455,6 +3166,7 @@ class CountBleck(pg.sprite.Sprite):
                 if not self.game.player.jumping:
                     pg.mixer.music.fadeout(200)
                     self.game.playsong = False
+                    self.game.firstLoop = True
                     self.textbox = TextBox(self.game, self, self.text)
         elif self.textbox != "complete":
             if not pg.mixer.music.get_busy() or self.textbox.rect.center == self.textbox.points[-1]:
@@ -2463,7 +3175,6 @@ class CountBleck(pg.sprite.Sprite):
         else:
             self.textbox = None
             self.game.loadBattle("THB15G")
-
 
     def animate(self):
         now = pg.time.get_ticks()
@@ -2567,7 +3278,8 @@ class TextBox(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.maxRect = self.image.get_rect()
         self.rect.center = self.game.camera.offset(parent.rect).center
-        self.advanceRect.center = (self.rect.right - self.advanceRect.width - 20, self.rect.bottom - self.advanceRect.width - 20)
+        self.advanceRect.center = (
+        self.rect.right - self.advanceRect.width - 20, self.rect.bottom - self.advanceRect.width - 20)
         self.image = pg.transform.scale(textboxSprites[self.type],
                                         (int(self.maxRect.width * self.scale), int(self.maxRect.height * self.scale)))
         if self.rect.y > height / 2:
@@ -2619,7 +3331,7 @@ class TextBox(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = center
 
-        if abs(self.angle) == 50:
+        if abs(self.angle) >= 30:
             self.angleDir = not self.angleDir
         if self.angleDir:
             self.angle += 2
@@ -2662,7 +3374,8 @@ class TextBox(pg.sprite.Sprite):
         completeText = False
         self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
         if self.scale >= 1:
-            text, pos = ptext.draw(character, (self.textx, self.texty), fontname=dialogueFont, color=black, fontsize=35, lineheight=0.8, surf=None)
+            text, pos = ptext.draw(character, (self.textx, self.texty), fontname=dialogueFont, color=black, fontsize=35,
+                                   lineheight=0.8, surf=None)
             self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 250))
             self.game.screen.blit(text, pos)
             self.game.screen.set_clip(None)
@@ -2716,7 +3429,8 @@ class TextBox(pg.sprite.Sprite):
                                     self.points = []
                                     for i in range(self.speed + 1):
                                         self.points.append(
-                                            pt.getPointOnLine(self.rect.centerx, self.rect.centery, self.game.camera.offset(self.parent.imgRect).centerx,
+                                            pt.getPointOnLine(self.rect.centerx, self.rect.centery,
+                                                              self.game.camera.offset(self.parent.imgRect).centerx,
                                                               self.game.camera.offset(self.parent.imgRect).centery,
                                                               (i / self.speed)))
                                     self.counter = 0
@@ -2726,4 +3440,3 @@ class TextBox(pg.sprite.Sprite):
                         self.game.screen.blit(self.advance, self.advanceRect.center)
             else:
                 self.pause -= 1
-
