@@ -55,7 +55,8 @@ class Hammer(pg.sprite.Sprite):
         self.currentFrame = 0
         self.counter = 0
         self.game = game
-        self.game.hammerSound.play()
+        self.game.hammerSwingSound.play()
+        self.hasPlayedHit = False
         self.dead = False
         self.parent = parent
         self.game.sprites.append(self)
@@ -152,8 +153,13 @@ class Hammer(pg.sprite.Sprite):
             self.game.playerHammer.rect = self.imgRect
         else:
             self.game.followerHammer.rect = self.imgRect
+
         if self.counter < len(self.points) - 1 and self.currentFrame > 2:
             self.counter += 1
+        elif not self.hasPlayedHit and self.currentFrame > 2:
+            self.game.hammerHitSound.play()
+            self.hasPlayedHit = True
+
         self.imgRect.center = self.points[self.counter]
         if not self.parent.hammering or self.parent.hit:
             self.parent.isHammer = None
@@ -289,6 +295,7 @@ class Mario(pg.sprite.Sprite):
         self.dead = False
         self.hammering = False
         self.canMove = True
+        self.canBeHit = True
         self.hitTime = 0
         self.ability = 0
         self.prevAbility = 12
@@ -315,7 +322,7 @@ class Mario(pg.sprite.Sprite):
         self.imgRect.left = x
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 1, "bp": 5, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 10, "bp": 5, "exp": 0}
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -682,6 +689,8 @@ class Mario(pg.sprite.Sprite):
                                 self.airTimer = 0
                                 self.game.jumpSound.play()
                         if event.key == pg.K_LSHIFT:
+                            if len(self.abilities) > 3:
+                                self.game.abilityAdvanceSound.play()
                             self.ability = (self.ability + 1) % (len(self.abilities) - 2)
                             print(self.abilities[self.ability])
                         if event.key == pg.K_h:
@@ -704,6 +713,15 @@ class Mario(pg.sprite.Sprite):
                 self.hammering = False
             if now - self.hitTime > 250:
                 self.hit = False
+
+        if not self.canBeHit:
+            if now % 2 == 0 and not self.hit:
+                self.alpha = 0
+            else:
+                self.alpha = 255
+            if now - self.hitTime > 1000:
+                self.alpha = 255
+                self.canBeHit = True
 
         self.rect.x += self.vx
         self.wallCollisions(self.game.walls, self.vx)
@@ -1344,6 +1362,48 @@ class Mario(pg.sprite.Sprite):
                         self.imgRect = self.image.get_rect()
                         self.imgRect.bottom = bottom
                         self.imgRect.left = left
+        else:
+            if self.facing == "up":
+                center = self.imgRect.center
+                self.image = self.standingFrames[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            if self.facing == "down":
+                center = self.imgRect.center
+                self.image = self.standingFrames[1]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            if self.facing == "left":
+                center = self.imgRect.center
+                self.image = self.standingFrames[2]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            if self.facing == "right":
+                center = self.imgRect.center
+                self.image = self.standingFrames[3]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            if self.facing == "downright":
+                center = self.imgRect.center
+                self.image = self.standingFrames[4]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            if self.facing == "upright":
+                center = self.imgRect.center
+                self.image = self.standingFrames[5]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            if self.facing == "downleft":
+                center = self.imgRect.center
+                self.image = self.standingFrames[6]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            if self.facing == "upleft":
+                center = self.imgRect.center
+                self.image = self.standingFrames[7]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            self.currentFrame = 11
 
         if self.walking and (self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
             self.stepSound.stop()
@@ -1372,6 +1432,7 @@ class Luigi(pg.sprite.Sprite):
         self.currentFrame = 0
         self.walking = False
         self.jumping = False
+        self.canBeHit = True
         self.jumpTimer = 0
         self.airTimer = 0
         self.image = self.standingFrames[0]
@@ -1497,6 +1558,8 @@ class Luigi(pg.sprite.Sprite):
                             self.airTimer = 0
                             self.game.jumpSound.play()
                     if event.key == pg.K_RSHIFT:
+                        if len(self.abilities) > 3:
+                            self.game.abilityAdvanceSound.play()
                         self.ability = (self.ability + 1) % (len(self.abilities) - 2)
                         print(self.abilities[self.ability])
                     if event.key == pg.K_h:
@@ -1506,10 +1569,20 @@ class Luigi(pg.sprite.Sprite):
                             self.abilities = ["jump", "interact", "talk"]
 
         if self.hit:
+            self.canBeHit = False
             if self.hammering:
                 self.hammering = False
             if now - self.hitTime > 250:
                 self.hit = False
+
+        if not self.canBeHit:
+            if now % 2 == 0 and not self.hit:
+                self.alpha = 0
+            else:
+                self.alpha = 255
+            if now - self.hitTime > 1000:
+                self.alpha = 255
+                self.canBeHit = True
 
         if not self.jumping:
             self.imgRect.bottom = self.rect.bottom - 5

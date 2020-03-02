@@ -83,6 +83,9 @@ class Game:
         self.despawnList = []
         self.currentPoint = 0
         self.volume = 1
+        self.room = "blank"
+        fad = Fadeout(self)
+        fad.alpha = 255
         self.fullscreen = False
         self.running = True
         self.pause = False
@@ -135,7 +138,9 @@ class Game:
         self.playerHitSound = pg.mixer.Sound("sounds/playerhit.ogg")
         self.enemyHitSound = pg.mixer.Sound("sounds/enemyhit.ogg")
         self.enemyDieSound = pg.mixer.Sound("sounds/enemydie.ogg")
-        self.hammerSound = pg.mixer.Sound("sounds/hammer.ogg")
+        self.hammerSwingSound = pg.mixer.Sound("sounds/hammer swing.ogg")
+        self.hammerHitSound = pg.mixer.Sound("sounds/hammer hit.ogg")
+        self.abilityAdvanceSound = pg.mixer.Sound("sounds/ability cycle.ogg")
 
     def loadBowserCastle(self):
         self.room = "BC"
@@ -399,6 +404,7 @@ class Game:
             self.drawOverworld()
 
             if trans.currentFrame == len(trans.sprites) - 1 and not pg.mixer.get_busy():
+                pg.event.clear()
                 if room == "THB1G":
                     self.loadTeeheeValleyBattle1G()
                     going = False
@@ -466,6 +472,7 @@ class Game:
             self.drawBattleOver()
             if fade.alpha >= 255:
                 break
+
         if not self.player.dead:
             self.sprites.remove(self.marioBattleOver)
         if not self.follower.dead:

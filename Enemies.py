@@ -290,7 +290,7 @@ class Goomba(pg.sprite.Sprite):
                             self.hit = True
                         self.game.player.airTimer = 0
                     else:
-                        if not self.game.player.hit and self.stats["hp"] > 0 and not self.hit:
+                        if not self.game.player.hit and self.stats["hp"] > 0 and not self.hit and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room, (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),(max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
                             if self.game.player.stats["hp"] <= 0:
@@ -298,6 +298,7 @@ class Goomba(pg.sprite.Sprite):
                                 self.game.player.currentFrame = 0
                             self.game.player.hitTime = pg.time.get_ticks()
                             self.game.playerHitSound.play()
+                            self.game.player.canBeHit = False
                             self.game.player.hit = True
 
         if self.game.follower.stats["hp"] != 0:
@@ -327,7 +328,7 @@ class Goomba(pg.sprite.Sprite):
                             self.hit = True
                         self.game.follower.airTimer = 0
                     else:
-                        if not self.game.follower.hit and self.stats["hp"] > 0 and not self.hit:
+                        if not self.game.follower.hit and self.stats["hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                             HitNumbers(self.game, self.game.room, (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2), (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                             self.game.follower.stats["hp"] -= (max(self.stats["pow"] - self.game.follower.stats["def"], 1))
                             if self.game.follower.stats["hp"] <= 0:
@@ -335,6 +336,7 @@ class Goomba(pg.sprite.Sprite):
                                 self.game.follower.currentFrame = 0
                             self.game.follower.hitTime = pg.time.get_ticks()
                             self.game.playerHitSound.play()
+                            self.game.follower.canBeHit = False
                             self.game.follower.hit = True
 
         if self.stats["hp"] != 0 and self.game.player.isHammer is not None:
@@ -343,8 +345,8 @@ class Goomba(pg.sprite.Sprite):
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
                 if hammerHitsRound2 and not self.hit:
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                               int((self.game.player.stats["pow"] - self.stats["def"]) * 1.5))
-                    self.stats["hp"] -= int((self.game.player.stats["pow"] - self.stats["def"]) * 1.5)
+                               round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5))
+                    self.stats["hp"] -= round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5)
                     if self.stats["hp"] <= 0:
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
@@ -356,8 +358,8 @@ class Goomba(pg.sprite.Sprite):
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
                 if hammerHitsRound2 and not self.hit:
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                               int((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5))
-                    self.stats["hp"] -= int((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5)
+                               round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5))
+                    self.stats["hp"] -= round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5)
                     if self.stats["hp"] <= 0:
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
