@@ -1,7 +1,4 @@
-import xml.etree.ElementTree as ET
-import pygame as pg
-import pytweening as pt
-import random
+from Overworld import *
 from UI import *
 from settings import *
 
@@ -30,7 +27,7 @@ class spritesheet:
 
 
 class GoombaO(pg.sprite.Sprite):
-    def __init__(self, game, x, y, battle="THBEM"):
+    def __init__(self, game, x, y, battle):
         self.groups = game.enemies
         pg.sprite.Sprite.__init__(self, self.groups)
         self.newID = False
@@ -364,3 +361,207 @@ class Goomba(pg.sprite.Sprite):
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
                     self.hit = True
+
+
+class GoombaKing(pg.sprite.Sprite):
+    def __init__(self, game, start):
+        pg.sprite.Sprite.__init__(self, game.npcs)
+        self.text = []
+        self.game = game
+        self.textbox = None
+        self.canTalk = True
+        self.game.sprites.append(self)
+        sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
+        self.image = sheet.getImageName("goomba_walking_down_1.png")
+        self.shadow = sheet.getImageName("shadow.png")
+        self.rect = self.shadow.get_rect()
+        self.imgRect = self.image.get_rect()
+        self.rect.center = start
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+        self.alpha = 255
+        self.counter = 0
+        self.text.append("WHO DARES DISTURB THE GREAT \nGOOMBA KING?")
+        self.text.append("Oh./p It's you.")
+        self.text.append(
+            "I have heard about all of your feats\nof strength, and I am telling you\nthat no one is stronger than me!")
+        self.text.append("So,/5/5/5 MARIO!/p LUIGI!/p\nLet the battle of the century.../P\nBEGIN!")
+
+    def update(self):
+        if self.textbox is None:
+            keys = pg.key.get_pressed()
+            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
+                if not self.game.player.jumping:
+                    self.textbox = TextBox(self.game, self, self.text)
+        elif self.textbox != "complete":
+            pg.event.clear()
+        else:
+            self.textbox = None
+            self.game.loadBattle("THB15G")
+
+
+class GoombaSmolText(pg.sprite.Sprite):
+    def __init__(self, game, start, hastexted=False):
+        pg.sprite.Sprite.__init__(self, game.npcs)
+        self.smoltext = []
+        self.text = []
+        self.game = game
+        self.canTalk = True
+        self.textbox = None
+        self.game.sprites.append(self)
+        sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
+        self.image = sheet.getImageName("goomba_walking_down_1.png")
+        self.shadow = sheet.getImageName("shadow.png")
+        self.rect = self.shadow.get_rect()
+        self.imgRect = self.image.get_rect()
+        self.rect.center = start
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+        self.alpha = 255
+        if not hastexted:
+            self.counter = 0
+        else:
+            self.counter = 1
+        self.text.append("Hello.")
+        self.text.append("The phrase that many people use to\nrefer to me is Jeff.")
+        self.smoltext.append("My name's jeff!")
+
+    def update(self):
+        if self.counter == 0:
+            if self.textbox is None:
+                keys = pg.key.get_pressed()
+                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
+                    if not self.game.player.jumping:
+                        self.textbox = TextBox(self.game, self, self.text)
+                        self.game.goombaHasTexted = True
+            elif self.textbox != "complete":
+                pg.event.clear()
+            else:
+                self.textbox = None
+                self.counter += 1
+        elif self.counter == 1:
+            self.canTalk = False
+            if self.textbox is None:
+                if pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
+                    self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.rect.top - 70))
+            elif self.textbox is not None:
+                if not pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
+                    self.textbox.closing = True
+
+
+class CountBleck(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        pg.sprite.Sprite.__init__(self, game.npcs)
+        self.text = []
+        self.game = game
+        self.canTalk = True
+        self.textbox = None
+        self.alpha = 255
+        self.currentFrame = 0
+        self.lastUpdate = 0
+        self.game.sprites.append(self)
+        self.loadImages()
+        self.image = self.sprites[0]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect.bottom = self.rect.centery
+        self.imgRect.left = self.rect.left - 10
+        self.text.append("BLEH HEH HEH HEH!/p BLECK!")
+        self.text.append("I see you've come at last!\nSo you really are the heroes\nof the Light Prognosticus!")
+        self.text.append("But, it is too late./p All worlds\nwill soon be erased, by Count Bleck.")
+        self.text.append("Come to grips with that now,\nfor you cannot stop me.")
+        self.text.append("I suggest you make yourself\ncomfortable and enjoy this\none, final spectacle!")
+        self.text.append("COUNT BLECK IS THE DELETER\nOF WORLDS! MY FATE IS WRITTEN\nIN THE DARK PROGNOSTICUS!")
+        self.text.append("ARE YOU PREPARED, HEROES?")
+        self.text.append("OUR DUEL WILL BE WORTHY OF\nTHE LAST CLASH THE WORLDS WILL\nEVER SEE!")
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/count bleck_idle.png", "sprites/count bleck_idle.xml")
+
+        self.sprites = [sheet.getImageName("count_bleck_idle_00.png"),
+                        sheet.getImageName("count_bleck_idle_01.png"),
+                        sheet.getImageName("count_bleck_idle_02.png"),
+                        sheet.getImageName("count_bleck_idle_03.png"),
+                        sheet.getImageName("count_bleck_idle_04.png"),
+                        sheet.getImageName("count_bleck_idle_05.png"),
+                        sheet.getImageName("count_bleck_idle_06.png"),
+                        sheet.getImageName("count_bleck_idle_07.png"),
+                        sheet.getImageName("count_bleck_idle_08.png"),
+                        sheet.getImageName("count_bleck_idle_09.png"),
+                        sheet.getImageName("count_bleck_idle_10.png"),
+                        sheet.getImageName("count_bleck_idle_11.png"),
+                        sheet.getImageName("count_bleck_idle_12.png"),
+                        sheet.getImageName("count_bleck_idle_13.png"),
+                        sheet.getImageName("count_bleck_idle_14.png"),
+                        sheet.getImageName("count_bleck_idle_15.png"),
+                        sheet.getImageName("count_bleck_idle_16.png"),
+                        sheet.getImageName("count_bleck_idle_17.png"),
+                        sheet.getImageName("count_bleck_idle_18.png"),
+                        sheet.getImageName("count_bleck_idle_19.png"),
+                        sheet.getImageName("count_bleck_idle_20.png"),
+                        sheet.getImageName("count_bleck_idle_21.png"),
+                        sheet.getImageName("count_bleck_idle_22.png"),
+                        sheet.getImageName("count_bleck_idle_23.png"),
+                        sheet.getImageName("count_bleck_idle_24.png"),
+                        sheet.getImageName("count_bleck_idle_25.png"),
+                        sheet.getImageName("count_bleck_idle_26.png"),
+                        sheet.getImageName("count_bleck_idle_27.png"),
+                        sheet.getImageName("count_bleck_idle_28.png"),
+                        sheet.getImageName("count_bleck_idle_29.png"),
+                        sheet.getImageName("count_bleck_idle_30.png"),
+                        sheet.getImageName("count_bleck_idle_31.png"),
+                        sheet.getImageName("count_bleck_idle_32.png"),
+                        sheet.getImageName("count_bleck_idle_33.png"),
+                        sheet.getImageName("count_bleck_idle_34.png"),
+                        sheet.getImageName("count_bleck_idle_35.png"),
+                        sheet.getImageName("count_bleck_idle_36.png"),
+                        sheet.getImageName("count_bleck_idle_37.png"),
+                        sheet.getImageName("count_bleck_idle_38.png"),
+                        sheet.getImageName("count_bleck_idle_39.png"),
+                        sheet.getImageName("count_bleck_idle_40.png"),
+                        sheet.getImageName("count_bleck_idle_41.png"),
+                        sheet.getImageName("count_bleck_idle_42.png"),
+                        sheet.getImageName("count_bleck_idle_43.png"),
+                        sheet.getImageName("count_bleck_idle_44.png"),
+                        sheet.getImageName("count_bleck_idle_45.png"),
+                        sheet.getImageName("count_bleck_idle_46.png"),
+                        sheet.getImageName("count_bleck_idle_47.png"),
+                        sheet.getImageName("count_bleck_idle_48.png"),
+                        sheet.getImageName("count_bleck_idle_49.png"),
+                        sheet.getImageName("count_bleck_idle_50.png")]
+
+        self.shadow = sheet.getImageName("count_bleck_shadow.png")
+
+    def update(self):
+        self.animate()
+        if self.textbox is None:
+            keys = pg.key.get_pressed()
+            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
+                if not self.game.player.jumping:
+                    pg.mixer.music.fadeout(200)
+                    self.game.playsong = False
+                    self.game.firstLoop = True
+                    self.textbox = TextBox(self.game, self, self.text)
+        elif self.textbox != "complete":
+            if not pg.mixer.music.get_busy() or self.textbox.rect.center == self.textbox.points[-1]:
+                self.game.playSong(10.314, 32.016, "the evil count bleck")
+            pg.event.clear()
+        else:
+            self.textbox = None
+            self.game.loadBattle("self.loadTeeheeValleyBattle15G()")
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 2:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.sprites):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.sprites))
+            else:
+                self.currentFrame = 0
+            bottom = self.imgRect.bottom
+            left = self.imgRect.left
+            self.image = self.sprites[self.currentFrame]
+            self.imgRect = self.image.get_rect()
+            self.imgRect.bottom = bottom
+            self.imgRect.left = left

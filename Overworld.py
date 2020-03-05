@@ -1,9 +1,7 @@
-import queue as Q
-import math
-import ptext
+import collections as Q
+from Libraries import ptext
 import random
 import xml.etree.ElementTree as ET
-import pygame as pg
 import pytweening as pt
 from settings import *
 
@@ -659,16 +657,30 @@ class Mario(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         self.vx, self.vy = 0, 0
 
+        hits = pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1))
+
         if not self.dead and self.canMove and not self.hammering:
             if not self.hit and not self.game.follower.hit and not self.game.follower.hammering:
-                if keys[pg.K_w]:
-                    self.vy = -playerSpeed
-                if keys[pg.K_a]:
-                    self.vx = -playerSpeed
-                if keys[pg.K_s]:
-                    self.vy = playerSpeed
-                if keys[pg.K_d]:
-                    self.vx = playerSpeed
+                if self.jumping and not hits:
+                    if keys[pg.K_w]:
+                        self.vy = -playerSpeed
+                    if keys[pg.K_a]:
+                        self.vx = -playerSpeed
+                    if keys[pg.K_s]:
+                        self.vy = playerSpeed
+                    if keys[pg.K_d]:
+                        self.vx = playerSpeed
+                elif not self.jumping:
+                    if keys[pg.K_w]:
+                        self.vy = -playerSpeed
+                    if keys[pg.K_a]:
+                        self.vx = -playerSpeed
+                    if keys[pg.K_s]:
+                        self.vy = playerSpeed
+                    if keys[pg.K_d]:
+                        self.vx = playerSpeed
+                else:
+                    self.walking = False
                 for event in self.game.event:
                     if event.type == pg.KEYDOWN:
                         if event.key == pg.K_m:
@@ -699,10 +711,12 @@ class Mario(pg.sprite.Sprite):
                             else:
                                 self.abilities = ["jump", "interact", "talk"]
 
-        if pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1)):
-            if self.prevAbility == 12:
-                self.prevAbility = self.ability
-            self.ability = len(self.abilities) - 1
+        hits = pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1))
+        if hits:
+            if hits.canTalk:
+                if self.prevAbility == 12:
+                    self.prevAbility = self.ability
+                self.ability = len(self.abilities) - 1
         else:
             if self.prevAbility != 12:
                 self.ability = self.prevAbility
@@ -714,7 +728,7 @@ class Mario(pg.sprite.Sprite):
             if now - self.hitTime > 250:
                 self.hit = False
 
-        if not self.canBeHit:
+        if not self.canBeHit and not self.dead:
             if now % 2 == 0 and not self.hit:
                 self.alpha = 0
             else:
@@ -1414,7 +1428,7 @@ class Luigi(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         pg.sprite.Sprite.__init__(self)
         self.stepSound = pg.mixer.Sound("sounds/coin.ogg")
-        self.moveQueue = Q.Queue()
+        self.moveQueue = Q.deque()
         self.hit = False
         self.dead = False
         self.canMove = True
@@ -1495,21 +1509,22 @@ class Luigi(pg.sprite.Sprite):
         if self.stats["hp"] == 0:
             self.dead = True
         self.animate()
+
         now = pg.time.get_ticks()
         keys = pg.key.get_pressed()
         if not self.dead and not self.game.player.dead:
             self.walking = self.game.player.walking
             if not self.hit and not self.game.player.hit:
                 if self.walking or self.game.player.vx != 0 or self.game.player.vy != 0:
-                    self.moveQueue.put(self.game.player.rect.x)
-                    self.moveQueue.put(self.game.player.rect.y)
-                    self.moveQueue.put(self.game.player.facing)
-                    if self.moveQueue.qsize() > 30:
-                        self.rect.x = self.moveQueue.get()
-                        self.rect.y = self.moveQueue.get()
-                        self.facing = self.moveQueue.get()
+                    self.moveQueue.append(self.game.player.rect.x)
+                    self.moveQueue.append(self.game.player.rect.y)
+                    self.moveQueue.append(self.game.player.facing)
+                    if len(self.moveQueue) > 30:
+                        self.rect.x = self.moveQueue.popleft()
+                        self.rect.y = self.moveQueue.popleft()
+                        self.facing = self.moveQueue.popleft()
         elif not self.dead and self.game.player.dead and self.canMove and not self.hammering:
-            self.moveQueue = Q.Queue()
+            self.moveQueue = Q.deque()
             self.vx, self.vy = 0, 0
             if not self.hit:
                 if keys[pg.K_w]:
@@ -1575,7 +1590,7 @@ class Luigi(pg.sprite.Sprite):
             if now - self.hitTime > 250:
                 self.hit = False
 
-        if not self.canBeHit:
+        if not self.canBeHit and not self.dead:
             if now % 2 == 0 and not self.hit:
                 self.alpha = 0
             else:
@@ -2951,7 +2966,9 @@ class MarioBattleComplete(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.alpha = 255
-        self.speed = 50
+        self.speed = 120
+        self.xp = self.game.player.stats["exp"]
+        self.numSpeed = self.game.battleXp / 30
         self.counter = 0
         self.currentFrame = 0
         self.lastUpdate = 0
@@ -2990,12 +3007,15 @@ class MarioBattleComplete(pg.sprite.Sprite):
         if self.counter < len(self.points) - 1:
             self.counter += 1
         else:
-            if self.newXP != self.game.battleXp:
-                self.game.player.stats["exp"] += 1
-                self.newXP += 1
+            if self.newXP < self.game.battleXp - self.numSpeed:
+                self.game.player.stats["exp"] += self.numSpeed
+                self.newXP += self.numSpeed
             elif self.image == self.spinningFrames[-1]:
+                self.game.player.stats["exp"] = self.xp + self.game.battleXp
                 self.currentFrame = 0
                 self.pose = True
+            else:
+                self.game.player.stats["exp"] = self.xp + self.game.battleXp
 
         self.rect.center = self.points[self.counter]
 
@@ -3003,7 +3023,7 @@ class MarioBattleComplete(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if now - self.lastUpdate > 45:
             self.lastUpdate = now
-            if self.newXP != self.game.battleXp:
+            if self.newXP < self.game.battleXp - self.numSpeed:
                 if self.currentFrame < len(self.spinningFrames):
                     self.currentFrame = (self.currentFrame + 1) % (len(self.spinningFrames))
                 else:
@@ -3034,8 +3054,10 @@ class LuigiBattleComplete(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.alpha = 255
-        self.speed = 50
+        self.speed = 120
         self.counter = 0
+        self.xp = self.game.follower.stats["exp"]
+        self.numSpeed = self.game.battleXp / 30
         self.currentFrame = 0
         self.lastUpdate = 0
         self.dead = False
@@ -3073,12 +3095,15 @@ class LuigiBattleComplete(pg.sprite.Sprite):
         if self.counter < len(self.points) - 1:
             self.counter += 1
         else:
-            if self.newXP != self.game.battleXp:
-                self.game.follower.stats["exp"] += 1
-                self.newXP += 1
+            if self.newXP < self.game.battleXp - self.numSpeed:
+                self.game.follower.stats["exp"] += self.numSpeed
+                self.newXP += self.numSpeed
             elif self.image == self.spinningFrames[-1]:
+                self.game.follower.stats["exp"] = self.xp + self.game.battleXp
                 self.currentFrame = 0
                 self.pose = True
+            else:
+                self.game.follower.stats["exp"] = self.xp + self.game.battleXp
 
         self.rect.center = self.points[self.counter]
 
@@ -3086,7 +3111,7 @@ class LuigiBattleComplete(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if now - self.lastUpdate > 45:
             self.lastUpdate = now
-            if self.newXP != self.game.battleXp:
+            if self.newXP < self.game.battleXp - self.numSpeed:
                 if self.currentFrame < len(self.spinningFrames):
                     self.currentFrame = (self.currentFrame + 1) % (len(self.spinningFrames))
                 else:
@@ -3112,157 +3137,68 @@ class LuigiBattleComplete(pg.sprite.Sprite):
                         self.rect.center = center
 
 
-class GoombaKing(pg.sprite.Sprite):
-    def __init__(self, game, start):
-        pg.sprite.Sprite.__init__(self, game.npcs)
-        self.text = []
-        self.game = game
-        self.textbox = None
-        self.game.sprites.append(self)
-        sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
-        self.image = sheet.getImageName("goomba_walking_down_1.png")
-        self.shadow = sheet.getImageName("shadow.png")
-        self.rect = self.shadow.get_rect()
-        self.imgRect = self.image.get_rect()
-        self.rect.center = start
-        self.imgRect.bottom = self.rect.bottom - 5
-        self.imgRect.centerx = self.rect.centerx
-        self.alpha = 255
-        self.counter = 0
-        self.text.append("WHO DARES DISTURB THE GREAT \nGOOMBA KING?")
-        self.text.append("Oh./p It's you.")
-        self.text.append(
-            "I have heard about all of your feats\nof strength, and I am telling you\nthat no one is stronger than me!")
-        self.text.append("So,/5/5/5 MARIO!/p LUIGI!/p\nLet the battle of the century.../P\nBEGIN!")
-
-    def update(self):
-        if self.textbox is None:
-            keys = pg.key.get_pressed()
-            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
-                if not self.game.player.jumping:
-                    self.textbox = TextBox(self.game, self, self.text)
-        elif self.textbox != "complete":
-            pg.event.clear()
-        else:
-            self.textbox = None
-            self.game.loadBattle("THB15G")
-
-
-class CountBleck(pg.sprite.Sprite):
+class Block(pg.sprite.Sprite):
     def __init__(self, game, pos):
-        pg.sprite.Sprite.__init__(self, game.npcs)
-        self.text = []
+        pg.sprite.Sprite.__init__(self, game.blocks)
         self.game = game
-        self.textbox = None
-        self.alpha = 255
-        self.currentFrame = 0
-        self.lastUpdate = 0
         self.game.sprites.append(self)
+        self.ID = -17
+        self.newID = False
+        self.hit = False
+        self.alpha = 255
+        self.vy = 0
+        self.dy = 0.065
         self.loadImages()
-        self.image = self.sprites[0]
-        self.imgRect = self.image.get_rect()
         self.rect = self.shadow.get_rect()
         self.rect.center = pos
-        self.imgRect.bottom = self.rect.centery
-        self.imgRect.left = self.rect.left - 10
-        self.text.append("BLEH HEH HEH HEH!/p BLECK!")
-        self.text.append("I see you've come at last!\nSo you really are the heroes\nof the Light Prognosticus!")
-        self.text.append("But, it is too late./p All worlds\nwill soon be erased, by Count Bleck.")
-        self.text.append("Come to grips with that now,\nfor you cannot stop me.")
-        self.text.append("I suggest you make yourself\ncomfortable and enjoy this\none, final spectacle!")
-        self.text.append("COUNT BLECK IS THE DELETER\nOF WORLDS! MY FATE IS WRITTEN\nIN THE DARK PROGNOSTICUS!")
-        self.text.append("ARE YOU PREPARED, HEROES?")
-        self.text.append("OUR DUEL WILL BE WORTHY OF\nTHE LAST CLASH THE WORLDS WILL\nEVER SEE!")
+        self.image = self.blockSprite
+        self.imgRect = self.image.get_rect()
+        self.imgRect.centerx = self.rect.centerx
+        self.imgRect.centery = self.rect.centery - 200
 
     def loadImages(self):
-        sheet = spritesheet("sprites/count bleck_idle.png", "sprites/count bleck_idle.xml")
+        sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
 
-        self.sprites = [sheet.getImageName("count_bleck_idle_00.png"),
-                        sheet.getImageName("count_bleck_idle_01.png"),
-                        sheet.getImageName("count_bleck_idle_02.png"),
-                        sheet.getImageName("count_bleck_idle_03.png"),
-                        sheet.getImageName("count_bleck_idle_04.png"),
-                        sheet.getImageName("count_bleck_idle_05.png"),
-                        sheet.getImageName("count_bleck_idle_06.png"),
-                        sheet.getImageName("count_bleck_idle_07.png"),
-                        sheet.getImageName("count_bleck_idle_08.png"),
-                        sheet.getImageName("count_bleck_idle_09.png"),
-                        sheet.getImageName("count_bleck_idle_10.png"),
-                        sheet.getImageName("count_bleck_idle_11.png"),
-                        sheet.getImageName("count_bleck_idle_12.png"),
-                        sheet.getImageName("count_bleck_idle_13.png"),
-                        sheet.getImageName("count_bleck_idle_14.png"),
-                        sheet.getImageName("count_bleck_idle_15.png"),
-                        sheet.getImageName("count_bleck_idle_16.png"),
-                        sheet.getImageName("count_bleck_idle_17.png"),
-                        sheet.getImageName("count_bleck_idle_18.png"),
-                        sheet.getImageName("count_bleck_idle_19.png"),
-                        sheet.getImageName("count_bleck_idle_20.png"),
-                        sheet.getImageName("count_bleck_idle_21.png"),
-                        sheet.getImageName("count_bleck_idle_22.png"),
-                        sheet.getImageName("count_bleck_idle_23.png"),
-                        sheet.getImageName("count_bleck_idle_24.png"),
-                        sheet.getImageName("count_bleck_idle_25.png"),
-                        sheet.getImageName("count_bleck_idle_26.png"),
-                        sheet.getImageName("count_bleck_idle_27.png"),
-                        sheet.getImageName("count_bleck_idle_28.png"),
-                        sheet.getImageName("count_bleck_idle_29.png"),
-                        sheet.getImageName("count_bleck_idle_30.png"),
-                        sheet.getImageName("count_bleck_idle_31.png"),
-                        sheet.getImageName("count_bleck_idle_32.png"),
-                        sheet.getImageName("count_bleck_idle_33.png"),
-                        sheet.getImageName("count_bleck_idle_34.png"),
-                        sheet.getImageName("count_bleck_idle_35.png"),
-                        sheet.getImageName("count_bleck_idle_36.png"),
-                        sheet.getImageName("count_bleck_idle_37.png"),
-                        sheet.getImageName("count_bleck_idle_38.png"),
-                        sheet.getImageName("count_bleck_idle_39.png"),
-                        sheet.getImageName("count_bleck_idle_40.png"),
-                        sheet.getImageName("count_bleck_idle_41.png"),
-                        sheet.getImageName("count_bleck_idle_42.png"),
-                        sheet.getImageName("count_bleck_idle_43.png"),
-                        sheet.getImageName("count_bleck_idle_44.png"),
-                        sheet.getImageName("count_bleck_idle_45.png"),
-                        sheet.getImageName("count_bleck_idle_46.png"),
-                        sheet.getImageName("count_bleck_idle_47.png"),
-                        sheet.getImageName("count_bleck_idle_48.png"),
-                        sheet.getImageName("count_bleck_idle_49.png"),
-                        sheet.getImageName("count_bleck_idle_50.png")]
+        self.shadow = sheet.getImageName("shadow.png")
 
-        self.shadow = sheet.getImageName("count_bleck_shadow.png")
+        self.blockSprite = sheet.getImageName("block.png")
+
+        self.hitSprite = sheet.getImageName("empty block.png")
 
     def update(self):
-        self.animate()
-        if self.textbox is None:
-            keys = pg.key.get_pressed()
-            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
-                if not self.game.player.jumping:
-                    pg.mixer.music.fadeout(200)
-                    self.game.playsong = False
-                    self.game.firstLoop = True
-                    self.textbox = TextBox(self.game, self, self.text)
-        elif self.textbox != "complete":
-            if not pg.mixer.music.get_busy() or self.textbox.rect.center == self.textbox.points[-1]:
-                self.game.playSong(10.314, 32.016, "the evil count bleck")
-            pg.event.clear()
+        if not self.newID:
+            if self.ID in self.game.hitBlockList:
+                self.hit = True
+            self.newID = True
+        if self.hit:
+            self.image = self.hitSprite
         else:
-            self.textbox = None
-            self.game.loadBattle("THB15G")
+            self.vy += self.dy
+            if self.vy > 1 or self.vy < -1:
+                self.dy *= -1
+            self.imgRect.y += round(self.vy)
 
-    def animate(self):
-        now = pg.time.get_ticks()
-        if now - self.lastUpdate > 2:
-            self.lastUpdate = now
-            if self.currentFrame < len(self.sprites):
-                self.currentFrame = (self.currentFrame + 1) % (len(self.sprites))
-            else:
-                self.currentFrame = 0
-            bottom = self.imgRect.bottom
-            left = self.imgRect.left
-            self.image = self.sprites[self.currentFrame]
-            self.imgRect = self.image.get_rect()
-            self.imgRect.bottom = bottom
-            self.imgRect.left = left
+        hits = pg.sprite.collide_rect(self, self.game.player)
+        if hits:
+            rect = self.rect
+            self.rect = self.imgRect
+            hitsRound2 = pg.sprite.collide_rect(self, self.game.playerCol)
+            self.rect = rect
+            if hitsRound2:
+                self.game.hitBlockList.append(self.ID)
+                self.game.player.airTimer = airTime
+                self.hit = True
+
+        hits = pg.sprite.collide_rect(self, self.game.follower)
+        if hits:
+            rect = self.rect
+            self.rect = self.imgRect
+            hitsRound2 = pg.sprite.collide_rect(self, self.game.followerCol)
+            self.rect = rect
+            if hitsRound2:
+                self.game.hitBlockList.append(self.ID)
+                self.game.follower.airTimer = airTime
+                self.hit = True
 
 
 class Wall(pg.sprite.Sprite):
@@ -3334,7 +3270,6 @@ class TextBox(pg.sprite.Sprite):
         self.text = text.copy()
         for i in range(len(self.text)):
             self.text[i] = self.text[i] + "\n\a"
-        id(self.text), id(self.parent.text)
         self.page = 0
         self.playSound = 0
         self.currentCharacter = 0
@@ -3513,3 +3448,70 @@ class TextBox(pg.sprite.Sprite):
                         self.game.screen.blit(self.advance, self.advanceRect.center)
             else:
                 self.pause -= 1
+
+
+class MiniTextbox(pg.sprite.Sprite):
+    def __init__(self, game, parent, text, pos):
+        pg.sprite.Sprite.__init__(self, game.ui)
+        self.speed = 20
+        self.game = game
+        self.parent = parent
+        self.parent.textbox = self
+        self.offset = True
+        self.closing = False
+        self.advancing = False
+        self.scale = 0
+        self.counter = 0
+        self.alpha = 0
+        self.text = text.copy()
+        for i in range(len(self.text)):
+            self.text[i] = self.text[i] + "\n\a"
+        self.page = 0
+        self.currentCharacter = 0
+        self.points = []
+        self.pause = 0
+        self.pTimes = 0
+        self.PTimes = 0
+        self.numTimes = 0
+        self.angle = 0
+        self.image = textboxSprites["dialogue"]
+        self.rect = self.image.get_rect()
+        self.maxRect = self.image.get_rect()
+        self.rect.center = pos
+        self.image = pg.transform.scale(textboxSprites["dialogue"],
+                                        (int(self.maxRect.width * self.scale), int(self.maxRect.height * self.scale)))
+
+    def update(self):
+        if not self.closing:
+            if self.scale <= 0.3:
+                self.scale += 0.02
+            if self.alpha < 255:
+                self.alpha += 10
+        else:
+            if self.scale > 0:
+                self.scale -= 0.02
+            if self.alpha > 0:
+                self.alpha -= 10
+            else:
+                self.parent.textbox = None
+                self.kill()
+
+        center = self.rect.center
+        self.image = pg.transform.scale(textboxSprites["dialogue"],
+                                        (int(self.maxRect.width * self.scale), int(self.maxRect.height * self.scale)))
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+
+    def draw(self):
+        character = self.text[self.page]
+        character = character[:self.currentCharacter]
+        self.game.blit_alpha(self.game.screen, self.image, self.game.camera.offset(self.rect), self.alpha)
+        if self.scale >= 0.3:
+            textx = self.game.camera.offset(self.rect).left + 10
+            texty = self.game.camera.offset(self.rect).top + 10
+            ptext.draw(character, (textx, texty), fontname=dialogueFont, color=black, fontsize=20,
+                       lineheight=0.8, surf=self.game.screen)
+            if self.currentCharacter < len(self.text[self.page]):
+                self.currentCharacter += 2
+                if self.currentCharacter > len(self.text[self.page]):
+                    self.currentCharacter = len(self.text[self.page])

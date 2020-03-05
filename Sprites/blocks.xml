@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:90543557a3471ed4aa830bde646c92da:b2850b124614b4998c17a88b95cda379:74f085f9dd224a639f9a757e06741014$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="blocks.png" width="46" height="437">
+    <sprite n="block.png" x="0" y="0" w="44" h="70"/>
+    <sprite n="empty block.png" x="0" y="70" w="44" h="70"/>
+    <sprite n="luigi block.png" x="0" y="140" w="44" h="70"/>
+    <sprite n="mario block.png" x="0" y="210" w="44" h="70"/>
+    <sprite n="save block.png" x="0" y="280" w="44" h="60"/>
+    <sprite n="save block_hit.png" x="0" y="340" w="46" h="74"/>
+    <sprite n="shadow.png" x="0" y="414" w="46" h="23"/>
+</TextureAtlas>

@@ -1,9 +1,4 @@
-import pygame as pg
-import math
-import pytweening as pt
-from settings import *
-from Overworld import *
-from UI import *
+import pickle
 from Enemies import *
 
 pg.display.set_icon(icon)
@@ -15,21 +10,24 @@ pg.display.set_caption(title)
 class Camera:
     def __init__(self, camWidth, camHeight):
         self.camera = pg.Rect(0, 0, camWidth, camHeight)
+        self.game = game
         self.width = camWidth
         self.height = camHeight
+        self.screen = self.game.screen
 
     def offset(self, target):
         return target.move(self.camera.topleft)
 
     def update(self, target):
+        self.screen = self.game.screen
         x = -target.x + int(width / 2)
         y = -target.y + int(height / 2)
 
         # Limit scrolling to map size
         x = min(0, x)  # Left side
-        x = max(-(self.width - width), x)  # Right side
+        x = max(-(self.width - self.screen.get_width()), x)  # Right side
         y = min(0, y)  # Top
-        y = max(-(self.height - height), y)  # Bottom
+        y = max(-(self.height - self.screen.get_height()), y)  # Bottom
         self.camera = pg.Rect(x, y, int(self.width), int(self.height))
 
 
@@ -76,17 +74,20 @@ class Game:
         self.fadeout = pg.sprite.Group()
         self.battleEndUI = []
         self.loadData()
+        self.goombaHasTexted = False
+        self.player = Mario(self, width / 2, 1278)
+        self.follower = Luigi(self, width / 2, 1278)
         MarioUI(self)
         LuigiUI(self)
         self.song_playing = ""
         self.storeData = {}
         self.despawnList = []
+        self.hitBlockList = []
         self.currentPoint = 0
         self.volume = 1
         self.room = "blank"
         fad = Fadeout(self)
         fad.alpha = 255
-        self.fullscreen = False
         self.running = True
         self.pause = False
 
@@ -124,6 +125,18 @@ class Game:
                 pg.mixer.music.play(0, soundPos + introLength - loopLength)
                 print("YOOOOOOOOO")
 
+    def saveGame(self):
+        with open("saves/File 1.ini", "wb") as file:
+            pickle.dump(self.storeData, file)
+            pickle.dump(self.despawnList, file)
+
+    def loadGame(self):
+        with open("saves/File 1.ini", "rb") as file:
+            self.storeData = pickle.load(file)
+            self.despawnList = pickle.load(file)
+
+        print(self.storeData)
+
     def loadData(self):
         self.sandSound = pg.mixer.Sound("sounds/sand footsteps.ogg")
         self.stoneSound = pg.mixer.Sound("sounds/stone footsteps.ogg")
@@ -143,12 +156,13 @@ class Game:
         self.abilityAdvanceSound = pg.mixer.Sound("sounds/ability cycle.ogg")
 
     def loadBowserCastle(self):
-        self.room = "BC"
+        self.room = "self.loadBowserCastle()"
         self.playsong = True
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
+        self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
         if self.song_playing != "castle bleck":
             self.firstLoop = True
@@ -166,35 +180,45 @@ class Game:
         self.camera = Camera(self.map.width, self.map.height)
         self.cameraRect = CameraRect()
         # GoombaKing(self, (self.map.width / 2 - 2, self.map.height - 620))
-        GoombaO(self, self.map.width / 2 + 500, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 - 500, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 + 400, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 - 400, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 + 600, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 - 600, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 - 200, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 + 200, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 + 300, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 - 300, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 + 100, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 - 100, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 - 700, self.map.height - 500, "THB1G")
-        GoombaO(self, self.map.width / 2 + 700, self.map.height - 500, "THB1G")
+        Block(self, (300, self.map.height - 450))
+        Block(self, (600, self.map.height - 450))
+        GoombaSmolText(self, (self.map.width / 2 - 2, self.map.height - 420), self.goombaHasTexted)
+        GoombaO(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 - 500, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 + 400, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 - 400, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 + 600, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 - 600, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 - 200, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 + 200, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 + 300, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 - 300, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 + 100, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 - 100, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 - 700, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
+        GoombaO(self, self.map.width / 2 + 700, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
         CountBleck(self, (self.map.width / 2 - 5, self.map.height - 620))
         try:
             self.player.rect.center = self.storeData["mario pos"]
             self.player.stats = self.storeData["mario stats"]
             self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.follower.moveQueue = self.storeData["luigi move"]
             self.player.facing = self.storeData["mario facing"]
             self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.follower.moveQueue = self.storeData["luigi move"]
         except:
             pass
 
         counter = 0
         for enemy in self.enemies:
             enemy.ID = counter
+            counter += 1
+
+        counter = 0
+        for block in self.blocks:
+            block.ID = counter
             counter += 1
 
         self.bowserCastle()
@@ -218,8 +242,41 @@ class Game:
             self.screen.fill(black)
             self.drawOverworld()
 
+    def loadBattle(self, function):
+        self.battleXp = 0
+        self.currentPoint += pg.mixer.music.get_pos() / 1000
+        pg.mixer.music.stop()
+        self.battleSound.play()
+        trans = BattleTransition(self)
+        going = True
+        self.storeData["mario stats"] = self.player.stats
+        self.storeData["mario pos"] = self.player.rect.center
+        self.storeData["mario facing"] = self.player.facing
+        self.storeData["mario abilities"] = self.player.abilities
+        if self.player.prevAbility == 12:
+            self.storeData["mario current ability"] = self.player.ability
+        else:
+            self.storeData["mario current ability"] = self.player.prevAbility
+        self.storeData["luigi stats"] = self.follower.stats
+        self.storeData["luigi pos"] = self.follower.rect.center
+        self.storeData["luigi move"] = self.follower.moveQueue
+        self.storeData["luigi facing"] = self.follower.facing
+        self.storeData["luigi abilities"] = self.follower.abilities
+        if self.follower.prevAbility == 12:
+            self.storeData["luigi current ability"] = self.follower.ability
+        else:
+            self.storeData["luigi current ability"] = self.follower.prevAbility
+        self.prevRoom = self.room
+        while going:
+            trans.update()
+            self.screen.fill(black)
+            self.drawOverworld()
+
+            if trans.currentFrame == len(trans.sprites) - 1 and not pg.mixer.get_busy():
+                eval(function)
+
     def loadTeeheeValleyBattle15G(self):
-        self.room = "THB15lG"
+        self.room = "battle"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
@@ -284,10 +341,10 @@ class Game:
         self.player.stepSound = self.sandSound
         self.map = loadMap("teehee valley battle", True)
         self.camera = Camera(self.map.width, self.map.height)
-        self.teeheeValleyBattle()
+        self.teeheeValleyBattle2()
 
     def loadTeeheeValleyBattle1G(self):
-        self.room = "THB1G"
+        self.room = "battle"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
@@ -369,48 +426,27 @@ class Game:
             if len(self.enemies) == 0:
                 self.battleOver()
 
-    def gotoPrevRoom(self):
-        if self.prevRoom == "BC":
-            self.loadBowserCastle()
-
-    def loadBattle(self, room):
-        self.battleXp = 0
-        self.currentPoint += pg.mixer.music.get_pos() / 1000
-        pg.mixer.music.stop()
-        self.battleSound.play()
-        trans = BattleTransition(self)
-        going = True
-        self.storeData["mario stats"] = self.player.stats
-        self.storeData["mario pos"] = self.player.rect.center
-        self.storeData["mario facing"] = self.player.facing
-        self.storeData["mario abilities"] = self.player.abilities
-        if self.player.prevAbility == 12:
-            self.storeData["mario current ability"] = self.player.ability
-        else:
-            self.storeData["mario current ability"] = self.player.prevAbility
-        self.storeData["luigi stats"] = self.follower.stats
-        self.storeData["luigi pos"] = self.follower.rect.center
-        self.storeData["luigi move"] = self.follower.moveQueue
-        self.storeData["luigi facing"] = self.follower.facing
-        self.storeData["luigi abilities"] = self.follower.abilities
-        if self.follower.prevAbility == 12:
-            self.storeData["luigi current ability"] = self.follower.ability
-        else:
-            self.storeData["luigi current ability"] = self.follower.prevAbility
-        self.prevRoom = self.room
-        while going:
-            trans.update()
+    def teeheeValleyBattle2(self):
+        self.playing = True
+        self.player.ability = self.storeData["mario current ability"]
+        self.player.abilities = self.storeData["mario abilities"]
+        self.follower.ability = self.storeData["luigi current ability"]
+        self.follower.abilities = self.storeData["luigi abilities"]
+        self.cameraRect = CameraRect()
+        # pg.mixer.music.load("music/battle.ogg")
+        # pg.mixer.music.play(-1)
+        while self.playing:
+            self.playSong(54.965, 191.98, "new soup final boss")
+            self.clock.tick(fps)
+            self.events()
+            if not self.pause:
+                self.updateBattle()
             self.screen.fill(black)
-            self.drawOverworld()
-
-            if trans.currentFrame == len(trans.sprites) - 1 and not pg.mixer.get_busy():
-                pg.event.clear()
-                if room == "THB1G":
-                    self.loadTeeheeValleyBattle1G()
-                    going = False
-                elif room == "THB15G":
-                    self.loadTeeheeValleyBattle15G()
-                    going = False
+            self.drawBattle()
+            # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
+            #     self.gameOver()
+            if len(self.enemies) == 0:
+                self.battleOver()
 
     def battleOver(self):
         pg.mixer.music.stop()
@@ -444,7 +480,7 @@ class Game:
         self.dimBackground = fadeout.get_rect()
         while True:
             self.playSong(5.44, 36.708, "battle victory")
-            self.clock.tick(fps)
+            self.clock.tick(60)
             self.events()
             if not self.pause:
                 self.updateBattleOver()
@@ -487,7 +523,7 @@ class Game:
             self.follower.stats["hp"] = 1
         self.storeData["mario stats"] = self.player.stats
         self.storeData["luigi stats"] = self.follower.stats
-        self.gotoPrevRoom()
+        eval(self.prevRoom)
 
     def events(self):
         self.event = pg.event.get().copy()
@@ -517,12 +553,8 @@ class Game:
                         self.follower.shadow = self.follower.shadowFrames["normal"]
                         self.follower.rect = self.follower.shadow.get_rect()
                         self.follower.rect.center = center
-                if event.key == pg.K_F4:
-                    if self.fullscreen:
-                        self.screen = pg.display.set_mode((width, height))
-                    else:
-                        self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
-                    self.fullscreen = not self.fullscreen
+                if event.key == pg.K_t:
+                    self.saveGame()
 
     def updateBattleOver(self):
         [ui.update() for ui in self.battleEndUI]
@@ -670,4 +702,5 @@ class Game:
 game = Game()
 
 while game.running:
+    # game.loadGame()
     game.loadBowserCastle()

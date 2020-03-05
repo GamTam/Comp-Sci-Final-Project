@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import ptext
+from Libraries import ptext
 from settings import *
 
 
@@ -47,151 +47,171 @@ class MarioUI(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = 0
         self.rect.top = 0
+        self.speed = 0
+        self.hp = self.game.player.stats["hp"]
 
     def update(self):
+        if self.hp > self.game.player.stats["hp"] and self.speed == 0:
+            self.speed = ((self.hp - self.game.player.stats["hp"]) / 30) * -1
+        elif self.hp < self.game.player.stats["hp"] and self.speed == 0:
+            self.speed = (self.game.player.stats["hp"] - self.hp) / 30
+
+        if self.speed != 0:
+            if self.hp > self.game.player.stats["hp"] + self.speed and self.speed < 0:
+                self.hp += self.speed
+            elif self.hp < self.game.player.stats["hp"] - self.speed and self.speed > 0:
+                self.hp += self.speed
+            else:
+                self.hp = self.game.player.stats["hp"]
+                self.speed = 0
+
+        if self.hp < 0:
+            hp = [0]
+        else:
+            hp = [int(i) for i in str(round(self.hp))]
+
         if self.game.player.abilities[self.game.player.ability] == "jump":
             self.image = self.sprites[0]
         elif self.game.player.abilities[self.game.player.ability] == "hammer":
             self.image = self.sprites[1]
-        self.hp = [int(i) for i in str(self.game.player.stats["hp"])]
 
-        if len(self.hp) == 1:
-            if self.hp[0] == 0:
+        if len(hp) == 1:
+            if hp[0] == 0:
                 self.numberImg = self.numbers[0]
-            elif self.hp[0] == 1:
+            elif hp[0] == 1:
                 self.numberImg = self.numbers[1]
-            elif self.hp[0] == 2:
+            elif hp[0] == 2:
                 self.numberImg = self.numbers[2]
-            elif self.hp[0] == 3:
+            elif hp[0] == 3:
                 self.numberImg = self.numbers[3]
-            elif self.hp[0] == 4:
+            elif hp[0] == 4:
                 self.numberImg = self.numbers[4]
-            elif self.hp[0] == 5:
+            elif hp[0] == 5:
                 self.numberImg = self.numbers[5]
-            elif self.hp[0] == 6:
+            elif hp[0] == 6:
                 self.numberImg = self.numbers[6]
-            elif self.hp[0] == 7:
+            elif hp[0] == 7:
                 self.numberImg = self.numbers[7]
-            elif self.hp[0] == 8:
+            elif hp[0] == 8:
                 self.numberImg = self.numbers[8]
-            elif self.hp[0] == 9:
+            elif hp[0] == 9:
                 self.numberImg = self.numbers[9]
 
             self.numberRect = self.numberImg.get_rect()
-            self.numberRect.right = self.rect.right - 70
+            self.numberRect.right = self.rect.right - 65
             self.numberRect.centery = self.rect.bottom - 25
-        elif len(self.hp) == 2:
-            if self.hp[0] == 0:
+        elif len(hp) == 2:
+            if hp[0] == 0:
                 self.numberImg1 = self.numbers[0]
-            elif self.hp[0] == 1:
+            elif hp[0] == 1:
                 self.numberImg1 = self.numbers[1]
-            elif self.hp[0] == 2:
+            elif hp[0] == 2:
                 self.numberImg1 = self.numbers[2]
-            elif self.hp[0] == 3:
+            elif hp[0] == 3:
                 self.numberImg1 = self.numbers[3]
-            elif self.hp[0] == 4:
+            elif hp[0] == 4:
                 self.numberImg1 = self.numbers[4]
-            elif self.hp[0] == 5:
+            elif hp[0] == 5:
                 self.numberImg1 = self.numbers[5]
-            elif self.hp[0] == 6:
+            elif hp[0] == 6:
                 self.numberImg1 = self.numbers[6]
-            elif self.hp[0] == 7:
+            elif hp[0] == 7:
                 self.numberImg1 = self.numbers[7]
-            elif self.hp[0] == 8:
+            elif hp[0] == 8:
                 self.numberImg1 = self.numbers[8]
-            elif self.hp[0] == 9:
+            elif hp[0] == 9:
                 self.numberImg1 = self.numbers[9]
 
-            if self.hp[1] == 0:
+            if hp[1] == 0:
                 self.numberImg2 = self.numbers[0]
-            elif self.hp[1] == 1:
+            elif hp[1] == 1:
                 self.numberImg2 = self.numbers[1]
-            elif self.hp[1] == 2:
+            elif hp[1] == 2:
                 self.numberImg2 = self.numbers[2]
-            elif self.hp[1] == 3:
+            elif hp[1] == 3:
                 self.numberImg2 = self.numbers[3]
-            elif self.hp[1] == 4:
+            elif hp[1] == 4:
                 self.numberImg2 = self.numbers[4]
-            elif self.hp[1] == 5:
+            elif hp[1] == 5:
                 self.numberImg2 = self.numbers[5]
-            elif self.hp[1] == 6:
+            elif hp[1] == 6:
                 self.numberImg2 = self.numbers[6]
-            elif self.hp[1] == 7:
+            elif hp[1] == 7:
                 self.numberImg2 = self.numbers[7]
-            elif self.hp[1] == 8:
+            elif hp[1] == 8:
                 self.numberImg2 = self.numbers[8]
-            elif self.hp[1] == 9:
+            elif hp[1] == 9:
                 self.numberImg2 = self.numbers[9]
 
             self.numberRect1 = self.numberImg1.get_rect()
             self.numberRect2 = self.numberImg2.get_rect()
 
             self.numberRect2.centery = self.rect.bottom - 25
-            self.numberRect2.right = self.rect.right - 70
+            self.numberRect2.right = self.rect.right - 65
             self.numberRect1.centery = self.rect.bottom - 25
             self.numberRect1.right = self.numberRect2.left
-        elif len(self.hp) == 3:
-            if self.hp[0] == 0:
+        elif len(hp) == 3:
+            if hp[0] == 0:
                 self.numberImg1 = self.numbers[0]
-            elif self.hp[0] == 1:
+            elif hp[0] == 1:
                 self.numberImg1 = self.numbers[1]
-            elif self.hp[0] == 2:
+            elif hp[0] == 2:
                 self.numberImg1 = self.numbers[2]
-            elif self.hp[0] == 3:
+            elif hp[0] == 3:
                 self.numberImg1 = self.numbers[3]
-            elif self.hp[0] == 4:
+            elif hp[0] == 4:
                 self.numberImg1 = self.numbers[4]
-            elif self.hp[0] == 5:
+            elif hp[0] == 5:
                 self.numberImg1 = self.numbers[5]
-            elif self.hp[0] == 6:
+            elif hp[0] == 6:
                 self.numberImg1 = self.numbers[6]
-            elif self.hp[0] == 7:
+            elif hp[0] == 7:
                 self.numberImg1 = self.numbers[7]
-            elif self.hp[0] == 8:
+            elif hp[0] == 8:
                 self.numberImg1 = self.numbers[8]
-            elif self.hp[0] == 9:
+            elif hp[0] == 9:
                 self.numberImg1 = self.numbers[9]
 
-            if self.hp[1] == 0:
+            if hp[1] == 0:
                 self.numberImg2 = self.numbers[0]
-            elif self.hp[1] == 1:
+            elif hp[1] == 1:
                 self.numberImg2 = self.numbers[1]
-            elif self.hp[1] == 2:
+            elif hp[1] == 2:
                 self.numberImg2 = self.numbers[2]
-            elif self.hp[1] == 3:
+            elif hp[1] == 3:
                 self.numberImg2 = self.numbers[3]
-            elif self.hp[1] == 4:
+            elif hp[1] == 4:
                 self.numberImg2 = self.numbers[4]
-            elif self.hp[1] == 5:
+            elif hp[1] == 5:
                 self.numberImg2 = self.numbers[5]
-            elif self.hp[1] == 6:
+            elif hp[1] == 6:
                 self.numberImg2 = self.numbers[6]
-            elif self.hp[1] == 7:
+            elif hp[1] == 7:
                 self.numberImg2 = self.numbers[7]
-            elif self.hp[1] == 8:
+            elif hp[1] == 8:
                 self.numberImg2 = self.numbers[8]
-            elif self.hp[1] == 9:
+            elif hp[1] == 9:
                 self.numberImg2 = self.numbers[9]
 
-            if self.hp[2] == 0:
+            if hp[2] == 0:
                 self.numberImg3 = self.numbers[0]
-            elif self.hp[2] == 1:
+            elif hp[2] == 1:
                 self.numberImg3 = self.numbers[1]
-            elif self.hp[2] == 2:
+            elif hp[2] == 2:
                 self.numberImg3 = self.numbers[2]
-            elif self.hp[2] == 3:
+            elif hp[2] == 3:
                 self.numberImg3 = self.numbers[3]
-            elif self.hp[2] == 4:
+            elif hp[2] == 4:
                 self.numberImg3 = self.numbers[4]
-            elif self.hp[2] == 5:
+            elif hp[2] == 5:
                 self.numberImg3 = self.numbers[5]
-            elif self.hp[2] == 6:
+            elif hp[2] == 6:
                 self.numberImg3 = self.numbers[6]
-            elif self.hp[2] == 7:
+            elif hp[2] == 7:
                 self.numberImg3 = self.numbers[7]
-            elif self.hp[2] == 8:
+            elif hp[2] == 8:
                 self.numberImg3 = self.numbers[8]
-            elif self.hp[2] == 9:
+            elif hp[2] == 9:
                 self.numberImg3 = self.numbers[9]
 
             self.numberRect1 = self.numberImg1.get_rect()
@@ -199,20 +219,31 @@ class MarioUI(pg.sprite.Sprite):
             self.numberRect3 = self.numberImg3.get_rect()
 
             self.numberRect3.centery = self.rect.bottom - 25
-            self.numberRect3.right = self.rect.right - 70
+            self.numberRect3.right = self.rect.right - 65
             self.numberRect2.right = self.numberRect3.left
             self.numberRect2.centery = self.rect.bottom - 25
             self.numberRect1.centery = self.rect.bottom - 25
             self.numberRect1.right = self.numberRect2.left
+        else:
+            self.numberImg = self.numbers[9]
+
+            self.numberRect = self.numberImg.get_rect()
+            self.numberRect.right = self.rect.right - 70
+            self.numberRect.centery = self.rect.bottom - 25
+
 
     def draw(self):
+        if self.hp < 0:
+            hp = [0]
+        else:
+            hp = [int(i) for i in str(round(self.hp))]
         self.game.screen.blit(self.image, self.rect)
-        if len(self.hp) == 1:
+        if len(hp) == 1:
             self.game.screen.blit(self.numberImg, self.numberRect)
-        elif len(self.hp) == 2:
+        elif len(hp) == 2:
             self.game.screen.blit(self.numberImg1, self.numberRect1)
             self.game.screen.blit(self.numberImg2, self.numberRect2)
-        elif len(self.hp) == 3:
+        elif len(hp) == 3:
             self.game.screen.blit(self.numberImg1, self.numberRect1)
             self.game.screen.blit(self.numberImg2, self.numberRect2)
             self.game.screen.blit(self.numberImg3, self.numberRect3)
@@ -239,151 +270,171 @@ class LuigiUI(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.right = width
         self.rect.top = 0
+        self.speed = 0
+        self.hp = self.game.follower.stats["hp"]
 
     def update(self):
+        if self.hp > self.game.follower.stats["hp"] and self.speed == 0:
+            self.speed = ((self.hp - self.game.follower.stats["hp"]) / 30) * -1
+        elif self.hp < self.game.follower.stats["hp"] and self.speed == 0:
+            self.speed = (self.game.follower.stats["hp"] - self.hp) / 30
+
+        if self.speed != 0:
+            if self.hp > self.game.follower.stats["hp"] + self.speed and self.speed < 0:
+                self.hp += self.speed
+            elif self.hp < self.game.follower.stats["hp"] - self.speed and self.speed > 0:
+                self.hp += self.speed
+            else:
+                self.hp = self.game.follower.stats["hp"]
+                self.speed = 0
+
         if self.game.follower.abilities[self.game.follower.ability] == "jump":
             self.image = self.sprites[0]
         elif self.game.follower.abilities[self.game.follower.ability] == "hammer":
             self.image = self.sprites[1]
-        self.hp = [int(i) for i in str(self.game.follower.stats["hp"])]
 
-        if len(self.hp) == 1:
-            if self.hp[0] == 0:
+        if self.hp < 0:
+            hp = [0]
+        else:
+            hp = [int(i) for i in str(round(self.hp))]
+
+        if len(hp) == 1:
+            if hp[0] == 0:
                 self.numberImg = self.numbers[0]
-            elif self.hp[0] == 1:
+            elif hp[0] == 1:
                 self.numberImg = self.numbers[1]
-            elif self.hp[0] == 2:
+            elif hp[0] == 2:
                 self.numberImg = self.numbers[2]
-            elif self.hp[0] == 3:
+            elif hp[0] == 3:
                 self.numberImg = self.numbers[3]
-            elif self.hp[0] == 4:
+            elif hp[0] == 4:
                 self.numberImg = self.numbers[4]
-            elif self.hp[0] == 5:
+            elif hp[0] == 5:
                 self.numberImg = self.numbers[5]
-            elif self.hp[0] == 6:
+            elif hp[0] == 6:
                 self.numberImg = self.numbers[6]
-            elif self.hp[0] == 7:
+            elif hp[0] == 7:
                 self.numberImg = self.numbers[7]
-            elif self.hp[0] == 8:
+            elif hp[0] == 8:
                 self.numberImg = self.numbers[8]
-            elif self.hp[0] == 9:
+            elif hp[0] == 9:
                 self.numberImg = self.numbers[9]
 
             self.numberRect = self.numberImg.get_rect()
-            self.numberRect.right = self.rect.right - 50
+            self.numberRect.right = self.rect.right - 45
             self.numberRect.centery = self.rect.bottom - 25
-        elif len(self.hp) == 2:
-            if self.hp[0] == 0:
+        elif len(hp) == 2:
+            if hp[0] == 0:
                 self.numberImg1 = self.numbers[0]
-            elif self.hp[0] == 1:
+            elif hp[0] == 1:
                 self.numberImg1 = self.numbers[1]
-            elif self.hp[0] == 2:
+            elif hp[0] == 2:
                 self.numberImg1 = self.numbers[2]
-            elif self.hp[0] == 3:
+            elif hp[0] == 3:
                 self.numberImg1 = self.numbers[3]
-            elif self.hp[0] == 4:
+            elif hp[0] == 4:
                 self.numberImg1 = self.numbers[4]
-            elif self.hp[0] == 5:
+            elif hp[0] == 5:
                 self.numberImg1 = self.numbers[5]
-            elif self.hp[0] == 6:
+            elif hp[0] == 6:
                 self.numberImg1 = self.numbers[6]
-            elif self.hp[0] == 7:
+            elif hp[0] == 7:
                 self.numberImg1 = self.numbers[7]
-            elif self.hp[0] == 8:
+            elif hp[0] == 8:
                 self.numberImg1 = self.numbers[8]
-            elif self.hp[0] == 9:
+            elif hp[0] == 9:
                 self.numberImg1 = self.numbers[9]
 
-            if self.hp[1] == 0:
+            if hp[1] == 0:
                 self.numberImg2 = self.numbers[0]
-            elif self.hp[1] == 1:
+            elif hp[1] == 1:
                 self.numberImg2 = self.numbers[1]
-            elif self.hp[1] == 2:
+            elif hp[1] == 2:
                 self.numberImg2 = self.numbers[2]
-            elif self.hp[1] == 3:
+            elif hp[1] == 3:
                 self.numberImg2 = self.numbers[3]
-            elif self.hp[1] == 4:
+            elif hp[1] == 4:
                 self.numberImg2 = self.numbers[4]
-            elif self.hp[1] == 5:
+            elif hp[1] == 5:
                 self.numberImg2 = self.numbers[5]
-            elif self.hp[1] == 6:
+            elif hp[1] == 6:
                 self.numberImg2 = self.numbers[6]
-            elif self.hp[1] == 7:
+            elif hp[1] == 7:
                 self.numberImg2 = self.numbers[7]
-            elif self.hp[1] == 8:
+            elif hp[1] == 8:
                 self.numberImg2 = self.numbers[8]
-            elif self.hp[1] == 9:
+            elif hp[1] == 9:
                 self.numberImg2 = self.numbers[9]
 
             self.numberRect1 = self.numberImg1.get_rect()
             self.numberRect2 = self.numberImg2.get_rect()
 
             self.numberRect2.centery = self.rect.bottom - 25
-            self.numberRect2.right = self.rect.right - 50
+            self.numberRect2.right = self.rect.right - 45
             self.numberRect1.centery = self.rect.bottom - 25
             self.numberRect1.right = self.numberRect2.left
-        elif len(self.hp) == 3:
-            if self.hp[0] == 0:
+        elif len(hp) == 3:
+            if hp[0] == 0:
                 self.numberImg1 = self.numbers[0]
-            elif self.hp[0] == 1:
+            elif hp[0] == 1:
                 self.numberImg1 = self.numbers[1]
-            elif self.hp[0] == 2:
+            elif hp[0] == 2:
                 self.numberImg1 = self.numbers[2]
-            elif self.hp[0] == 3:
+            elif hp[0] == 3:
                 self.numberImg1 = self.numbers[3]
-            elif self.hp[0] == 4:
+            elif hp[0] == 4:
                 self.numberImg1 = self.numbers[4]
-            elif self.hp[0] == 5:
+            elif hp[0] == 5:
                 self.numberImg1 = self.numbers[5]
-            elif self.hp[0] == 6:
+            elif hp[0] == 6:
                 self.numberImg1 = self.numbers[6]
-            elif self.hp[0] == 7:
+            elif hp[0] == 7:
                 self.numberImg1 = self.numbers[7]
-            elif self.hp[0] == 8:
+            elif hp[0] == 8:
                 self.numberImg1 = self.numbers[8]
-            elif self.hp[0] == 9:
+            elif hp[0] == 9:
                 self.numberImg1 = self.numbers[9]
 
-            if self.hp[1] == 0:
+            if hp[1] == 0:
                 self.numberImg2 = self.numbers[0]
-            elif self.hp[1] == 1:
+            elif hp[1] == 1:
                 self.numberImg2 = self.numbers[1]
-            elif self.hp[1] == 2:
+            elif hp[1] == 2:
                 self.numberImg2 = self.numbers[2]
-            elif self.hp[1] == 3:
+            elif hp[1] == 3:
                 self.numberImg2 = self.numbers[3]
-            elif self.hp[1] == 4:
+            elif hp[1] == 4:
                 self.numberImg2 = self.numbers[4]
-            elif self.hp[1] == 5:
+            elif hp[1] == 5:
                 self.numberImg2 = self.numbers[5]
-            elif self.hp[1] == 6:
+            elif hp[1] == 6:
                 self.numberImg2 = self.numbers[6]
-            elif self.hp[1] == 7:
+            elif hp[1] == 7:
                 self.numberImg2 = self.numbers[7]
-            elif self.hp[1] == 8:
+            elif hp[1] == 8:
                 self.numberImg2 = self.numbers[8]
-            elif self.hp[1] == 9:
+            elif hp[1] == 9:
                 self.numberImg2 = self.numbers[9]
 
-            if self.hp[2] == 0:
+            if hp[2] == 0:
                 self.numberImg3 = self.numbers[0]
-            elif self.hp[2] == 1:
+            elif hp[2] == 1:
                 self.numberImg3 = self.numbers[1]
-            elif self.hp[2] == 2:
+            elif hp[2] == 2:
                 self.numberImg3 = self.numbers[2]
-            elif self.hp[2] == 3:
+            elif hp[2] == 3:
                 self.numberImg3 = self.numbers[3]
-            elif self.hp[2] == 4:
+            elif hp[2] == 4:
                 self.numberImg3 = self.numbers[4]
-            elif self.hp[2] == 5:
+            elif hp[2] == 5:
                 self.numberImg3 = self.numbers[5]
-            elif self.hp[2] == 6:
+            elif hp[2] == 6:
                 self.numberImg3 = self.numbers[6]
-            elif self.hp[2] == 7:
+            elif hp[2] == 7:
                 self.numberImg3 = self.numbers[7]
-            elif self.hp[2] == 8:
+            elif hp[2] == 8:
                 self.numberImg3 = self.numbers[8]
-            elif self.hp[2] == 9:
+            elif hp[2] == 9:
                 self.numberImg3 = self.numbers[9]
 
             self.numberRect1 = self.numberImg1.get_rect()
@@ -391,20 +442,24 @@ class LuigiUI(pg.sprite.Sprite):
             self.numberRect3 = self.numberImg3.get_rect()
 
             self.numberRect3.centery = self.rect.bottom - 25
-            self.numberRect3.right = self.rect.right - 50
+            self.numberRect3.right = self.rect.right - 45
             self.numberRect2.right = self.numberRect3.left
             self.numberRect2.centery = self.rect.bottom - 25
             self.numberRect1.centery = self.rect.bottom - 25
             self.numberRect1.right = self.numberRect2.left
 
     def draw(self):
+        if self.hp < 0:
+            hp = [0]
+        else:
+            hp = [int(i) for i in str(round(self.hp))]
         self.game.screen.blit(self.image, self.rect)
-        if len(self.hp) == 1:
+        if len(hp) == 1:
             self.game.screen.blit(self.numberImg, self.numberRect)
-        elif len(self.hp) == 2:
+        elif len(hp) == 2:
             self.game.screen.blit(self.numberImg1, self.numberRect1)
             self.game.screen.blit(self.numberImg2, self.numberRect2)
-        elif len(self.hp) == 3:
+        elif len(hp) == 3:
             self.game.screen.blit(self.numberImg1, self.numberRect1)
             self.game.screen.blit(self.numberImg2, self.numberRect2)
             self.game.screen.blit(self.numberImg3, self.numberRect3)
@@ -628,21 +683,26 @@ class ExpNumbers(pg.sprite.Sprite):
         self.exp = self.game.battleXp
         self.room = self.game.room
         self.rect.center = (700, 150)
+        self.speed = self.exp / 30
 
     def update(self):
         if not self.game.player.dead:
-            if self.game.marioBattleOver.counter >= len(self.game.marioBattleOver.points) - 1 and self.exp > 0:
-                self.exp -= 1
+            if self.game.marioBattleOver.counter >= len(self.game.marioBattleOver.points) - 1 and self.exp > self.speed:
+                self.exp -= self.speed
+            elif self.game.marioBattleOver.counter >= len(self.game.marioBattleOver.points) - 1:
+                self.exp = 0
         elif not self.game.follower.dead:
-            if self.game.luigiBattleOver.counter == len(self.game.luigiBattleOver.points) - 1 and self.exp > 0:
-                self.exp -= 1
+            if self.game.luigiBattleOver.counter == len(self.game.luigiBattleOver.points) - 1 and self.exp > self.speed:
+                self.exp -= self.speed
+            elif self.game.marioBattleOver.counter >= len(self.game.luigiBattleOver.points) - 1:
+                self.exp = 0
 
         if self.room != self.game.room:
             self.game.battleEndUI.remove(self)
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(self.exp), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        ptext.draw(str(round(self.exp)), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class MarioExpNumbers(pg.sprite.Sprite):
@@ -662,7 +722,7 @@ class MarioExpNumbers(pg.sprite.Sprite):
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(self.game.player.stats["exp"]), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        ptext.draw(str(round(self.game.player.stats["exp"])), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class LuigiExpNumbers(pg.sprite.Sprite):
@@ -682,7 +742,7 @@ class LuigiExpNumbers(pg.sprite.Sprite):
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(self.game.follower.stats["exp"]), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        ptext.draw(str(round(self.game.follower.stats["exp"])), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class Fadeout(pg.sprite.Sprite):

@@ -54,4 +54,4 @@ talkAdvanceSprite = pg.image.load("sprites/textboxadvance.png").convert_alpha()
 
 textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png")}
 
-fadeout = pg.image.load("sprites/fadeout.png")
+fadeout = pg.image.load("sprites/fadeout.png").convert_alpha()
