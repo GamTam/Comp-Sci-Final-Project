@@ -102,10 +102,12 @@ class Goomba(pg.sprite.Sprite):
         self.rect = self.shadow.get_rect()
         self.rect.center = (x, y)
         self.alpha = 255
+        self.speed = 0
         self.mask = pg.mask.from_surface(self.image)
 
         # Stats
         self.stats = {"maxHP": 4, "hp": 4, "pow": 2, "def": 0, "exp": 2}
+        self.rectHP = self.stats["hp"]
 
     def loadImages(self):
         sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
@@ -198,6 +200,21 @@ class Goomba(pg.sprite.Sprite):
 
     def update(self):
         self.animate()
+
+        if self.rectHP > self.stats["hp"] and self.speed == 0:
+            self.speed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.speed == 0:
+            self.speed = (self.stats["hp"] - self.rectHP) / 30
+
+        if self.speed != 0:
+            if self.rectHP > self.stats["hp"] and self.speed < 0:
+                self.rectHP += self.speed
+            elif self.rectHP < self.stats["hp"] and self.speed > 0:
+                self.rectHP += self.speed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.speed = 0
+
         if self.stats["hp"] <= 0:
             self.going = False
             self.alpha -= 10

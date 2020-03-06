@@ -2968,7 +2968,7 @@ class MarioBattleComplete(pg.sprite.Sprite):
         self.alpha = 255
         self.speed = 120
         self.xp = self.game.player.stats["exp"]
-        self.numSpeed = self.game.battleXp / 30
+        self.numSpeed = self.game.battleXp / 45
         self.counter = 0
         self.currentFrame = 0
         self.lastUpdate = 0
@@ -3057,7 +3057,7 @@ class LuigiBattleComplete(pg.sprite.Sprite):
         self.speed = 120
         self.counter = 0
         self.xp = self.game.follower.stats["exp"]
-        self.numSpeed = self.game.battleXp / 30
+        self.numSpeed = self.game.battleXp / 45
         self.currentFrame = 0
         self.lastUpdate = 0
         self.dead = False

@@ -645,12 +645,15 @@ class Game:
 
         for enemy in self.enemies:
             if enemy.stats["hp"] != enemy.stats["maxHP"]:
-                if enemy.stats["hp"] >= 0:
+                pg.draw.rect(self.screen, darkGray,
+                             self.camera.offset(
+                                 pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)))
+                if enemy.rectHP >= 0:
                     pg.draw.rect(self.screen, red, self.camera.offset(
-                        pg.Rect(enemy.rect.left, enemy.imgRect.top - 12,
-                                (enemy.rect.width * (enemy.stats["hp"] / enemy.stats["maxHP"])), 10)))
+                        pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
                 pg.draw.rect(self.screen, black,
-                             self.camera.offset(pg.Rect(enemy.rect.left, enemy.imgRect.top - 12, enemy.rect.width, 10)),
+                             self.camera.offset(pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
                              1)
 
         [ui.draw() for ui in self.ui]

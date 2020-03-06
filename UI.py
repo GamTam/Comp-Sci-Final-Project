@@ -683,7 +683,7 @@ class ExpNumbers(pg.sprite.Sprite):
         self.exp = self.game.battleXp
         self.room = self.game.room
         self.rect.center = (700, 150)
-        self.speed = self.exp / 30
+        self.speed = self.exp / 45
 
     def update(self):
         if not self.game.player.dead:
