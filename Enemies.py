@@ -1,6 +1,6 @@
 from Overworld import *
 from UI import *
-from settings import *
+from Settings import *
 
 
 class spritesheet:
@@ -79,6 +79,16 @@ class GoombaO(pg.sprite.Sprite):
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
 
+            if self.game.follower.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+
 
 class Goomba(pg.sprite.Sprite):
     def __init__(self, game, x, y, vx, vy, facing="down"):
@@ -106,7 +116,7 @@ class Goomba(pg.sprite.Sprite):
         self.mask = pg.mask.from_surface(self.image)
 
         # Stats
-        self.stats = {"maxHP": 4, "hp": 4, "pow": 2, "def": 0, "exp": 2}
+        self.stats = {"maxHP": 4, "hp": 4, "pow": 2, "def": 0, "exp": 2, "coins": 3}
         self.rectHP = self.stats["hp"]
 
     def loadImages(self):
@@ -220,6 +230,7 @@ class Goomba(pg.sprite.Sprite):
             self.alpha -= 10
 
         if self.alpha <= 0:
+            self.game.battleCoins += self.stats["coins"]
             self.game.battleXp += self.stats["exp"]
             self.game.sprites.remove(self)
             self.game.enemies.remove(self)
@@ -407,9 +418,14 @@ class GoombaKing(pg.sprite.Sprite):
     def update(self):
         if self.textbox is None:
             keys = pg.key.get_pressed()
-            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
-                if not self.game.player.jumping:
-                    self.textbox = TextBox(self.game, self, self.text)
+            if self.game.leader == "mario":
+                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
+                    if not self.game.player.jumping:
+                        self.textbox = TextBox(self.game, self, self.text)
+            elif self.game.leader == "luigi":
+                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
+                    if not self.game.follower.jumping:
+                        self.textbox = TextBox(self.game, self, self.text)
         elif self.textbox != "complete":
             pg.event.clear()
         else:
@@ -447,10 +463,16 @@ class GoombaSmolText(pg.sprite.Sprite):
         if self.counter == 0:
             if self.textbox is None:
                 keys = pg.key.get_pressed()
-                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
-                    if not self.game.player.jumping:
-                        self.textbox = TextBox(self.game, self, self.text)
-                        self.game.goombaHasTexted = True
+                if self.game.leader == "mario":
+                    if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
+                        if not self.game.player.jumping:
+                            self.textbox = TextBox(self.game, self, self.text)
+                            self.game.goombaHasTexted = True
+                elif self.game.leader == "luigi":
+                    if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
+                        if not self.game.follower.jumping:
+                            self.textbox = TextBox(self.game, self, self.text)
+                            self.game.goombaHasTexted = True
             elif self.textbox != "complete":
                 pg.event.clear()
             else:
@@ -458,12 +480,20 @@ class GoombaSmolText(pg.sprite.Sprite):
                 self.counter += 1
         elif self.counter == 1:
             self.canTalk = False
-            if self.textbox is None:
-                if pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
-                    self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.rect.top - 70))
-            elif self.textbox is not None:
-                if not pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
-                    self.textbox.closing = True
+            if self.game.leader == "mario":
+                if self.textbox is None:
+                    if pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
+                        self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.rect.top - 70))
+                elif self.textbox is not None:
+                    if not pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
+                        self.textbox.closing = True
+            elif self.game.leader == "luigi":
+                if self.textbox is None:
+                    if pg.sprite.collide_rect_ratio(1.5)(self, self.game.follower):
+                        self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.rect.top - 70))
+                elif self.textbox is not None:
+                    if not pg.sprite.collide_rect_ratio(1.5)(self, self.game.follower):
+                        self.textbox.closing = True
 
 
 class CountBleck(pg.sprite.Sprite):
@@ -554,12 +584,20 @@ class CountBleck(pg.sprite.Sprite):
         self.animate()
         if self.textbox is None:
             keys = pg.key.get_pressed()
-            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
-                if not self.game.player.jumping:
-                    pg.mixer.music.fadeout(200)
-                    self.game.playsong = False
-                    self.game.firstLoop = True
-                    self.textbox = TextBox(self.game, self, self.text)
+            if self.game.leader == "mario":
+                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
+                    if not self.game.player.jumping:
+                        pg.mixer.music.fadeout(200)
+                        self.game.playsong = False
+                        self.game.firstLoop = True
+                        self.textbox = TextBox(self.game, self, self.text)
+            elif self.game.leader == "luigi":
+                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
+                    if not self.game.follower.jumping:
+                        pg.mixer.music.fadeout(200)
+                        self.game.playsong = False
+                        self.game.firstLoop = True
+                        self.textbox = TextBox(self.game, self, self.text)
         elif self.textbox != "complete":
             if not pg.mixer.music.get_busy() or self.textbox.rect.center == self.textbox.points[-1]:
                 self.game.playSong(10.314, 32.016, "the evil count bleck")

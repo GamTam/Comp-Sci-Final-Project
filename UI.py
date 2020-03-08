@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 from Libraries import ptext
-from settings import *
+from Settings import *
 
 
 class spritesheet:
@@ -681,9 +681,13 @@ class ExpNumbers(pg.sprite.Sprite):
         self.image = pg.image.load("sprites/ui/exp collection_exp.png")
         self.rect = self.image.get_rect()
         self.exp = self.game.battleXp
+        self.prevXp = self.game.battleXp
+        self.totalXp = self.game.battleXp
         self.room = self.game.room
-        self.rect.center = (700, 150)
+        self.counter = 0
+        self.rect.center = (500, 150)
         self.speed = self.exp / 45
+        print(self.speed)
 
     def update(self):
         if not self.game.player.dead:
@@ -692,10 +696,22 @@ class ExpNumbers(pg.sprite.Sprite):
             elif self.game.marioBattleOver.counter >= len(self.game.marioBattleOver.points) - 1:
                 self.exp = 0
         elif not self.game.follower.dead:
-            if self.game.luigiBattleOver.counter == len(self.game.luigiBattleOver.points) - 1 and self.exp > self.speed:
+            if self.game.luigiBattleOver.counter >= len(self.game.luigiBattleOver.points) - 1 and self.exp > self.speed:
                 self.exp -= self.speed
-            elif self.game.marioBattleOver.counter >= len(self.game.luigiBattleOver.points) - 1:
+            elif self.game.luigiBattleOver.counter >= len(self.game.luigiBattleOver.points) - 1:
                 self.exp = 0
+
+        if round(self.exp) != self.prevXp:
+            self.prevXp = round(self.exp)
+            self.game.expIncreaseSound.stop()
+            self.game.expFinishedSound.stop()
+            if self.totalXp <= 9:
+                self.game.expFinishedSound.play()
+            else:
+                if self.prevXp == 0:
+                    self.game.expFinishedSound.play()
+                else:
+                    self.game.expIncreaseSound.play()
 
         if self.room != self.game.room:
             self.game.battleEndUI.remove(self)
@@ -710,11 +726,15 @@ class MarioExpNumbers(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.game.battleEndUI.append(self)
+        if self.game.player.dead:
+            self.dead = True
+        else:
+            self.dead = False
         self.offset = False
         self.image = pg.image.load("sprites/ui/exp collection_mario.png")
         self.rect = self.image.get_rect()
         self.room = self.game.room
-        self.rect.center = (700, 300)
+        self.rect.center = (500, 300)
 
     def update(self):
         if self.room != self.game.room:
@@ -731,10 +751,14 @@ class LuigiExpNumbers(pg.sprite.Sprite):
         self.game = game
         self.game.battleEndUI.append(self)
         self.offset = False
+        if self.game.follower.dead:
+            self.dead = True
+        else:
+            self.dead = False
         self.image = pg.image.load("sprites/ui/exp collection_luigi.png")
         self.rect = self.image.get_rect()
         self.room = self.game.room
-        self.rect.center = (700, 500)
+        self.rect.center = (500, 500)
 
     def update(self):
         if self.room != self.game.room:
@@ -743,6 +767,92 @@ class LuigiExpNumbers(pg.sprite.Sprite):
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
         ptext.draw(str(round(self.game.follower.stats["exp"])), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+
+
+class CoinCollectionSubtract(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.game.battleEndUI.append(self)
+        self.offset = False
+        self.image = pg.image.load("sprites/ui/coin collection_earned.png")
+        self.rect = self.image.get_rect()
+        self.exp = self.game.battleCoins
+        self.prevXp = self.game.battleCoins
+        self.totalXp = self.game.battleCoins
+        self.room = self.game.room
+        self.counter = 0
+        self.rect.center = (1000, 150)
+        self.speed = self.exp / 45
+        if not self.game.player.dead:
+            self.parent = self.game.marioBattleOver
+        else:
+            self.parent = self.game.luigiBattleOver
+        self.canGo = False
+
+    def update(self):
+        if self.parent.counter >= len(self.parent.points) - 1:
+            self.canGo = True
+        if self.game.expNumbers.exp == 0 and self.exp > self.speed and self.canGo:
+            if self.counter >= 45:
+                self.exp -= self.speed
+            else:
+                self.counter += 1
+        elif self.game.expNumbers.exp == 0:
+            self.exp = 0
+
+        if round(self.exp) != self.prevXp:
+            self.prevXp = round(self.exp)
+            self.game.expIncreaseSound.stop()
+            self.game.expFinishedSound.stop()
+            if self.totalXp <= 9:
+                self.game.expFinishedSound.play()
+            else:
+                if self.prevXp == 0:
+                    self.game.expFinishedSound.play()
+                else:
+                    self.game.expIncreaseSound.play()
+
+        if self.room != self.game.room:
+            self.game.battleEndUI.remove(self)
+
+    def draw(self):
+        self.game.screen.blit(self.image, self.rect)
+        ptext.draw(str(round(self.exp)), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+
+
+class CoinCollectionAdd(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.game.battleEndUI.append(self)
+        self.offset = False
+        self.image = pg.image.load("sprites/ui/coin collection_total.png")
+        self.rect = self.image.get_rect()
+        self.exp = 0
+        self.counter = 0
+        self.totalCoins = self.game.battleCoins
+        self.coins = self.game.coins
+        self.room = self.game.room
+        self.rect.center = (1000, 400)
+        self.speed = self.totalCoins / 45
+
+    def update(self):
+        if self.game.expNumbers.exp == 0 and self.exp < self.totalCoins:
+            if self.counter >= 45:
+                self.exp += self.speed
+            else:
+                self.counter += 1
+        elif self.game.expNumbers.exp == 0:
+            self.exp = self.totalCoins
+
+
+        if self.room != self.game.room:
+            self.game.battleEndUI.remove(self)
+
+    def draw(self):
+        self.game.screen.blit(self.image, self.rect)
+        ptext.draw(str(round(self.exp) + self.coins), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class Fadeout(pg.sprite.Sprite):

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:90543557a3471ed4aa830bde646c92da:b2850b124614b4998c17a88b95cda379:74f085f9dd224a639f9a757e06741014$ -->
+<!-- $TexturePacker:SmartUpdate:f3fd2dec8010a0957e145737f3cf419f:0266d42ff72e2170a33fee93cc52f481:74f085f9dd224a639f9a757e06741014$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -19,12 +19,52 @@ vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
 verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
 triangles  => sprite triangulation, 3 vertex indices per triangle
 -->
-<TextureAtlas imagePath="blocks.png" width="46" height="437">
-    <sprite n="block.png" x="0" y="0" w="44" h="70"/>
-    <sprite n="empty block.png" x="0" y="70" w="44" h="70"/>
-    <sprite n="luigi block.png" x="0" y="140" w="44" h="70"/>
-    <sprite n="mario block.png" x="0" y="210" w="44" h="70"/>
-    <sprite n="save block.png" x="0" y="280" w="44" h="60"/>
-    <sprite n="save block_hit.png" x="0" y="340" w="46" h="74"/>
-    <sprite n="shadow.png" x="0" y="414" w="46" h="23"/>
+<TextureAtlas imagePath="blocks.png" width="248" height="486">
+    <sprite n="5coin_1.png" x="102" y="42" w="46" h="46"/>
+    <sprite n="5coin_2.png" x="0" y="88" w="38" h="46"/>
+    <sprite n="5coin_3.png" x="30" y="42" w="34" h="46"/>
+    <sprite n="5coin_4.png" x="192" y="42" w="26" h="46"/>
+    <sprite n="5coin_5.png" x="182" y="42" w="10" h="46"/>
+    <sprite n="5coin_6.png" x="218" y="42" w="26" h="46"/>
+    <sprite n="5coin_7.png" x="148" y="42" w="34" h="46"/>
+    <sprite n="5coin_8.png" x="64" y="42" w="38" h="46"/>
+    <sprite n="10coin_1.png" x="38" y="88" w="54" h="54"/>
+    <sprite n="10coin_2.png" x="92" y="88" w="48" h="54"/>
+    <sprite n="10coin_3.png" x="188" y="88" w="40" h="54"/>
+    <sprite n="10coin_4.png" x="0" y="142" w="28" h="54"/>
+    <sprite n="10coin_5.png" x="68" y="142" w="12" h="54"/>
+    <sprite n="10coin_6.png" x="80" y="142" w="28" h="54"/>
+    <sprite n="10coin_7.png" x="28" y="142" w="40" h="54"/>
+    <sprite n="10coin_8.png" x="140" y="88" w="48" h="54"/>
+    <sprite n="50coin_1.png" x="0" y="206" w="64" h="64"/>
+    <sprite n="50coin_2.png" x="142" y="206" w="54" h="64"/>
+    <sprite n="50coin_3.png" x="64" y="206" w="46" h="64"/>
+    <sprite n="50coin_4.png" x="110" y="206" w="32" h="64"/>
+    <sprite n="50coin_5.png" x="0" y="270" w="14" h="64"/>
+    <sprite n="50coin_6.png" x="14" y="270" w="32" h="64"/>
+    <sprite n="50coin_7.png" x="196" y="206" w="46" h="64"/>
+    <sprite n="50coin_8.png" x="152" y="142" w="54" h="64"/>
+    <sprite n="100coin_1.png" x="76" y="412" w="72" h="72"/>
+    <sprite n="100coin_2.png" x="0" y="340" w="60" h="72"/>
+    <sprite n="100coin_3.png" x="60" y="340" w="54" h="72"/>
+    <sprite n="100coin_4.png" x="154" y="340" w="40" h="72"/>
+    <sprite n="100coin_5.png" x="60" y="412" w="16" h="72"/>
+    <sprite n="100coin_6.png" x="114" y="340" w="40" h="72"/>
+    <sprite n="100coin_7.png" x="194" y="340" w="54" h="72"/>
+    <sprite n="100coin_8.png" x="0" y="412" w="60" h="72"/>
+    <sprite n="block.png" x="178" y="270" w="44" h="70"/>
+    <sprite n="coin_1.png" x="98" y="0" w="42" h="42"/>
+    <sprite n="coin_2.png" x="150" y="0" w="36" h="42"/>
+    <sprite n="coin_3.png" x="68" y="0" w="30" h="42"/>
+    <sprite n="coin_4.png" x="46" y="0" w="22" h="42"/>
+    <sprite n="coin_5.png" x="140" y="0" w="10" h="42"/>
+    <sprite n="coin_6.png" x="222" y="0" w="22" h="42"/>
+    <sprite n="coin_7.png" x="0" y="42" w="30" h="42"/>
+    <sprite n="coin_8.png" x="186" y="0" w="36" h="42"/>
+    <sprite n="empty block.png" x="46" y="270" w="44" h="70"/>
+    <sprite n="luigi block.png" x="90" y="270" w="44" h="70"/>
+    <sprite n="mario block.png" x="134" y="270" w="44" h="70"/>
+    <sprite n="save block.png" x="108" y="142" w="44" h="60"/>
+    <sprite n="save block_hit.png" x="148" y="412" w="46" h="74"/>
+    <sprite n="shadow.png" x="0" y="0" w="46" h="23"/>
 </TextureAtlas>
