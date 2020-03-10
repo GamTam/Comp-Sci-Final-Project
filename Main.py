@@ -20,8 +20,8 @@ class Camera:
 
     def update(self, target):
         self.screen = self.game.screen
-        x = -target.x + int(width / 2)
-        y = -target.y + int(height / 2)
+        x = -target.x + int(self.screen.get_width() / 2)
+        y = -target.y + int(self.screen.get_height() / 2)
 
         # Limit scrolling to map size
         x = min(0, x)  # Left side
@@ -68,6 +68,7 @@ class loadMap:
 class Game:
     def __init__(self):
         self.screen = pg.display.set_mode((width, height))
+        self.screen.set_clip(0, 0, width, height)
         self.clock = pg.time.Clock()
         self.effects = pg.sprite.Group()
         self.ui = pg.sprite.Group()
@@ -91,6 +92,7 @@ class Game:
         fad.alpha = 255
         self.running = True
         self.pause = False
+        self.fullscreen = False
         self.leader = "mario"
 
     def playSong(self, introLength, loopLength, song, loop=True, cont=False, fadein=False, fadeinSpeed=0.05):
@@ -189,6 +191,7 @@ class Game:
         MarioBlock(self, (300, self.map.height - 450))
         LuigiBlock(self, (600, self.map.height - 450))
         Block(self, (900, self.map.height - 450))
+        LuigiBlock(self, (1100, self.map.height - 450), contents=["Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)"])
         GoombaSmolText(self, (self.map.width / 2 - 2, self.map.height - 420), self.goombaHasTexted)
         GoombaO(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
         GoombaO(self, self.map.width / 2 - 500, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
@@ -525,7 +528,7 @@ class Game:
                 self.updateBattleOver()
             self.screen.fill(black)
             self.drawBattleOver()
-            if fade.alpha >= 255:
+            if fade.alpha > 255:
                 break
 
         if not self.player.dead:
@@ -552,8 +555,12 @@ class Game:
                 pg.quit()
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_F4:
-                    pg.display.toggle_fullscreen()
-                if event.key == pg.K_RETURN:
+                    self.fullscreen = not self.fullscreen
+                    if not self.fullscreen:
+                        self.screen = pg.display.set_mode((width, height))
+                    else:
+                        self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
+                if event.key == pg.K_RETURN and not self.player.dead and not self.follower.dead:
                     if self.leader == "mario":
                         self.leader = "luigi"
                         self.follower.moveQueue = self.player.moveQueue
@@ -585,7 +592,14 @@ class Game:
                         self.follower.rect = self.follower.shadow.get_rect()
                         self.follower.rect.center = center
                 if event.key == pg.K_t:
-                    self.saveGame()
+                    clip = VideoFileClip("movies/chunky.mp4")
+                    self.screen.fill(black)
+                    if self.fullscreen:
+                        clip.preview(fps=29.96, fullscreen=True)
+                    else:
+                        clip.preview(fps=29.96)
+                    clip.close()
+                    pg.mixer.pre_init(44100, -16, 2, 2048)
 
     def updateBattleOver(self):
         [ui.update() for ui in self.battleEndUI]
@@ -637,6 +651,10 @@ class Game:
         target.blit(temp, location)
 
     def drawBattleOver(self):
+        s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+        sRect = s.get_rect()
+        s.fill(black)
+        s.set_alpha(125)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         for sprite in self.sprites:
             if sprite.dead:
@@ -648,7 +666,7 @@ class Game:
                     ui.draw()
             except:
                 pass
-        self.blit_alpha(self.screen, fadeout, self.dimBackground, 125)
+        self.screen.blit(s, sRect)
         for ui in self.battleEndUI:
             try:
                 if not ui.dead:
@@ -661,7 +679,7 @@ class Game:
             if not sprite.dead:
                 self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.rect), sprite.alpha)
 
-        [self.blit_alpha(self.screen, fad.image, fad.rect, fad.alpha) for fad in self.fadeout]
+        [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
         pg.display.flip()
 
@@ -708,7 +726,7 @@ class Game:
             else:
                 self.blit_alpha(self.screen, fx.image, fx.rect, fx.alpha)
 
-        [self.blit_alpha(self.screen, fad.image, fad.rect, fad.alpha) for fad in self.fadeout]
+        [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
         pg.display.flip()
 
@@ -738,7 +756,7 @@ class Game:
             else:
                 self.blit_alpha(self.screen, fx.image, fx.rect, fx.alpha)
 
-        [self.blit_alpha(self.screen, fad.image, fad.rect, fad.alpha) for fad in self.fadeout]
+        [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
         pg.display.flip()
 

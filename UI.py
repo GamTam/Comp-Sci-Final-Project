@@ -859,15 +859,17 @@ class Fadeout(pg.sprite.Sprite):
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self, game.fadeout)
         self.game = game
-        self.image = fadeout
+        self.image = pg.Surface((self.game.screen.get_width(), self.game.screen.get_height()))
         self.rect = self.image.get_rect()
+        self.image.fill(black)
         self.alpha = 1
         self.room = self.game.room
 
     def update(self):
-        if self.room == self.game.room and self.alpha < 255:
+        self.image.set_alpha(self.alpha)
+        if self.room == self.game.room and self.alpha <= 255:
             self.alpha += 20
-        else:
+        elif self.room != self.game.room:
             self.alpha -= 20
 
         if self.alpha < 0:
