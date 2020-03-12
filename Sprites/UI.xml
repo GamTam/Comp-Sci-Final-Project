@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:10e455d824d3ba71fa408ca410446f5b:8f06b7ebda00e18d72328c31a48c89f6:0dbeed7acf6c3264861a2e70e992bcae$ -->
+<!-- $TexturePacker:SmartUpdate:809f73845151e924593d51e09a6809c5:32070faade268fa0ad4a381f1d065251:0dbeed7acf6c3264861a2e70e992bcae$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -19,34 +19,55 @@ vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
 verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
 triangles  => sprite triangulation, 3 vertex indices per triangle
 -->
-<TextureAtlas imagePath="ui.png" width="952" height="365">
-    <sprite n="0.png" x="0" y="0" w="36" h="42" pX="0.5" pY="0.5"/>
-    <sprite n="0_hp.png" x="36" y="0" w="27" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="1.png" x="63" y="0" w="30" h="42" pX="0.5" pY="0.5"/>
-    <sprite n="1_hp.png" x="93" y="0" w="18" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="2.png" x="111" y="0" w="36" h="42" pX="0.5" pY="0.5"/>
-    <sprite n="2_hp.png" x="147" y="0" w="29" h="39" pX="0.5" pY="0.5"/>
-    <sprite n="3.png" x="176" y="0" w="38" h="42" pX="0.5" pY="0.5"/>
-    <sprite n="3_hp.png" x="214" y="0" w="28" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="4.png" x="242" y="0" w="38" h="42" pX="0.5" pY="0.5"/>
-    <sprite n="4_hp.png" x="280" y="0" w="28" h="39" pX="0.5" pY="0.5"/>
-    <sprite n="5.png" x="308" y="0" w="36" h="42" pX="0.5" pY="0.5"/>
-    <sprite n="5_hp.png" x="344" y="0" w="28" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="6.png" x="372" y="0" w="38" h="44" pX="0.5" pY="0.5"/>
-    <sprite n="6_hp.png" x="410" y="0" w="28" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="7.png" x="438" y="0" w="36" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="7_hp.png" x="474" y="0" w="29" h="39" pX="0.5" pY="0.5"/>
-    <sprite n="8.png" x="503" y="0" w="38" h="44" pX="0.5" pY="0.5"/>
-    <sprite n="8_hp.png" x="541" y="0" w="29" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="9.png" x="570" y="0" w="38" h="42" pX="0.5" pY="0.5"/>
-    <sprite n="9_hp.png" x="608" y="0" w="28" h="40" pX="0.5" pY="0.5"/>
-    <sprite n="Excellent.png" x="0" y="44" w="507" h="121" pX="0.5" pY="0.5"/>
-    <sprite n="Game Over.png" x="0" y="165" w="705" h="98" pX="0.5" pY="0.5"/>
-    <sprite n="Good.png" x="705" y="165" w="247" h="90" pX="0.5" pY="0.5"/>
-    <sprite n="Great.png" x="0" y="263" w="314" h="101" pX="0.5" pY="0.5"/>
-    <sprite n="hit.png" x="314" y="263" w="80" h="64" pX="0.5" pY="0.5"/>
-    <sprite n="hit_luigi.png" x="394" y="263" w="80" h="64" pX="0.5" pY="0.5"/>
-    <sprite n="hit_mario.png" x="474" y="263" w="80" h="64" pX="0.5" pY="0.5"/>
-    <sprite n="OK.png" x="554" y="263" w="130" h="83" pX="0.5" pY="0.5"/>
-    <sprite n="Too Bad.png" x="684" y="263" w="254" h="102" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="ui.png" width="944" height="422">
+    <sprite n="0.png" x="410" y="0" w="36" h="42"/>
+    <sprite n="0_hp.png" x="18" y="0" w="27" h="40"/>
+    <sprite n="1.png" x="272" y="0" w="30" h="42"/>
+    <sprite n="1_hp.png" x="0" y="0" w="18" h="40"/>
+    <sprite n="2.png" x="374" y="0" w="36" h="42"/>
+    <sprite n="2_hp.png" x="185" y="0" w="29" h="39"/>
+    <sprite n="3.png" x="446" y="0" w="38" h="42"/>
+    <sprite n="3_hp.png" x="101" y="0" w="28" h="40"/>
+    <sprite n="4.png" x="484" y="0" w="38" h="42"/>
+    <sprite n="4_hp.png" x="45" y="0" w="28" h="39"/>
+    <sprite n="5.png" x="338" y="0" w="36" h="42"/>
+    <sprite n="5_hp.png" x="129" y="0" w="28" h="40"/>
+    <sprite n="6.png" x="560" y="0" w="38" h="44"/>
+    <sprite n="6_hp.png" x="73" y="0" w="28" h="40"/>
+    <sprite n="7.png" x="302" y="0" w="36" h="40"/>
+    <sprite n="7_hp.png" x="214" y="0" w="29" h="39"/>
+    <sprite n="8.png" x="598" y="0" w="38" h="44"/>
+    <sprite n="8_hp.png" x="243" y="0" w="29" h="40"/>
+    <sprite n="9.png" x="522" y="0" w="38" h="42"/>
+    <sprite n="9_hp.png" x="157" y="0" w="28" h="40"/>
+    <sprite n="cursor_1.png" x="610" y="47" w="61" h="47"/>
+    <sprite n="cursor_2.png" x="122" y="47" w="61" h="47"/>
+    <sprite n="cursor_3.png" x="366" y="47" w="61" h="47"/>
+    <sprite n="cursor_4.png" x="244" y="47" w="61" h="47"/>
+    <sprite n="cursor_5.png" x="698" y="0" w="62" h="40"/>
+    <sprite n="cursor_6.png" x="854" y="47" w="55" h="54"/>
+    <sprite n="cursor_7.png" x="0" y="101" w="51" h="60"/>
+    <sprite n="cursor_8.png" x="636" y="0" w="62" h="40"/>
+    <sprite n="cursor_9.png" x="760" y="0" w="62" h="45"/>
+    <sprite n="cursor_10.png" x="488" y="47" w="61" h="47"/>
+    <sprite n="cursor_11.png" x="549" y="47" w="61" h="47"/>
+    <sprite n="cursor_12.png" x="732" y="47" w="61" h="47"/>
+    <sprite n="cursor_13.png" x="793" y="47" w="61" h="47"/>
+    <sprite n="cursor_14.png" x="671" y="47" w="61" h="47"/>
+    <sprite n="cursor_15.png" x="427" y="47" w="61" h="47"/>
+    <sprite n="cursor_16.png" x="61" y="47" w="61" h="47"/>
+    <sprite n="cursor_17.png" x="0" y="47" w="61" h="47"/>
+    <sprite n="cursor_18.png" x="883" y="0" w="61" h="47"/>
+    <sprite n="cursor_19.png" x="822" y="0" w="61" h="47"/>
+    <sprite n="cursor_20.png" x="183" y="47" w="61" h="47"/>
+    <sprite n="cursor_21.png" x="305" y="47" w="61" h="47"/>
+    <sprite n="Excellent.png" x="314" y="203" w="507" h="121"/>
+    <sprite n="Game Over.png" x="0" y="324" w="705" h="98"/>
+    <sprite n="Good.png" x="421" y="101" w="247" h="90"/>
+    <sprite n="Great.png" x="0" y="203" w="314" h="101"/>
+    <sprite n="hit.png" x="131" y="101" w="80" h="64"/>
+    <sprite n="hit_luigi.png" x="51" y="101" w="80" h="64"/>
+    <sprite n="hit_mario.png" x="211" y="101" w="80" h="64"/>
+    <sprite n="OK.png" x="291" y="101" w="130" h="83"/>
+    <sprite n="Too Bad.png" x="668" y="101" w="254" h="102"/>
 </TextureAtlas>

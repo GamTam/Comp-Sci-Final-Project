@@ -104,7 +104,7 @@ class Goomba(pg.sprite.Sprite):
         self.game.enemies.append(self)
         self.loadImages()
         self.image = self.walkingFramesDown[0]
-        self.currentFrame = 0
+        self.currentFrame = random.randrange(len(self.walkingFramesDown))
         self.lastUpdate = 0
         self.facing = facing
         self.shadow = self.shadowFrame
@@ -116,7 +116,7 @@ class Goomba(pg.sprite.Sprite):
         self.mask = pg.mask.from_surface(self.image)
 
         # Stats
-        self.stats = {"maxHP": 4, "hp": 4, "pow": 2, "def": 0, "exp": 2, "coins": 3}
+        self.stats = {"maxHP": 4, "hp": 4, "pow": 2, "def": 0, "exp": 2, "coins": 3, "name": "Goomba"}
         self.rectHP = self.stats["hp"]
 
     def loadImages(self):
@@ -368,7 +368,7 @@ class Goomba(pg.sprite.Sprite):
             hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
             if hammerHits:
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
-                if hammerHitsRound2 and not self.hit:
+                if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5))
                     self.stats["hp"] -= round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5)
@@ -381,7 +381,7 @@ class Goomba(pg.sprite.Sprite):
             hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
             if hammerHits:
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
-                if hammerHitsRound2 and not self.hit:
+                if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5))
                     self.stats["hp"] -= round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5)

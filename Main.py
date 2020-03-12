@@ -73,6 +73,7 @@ class Game:
         self.effects = pg.sprite.Group()
         self.ui = pg.sprite.Group()
         self.fadeout = pg.sprite.Group()
+        self.brosAttackUI = pg.sprite.Group()
         self.battleEndUI = []
         self.loadData()
         self.goombaHasTexted = False
@@ -251,7 +252,10 @@ class Game:
                 self.playSong(6.749, 102.727, "castle bleck", cont=True, fadein=True)
             self.clock.tick(fps)
             self.events()
-            if not self.pause:
+            if len(self.fadeout) != 0:
+                self.updateOverworld()
+                self.pause = False
+            elif not self.pause:
                 self.updateOverworld()
             self.screen.fill(black)
             self.drawOverworld()
@@ -291,6 +295,7 @@ class Game:
             self.drawOverworld()
 
             if trans.currentFrame == len(trans.sprites) - 1 and not pg.mixer.get_busy():
+                self.pause = False
                 eval(function)
 
     def loadTeeheeValleyBattle15G(self):
@@ -437,6 +442,8 @@ class Game:
             self.events()
             if not self.pause:
                 self.updateBattle()
+            else:
+                self.enemySelect()
             self.screen.fill(black)
             self.drawBattle()
             # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
@@ -451,20 +458,170 @@ class Game:
         self.follower.ability = self.storeData["luigi current ability"]
         self.follower.abilities = self.storeData["luigi abilities"]
         self.cameraRect = CameraRect()
-        # pg.mixer.music.load("music/battle.ogg")
-        # pg.mixer.music.play(-1)
         while self.playing:
             self.playSong(54.965, 191.98, "new soup final boss")
             self.clock.tick(fps)
             self.events()
             if not self.pause:
                 self.updateBattle()
+            else:
+                self.enemySelect()
             self.screen.fill(black)
             self.drawBattle()
             # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
             #     self.gameOver()
             if len(self.enemies) == 0:
                 self.battleOver()
+
+    def enemySelect(self):
+        going = True
+        for enemy in self.enemies:
+            if enemy.stats["hp"] <= 0:
+                self.battleCoins += enemy.stats["coins"]
+                self.battleXp += enemy.stats["exp"]
+                self.enemies.remove(enemy)
+                self.sprites.remove(enemy)
+        self.enemies.sort(key=self.sortByXPos)
+        if len(self.enemies) != 0:
+            cursor = Cursor(self, self.enemies[0].imgRect)
+            enemyNames = EnemyNames(self, self.enemies[0].stats["name"])
+            self.abilityAdvanceSound.play()
+        else:
+            going = False
+        number = 0
+        while going:
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            keys = pg.key.get_pressed()
+            cursor.update(self.enemies[number].imgRect, 60)
+            enemyNames.update(self.enemies[number].stats["name"])
+            self.cameraRect.update(self.enemies[number].rect, 60)
+            self.camera.update(self.cameraRect.rect)
+            self.ui.update()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_d:
+                        if number < len(self.enemies):
+                            number = (number + 1) % (len(self.enemies))
+                        if len(self.enemies) > 1:
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_a:
+                        if number < len(self.enemies):
+                            number = (number - 1) % (len(self.enemies))
+                        if len(self.enemies) > 1:
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        going = False
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+            self.drawBattleBrosAttack()
+            self.screen.blit(s, sRect)
+            self.blit_alpha(self.screen, self.enemies[number].image, self.camera.offset(self.enemies[number].imgRect),
+                            self.enemies[number].alpha)
+            pg.draw.rect(self.screen, darkGray,
+                         self.camera.offset(
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                     self.enemies[number].rect.width, 10)))
+            if self.enemies[number].rectHP >= 0:
+                pg.draw.rect(self.screen, red, self.camera.offset(
+                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                            (self.enemies[number].rect.width * (
+                                        self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
+            pg.draw.rect(self.screen, black,
+                         self.camera.offset(
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                     self.enemies[number].rect.width, 10)),
+                         1)
+
+            self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
+            enemyNames.draw()
+
+            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+
+            pg.display.flip()
+        fad = Fadeout(self)
+        while True:
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            keys = pg.key.get_pressed()
+            cursor.update(self.enemies[number].imgRect, 60)
+            enemyNames.update(self.enemies[number].stats["name"])
+            self.cameraRect.update(self.enemies[number].rect, 60)
+            self.camera.update(self.cameraRect.rect)
+            self.ui.update()
+            fad.update()
+            if fad.alpha >= 255:
+                cursor.kill()
+                self.pause = False
+                self.room = "banana"
+                self.greenShell()
+                break
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+            self.drawBattleBrosAttack()
+            self.screen.blit(s, sRect)
+            self.blit_alpha(self.screen, self.enemies[number].image, self.camera.offset(self.enemies[number].imgRect),
+                            self.enemies[number].alpha)
+            pg.draw.rect(self.screen, darkGray,
+                         self.camera.offset(
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                     self.enemies[number].rect.width, 10)))
+            if self.enemies[number].rectHP >= 0:
+                pg.draw.rect(self.screen, red, self.camera.offset(
+                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                            (self.enemies[number].rect.width * (
+                                    self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
+            pg.draw.rect(self.screen, black,
+                         self.camera.offset(
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                     self.enemies[number].rect.width, 10)),
+                         1)
+
+            self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
+            enemyNames.draw()
+
+            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+
+            pg.display.flip()
+
+    def greenShell(self):
+        going = True
+        background = pg.image.load("sprites/maps/Bros Attack.png")
+        bRect = background.get_rect()
+        while going:
+            keys = pg.key.get_pressed()
+            for event in pg.event.get():
+                if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_TAB:
+                        going = False
+                    if event.key == pg.K_F4:
+                        self.fullscreen = not self.fullscreen
+                        if not self.fullscreen:
+                            self.screen = pg.display.set_mode((width, height))
+                        else:
+                            self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
+
+            self.fadeout.update()
+
+            self.screen.fill((59, 59, 59))
+            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+            self.screen.blit(background, bRect)
+
+            pg.display.flip()
+        self.room = "asdfroom"
 
     def battleOver(self):
         pg.mixer.music.stop()
@@ -502,8 +659,7 @@ class Game:
             self.playSong(5.44, 36.708, "battle victory")
             self.clock.tick(fps)
             self.events()
-            if not self.pause:
-                self.updateBattleOver()
+            self.updateBattleOver()
             self.screen.fill(black)
             self.drawBattleOver()
             keys = pg.key.get_pressed()
@@ -524,11 +680,11 @@ class Game:
         while True:
             self.clock.tick(fps)
             self.events()
-            if not self.pause:
-                self.updateBattleOver()
+            self.updateBattleOver()
             self.screen.fill(black)
             self.drawBattleOver()
             if fade.alpha > 255:
+                self.pause = False
                 break
 
         if not self.player.dead:
@@ -570,12 +726,6 @@ class Game:
 
                     self.player.rect.center, self.follower.rect.center = self.follower.rect.center, self.player.rect.center
                     self.player.facing, self.follower.facing = self.follower.facing, self.player.facing
-                if event.key == pg.K_p:
-                    self.pause = not self.pause
-                    if self.pause:
-                        self.volume = 0.5
-                    else:
-                        self.volume = 1
                 if event.key == pg.K_f:
                     self.player.stats["hp"] = self.player.stats["maxHP"]
                     if self.player.dead:
@@ -591,15 +741,8 @@ class Game:
                         self.follower.shadow = self.follower.shadowFrames["normal"]
                         self.follower.rect = self.follower.shadow.get_rect()
                         self.follower.rect.center = center
-                if event.key == pg.K_t:
-                    clip = VideoFileClip("movies/chunky.mp4")
-                    self.screen.fill(black)
-                    if self.fullscreen:
-                        clip.preview(fps=29.96, fullscreen=True)
-                    else:
-                        clip.preview(fps=29.96)
-                    clip.close()
-                    pg.mixer.pre_init(44100, -16, 2, 2048)
+                if event.key == pg.K_TAB:
+                    self.pause = not self.pause
 
     def updateBattleOver(self):
         [ui.update() for ui in self.battleEndUI]
@@ -621,9 +764,9 @@ class Game:
         self.ui.update()
         [col.update() for col in self.collision]
         if self.leader == "mario":
-            self.cameraRect.update(self.player.rect, 20)
+            self.cameraRect.update(self.player.rect, 600)
         else:
-            self.cameraRect.update(self.follower.rect, 20)
+            self.cameraRect.update(self.follower.rect, 600)
         self.camera.update(self.cameraRect.rect)
 
     def updateOverworld(self):
@@ -636,9 +779,9 @@ class Game:
         [sprite.update() for sprite in self.sprites]
         [col.update() for col in self.collision]
         if self.leader == "mario":
-            self.cameraRect.update(self.player.rect, 20)
+            self.cameraRect.update(self.player.rect, 600)
         else:
-            self.cameraRect.update(self.follower.rect, 20)
+            self.cameraRect.update(self.follower.rect, 600)
         self.camera.update(self.cameraRect.rect)
 
     def blit_alpha(self, target, source, location, opacity):
@@ -730,6 +873,34 @@ class Game:
 
         pg.display.flip()
 
+    def drawBattleBrosAttack(self):
+        self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+        self.sprites.sort(key=self.sortByYPos)
+        for sprite in self.sprites:
+            try:
+                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+            except:
+                pass
+
+        for sprite in self.sprites:
+            if sprite.dead:
+                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+
+        for sprite in self.sprites:
+            if not sprite.dead:
+                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+
+        try:
+            self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
+        except:
+            pass
+
+        for fx in self.effects:
+            if fx.offset:
+                self.blit_alpha(self.screen, fx.image, self.camera.offset(fx.rect), fx.alpha)
+            else:
+                self.blit_alpha(self.screen, fx.image, fx.rect, fx.alpha)
+
     def drawOverworld(self):
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
@@ -762,6 +933,9 @@ class Game:
 
     def sortByYPos(self, element):
         return element.rect.bottom
+
+    def sortByXPos(self, element):
+        return element.rect.left
 
 
 game = Game()

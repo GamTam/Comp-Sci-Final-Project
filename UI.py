@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import pytweening as pt
 from Libraries import ptext
 from Settings import *
 
@@ -853,6 +854,93 @@ class CoinCollectionAdd(pg.sprite.Sprite):
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
         ptext.draw(str(round(self.exp) + self.coins), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+
+
+class Cursor(pg.sprite.Sprite):
+    def __init__(self, game, target):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        sheet = spritesheet("sprites/ui.png", "sprites/ui.xml")
+        self.sprites = [sheet.getImageName("cursor_1.png"),
+                        sheet.getImageName("cursor_2.png"),
+                        sheet.getImageName("cursor_3.png"),
+                        sheet.getImageName("cursor_4.png"),
+                        sheet.getImageName("cursor_5.png"),
+                        sheet.getImageName("cursor_6.png"),
+                        sheet.getImageName("cursor_7.png"),
+                        sheet.getImageName("cursor_8.png"),
+                        sheet.getImageName("cursor_9.png"),
+                        sheet.getImageName("cursor_10.png"),
+                        sheet.getImageName("cursor_11.png"),
+                        sheet.getImageName("cursor_12.png"),
+                        sheet.getImageName("cursor_13.png"),
+                        sheet.getImageName("cursor_14.png"),
+                        sheet.getImageName("cursor_15.png"),
+                        sheet.getImageName("cursor_16.png"),
+                        sheet.getImageName("cursor_17.png"),
+                        sheet.getImageName("cursor_18.png"),
+                        sheet.getImageName("cursor_19.png"),
+                        sheet.getImageName("cursor_20.png"),
+                        sheet.getImageName("cursor_21.png")]
+        self.image = self.sprites[0]
+        self.rect = self.image.get_rect()
+        self.rect.left = target.right + 5
+        self.rect.centery = target.top - 10
+        self.target = target
+        self.prevTarget = target
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.points = []
+        self.counter = -17
+
+    def update(self, target, speed):
+        self.animate()
+
+        if target != self.prevTarget:
+            self.counter = 0
+            self.prevTarget = target
+        elif self.counter != speed:
+            self.rect.left, self.rect.centery = pt.getPointOnLine(self.rect.left, self.rect.centery, target.right + 5, target.top - 10,
+                                                 (self.counter / speed))
+            self.counter += 1
+        else:
+            self.counter = speed
+            self.rect.left = target.right + 5
+            self.rect.centery = target.top - 10
+
+    def animate(self):
+        now = pg.time.get_ticks()
+
+        if now - self.lastUpdate > 45:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.sprites):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.sprites))
+            else:
+                self.currentFrame = 0
+            center = self.rect.center
+            self.image = self.sprites[self.currentFrame]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
+
+
+class EnemyNames(pg.sprite.Sprite):
+    def __init__(self, game, name):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.image = pg.image.load("sprites/ui/enemySelection.png").convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.left = 0
+        self.rect.top = 0
+        self.name = name
+
+    def update(self, name):
+        self.name = name
+
+    def draw(self):
+        self.game.screen.blit(self.image, self.rect)
+        ptext.draw(self.name, (self.rect.left + 10, self.rect.bottom - 75), fontname=dialogueFont, color=black, fontsize=40,
+                                   lineheight=0.8, surf=self.game.screen)
+
 
 
 class Fadeout(pg.sprite.Sprite):

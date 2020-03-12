@@ -638,6 +638,9 @@ class Mario(pg.sprite.Sprite):
         self.imgRect.bottom = (self.rect.bottom - 5) - jumpOffset
 
     def hammer(self):
+        self.canBeHit = True
+        if self.alpha != 255:
+            self.alpha = 255
         if self.isHammer == None:
             self.isHammer = Hammer(self.game, self)
         self.walking = False
@@ -1944,7 +1947,9 @@ class Luigi(pg.sprite.Sprite):
         self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "stache": 3, "hp": 13, "bp": 5, "exp": 0}
 
     def hammer(self):
-        self.walking = False
+        self.canBeHit = True
+        if self.alpha != 255:
+            self.alpha = 255
         if self.isHammer == None:
             self.isHammer = Hammer(self.game, self)
         if self.currentFrame < len(self.hammerFramesLeft) - 1:
