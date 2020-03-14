@@ -475,6 +475,7 @@ class Game:
 
     def enemySelect(self):
         going = True
+        attack = False
         for enemy in self.enemies:
             if enemy.stats["hp"] <= 0:
                 self.battleCoins += enemy.stats["coins"]
@@ -517,6 +518,7 @@ class Game:
                             self.abilityAdvanceSound.play()
                     if event.key == pg.K_m or event.key == pg.K_l:
                         going = False
+                        attack = True
                     if event.key == pg.K_TAB:
                         cursor.kill()
                         self.pause = False
@@ -546,54 +548,55 @@ class Game:
             [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
             pg.display.flip()
-        fad = Fadeout(self)
-        while True:
-            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
-            sRect = s.get_rect()
-            s.fill(black)
-            s.set_alpha(125)
-            keys = pg.key.get_pressed()
-            cursor.update(self.enemies[number].imgRect, 60)
-            enemyNames.update(self.enemies[number].stats["name"])
-            self.cameraRect.update(self.enemies[number].rect, 60)
-            self.camera.update(self.cameraRect.rect)
-            self.ui.update()
-            fad.update()
-            if fad.alpha >= 255:
-                cursor.kill()
-                self.pause = False
-                self.room = "banana"
-                self.greenShell()
-                break
-            self.event = pg.event.get().copy()
-            for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
-            self.drawBattleBrosAttack()
-            self.screen.blit(s, sRect)
-            self.blit_alpha(self.screen, self.enemies[number].image, self.camera.offset(self.enemies[number].imgRect),
-                            self.enemies[number].alpha)
-            pg.draw.rect(self.screen, darkGray,
-                         self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                                     self.enemies[number].rect.width, 10)))
-            if self.enemies[number].rectHP >= 0:
-                pg.draw.rect(self.screen, red, self.camera.offset(
-                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                            (self.enemies[number].rect.width * (
-                                    self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
-            pg.draw.rect(self.screen, black,
-                         self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                                     self.enemies[number].rect.width, 10)),
-                         1)
+        if attack:
+            fad = Fadeout(self)
+            while True:
+                s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+                sRect = s.get_rect()
+                s.fill(black)
+                s.set_alpha(125)
+                keys = pg.key.get_pressed()
+                cursor.update(self.enemies[number].imgRect, 60)
+                enemyNames.update(self.enemies[number].stats["name"])
+                self.cameraRect.update(self.enemies[number].rect, 60)
+                self.camera.update(self.cameraRect.rect)
+                self.ui.update()
+                fad.update()
+                if fad.alpha >= 255:
+                    cursor.kill()
+                    self.pause = False
+                    self.room = "banana"
+                    self.greenShell()
+                    break
+                self.event = pg.event.get().copy()
+                for event in self.event:
+                    if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                        pg.quit()
+                self.drawBattleBrosAttack()
+                self.screen.blit(s, sRect)
+                self.blit_alpha(self.screen, self.enemies[number].image, self.camera.offset(self.enemies[number].imgRect),
+                                self.enemies[number].alpha)
+                pg.draw.rect(self.screen, darkGray,
+                             self.camera.offset(
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                         self.enemies[number].rect.width, 10)))
+                if self.enemies[number].rectHP >= 0:
+                    pg.draw.rect(self.screen, red, self.camera.offset(
+                        pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                (self.enemies[number].rect.width * (
+                                        self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
+                pg.draw.rect(self.screen, black,
+                             self.camera.offset(
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                         self.enemies[number].rect.width, 10)),
+                             1)
 
-            self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
-            enemyNames.draw()
+                self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
+                enemyNames.draw()
 
-            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+                [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
-            pg.display.flip()
+                pg.display.flip()
 
     def greenShell(self):
         going = True
