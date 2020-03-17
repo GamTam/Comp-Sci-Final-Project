@@ -1,4 +1,5 @@
 import pickle
+from BrosAttacks import *
 from Enemies import *
 
 pg.display.set_icon(icon)
@@ -73,12 +74,11 @@ class Game:
         self.effects = pg.sprite.Group()
         self.ui = pg.sprite.Group()
         self.fadeout = pg.sprite.Group()
-        self.brosAttackUI = pg.sprite.Group()
         self.battleEndUI = []
         self.loadData()
         self.goombaHasTexted = False
-        self.player = Mario(self, width / 2, 1278)
-        self.follower = Luigi(self, width / 2, 1278)
+        self.player = Mario(self, 0, 0)
+        self.follower = Luigi(self, 0, 0)
         MarioUI(self)
         LuigiUI(self)
         self.song_playing = ""
@@ -175,9 +175,9 @@ class Game:
         self.npcs = pg.sprite.Group()
         if self.song_playing != "castle bleck":
             self.firstLoop = True
-        self.player = Mario(self, width / 2, 1278)
+        self.player.rect.center = (width / 2, 1278)
         self.playerCol = MarioCollision(self)
-        self.follower = Luigi(self, width / 2, 1278)
+        self.follower.rect.center = (width / 2, 1278)
         self.followerCol = LuigiCollision(self)
         self.playerHammer = HammerCollisionMario(self)
         self.followerHammer = HammerCollisionLuigi(self)
@@ -279,9 +279,9 @@ class Game:
         self.storeData["luigi stats"] = self.follower.stats
         self.storeData["luigi pos"] = self.follower.rect.center
         if self.leader == "mario":
-            self.storeData["move"] = self.follower.moveQueue
+            self.storeData["move"] = self.follower.moveQueue.copy()
         elif self.leader == "luigi":
-            self.storeData["move"] = self.player.moveQueue
+            self.storeData["move"] = self.player.moveQueue.copy()
         self.storeData["luigi facing"] = self.follower.facing
         self.storeData["luigi abilities"] = self.follower.abilities
         if self.follower.prevAbility == 12:
@@ -307,10 +307,12 @@ class Game:
         self.enemies = []
         self.playsong = True
         self.firstLoop = True
-        self.player = Mario(self, width / 2, 1278)
+        self.player.rect.center = (width / 2, 1278)
         self.playerCol = MarioCollision(self)
-        self.follower = Luigi(self, width / 2, 1278)
+        self.follower.rect.center = (width / 2, 1278)
         self.followerCol = LuigiCollision(self)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
         Goomba(self, 722, 1228, 4, 4, "left")
         Goomba(self, 722, 1228, 4, 4, "up")
         Goomba(self, 702, 1378, 4, 4, "right")
@@ -413,9 +415,11 @@ class Game:
 
         self.map = loadMap("teehee valley battle", True)
         self.camera = Camera(self.map.width, self.map.height)
-        self.player = Mario(self, self.map.width / 2, 1278)
+        self.player.rect.center = (width / 2, 1278)
         self.playerCol = MarioCollision(self)
-        self.follower = Luigi(self, self.map.width / 2, 1278)
+        self.follower.rect.center = (width / 2, 1278)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
         self.followerCol = LuigiCollision(self)
         self.sprites.append(self.follower)
         self.sprites.append(self.player)
@@ -465,7 +469,7 @@ class Game:
             if not self.pause:
                 self.updateBattle()
             else:
-                self.enemySelect()
+                self.enemySelect('self.playSong(54.965, 191.98, "new soup final boss")')
             self.screen.fill(black)
             self.drawBattle()
             # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
@@ -473,7 +477,7 @@ class Game:
             if len(self.enemies) == 0:
                 self.battleOver()
 
-    def enemySelect(self):
+    def enemySelect(self, song=None):
         going = True
         attack = False
         for enemy in self.enemies:
@@ -490,7 +494,11 @@ class Game:
         else:
             going = False
         number = 0
+        colCircle = pg.rect.Rect(0, 0, 100, 100)
         while going:
+            if song is not None:
+                eval(song)
+            self.fadeout.update()
             s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
             sRect = s.get_rect()
             s.fill(black)
@@ -525,22 +533,26 @@ class Game:
                         going = False
             self.drawBattleBrosAttack()
             self.screen.blit(s, sRect)
-            self.blit_alpha(self.screen, self.enemies[number].image, self.camera.offset(self.enemies[number].imgRect),
-                            self.enemies[number].alpha)
-            pg.draw.rect(self.screen, darkGray,
-                         self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                                     self.enemies[number].rect.width, 10)))
-            if self.enemies[number].rectHP >= 0:
-                pg.draw.rect(self.screen, red, self.camera.offset(
-                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                            (self.enemies[number].rect.width * (
-                                        self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
-            pg.draw.rect(self.screen, black,
-                         self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                                     self.enemies[number].rect.width, 10)),
-                         1)
+            colCircle.center = self.enemies[number].rect.center
+            for enemy in self.enemies:
+                if colCircle.colliderect(enemy.rect):
+                    self.blit_alpha(self.screen, enemy.image,
+                                    self.camera.offset(enemy.imgRect),
+                                    enemy.alpha)
+                    pg.draw.rect(self.screen, darkGray,
+                                 self.camera.offset(
+                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                             enemy.rect.width, 10)))
+                    if enemy.rectHP >= 0:
+                        pg.draw.rect(self.screen, red, self.camera.offset(
+                            pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                    (enemy.rect.width * (
+                                                enemy.rectHP / enemy.stats["maxHP"])), 10)))
+                    pg.draw.rect(self.screen, black,
+                                 self.camera.offset(
+                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                             enemy.rect.width, 10)),
+                                 1)
 
             self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
             enemyNames.draw()
@@ -550,6 +562,10 @@ class Game:
             pg.display.flip()
         if attack:
             fad = Fadeout(self)
+            enemies = []
+            for enemy in self.enemies:
+                if colCircle.colliderect(enemy.imgRect):
+                    enemies.append(enemy)
             while True:
                 s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
                 sRect = s.get_rect()
@@ -561,12 +577,12 @@ class Game:
                 self.cameraRect.update(self.enemies[number].rect, 60)
                 self.camera.update(self.cameraRect.rect)
                 self.ui.update()
-                fad.update()
+                self.fadeout.update()
                 if fad.alpha >= 255:
                     cursor.kill()
                     self.pause = False
-                    self.room = "banana"
-                    self.greenShell()
+                    self.room = "bros attack"
+                    self.greenShell(enemies, song)
                     break
                 self.event = pg.event.get().copy()
                 for event in self.event:
@@ -574,22 +590,25 @@ class Game:
                         pg.quit()
                 self.drawBattleBrosAttack()
                 self.screen.blit(s, sRect)
-                self.blit_alpha(self.screen, self.enemies[number].image, self.camera.offset(self.enemies[number].imgRect),
-                                self.enemies[number].alpha)
-                pg.draw.rect(self.screen, darkGray,
-                             self.camera.offset(
-                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                                         self.enemies[number].rect.width, 10)))
-                if self.enemies[number].rectHP >= 0:
-                    pg.draw.rect(self.screen, red, self.camera.offset(
-                        pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                                (self.enemies[number].rect.width * (
-                                        self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
-                pg.draw.rect(self.screen, black,
-                             self.camera.offset(
-                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
-                                         self.enemies[number].rect.width, 10)),
-                             1)
+                for enemy in self.enemies:
+                    if colCircle.colliderect(enemy.rect):
+                        self.blit_alpha(self.screen, enemy.image,
+                                        self.camera.offset(enemy.imgRect),
+                                        enemy.alpha)
+                        pg.draw.rect(self.screen, darkGray,
+                                     self.camera.offset(
+                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                                 enemy.rect.width, 10)))
+                        if enemy.rectHP >= 0:
+                            pg.draw.rect(self.screen, red, self.camera.offset(
+                                pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                        (enemy.rect.width * (
+                                                enemy.rectHP / enemy.stats["maxHP"])), 10)))
+                        pg.draw.rect(self.screen, black,
+                                     self.camera.offset(
+                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                                 enemy.rect.width, 10)),
+                                     1)
 
                 self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
                 enemyNames.draw()
@@ -598,33 +617,213 @@ class Game:
 
                 pg.display.flip()
 
-    def greenShell(self):
+    def greenShell(self, enems, song=None):
         going = True
+        started = False
+        button = pg.image.load("sprites/bros attack start.png").convert_alpha()
+        buRect = button.get_rect()
+        buRect.center = (width / 2, height / 2)
+        s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+        sRect = s.get_rect()
+        s.fill(black)
+        s.set_alpha(125)
         background = pg.image.load("sprites/maps/Bros Attack.png")
         bRect = background.get_rect()
+        shell = GreenShell(self, 50)
+        mario = MarioShell(self, shell)
+        luigi = LuigiShell(self, shell)
+        self.camera.update(mario.rect)
+        sprites = [mario, luigi]
+        enemies = []
+        for enemy in enems:
+            command = enemy.stats["name"] + "BrosAttack(self, enemy)"
+            en = eval(command)
+            sprites.append(en)
+            enemies.append(en)
         while going:
+            sprites.sort(key=self.sortByYPos)
+            for sprite in sprites:
+                if sprite in self.ui:
+                    sprites.remove(sprite)
+                    sprites.append(sprite)
+            self.clock.tick(fps)
+            if len(enemies) != 0:
+                target = enemies[0]
+            if song is not None:
+                eval(song)
+            self.event = pg.event.get().copy()
             keys = pg.key.get_pressed()
-            for event in pg.event.get():
+            for event in self.event:
                 if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
                 if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_TAB:
-                        going = False
                     if event.key == pg.K_F4:
                         self.fullscreen = not self.fullscreen
                         if not self.fullscreen:
                             self.screen = pg.display.set_mode((width, height))
                         else:
                             self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
+                    if event.key == pg.K_m and started:
+                        if not mario.kicking and not mario.onShell and not mario.lookAtLuigi and not mario.winPose:
+                            mario.currentFrame = 0
+                            mario.kicking = True
+                    if event.key == pg.K_l and started:
+                        if not luigi.kicking and not luigi.onShell and not luigi.lookAtMario and not luigi.winPose:
+                            luigi.currentFrame = 0
+                            luigi.kicking = True
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if shell not in sprites:
+                            started = True
+                            sprites.append(shell)
+                            luigi.currentFrame = 0
+                            luigi.kicking = True
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      target.rect.centerx, target.rect.bottom - 10, (i / shell.speed)))
 
             self.fadeout.update()
+            if shell in sprites:
+                if shell.counter >= shell.speed and not shell.missed:
+                    if shell.target == "enemy":
+                        if shell.speed <= 10 or target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
+                            shell.missed = True
+                            shell.travelSpeed = (
+                            shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                        elif shell.prevTarget == "mario":
+                            shell.target = "luigi"
+                            luigi.target = True
+                            luigi.currentFrame = 0
+                            shell.prevTarget = "enemy"
+                            sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
+                                       (self.player.stats["pow"] - target.enemy.stats["def"])))
+                            target.enemy.stats["hp"] -= (self.player.stats["pow"] - target.enemy.stats["def"])
+                            self.enemyHitSound.play()
+                            if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
+                                shell.travelSpeed = (
+                                    shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                                shell.missed = True
+                            if target.enemy.stats["hp"] <= 0:
+                                enemies.remove(target)
+                                self.enemyDieSound.play()
+                            shell.points = []
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      luigi.rect.centerx, luigi.rect.bottom - 10, (i / shell.speed)))
+                            shell.counter = 0
+                        elif shell.prevTarget == "luigi":
+                            shell.target = "mario"
+                            mario.target = True
+                            mario.currentFrame = 0
+                            shell.prevTarget = "enemy"
+                            sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
+                                                      (self.follower.stats["pow"] - target.enemy.stats["def"])))
+                            target.enemy.stats["hp"] -= (self.follower.stats["pow"] - target.enemy.stats["def"])
+                            self.enemyHitSound.play()
+                            if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
+                                shell.travelSpeed = (
+                                    shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                                shell.missed = True
+                            if target.enemy.stats["hp"] <= 0:
+                                enemies.remove(target)
+                                self.enemyDieSound.play()
+                            shell.points = []
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      mario.rect.centerx, mario.rect.bottom - 10, (i / shell.speed)))
+                            shell.counter = 0
+                    else:
+                        if shell.target == "mario":
+                            shell.target = "enemy"
+                            shell.prevTarget = "mario"
+                            kik = mario.kicking
+                        elif shell.target == "luigi":
+                            shell.target = "enemy"
+                            shell.prevTarget = "luigi"
+                            kik = luigi.kicking
+                        mario.target = False
+                        luigi.target = False
+                        if kik:
+                            if shell.speed != 2:
+                                shell.speed -= 3
+                            shell.points = []
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      target.rect.centerx, target.rect.bottom - 10, (i / shell.speed)))
+                            shell.counter = 0
+                        else:
+                            if shell.prevTarget == "luigi":
+                                luigi.onShell = True
+                                sprites.remove(luigi)
+                                sprites.append(luigi)
+                                mario.currentFrame = 0
+                                mario.lookAtLuigi = True
+                            if shell.prevTarget == "mario":
+                                mario.onShell = True
+                                sprites.remove(mario)
+                                sprites.append(mario)
+                                luigi.currentFrame = 0
+                                luigi.lookAtMario = True
+                            shell.missed = True
+                            shell.travelSpeed = (shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+            if len(enemies) == 0:
+                mario.winPose = True
+                luigi.winPose = True
+            [sprite.update() for sprite in sprites]
+            if luigi.onShell:
+                luigi.rect.centerx = shell.rect.centerx
+                luigi.rect.centery = shell.rect.top - 10
+            if mario.onShell:
+                mario.rect.centerx = shell.rect.centerx
+                mario.rect.centery = shell.rect.top - 10
+            if shell.rect.right < 0 or shell.rect.left > width:
+                going = False
 
             self.screen.fill((59, 59, 59))
-            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
             self.screen.blit(background, bRect)
+            for sprite in sprites:
+                try:
+                    sprite.draw()
+                except:
+                    self.blit_alpha(self.screen, sprite.image, sprite.rect, sprite.alpha)
+            for enemy in enemies:
+                pg.draw.rect(self.screen, darkGray,
+                                 pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                         enemy.barRect.width, 10))
+                if enemy.enemy.rectHP >= 0:
+                    pg.draw.rect(self.screen, red,
+                        pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                (enemy.barRect.width * (
+                                        enemy.enemy.rectHP / enemy.enemy.stats["maxHP"])), 10))
+                pg.draw.rect(self.screen, black,
+                                 pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                         enemy.barRect.width, 10),
+                             1)
+            if not started:
+                self.screen.blit(s, sRect)
+                self.screen.blit(button, buRect)
+            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
             pg.display.flip()
-        self.room = "asdfroom"
+        fad = Fadeout(self, 5)
+        while fad.alpha <= 255:
+            self.fadeout.update()
+            [sprite.update() for sprite in sprites]
+            self.screen.fill((59, 59, 59))
+            self.screen.blit(background, bRect)
+            for sprite in sprites:
+                try:
+                    sprite.draw()
+                except:
+                    self.blit_alpha(self.screen, sprite.image, sprite.rect, sprite.alpha)
+            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+
+            pg.display.flip()
+        self.camera.update(self.player.rect)
+        self.room = "battle"
 
     def battleOver(self):
         pg.mixer.music.stop()

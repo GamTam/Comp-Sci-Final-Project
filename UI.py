@@ -469,6 +469,7 @@ class LuigiUI(pg.sprite.Sprite):
 class HitNumbers(pg.sprite.Sprite):
     def __init__(self, game, room, pos, number, type="normal"):
         self.groups = game.ui
+        print(number)
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.offset = True
@@ -944,9 +945,10 @@ class EnemyNames(pg.sprite.Sprite):
 
 
 class Fadeout(pg.sprite.Sprite):
-    def __init__(self, game):
+    def __init__(self, game, speed=20):
         pg.sprite.Sprite.__init__(self, game.fadeout)
         self.game = game
+        self.speed = speed
         self.image = pg.Surface((self.game.screen.get_width(), self.game.screen.get_height()))
         self.rect = self.image.get_rect()
         self.image.fill(black)
@@ -956,9 +958,9 @@ class Fadeout(pg.sprite.Sprite):
     def update(self):
         self.image.set_alpha(self.alpha)
         if self.room == self.game.room and self.alpha <= 255:
-            self.alpha += 20
+            self.alpha += self.speed
         elif self.room != self.game.room:
-            self.alpha -= 20
+            self.alpha -= self.speed
 
         if self.alpha < 0:
             self.kill()

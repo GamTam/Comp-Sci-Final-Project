@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:c88872749cf844e66d2cbf1cf666f637:be424a84897afabcfb67764c1931ed2d:e09860e8e044ea2bbdc875be64a0785d$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="enemies_bros_attacks.png" width="244" height="1252">
+    <sprite n="goomba_hit.png" x="96" y="1028" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_1.png" x="48" y="692" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_2.png" x="144" y="1084" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_3.png" x="98" y="530" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_4.png" x="144" y="104" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_5.png" x="192" y="104" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_6.png" x="0" y="530" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_7.png" x="48" y="1084" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_8.png" x="144" y="692" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_9.png" x="144" y="476" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_10.png" x="144" y="208" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_11.png" x="96" y="208" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_12.png" x="144" y="584" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_13.png" x="48" y="748" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_14.png" x="192" y="692" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_15.png" x="146" y="530" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_16.png" x="48" y="52" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_17.png" x="144" y="52" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_18.png" x="96" y="584" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_19.png" x="96" y="916" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_20.png" x="48" y="1140" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_21.png" x="48" y="584" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_22.png" x="192" y="0" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_23.png" x="48" y="0" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_24.png" x="0" y="584" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_25.png" x="96" y="1140" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_26.png" x="96" y="1084" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_27.png" x="192" y="584" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_28.png" x="192" y="52" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_29.png" x="0" y="104" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_30.png" x="194" y="530" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_31.png" x="96" y="972" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_32.png" x="0" y="972" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_33.png" x="144" y="916" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_34.png" x="146" y="638" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_35.png" x="96" y="156" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_36.png" x="0" y="156" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_37.png" x="0" y="638" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_38.png" x="144" y="1028" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_39.png" x="192" y="1028" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_40.png" x="0" y="1140" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_41.png" x="194" y="638" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_42.png" x="96" y="52" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_43.png" x="96" y="104" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_44.png" x="146" y="314" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_45.png" x="192" y="972" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_46.png" x="48" y="1028" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_47.png" x="98" y="368" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_48.png" x="48" y="260" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_49.png" x="48" y="104" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_50.png" x="48" y="314" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_51.png" x="0" y="1028" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_52.png" x="144" y="972" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_53.png" x="0" y="314" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_54.png" x="144" y="156" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_55.png" x="48" y="156" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_56.png" x="0" y="422" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_57.png" x="48" y="972" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_58.png" x="0" y="1084" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_59.png" x="0" y="476" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_60.png" x="96" y="0" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_61.png" x="144" y="0" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_62.png" x="192" y="476" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_63.png" x="192" y="1140" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_64.png" x="96" y="1196" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_65.png" x="0" y="1196" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_66.png" x="48" y="1196" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_67.png" x="144" y="1140" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_68.png" x="192" y="422" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_69.png" x="0" y="52" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_70.png" x="192" y="156" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_71.png" x="48" y="422" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_72.png" x="192" y="1084" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_73.png" x="192" y="916" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_74.png" x="144" y="422" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_75.png" x="0" y="0" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_76.png" x="96" y="260" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_77.png" x="96" y="476" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_78.png" x="144" y="748" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_79.png" x="96" y="748" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_80.png" x="0" y="692" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_81.png" x="96" y="422" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_82.png" x="0" y="260" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_83.png" x="0" y="208" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_84.png" x="194" y="368" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_85.png" x="192" y="748" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_86.png" x="144" y="860" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_87.png" x="48" y="916" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_88.png" x="48" y="476" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_89.png" x="48" y="208" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_90.png" x="192" y="208" w="48" h="52" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_91.png" x="146" y="368" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_92.png" x="144" y="804" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_93.png" x="50" y="368" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_94.png" x="194" y="260" w="50" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_95.png" x="144" y="260" w="50" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_96.png" x="194" y="314" w="50" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_97.png" x="96" y="314" w="50" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_98.png" x="0" y="368" w="50" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_99.png" x="48" y="530" w="50" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_100.png" x="96" y="638" w="50" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_101.png" x="48" y="638" w="48" h="54" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_102.png" x="192" y="860" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_103.png" x="0" y="916" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_104.png" x="48" y="860" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_105.png" x="192" y="804" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_106.png" x="96" y="804" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_107.png" x="0" y="804" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_108.png" x="0" y="860" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_109.png" x="96" y="860" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_110.png" x="48" y="804" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_111.png" x="0" y="748" w="48" h="56" pX="0.5" pY="0.5"/>
+    <sprite n="goomba_idle_112.png" x="96" y="692" w="48" h="56" pX="0.5" pY="0.5"/>
+</TextureAtlas>

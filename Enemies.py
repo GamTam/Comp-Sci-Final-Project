@@ -208,9 +208,7 @@ class Goomba(pg.sprite.Sprite):
                     self.imgRect = self.image.get_rect()
                     self.imgRect.center = center
 
-    def update(self):
-        self.animate()
-
+    def hpMath(self):
         if self.rectHP > self.stats["hp"] and self.speed == 0:
             self.speed = ((self.rectHP - self.stats["hp"]) / 30) * -1
         elif self.rectHP < self.stats["hp"] and self.speed == 0:
@@ -224,6 +222,11 @@ class Goomba(pg.sprite.Sprite):
             else:
                 self.rectHP = self.stats["hp"]
                 self.speed = 0
+
+    def update(self):
+        self.animate()
+
+        self.hpMath()
 
         if self.stats["hp"] <= 0:
             self.going = False

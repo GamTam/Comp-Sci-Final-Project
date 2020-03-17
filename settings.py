@@ -1,4 +1,5 @@
 import pygame as pg
+import math
 from moviepy.editor import *
 
 width = 1280
