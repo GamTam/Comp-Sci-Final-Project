@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import random
+from Libraries import ptext
 from Settings import *
 
 
@@ -24,6 +25,93 @@ class spritesheet:
     def getImageName(self, name):
         rect = pg.Rect(self.map[name]['x'], self.map[name]['y'], self.map[name]['w'], self.map[name]['h'])
         return self.spritesheet.subsurface(rect)
+
+
+class MenuIcon(pg.sprite.Sprite):
+    def __init__(self, game, pos, text="Oof, It's [Broke]", icon=talkAdvanceSprite, info=None):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.text = text
+        self.icon = icon
+        if icon is not None:
+         self.rect = self.icon.get_rect()
+        if icon is not None:
+            self.rect.center = pos
+        else:
+            self.pos = pos
+        self.color = white
+        self.info = info
+
+    def draw(self, offset=None):
+        if offset is None:
+            if self.icon is not None:
+                self.game.screen.blit(self.icon, self.rect)
+                ptext.draw(self.text, midleft=(self.rect.right + 30, self.rect.centery), color=self.color, surf=self.game.screen, owidth=1,
+                               fontname=dialogueFont, fontsize=40)
+            else:
+                ptext.draw(self.text, midleft=self.pos, color=self.color,
+                           surf=self.game.screen, owidth=1,
+                           fontname=dialogueFont, fontsize=40)
+        else:
+            if self.icon is not None:
+                self.game.screen.blit(self.icon, offset)
+                ptext.draw(self.text, midleft=(offset.right + 30, offset.centery), color=self.color,
+                           surf=self.game.screen, owidth=1,
+                           fontname=dialogueFont, fontsize=40)
+            else:
+                ptext.draw(self.text, midleft=self.pos, color=self.color,
+                           surf=self.game.screen, owidth=1,
+                           fontname=dialogueFont, fontsize=40)
+
+
+class MarioRecoverables(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.bp = str(self.game.player.stats["bp"])
+        self.maxBP = str(self.game.player.stats["maxBP"])
+        self.hp = str(self.game.player.stats["hp"])
+        self.maxHP = str(self.game.player.stats["maxHP"])
+        self.BPimage = pg.image.load("sprites/ui/marioBP.png")
+        self.HPimage = pg.image.load("sprites/ui/marioHP.png")
+        self.rect = self.BPimage.get_rect()
+        self.rect.bottom = height
+        self.rect.left = 235
+
+    def draw(self, recoverable="bp"):
+        if recoverable == "bp":
+            self.game.screen.blit(self.BPimage, self.rect)
+            ptext.draw(self.bp + "/" + self.maxBP, (self.rect.left + 80, self.rect.centery), owidth=1,
+                       fontname=superMario256, fontsize=40, color=(255, 204, 0), anchor=(0, 0.5))
+        else:
+            self.game.screen.blit(self.HPimage, self.rect)
+            ptext.draw(self.hp + "/" + self.maxHP, (self.rect.left + 80, self.rect.centery), owidth=1,
+                       fontname=superMario256, fontsize=40, color=(255, 204, 0), anchor=(0, 0.5))
+
+
+class LuigiRecoverables(pg.sprite.Sprite):
+    def __init__(self, game):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.bp = str(self.game.follower.stats["bp"])
+        self.maxBP = str(self.game.follower.stats["maxBP"])
+        self.hp = str(self.game.follower.stats["hp"])
+        self.maxHP = str(self.game.follower.stats["maxHP"])
+        self.BPimage = pg.image.load("sprites/ui/luigiBP.png")
+        self.HPimage = pg.image.load("sprites/ui/luigiHP.png")
+        self.rect = self.BPimage.get_rect()
+        self.rect.bottom = height
+        self.rect.left = 743
+
+    def draw(self, recoverable="bp"):
+        if recoverable == "bp":
+            self.game.screen.blit(self.BPimage, self.rect)
+            ptext.draw(self.bp + "/" + self.maxBP, (self.rect.left + 80, self.rect.centery), owidth=1,
+                       fontname=superMario256, fontsize=40, color=(255, 204, 0), anchor=(0, 0.5))
+        else:
+            self.game.screen.blit(self.HPimage, self.rect)
+            ptext.draw(self.hp + "/" + self.maxHP, (self.rect.left + 80, self.rect.centery), owidth=1,
+                       fontname=superMario256, fontsize=40, color=(255, 204, 0), anchor=(0, 0.5))
 
 
 class GreenShell(pg.sprite.Sprite):
@@ -56,6 +144,60 @@ class GreenShell(pg.sprite.Sprite):
                        sheet.getImageName("green_shell_6.png"),
                        sheet.getImageName("green_shell_7.png"),
                        sheet.getImageName("green_shell_8.png")]
+
+    def update(self):
+        self.animate()
+        if not self.missed:
+            self.rect.center = self.points[self.counter]
+            self.counter += 1
+        elif self.missed:
+            self.rect.centerx += self.travelSpeed[0]
+            self.rect.centery += self.travelSpeed[1]
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 45:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.frames):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.frames))
+            else:
+                self.currentFrame = 0
+            center = self.rect.center
+            self.image = self.frames[self.currentFrame]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
+
+
+class RedShell(pg.sprite.Sprite):
+    def __init__(self, game, speed):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.alpha = 255
+        self.speed = speed
+        self.currentFrame = 0
+        self.lastUpdate = 0
+        self.missed = False
+        self.loadImages()
+        self.image = self.frames[0]
+        self.rect = self.image.get_rect()
+        self.travelSpeed = 0
+        self.rect.center = (251, 450)
+        self.counter = 0
+        self.points = []
+        self.prevTarget = "mario"
+        self.target = "enemy"
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/bros attacks/koopa_shell.png", "sprites/bros attacks/koopa_shell.xml")
+
+        self.frames = [sheet.getImageName("red_shell_1.png"),
+                       sheet.getImageName("red_shell_2.png"),
+                       sheet.getImageName("red_shell_3.png"),
+                       sheet.getImageName("red_shell_4.png"),
+                       sheet.getImageName("red_shell_5.png"),
+                       sheet.getImageName("red_shell_6.png"),
+                       sheet.getImageName("red_shell_7.png"),
+                       sheet.getImageName("red_shell_8.png")]
 
     def update(self):
         self.animate()
@@ -490,16 +632,17 @@ class LuigiShell(pg.sprite.Sprite):
                 self.rect.center = center
 
 
-
 class GoombaBrosAttack(pg.sprite.Sprite):
     def __init__(self, game, enemy):
         pg.sprite.Sprite.__init__(self)
         self.game = game
+        self.hit = False
         self.alpha = 255
-        self.currentFrame = 0
         self.lastUpdate = 0
+        self.counter = 0
         self.enemy = enemy
         self.loadImages()
+        self.currentFrame = random.randrange(0, len(self.standingFrames) - 1)
         self.image = self.standingFrames[0]
         self.rect = self.image.get_rect()
         self.rect.center = (random.randrange(width / 2, width - 100), random.randrange(420, height - 50))
@@ -628,6 +771,12 @@ class GoombaBrosAttack(pg.sprite.Sprite):
 
         self.enemy.hpMath()
 
+        if self.hit and self.counter <= 30:
+            self.counter += 1
+        elif self.hit:
+            self.counter = 0
+            self.hit = False
+
         if self.enemy.stats["hp"] <= 0:
             if self.enemy in self.game.enemies:
                 self.game.battleCoins += self.enemy.stats["coins"]
@@ -641,14 +790,22 @@ class GoombaBrosAttack(pg.sprite.Sprite):
     def animate(self):
         now = pg.time.get_ticks()
         if now - self.lastUpdate > 45:
-            self.lastUpdate = now
-            if self.currentFrame < len(self.standingFrames):
-                self.currentFrame = (self.currentFrame + 1) % (len(self.standingFrames))
+            if not self.hit:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.standingFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.standingFrames))
+                else:
+                    self.currentFrame = 0
+                centerx = self.rect.centerx
+                bottom = self.rect.bottom
+                self.image = self.standingFrames[self.currentFrame]
+                self.rect = self.image.get_rect()
+                self.rect.centerx = centerx
+                self.rect.bottom = bottom
             else:
-                self.currentFrame = 0
-            centerx = self.rect.centerx
-            bottom = self.rect.bottom
-            self.image = self.standingFrames[self.currentFrame]
-            self.rect = self.image.get_rect()
-            self.rect.centerx = centerx
-            self.rect.bottom = bottom
+                centerx = self.rect.centerx
+                bottom = self.rect.bottom
+                self.image = self.hitFrame
+                self.rect = self.image.get_rect()
+                self.rect.centerx = centerx
+                self.rect.bottom = bottom

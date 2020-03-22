@@ -1,4 +1,5 @@
 import pickle
+
 from BrosAttacks import *
 from Enemies import *
 
@@ -69,9 +70,9 @@ class loadMap:
 class Game:
     def __init__(self):
         self.screen = pg.display.set_mode((width, height))
-        self.screen.set_clip(0, 0, width, height)
         self.clock = pg.time.Clock()
         self.effects = pg.sprite.Group()
+        self.blockContents = pg.sprite.Group()
         self.ui = pg.sprite.Group()
         self.fadeout = pg.sprite.Group()
         self.battleEndUI = []
@@ -81,66 +82,190 @@ class Game:
         self.follower = Luigi(self, 0, 0)
         MarioUI(self)
         LuigiUI(self)
+        self.file = 1
         self.song_playing = ""
         self.storeData = {}
         self.despawnList = []
         self.hitBlockList = []
-        self.coins = 0
         self.currentPoint = 0
         self.volume = 1
-        self.room = "blank"
+        self.room = "title screen"
+        self.area = "title screen"
         fad = Fadeout(self)
         fad.alpha = 255
+        self.loops = 0
         self.running = True
         self.pause = False
         self.fullscreen = False
         self.leader = "mario"
+        self.coins = 0
+        self.items = [["Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 30 HP to one Bro.", 30],
+                      ["Super Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 60 HP to one Bro.", 60],
+                      ["Ultra Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 120 HP to one Bro.", 120],
+                      ["Max Mushroom", -1, mushroomSprite, "hp", "maxHP", "Fully restores HP to one Bro.", "maxHP"],
+                      ["Nut", -1, NutSprite, "hp", "maxHP", "Restores 20 BP for both Bros.", 20],
+                      ["Super Nut", -1, NutSprite, "hp", "maxHP", "Restores 40 BP for both Bros.", 40],
+                      ["Ultra Nut", -1, NutSprite, "hp", "maxHP", "Restores 80 BP for both Bros.", 80],
+                      ["Max Nut", -1, NutSprite, "hp", "maxHP", "Fuly restores  BP for both Bros.", "maxHP"],
+                      ["Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 10 BP to one Bro.", 10],
+                      ["Super Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 20 BP to one Bro.", 20],
+                      ["Ultra Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 30 BP to one Bro.", 30],
+                      ["Max Syrup", -1, syrupSprite, "bp", "maxBP", "Fully restores BP to one Bro.", "maxBP"],
+                      ["1-UP Mushroom", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with 1/2 HP.", "maxHP"],
+                      ["1-UP Super", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with full HP.", "maxHP"],
+                      ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.", "maxHP"]]
 
-    def playSong(self, introLength, loopLength, song, loop=True, cont=False, fadein=False, fadeinSpeed=0.05):
+    def playSong(self, introLength, loopLength, song, cont=False, fadein=False, fadeinSpeed=0.05):
         if self.song_playing != song:
             pg.mixer.music.load("music/" + song + ".ogg")
+            self.loops = 0
+
             if cont:
+                if self.currentPoint > (introLength + loopLength) * 1000:
+                    self.currentPoint -= introLength * 1000
+                    while self.currentPoint > loopLength * 1000:
+                        self.currentPoint -= loopLength * 1000
                 pg.mixer.music.play()
-                pg.mixer.music.set_pos(self.currentPoint)
+                pg.mixer.music.set_pos(self.currentPoint / 1000)
             else:
                 pg.mixer.music.play()
             self.song_playing = song
             if fadein:
                 self.volume = 0
 
-        totalLength = introLength + loopLength
         if cont:
-            soundPos = pg.mixer.music.get_pos() / 1000 + self.currentPoint
+            soundPos = ((pg.mixer.music.get_pos() + self.currentPoint) / 1000) - (loopLength * self.loops) - introLength
         else:
-            soundPos = pg.mixer.music.get_pos() / 1000
+            soundPos = (pg.mixer.music.get_pos() / 1000) - (loopLength * self.loops) - introLength
 
         if not self.pause and self.volume < 1:
             self.volume += fadeinSpeed
 
         pg.mixer.music.set_volume(self.volume)
 
-        if loop:
-            if soundPos >= totalLength and self.firstLoop:
-                self.currentPoint = 0
-                pg.mixer.music.play(0, soundPos - loopLength)
-                self.firstLoop = False
+        if soundPos > loopLength and pg.mixer.music.get_pos() > 500:
+            self.loops += 1
+            if cont:
+                pg.mixer.music.set_pos(
+                    ((pg.mixer.music.get_pos() + self.currentPoint) / 1000) - loopLength * self.loops)
+            else:
+                pg.mixer.music.set_pos((pg.mixer.music.get_pos() / 1000) - loopLength * self.loops)
+            if self.loops == 1:
                 print("YEEEEEEEEE")
-            elif soundPos >= loopLength and not self.firstLoop:
-                self.currentPoint = 0
-                pg.mixer.music.play(0, soundPos + introLength - loopLength)
+            else:
                 print("YOOOOOOOOO")
 
-    def saveGame(self):
-        with open("saves/File 1.ini", "wb") as file:
-            pickle.dump(self.storeData, file)
-            pickle.dump(self.despawnList, file)
+    def titleScreen(self):
+        
 
-    def loadGame(self):
-        with open("saves/File 1.ini", "rb") as file:
-            self.storeData = pickle.load(file)
-            self.despawnList = pickle.load(file)
+    def saveGame(self, file=1):
+        self.storeData["mario stats"] = self.player.stats
+        self.storeData["mario pos"] = self.player.rect.center
+        self.storeData["mario facing"] = self.player.facing
+        self.storeData["mario abilities"] = self.player.abilities
+        if self.player.prevAbility == 12:
+            self.storeData["mario current ability"] = self.player.ability
+        else:
+            self.storeData["mario current ability"] = self.player.prevAbility
+        self.storeData["luigi stats"] = self.follower.stats
+        self.storeData["luigi pos"] = self.follower.rect.center
+        if self.leader == "mario":
+            self.storeData["move"] = self.follower.moveQueue.copy()
+        elif self.leader == "luigi":
+            self.storeData["move"] = self.player.moveQueue.copy()
+        self.storeData["luigi facing"] = self.follower.facing
+        self.storeData["luigi abilities"] = self.follower.abilities
+        if self.follower.prevAbility == 12:
+            self.storeData["luigi current ability"] = self.follower.ability
+        else:
+            self.storeData["luigi current ability"] = self.follower.prevAbility
 
-        print(self.storeData)
+        if file == 1:
+            with open("saves/File 1.ini", "wb") as file:
+                pickle.dump(self.storeData, file)
+                pickle.dump(self.despawnList, file)
+                pickle.dump(self.hitBlockList, file)
+                pickle.dump(self.coins, file)
+                for item in self.items:
+                    pickle.dump(item[1], file)
+                pickle.dump(self.room, file)
+                pickle.dump(self.area, file)
+        if file == 2:
+            with open("saves/File 2.ini", "wb") as file:
+                pickle.dump(self.storeData, file)
+                pickle.dump(self.despawnList, file)
+                pickle.dump(self.hitBlockList, file)
+                pickle.dump(self.coins, file)
+                for item in self.items:
+                    pickle.dump(item[1], file)
+                pickle.dump(self.room, file)
+                pickle.dump(self.area, file)
+        if file == 3:
+            with open("saves/File 3.ini", "wb") as file:
+                pickle.dump(self.storeData, file)
+                pickle.dump(self.despawnList, file)
+                pickle.dump(self.hitBlockList, file)
+                pickle.dump(self.coins, file)
+                for item in self.items:
+                    pickle.dump(item[1], file)
+                pickle.dump(self.room, file)
+                pickle.dump(self.area, file)
+
+    def loadGame(self, file=1):
+        try:
+            if file == 1:
+                with open("saves/File 1.ini", "rb") as file:
+                    self.storeData = pickle.load(file)
+                    self.despawnList = pickle.load(file)
+                    self.hitBlockList = pickle.load(file)
+                    self.coins = pickle.load(file)
+                    for item in self.items:
+                        item[1] = pickle.load(file)
+                    self.room = pickle.load(file)
+                    self.area = pickle.load(file)
+            elif file == 2:
+                with open("saves/File 2.ini", "rb") as file:
+                    self.storeData = pickle.load(file)
+                    self.despawnList = pickle.load(file)
+                    self.hitBlockList = pickle.load(file)
+                    self.coins = pickle.load(file)
+                    for item in self.items:
+                        item[1] = pickle.load(file)
+                    self.room = pickle.load(file)
+                    self.area = pickle.load(file)
+            elif file == 3:
+                with open("saves/File 1.ini", "rb") as file:
+                    self.storeData = pickle.load(file)
+                    self.despawnList = pickle.load(file)
+                    self.hitBlockList = pickle.load(file)
+                    self.coins = pickle.load(file)
+                    for item in self.items:
+                        item[1] = pickle.load(file)
+                    self.room = pickle.load(file)
+                    self.area = pickle.load(file)
+            eval(self.room)
+        except:
+            print("File not found.\nStarting a new game...")
+            self.items = [["Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 30 HP to one Bro.", 30],
+                          ["Super Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 60 HP to one Bro.", 60],
+                          ["Ultra Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 120 HP to one Bro.", 120],
+                          ["Max Mushroom", -1, mushroomSprite, "hp", "maxHP", "Fully restores HP to one Bro.", "maxHP"],
+                          ["Nut", -1, NutSprite, "hp", "maxHP", "Restores 20 BP for both Bros.", 20],
+                          ["Super Nut", -1, NutSprite, "hp", "maxHP", "Restores 40 BP for both Bros.", 40],
+                          ["Ultra Nut", -1, NutSprite, "hp", "maxHP", "Restores 80 BP for both Bros.", 80],
+                          ["Max Nut", -1, NutSprite, "hp", "maxHP", "Fuly restores  BP for both Bros.", "maxHP"],
+                          ["Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 10 BP to one Bro.", 10],
+                          ["Super Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 20 BP to one Bro.", 20],
+                          ["Ultra Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 30 BP to one Bro.", 30],
+                          ["Max Syrup", -1, syrupSprite, "bp", "maxBP", "Fully restores BP to one Bro.", "maxBP"],
+                          ["1-UP Mushroom", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with 1/2 HP.", "maxHP"],
+                          ["1-UP Super", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with full HP.", "maxHP"],
+                          ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.",
+                           "maxHP"]]
+            self.despawnList = []
+            self.hitBlockList = []
+            self.coins = 0
+            self.loadDebugLevel()
 
     def loadData(self):
         self.coinSound = pg.mixer.Sound("sounds/coin.ogg")
@@ -160,12 +285,25 @@ class Game:
         self.hammerSwingSound = pg.mixer.Sound("sounds/hammer swing.ogg")
         self.hammerHitSound = pg.mixer.Sound("sounds/hammer hit.ogg")
         self.abilityAdvanceSound = pg.mixer.Sound("sounds/ability cycle.ogg")
+        self.menuOpenSound = pg.mixer.Sound("sounds/menuOpen.ogg")
+        self.menuChooseSound = pg.mixer.Sound("sounds/menuChoose.ogg")
+        self.menuCloseSound = pg.mixer.Sound("sounds/menuClose.ogg")
+        self.wrongSound = pg.mixer.Sound("sounds/menuWrong.ogg")
         self.expIncreaseSound = pg.mixer.Sound("sounds/expIncrease.ogg")
         self.expFinishedSound = pg.mixer.Sound("sounds/expIncreaseFinished.ogg")
         self.blockHitSound = pg.mixer.Sound("sounds/hitBlock.ogg")
+        self.smallRestoreSound = pg.mixer.Sound("sounds/smallRestore.ogg")
+        self.medRestoreSound = pg.mixer.Sound("sounds/medRestore.ogg")
+        self.fullRestoreSound = pg.mixer.Sound("sounds/fullRestore.ogg")
+        self.levelUpSound = pg.mixer.Sound("sounds/levelUp.ogg")
+        self.marioWahoo = pg.mixer.Sound("sounds/marioWahoo.ogg")
+        self.marioOhYeah = pg.mixer.Sound("sounds/marioOhYeah.ogg")
+        self.luigiYaHoooo = pg.mixer.Sound("sounds/luigiYaHoooo.ogg")
+        self.luigiOhHoHo = pg.mixer.Sound("sounds/luigiOhHoHo.ogg")
+        self.itemFromBlockSound = pg.mixer.Sound("sounds/itemFromBlock.ogg")
 
-    def loadBowserCastle(self):
-        self.room = "self.loadBowserCastle()"
+    def loadDebugLevel(self):
+        self.room = "self.loadDebugLevel()"
         self.playsong = True
         self.sprites = []
         self.collision = []
@@ -173,8 +311,6 @@ class Game:
         self.enemies = pg.sprite.Group()
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
-        if self.song_playing != "castle bleck":
-            self.firstLoop = True
         self.player.rect.center = (width / 2, 1278)
         self.playerCol = MarioCollision(self)
         self.follower.rect.center = (width / 2, 1278)
@@ -191,24 +327,29 @@ class Game:
         # GoombaKing(self, (self.map.width / 2 - 2, self.map.height - 620))
         MarioBlock(self, (300, self.map.height - 450))
         LuigiBlock(self, (600, self.map.height - 450))
-        Block(self, (900, self.map.height - 450))
-        LuigiBlock(self, (1100, self.map.height - 450), contents=["Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)"])
-        GoombaSmolText(self, (self.map.width / 2 - 2, self.map.height - 420), self.goombaHasTexted)
-        GoombaO(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 - 500, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 + 400, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 - 400, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 + 600, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 - 600, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 - 200, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 + 200, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 + 300, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 - 300, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 + 100, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 - 100, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 - 700, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        GoombaO(self, self.map.width / 2 + 700, self.map.height - 500, "self.loadTeeheeValleyBattle1G()")
-        CountBleck(self, (self.map.width / 2 - 5, self.map.height - 620))
+        Block(self, (900, self.map.height - 450), contents=["Other(self.game, self, 'Max Nut', 1)"])
+        LuigiBlock(self, (1100, self.map.height - 450),
+                   contents=["Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)",
+                             "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)",
+                             "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)",
+                             "Coin(self.game, self)"])
+        SaveBlock(self, (1200, self.map.height - 450))
+        LinebeckDebug(self, (self.map.width / 2 - 2, self.map.height - 420), self.goombaHasTexted)
+        GoombaODebug(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 - 500, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 + 400, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 - 400, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 + 600, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 - 600, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 - 200, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 + 200, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 + 300, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 - 300, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 + 100, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 - 100, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 - 700, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 + 700, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        CountBleckDebug(self, (self.map.width / 2 - 5, self.map.height - 620))
         try:
             self.player.rect.center = self.storeData["mario pos"]
             self.player.stats = self.storeData["mario stats"]
@@ -236,9 +377,10 @@ class Game:
             block.ID = counter
             counter += 1
 
-        self.bowserCastle()
+        self.overworld("debug", [6.749, 102.727, "castle bleck"])
 
-    def bowserCastle(self):
+    def overworld(self, area, songData):
+        menud = False
         self.playing = True
         try:
             self.player.ability = self.storeData["mario current ability"]
@@ -246,12 +388,23 @@ class Game:
             self.follower.ability = self.storeData["luigi current ability"]
             self.follower.abilities = self.storeData["luigi abilities"]
         except:
-            self.playSong(6.749, 102.727, "castle bleck")
+            pass
+        if self.area != area:
+            self.playSong(songData[0], songData[1], songData[2])
+            self.area = area
         while self.playing:
             if self.playsong:
-                self.playSong(6.749, 102.727, "castle bleck", cont=True, fadein=True)
+                self.playSong(songData[0], songData[1], songData[2], cont=True, fadein=True)
             self.clock.tick(fps)
             self.events()
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_TAB:
+                        self.player.canMove = False
+                        self.follower.canMove = False
+                        menud = True
+                        self.pause = True
+                        self.overworldMenu(songData)
             if len(self.fadeout) != 0:
                 self.updateOverworld()
                 self.pause = False
@@ -260,10 +413,235 @@ class Game:
             self.screen.fill(black)
             self.drawOverworld()
 
-    def loadBattle(self, function):
+            if menud:
+                self.player.canMove = True
+                self.follower.canMove = True
+                menud = False
+
+    def overworldMenu(self, song=None):
+        self.menuOpenSound.play()
+        going = True
+        select = 0
+        itemMenu = pg.image.load("sprites/ui/itemsIcon.png").convert_alpha()
+        itemRect = itemMenu.get_rect()
+        brosMenu = pg.image.load("sprites/ui/statsIcon.png").convert_alpha()
+        brosRect = brosMenu.get_rect()
+        itemRect.center = (((width / 2) - (itemRect.width / 2)) - 100, height / 2)
+        brosRect.center = (((width / 2) + (brosRect.width / 2)) + 100, height / 2)
+        coinAmount = pg.transform.flip(pg.image.load("sprites/ui/enemySelection.png").convert_alpha(), True, True)
+        sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
+        coinIcon = [sheet.getImageName("coin_1.png"),
+                    sheet.getImageName("coin_2.png"),
+                    sheet.getImageName("coin_3.png"),
+                    sheet.getImageName("coin_4.png"),
+                    sheet.getImageName("coin_5.png"),
+                    sheet.getImageName("coin_6.png"),
+                    sheet.getImageName("coin_7.png"),
+                    sheet.getImageName("coin_8.png")]
+        coinIconRect = coinIcon[0].get_rect()
+        coinRect = coinAmount.get_rect()
+        coinRect.right = width
+        coinRect.bottom = height
+        coinIconRect.center = (coinRect.left + 50, coinRect.centery + 10)
+        name = EnemyNames(self, "Items")
+        cursor = Cursor(self, itemRect)
+        lastUpdate = 0
+        currentFrame = 0
+        print(song)
+        while going and self.pause:
+            now = pg.time.get_ticks()
+            if now - lastUpdate > 45:
+                lastUpdate = now
+                if currentFrame < len(coinIcon):
+                    currentFrame = (currentFrame + 1) % (len(coinIcon))
+                else:
+                    currentFrame = 0
+                center = coinIconRect.center
+                coinIconRect = coinIcon[currentFrame].get_rect()
+                coinIconRect.center = center
+            self.clock.tick(fps)
+            if song is not None:
+                self.playSong(song[0], song[1], song[2], cont=True, fadein=True)
+
+            self.fadeout.update()
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_a or event.key == pg.K_d:
+                        if select == 0:
+                            select = 1
+                        elif select == 1:
+                            select = 0
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if select == 0:
+                            canMenu = False
+                            for item in self.items:
+                                if item[1] >= 0:
+                                    canMenu = True
+                            if canMenu:
+                                going = False
+                                self.menuChooseSound.play()
+                                self.itemSelect(song)
+                            else:
+                                self.wrongSound.play()
+                        if select == 1:
+                            going = False
+                            self.menuChooseSound.play()
+                            self.brosStats(song)
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            if select == 0:
+                name.update("Items")
+                cursor.update(itemRect, 60)
+            if select == 1:
+                name.update("Statistics")
+                cursor.update(brosRect, 60)
+
+            self.drawOverworldMenu()
+            self.screen.blit(itemMenu, itemRect)
+            self.screen.blit(s, sRect)
+            canMenu = False
+            for item in self.items:
+                if item[1] >= 0:
+                    canMenu = True
+            if canMenu:
+                self.screen.blit(itemMenu, itemRect)
+            self.screen.blit(brosMenu, brosRect)
+            self.screen.blit(cursor.image, cursor.rect)
+            self.screen.blit(coinAmount, coinRect)
+            self.screen.blit(coinIcon[currentFrame], coinIconRect)
+            ptext.draw("X" + str(self.coins), (coinRect.left + 100, coinIconRect.centery), fontname=dialogueFont, owidth=1, anchor=(0, 0.5),
+                       surf=self.screen, fontsize=50, color=white)
+            name.draw()
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+
+    def brosStats(self, song=None):
+        going = True
+        up = True
+        alpha = 0
+        rect = pg.rect.Rect(0, 0, 0, 0)
+        rect.center = (150, 150)
+        select = "Mario"
+        name = EnemyNames(self, select + "'s Stats")
+
+        Mhp = MenuIcon(self, (150, 150), "HP: " + str(self.player.stats["hp"]) + "/" + str(self.player.stats["maxHP"]),
+                       hpSprite)
+        Mbp = MenuIcon(self, (150, 250), "BP: " + str(self.player.stats["bp"]) + "/" + str(self.player.stats["maxBP"]),
+                       bpSprite)
+        Mpow = MenuIcon(self, (150, 350), "POW: " + str(self.player.stats["pow"]), powSprite)
+        Mdefense = MenuIcon(self, (150, 450), "DEF: " + str(self.player.stats["def"]), defSprite)
+        Mlevel = MenuIcon(self, (750, height / 2 - 80), "LEVEL: " + str(self.player.stats["level"]), None)
+        Mexp = MenuIcon(self, (750, height / 2), "EXP: " + str(self.player.stats["exp"]), None)
+        if self.player.stats["level"] < 100:
+            MnextLevel = MenuIcon(self, (750, height / 2 + 40),
+                                  "NEXT LEVEL: " + str(round((4 * (self.player.stats["level"] ** 3)) / 5) + 5), None)
+        else:
+            MnextLevel = MenuIcon(self, (750, height / 2 + 40),
+                                  "NEXT LEVEL: N/A", None)
+        Mstats = [Mhp, Mbp, Mpow, Mdefense, Mlevel, Mexp, MnextLevel]
+
+        Lhp = MenuIcon(self, (150, 150),
+                       "HP: " + str(self.follower.stats["hp"]) + "/" + str(self.follower.stats["maxHP"]), hpSprite)
+        Lbp = MenuIcon(self, (150, 250),
+                       "BP: " + str(self.follower.stats["bp"]) + "/" + str(self.follower.stats["maxBP"]), bpSprite)
+        Lpow = MenuIcon(self, (150, 350), "POW: " + str(self.follower.stats["pow"]), powSprite)
+        Ldefense = MenuIcon(self, (150, 450), "DEF: " + str(self.follower.stats["def"]), defSprite)
+        Llevel = MenuIcon(self, (750, height / 2 - 80), "LEVEL: " + str(self.follower.stats["level"]), None)
+        Lexp = MenuIcon(self, (750, height / 2), "EXP: " + str(self.follower.stats["exp"]), None)
+        if self.follower.stats["level"] < 100:
+            LnextLevel = MenuIcon(self, (750, height / 2 + 40),
+                                  "NEXT LEVEL: " + str(round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5),
+                                  None)
+        else:
+            LnextLevel = MenuIcon(self, (750, height / 2 + 40),
+                                  "NEXT LEVEL: N/A", None)
+        Lstats = [Lhp, Lbp, Lpow, Ldefense, Llevel, Lexp, LnextLevel]
+
+        while going:
+            if up:
+                alpha += 10
+                if alpha >= 255:
+                    up = not up
+            else:
+                alpha -= 10
+                if alpha <= 5:
+                    up = not up
+            self.fadeout.update()
+            self.clock.tick(fps)
+            if song is not None:
+                self.playSong(song[0], song[1], song[2], cont=True, fadein=True)
+
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_a or event.key == pg.K_d:
+                        if select == "Mario":
+                            select = "Luigi"
+                        elif select == "Luigi":
+                            select = "Mario"
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+                    if event.key == pg.K_TAB:
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            name.update(select)
+
+            self.screen.fill(black)
+            if type(song) is list:
+                self.drawOverworldMenu()
+            else:
+                self.drawBattleMenu()
+            self.screen.blit(s, sRect)
+            if select == "Mario":
+                self.blit_alpha(self.screen, self.player.image, self.camera.offset(self.player.imgRect), alpha)
+                [s.draw() for s in Mstats]
+            elif select == "Luigi":
+                self.blit_alpha(self.screen, self.follower.image, self.camera.offset(self.follower.imgRect), alpha)
+                [s.draw() for s in Lstats]
+            name.draw()
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+            else:
+                break
+
+    def loadBattle(self, function, currentPoint=True):
+        self.player.isHammer = None
+        self.follower.isHammer = None
         self.battleXp = 0
         self.battleCoins = 0
-        self.currentPoint += pg.mixer.music.get_pos() / 1000
+        if currentPoint:
+            self.currentPoint += pg.mixer.music.get_pos()
         pg.mixer.music.stop()
         self.battleSound.play()
         trans = BattleTransition(self)
@@ -298,7 +676,7 @@ class Game:
                 self.pause = False
                 eval(function)
 
-    def loadTeeheeValleyBattle15G(self):
+    def loadMultiEnemyDebug(self):
         self.room = "battle"
         self.sprites = []
         self.collision = []
@@ -366,9 +744,10 @@ class Game:
         self.player.stepSound = self.sandSound
         self.map = loadMap("teehee valley battle", True)
         self.camera = Camera(self.map.width, self.map.height)
-        self.teeheeValleyBattle2()
+        # self.battle('self.playSong(54.965, 191.98, "New Soup Final Boss")')
+        self.battle('self.playSong(8.148, 71.893, "Vs Linebeck")')
 
-    def loadTeeheeValleyBattle1G(self):
+    def loadSingleEnemyDebug(self):
         self.room = "battle"
         self.sprites = []
         self.collision = []
@@ -430,56 +809,742 @@ class Game:
             self.follower.stats = self.storeData["luigi stats"]
         except:
             pass
-        self.teeheeValleyBattle()
+        self.battle()
 
-    def teeheeValleyBattle(self):
+    def battle(self, song=None):
+        menud = False
+        self.countdown = 0
         self.playing = True
         self.player.ability = self.storeData["mario current ability"]
         self.player.abilities = self.storeData["mario abilities"]
         self.follower.ability = self.storeData["luigi current ability"]
         self.follower.abilities = self.storeData["luigi abilities"]
         self.cameraRect = CameraRect()
-        pg.mixer.music.load("music/battle.ogg")
-        pg.mixer.music.play(-1)
+        if song is None:
+            pg.mixer.music.load("music/battle.ogg")
+            pg.mixer.music.play(-1)
         while self.playing:
+            if song is not None:
+                eval(song)
             self.clock.tick(fps)
             self.events()
-            if not self.pause:
-                self.updateBattle()
-            else:
-                self.enemySelect()
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_TAB:
+                        if self.countdown == 0:
+                            self.player.canMove = False
+                            self.follower.canMove = False
+                            menud = True
+                            self.battleMenu(song)
+                        else:
+                            self.wrongSound.play()
+            self.updateBattle()
             self.screen.fill(black)
             self.drawBattle()
+            if self.countdown != 0:
+                self.countdown -= 1
             # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
             #     self.gameOver()
+            if menud:
+                self.player.canMove = True
+                self.follower.canMove = True
+                menud = False
             if len(self.enemies) == 0:
                 self.battleOver()
 
-    def teeheeValleyBattle2(self):
-        self.playing = True
-        self.player.ability = self.storeData["mario current ability"]
-        self.player.abilities = self.storeData["mario abilities"]
-        self.follower.ability = self.storeData["luigi current ability"]
-        self.follower.abilities = self.storeData["luigi abilities"]
-        self.cameraRect = CameraRect()
-        while self.playing:
-            self.playSong(54.965, 191.98, "new soup final boss")
-            self.clock.tick(fps)
-            self.events()
-            if not self.pause:
-                self.updateBattle()
-            else:
-                self.enemySelect('self.playSong(54.965, 191.98, "new soup final boss")')
-            self.screen.fill(black)
-            self.drawBattle()
-            # if self.player.stats["hp"] <= 0 and self.follower.stats["hp"] <= 0:
-            #     self.gameOver()
-            if len(self.enemies) == 0:
-                self.battleOver()
-
-    def enemySelect(self, song=None):
+    def battleMenu(self, song=None):
+        self.menuOpenSound.play()
         going = True
-        attack = False
+        select = 0
+        itemMenu = pg.image.load("sprites/ui/itemsIcon.png").convert_alpha()
+        itemRect = itemMenu.get_rect()
+        checkEnemies = pg.image.load("sprites/ui/Enemy Check.png").convert_alpha()
+        checkRect = checkEnemies.get_rect()
+        checkRect.center = (width / 2, height - 100)
+        if self.player.attackPieces[0][1] >= 10:
+            brosMenu = pg.image.load("sprites/ui/brosAttacksIcon.png").convert_alpha()
+            brosRect = brosMenu.get_rect()
+            itemRect.center = (((width / 2) - (itemRect.width / 2)) - 100, height / 2)
+            brosRect.center = (((width / 2) + (brosRect.width / 2)) + 100, height / 2)
+        else:
+            itemRect.center = (width / 2, height / 2)
+        name = EnemyNames(self, "Items")
+        cursor = Cursor(self, itemRect)
+        print(song)
+        while going and self.pause:
+            self.clock.tick(fps)
+            if song is not None:
+                eval(song)
+
+            self.fadeout.update()
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_a or event.key == pg.K_d:
+                        if self.player.attackPieces[0][1] >= 10:
+                            if select == 0:
+                                select = 1
+                            elif select == 1:
+                                select = 0
+                            if select == 2:
+                                if event.key == pg.K_a:
+                                    select = 0
+                                else:
+                                    select = 1
+                            self.abilityAdvanceSound.play()
+                        else:
+                            if select == 2:
+                                select = 0
+                    if event.key == pg.K_w or event.key == pg.K_s:
+                        if select != 2:
+                            select = 2
+                        else:
+                            select = 0
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if select == 1:
+                            if self.player.dead or self.follower.dead:
+                                self.wrongSound.play()
+                            else:
+                                going = False
+                                self.menuChooseSound.play()
+                                self.brosAttackSelect(song)
+                        if select == 0:
+                            canMenu = False
+                            for item in self.items:
+                                if item[1] >= 0:
+                                    canMenu = True
+                            if canMenu:
+                                going = False
+                                self.menuChooseSound.play()
+                                self.itemSelect(song)
+                            else:
+                                self.wrongSound.play()
+                        if select == 2:
+                            self.menuChooseSound.play()
+                            going = False
+                            self.enemySelect("self.enemyCheck(enemies[0], song=song)", song=song, fadeout=False)
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            if select == 0:
+                name.update("Items")
+                cursor.update(itemRect, 60)
+            elif select == 1:
+                name.update("Bros. Attacks")
+                cursor.update(brosRect, 60)
+            elif select == 2:
+                name.update("Check Enemies")
+                cursor.update(checkRect, 60)
+
+            self.drawBattleMenu()
+            if self.player.attackPieces[0][1] >= 10:
+                self.screen.blit(brosMenu, brosRect)
+            self.screen.blit(itemMenu, itemRect)
+            self.screen.blit(s, sRect)
+            canMenu = False
+            for item in self.items:
+                if item[1] >= 0:
+                    canMenu = True
+            if canMenu:
+                self.screen.blit(itemMenu, itemRect)
+            if self.player.attackPieces[0][1] >= 10 and not self.player.dead and not self.follower.dead:
+                self.screen.blit(brosMenu, brosRect)
+            self.screen.blit(checkEnemies, checkRect)
+            self.screen.blit(cursor.image, cursor.rect)
+            name.draw()
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+
+    def brosAttackSelect(self, song=None):
+        self.player.alpha = 255
+        self.follower.alpha = 255
+        cursor = Cursor(self, self.player.imgRect)
+        name = EnemyNames(self, "Mario")
+        going = True
+        up = True
+        alpha = 0
+        select = 0
+        while going:
+            if up:
+                alpha += 10
+                if alpha >= 255:
+                    up = not up
+            else:
+                alpha -= 10
+                if alpha <= 5:
+                    up = not up
+            self.clock.tick(fps)
+            if song is not None:
+                eval(song)
+
+            self.fadeout.update()
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_a or event.key == pg.K_d:
+                        if select == 0:
+                            select = 1
+                        elif select == 1:
+                            select = 0
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if select == 1:
+                            going = False
+                            self.menuChooseSound.play()
+                            self.luigiAttackSelect(song)
+                        if select == 0:
+                            self.menuChooseSound.play()
+                            going = False
+                            self.marioAttackSelect(song)
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            if select == 0:
+                name.update("Mario")
+                cursor.update(self.player.imgRect, 60)
+            elif select == 1:
+                name.update("Luigi")
+                cursor.update(self.follower.imgRect, 60)
+
+            self.drawBattleMenu()
+            self.screen.blit(s, sRect)
+            if select == 0:
+                self.blit_alpha(self.screen, self.player.image, self.camera.offset(self.player.imgRect), alpha)
+            elif select == 1:
+                self.blit_alpha(self.screen, self.follower.image, self.camera.offset(self.follower.imgRect), alpha)
+            self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
+            name.draw()
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+
+    def itemSelect(self, song=None):
+        cursor = Cursor(self, self.player.imgRect)
+        marioBP = MarioRecoverables(self)
+        luigiBP = LuigiRecoverables(self)
+        bp = [marioBP, luigiBP]
+        going = True
+        menuIcons = []
+        rect = pg.rect.Rect(0, 0, 0, 0)
+        rect.center = (150, 150)
+        select = 0
+        for item in self.items:
+            if item[1] == 1:
+                if item[0] == "Star Cand":
+                    menuIcons.append(MenuIcon(self, rect.center, item[0] + "y X" + str(
+                        item[1]), item[2], item))
+                else:
+                    menuIcons.append(MenuIcon(self, rect.center, item[0] + " X" + str(
+                        item[1]), item[2], item))
+                rect.y += 100
+            elif item[1] >= 0:
+                if item[0] == "Star Cand":
+                    menuIcons.append(MenuIcon(self, rect.center, item[0] + "ies X" + str(
+                        item[1]), item[2], item))
+                else:
+                    menuIcons.append(MenuIcon(self, rect.center, item[0] + "s X" + str(
+                        item[1]), item[2], item))
+                rect.y += 100
+
+        for icon in menuIcons:
+            icon.color = darkGray
+            if icon.info[1] > 0:
+                try:
+                    if self.player.stats[icon.info[3]] < self.player.stats[icon.info[4]] - 1:
+                        icon.color = white
+                    if self.follower.stats[icon.info[3]] < self.follower.stats[icon.info[4]] - 1:
+                        icon.color = white
+                except:
+                    if self.player.stats[icon.info[3]] < icon.info[4] - 1:
+                        icon.color = white
+                    if self.follower.stats[icon.info[3]] < icon.info[4] - 1:
+                        icon.color = white
+                if "Star Cand" in icon.info[0]:
+                    if self.player.stats["hp"] < self.player.stats["maxHP"] or self.player.stats["bp"] < \
+                            self.player.stats["maxBP"]:
+                        icon.color = white
+                    if self.follower.stats["hp"] < self.follower.stats["maxHP"] or self.follower.stats["bp"] < \
+                            self.follower.stats["maxBP"]:
+                        icon.color = white
+                if "1-UP" in icon.info[0]:
+                    if self.player.dead or self.follower.dead:
+                        icon.color = white
+
+        menuCamera = Camera(width, menuIcons[-1].rect.bottom + (width / 2))
+        name = EnemyNames(self, menuIcons[0].info[-2],
+                          pg.image.load("sprites/ui/enemySelectionFullScreen.png").convert_alpha())
+
+        while going:
+            self.fadeout.update()
+            self.clock.tick(fps)
+            if song is not None:
+                if type(song) is str:
+                    eval(song)
+                elif type(song) is list:
+                    self.playSong(song[0], song[1], song[2], cont=True, fadein=True)
+
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_w or event.key == pg.K_a:
+                        if len(menuIcons) != 1:
+                            select -= 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_s or event.key == pg.K_d:
+                        if len(menuIcons) != 1:
+                            select += 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if menuIcons[select].color != darkGray:
+                            going = False
+                            self.menuChooseSound.play()
+                            self.brosItemSelect(song, menuIcons[select].info)
+                        else:
+                            self.wrongSound.play()
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            cursor.update(menuIcons[select].rect, 60)
+            name.update(menuIcons[select].info[-2])
+            rect.center = cursor.rect.center
+            menuCamera.update(rect)
+            recoverable = menuIcons[select].info[3]
+
+            self.screen.fill(black)
+            if type(song) is list:
+                self.drawOverworldMenu()
+            else:
+                self.drawBattleMenu()
+            self.screen.blit(s, sRect)
+            [a.draw(menuCamera.offset(a.rect)) for a in menuIcons]
+            [bp.draw(recoverable) for bp in bp]
+            name.draw()
+            self.screen.blit(cursor.image, menuCamera.offset(cursor.rect))
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+            else:
+                break
+
+    def brosItemSelect(self, song=None, info=None):
+        self.player.alpha = 255
+        self.follower.alpha = 255
+        cursor = Cursor(self, self.player.imgRect)
+        name = EnemyNames(self, "Mario")
+        going = True
+        up = True
+        alpha = 0
+        select = 0
+        while going:
+            if up:
+                alpha += 10
+                if alpha >= 255:
+                    up = not up
+            else:
+                alpha -= 10
+                if alpha <= 5:
+                    up = not up
+            self.clock.tick(fps)
+            if song is not None:
+                if type(song) is str:
+                    eval(song)
+                elif type(song) is list:
+                    self.playSong(song[0], song[1], song[2], cont=True, fadein=True)
+
+            self.fadeout.update()
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_a or event.key == pg.K_d:
+                        if select == 0:
+                            select = 1
+                        elif select == 1:
+                            select = 0
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if select == 1:
+                            self.pause = False
+                            going = False
+                            self.menuChooseSound.play()
+                            if "Nut" in info[0]:
+                                if "Max" in info[0]:
+                                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                                    self.player.stats["hp"] = self.player.stats["maxHP"]
+                                else:
+                                    self.follower.stats[info[3]] += info[-1]
+                                    self.player.stats[info[3]] += info[-1]
+                            elif "Star Cand" in info[0]:
+                                self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                                self.follower.stats["bp"] = self.follower.stats["maxBP"]
+                            elif "Max " in info[0]:
+                                self.follower.stats[info[3]] = self.follower.stats[info[4]]
+                            elif "1-UP " in info[0]:
+                                if "Mushroom" in info[0]:
+                                    self.follower.stats["hp"] = round(self.follower.stats["maxHP"] / 2)
+                                else:
+                                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                                self.follower.dead = False
+                                center = self.follower.rect.center
+                                self.follower.shadow = self.follower.shadowFrames["normal"]
+                                self.follower.rect = self.follower.shadow.get_rect()
+                                self.follower.rect.center = center
+                                self.follower.jumping = True
+                                self.jumpSound.play()
+                            else:
+                                self.follower.stats[info[3]] += info[-1]
+
+                            if self.player.stats["hp"] > self.player.stats["maxHP"]:
+                                self.player.stats["hp"] = self.player.stats["maxHP"]
+                            if self.player.stats["bp"] > self.player.stats["maxBP"]:
+                                self.player.stats["bp"] = self.player.stats["maxBP"]
+                            if self.follower.stats["hp"] > self.follower.stats["maxHP"]:
+                                self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                            if self.follower.stats["bp"] > self.follower.stats["maxBP"]:
+                                self.follower.stats["bp"] = self.follower.stats["maxBP"]
+                            info[1] -= 1
+                            pg.event.clear()
+                        if select == 0:
+                            self.pause = False
+                            self.menuChooseSound.play()
+                            going = False
+                            if "Nut" in info[0]:
+                                if "Max" in info[0]:
+                                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                                    self.player.stats["hp"] = self.player.stats["maxHP"]
+                                else:
+                                    self.follower.stats[info[3]] += info[-1]
+                                    self.player.stats[info[3]] += info[-1]
+                            elif "Star Cand" in info[0]:
+                                self.player.stats["hp"] = self.player.stats["maxHP"]
+                                self.player.stats["bp"] = self.player.stats["maxBP"]
+                            elif "Max " in info[0]:
+                                self.player.stats[info[3]] = self.player.stats[info[4]]
+                            elif "1-UP " in info[0]:
+                                if "Mushroom" in info[0]:
+                                    self.player.stats["hp"] = round(self.player.stats["maxHP"] / 2)
+                                else:
+                                    self.player.stats["hp"] = self.player.stats["maxHP"]
+                                self.player.dead = False
+                                center = self.player.rect.center
+                                self.player.shadow = self.player.shadowFrames["normal"]
+                                self.player.rect = self.player.shadow.get_rect()
+                                self.player.rect.center = center
+                                self.player.jumping = True
+                                self.jumpSound.play()
+                            else:
+                                self.player.stats[info[3]] += info[-1]
+                            if self.player.stats["hp"] > self.player.stats["maxHP"]:
+                                self.player.stats["hp"] = self.player.stats["maxHP"]
+                            if self.player.stats["bp"] > self.player.stats["maxBP"]:
+                                self.player.stats["bp"] = self.player.stats["maxBP"]
+                            if self.follower.stats["hp"] > self.follower.stats["maxHP"]:
+                                self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                            if self.follower.stats["bp"] > self.follower.stats["maxBP"]:
+                                self.follower.stats["bp"] = self.follower.stats["maxBP"]
+                            info[1] -= 1
+                            pg.event.clear()
+                        if "1-UP" in info[0]:
+                            self.fullRestoreSound.play()
+                        elif "Super" in info[0]:
+                            self.medRestoreSound.play()
+                        elif "Ultra" in info[0]:
+                            self.medRestoreSound.play()
+                        elif "Max" in info[0]:
+                            self.fullRestoreSound.play()
+                        else:
+                            self.smallRestoreSound.play()
+
+                        self.countdown = fps * 10
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            if select == 0:
+                name.update("Mario")
+                cursor.update(self.player.imgRect, 60)
+            elif select == 1:
+                name.update("Luigi")
+                cursor.update(self.follower.imgRect, 60)
+
+            if type(song) is list:
+                self.drawOverworldMenu()
+            else:
+                self.drawBattleMenu()
+            self.screen.blit(s, sRect)
+            if select == 0:
+                self.blit_alpha(self.screen, self.player.image, self.camera.offset(self.player.imgRect), alpha)
+            elif select == 1:
+                self.blit_alpha(self.screen, self.follower.image, self.camera.offset(self.follower.imgRect), alpha)
+            self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
+            name.draw()
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+
+    def marioAttackSelect(self, song=None):
+        cursor = Cursor(self, self.player.imgRect)
+        marioBP = MarioRecoverables(self)
+        luigiBP = LuigiRecoverables(self)
+        bp = [marioBP, luigiBP]
+        going = True
+        menuIcons = []
+        rect = pg.rect.Rect(0, 0, 0, 0)
+        rect.center = (150, 150)
+        counter = 0
+        select = 0
+        for pieces in self.player.attackPieces:
+            if pieces[1] == 10:
+                menuIcons.append(MenuIcon(self, rect.center, self.player.brosAttacks[counter][0] + " (" + str(
+                    self.player.brosAttacks[counter][4]) + " BP)", self.player.brosAttacks[counter][2]))
+            elif 10 > pieces[1] > 0:
+                menuIcons.append(MenuIcon(self, rect.center, pieces[0] + " Attack Pieces: " + str(pieces[1]) + "/10"))
+            rect.y += 100
+            counter += 1
+
+        for icon in menuIcons:
+            if self.player.attackPieces[int((icon.rect.centery - 150) / 100)][1] < 10:
+                icon.color = darkGray
+
+        while going:
+            self.fadeout.update()
+            self.clock.tick(fps)
+            if song is not None:
+                eval(song)
+
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_w or event.key == pg.K_a:
+                        if len(menuIcons) != 1:
+                            select -= 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_s or event.key == pg.K_d:
+                        if len(menuIcons) != 1:
+                            select += 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if self.player.attackPieces[int((menuIcons[select].rect.centery - 150) / 100)][1] == 10:
+                            if self.player.stats["bp"] >= \
+                                    self.player.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][4]:
+                                self.player.stats["bp"] -= \
+                                    self.player.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][4]
+                                self.menuChooseSound.play()
+                                self.enemySelect(
+                                    self.player.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][1],
+                                    self.player.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][3], song,
+                                    cost=self.player.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][4],
+                                    bro="mario")
+                            else:
+                                self.wrongSound.play()
+                        else:
+                            self.wrongSound.play()
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            cursor.update(menuIcons[select].rect, 60)
+
+            for icon in menuIcons:
+                if self.player.attackPieces[int((icon.rect.centery - 150) / 100)][1] < 10:
+                    icon.color = darkGray
+                elif self.player.brosAttacks[int((icon.rect.centery - 150) / 100)][4] > self.player.stats["bp"]:
+                    icon.color = darkGray
+
+            self.screen.fill(black)
+            self.drawBattleMenu()
+            self.screen.blit(s, sRect)
+            [a.draw() for a in menuIcons]
+            [bp.draw() for bp in bp]
+            self.screen.blit(cursor.image, cursor.rect)
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+            else:
+                break
+
+    def luigiAttackSelect(self, song=None):
+        cursor = Cursor(self, self.follower.imgRect)
+        marioBP = MarioRecoverables(self)
+        luigiBP = LuigiRecoverables(self)
+        bp = [marioBP, luigiBP]
+        going = True
+        menuIcons = []
+        rect = pg.rect.Rect(0, 0, 0, 0)
+        rect.center = (150, 150)
+        counter = 0
+        select = 0
+        for pieces in self.follower.attackPieces:
+            if pieces[1] == 10:
+                menuIcons.append(MenuIcon(self, rect.center, self.follower.brosAttacks[counter][0] + " (" + str(
+                    self.follower.brosAttacks[counter][4]) + " BP)", self.follower.brosAttacks[counter][2]))
+            elif 10 > pieces[1] > 0:
+                menuIcons.append(MenuIcon(self, rect.center, pieces[0] + " Attack Pieces: " + str(pieces[1]) + "/10"))
+            rect.y += 100
+            counter += 1
+
+        for icon in menuIcons:
+            if self.follower.attackPieces[int((icon.rect.centery - 150) / 100)][1] < 10:
+                icon.color = darkGray
+
+        while going:
+            self.fadeout.update()
+            self.clock.tick(fps)
+            if song is not None:
+                eval(song)
+
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_w or event.key == pg.K_a:
+                        if len(menuIcons) != 1:
+                            select -= 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_s or event.key == pg.K_d:
+                        if len(menuIcons) != 1:
+                            select += 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if self.follower.attackPieces[int((menuIcons[select].rect.centery - 150) / 100)][1] == 10:
+                            if self.follower.stats["bp"] >= \
+                                    self.follower.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][4]:
+                                self.follower.stats["bp"] -= \
+                                    self.follower.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][4]
+                                self.menuChooseSound.play()
+                                self.enemySelect(
+                                    self.follower.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][1],
+                                    self.follower.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][3],
+                                    song,
+                                    cost=self.follower.brosAttacks[int((menuIcons[select].rect.centery - 150) / 100)][
+                                        4],
+                                    bro="luigi")
+                            else:
+                                self.wrongSound.play()
+                        else:
+                            self.wrongSound.play()
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            cursor.update(menuIcons[select].rect, 60)
+
+            for icon in menuIcons:
+                if self.follower.attackPieces[int((icon.rect.centery - 150) / 100)][1] < 10:
+                    icon.color = darkGray
+                elif self.follower.brosAttacks[int((icon.rect.centery - 150) / 100)][4] > self.follower.stats["bp"]:
+                    icon.color = darkGray
+
+            self.screen.fill(black)
+            self.drawBattleMenu()
+            self.screen.blit(s, sRect)
+            [a.draw() for a in menuIcons]
+            [bp.draw() for bp in bp]
+            self.screen.blit(cursor.image, cursor.rect)
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+            else:
+                break
+
+    def enemySelect(self, command, size=0, song=None, fadeout=True, bro="mario", cost=0):
+        going = True
+        attacking = False
+        alpha = 255
+        up = True
         for enemy in self.enemies:
             if enemy.stats["hp"] <= 0:
                 self.battleCoins += enemy.stats["coins"]
@@ -490,12 +1555,20 @@ class Game:
         if len(self.enemies) != 0:
             cursor = Cursor(self, self.enemies[0].imgRect)
             enemyNames = EnemyNames(self, self.enemies[0].stats["name"])
-            self.abilityAdvanceSound.play()
         else:
             going = False
         number = 0
-        colCircle = pg.rect.Rect(0, 0, 100, 100)
+        colRect = pg.rect.Rect(0, 0, size, size)
         while going:
+            self.clock.tick(fps)
+            if up:
+                alpha += 10
+                if alpha >= 255:
+                    up = not up
+            else:
+                alpha -= 10
+                if alpha <= 5:
+                    up = not up
             if song is not None:
                 eval(song)
             self.fadeout.update()
@@ -525,48 +1598,80 @@ class Game:
                         if len(self.enemies) > 1:
                             self.abilityAdvanceSound.play()
                     if event.key == pg.K_m or event.key == pg.K_l:
-                        going = False
-                        attack = True
-                    if event.key == pg.K_TAB:
                         cursor.kill()
-                        self.pause = False
+                        self.countdown = fps * 10
+                        if fadeout:
+                            going = False
+                            attacking = True
+                        else:
+                            going = False
+                            enemies = [self.enemies[number]]
+                            for enemy in self.enemies:
+                                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
+                                    enemies.append(enemy)
+                            eval(command)
+                    if event.key == pg.K_TAB:
+                        if bro == "mario":
+                            self.player.stats["bp"] += cost
+                        else:
+                            self.follower.stats["bp"] += cost
+                        self.menuCloseSound.play()
+                        cursor.kill()
                         going = False
-            self.drawBattleBrosAttack()
+                        self.pause = False
+            self.drawBattleMenu()
+            self.blit_alpha(self.screen, self.enemies[number].image,
+                            self.camera.offset(self.enemies[number].imgRect),
+                            255)
             self.screen.blit(s, sRect)
-            colCircle.center = self.enemies[number].rect.center
+            colRect.center = self.enemies[number].rect.center
             for enemy in self.enemies:
-                if colCircle.colliderect(enemy.rect):
+                if colRect.colliderect(enemy.rect) and enemy.rect.center != colRect.center:
                     self.blit_alpha(self.screen, enemy.image,
                                     self.camera.offset(enemy.imgRect),
                                     enemy.alpha)
-                    pg.draw.rect(self.screen, darkGray,
-                                 self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
-                                             enemy.rect.width, 10)))
-                    if enemy.rectHP >= 0:
-                        pg.draw.rect(self.screen, red, self.camera.offset(
-                            pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
-                                    (enemy.rect.width * (
-                                                enemy.rectHP / enemy.stats["maxHP"])), 10)))
-                    pg.draw.rect(self.screen, black,
-                                 self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
-                                             enemy.rect.width, 10)),
-                                 1)
+            self.blit_alpha(self.screen, self.enemies[number].image,
+                            self.camera.offset(self.enemies[number].imgRect),
+                            alpha)
+            pg.draw.rect(self.screen, darkGray,
+                         self.camera.offset(
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                     self.enemies[number].rect.width, 10)))
+            if self.enemies[number].rectHP >= 0:
+                pg.draw.rect(self.screen, red, self.camera.offset(
+                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                            (self.enemies[number].rect.width * (
+                                    self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
+            pg.draw.rect(self.screen, black,
+                         self.camera.offset(
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                     self.enemies[number].rect.width, 10)),
+                         1)
 
             self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
             enemyNames.draw()
 
             [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
-            pg.display.flip()
-        if attack:
+            if self.pause:
+                pg.display.flip()
+        if attacking:
+            self.menuChooseSound.play()
+            if up:
+                alpha += 10
+                if alpha >= 255:
+                    up = not up
+            else:
+                alpha -= 10
+                if alpha <= 5:
+                    up = not up
             fad = Fadeout(self)
-            enemies = []
+            enemies = [self.enemies[number]]
             for enemy in self.enemies:
-                if colCircle.colliderect(enemy.imgRect):
+                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
                     enemies.append(enemy)
             while True:
+                self.clock.tick(fps)
                 s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
                 sRect = s.get_rect()
                 s.fill(black)
@@ -582,40 +1687,86 @@ class Game:
                     cursor.kill()
                     self.pause = False
                     self.room = "bros attack"
-                    self.greenShell(enemies, song)
+                    eval(command)
                     break
                 self.event = pg.event.get().copy()
                 for event in self.event:
                     if event == pg.QUIT or keys[pg.K_ESCAPE]:
                         pg.quit()
-                self.drawBattleBrosAttack()
+                self.drawBattleMenu()
+                self.blit_alpha(self.screen, self.enemies[number].image,
+                                self.camera.offset(self.enemies[number].imgRect),
+                                255)
                 self.screen.blit(s, sRect)
                 for enemy in self.enemies:
-                    if colCircle.colliderect(enemy.rect):
+                    if colRect.colliderect(enemy.imgRect):
                         self.blit_alpha(self.screen, enemy.image,
                                         self.camera.offset(enemy.imgRect),
                                         enemy.alpha)
-                        pg.draw.rect(self.screen, darkGray,
-                                     self.camera.offset(
-                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
-                                                 enemy.rect.width, 10)))
-                        if enemy.rectHP >= 0:
-                            pg.draw.rect(self.screen, red, self.camera.offset(
-                                pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
-                                        (enemy.rect.width * (
-                                                enemy.rectHP / enemy.stats["maxHP"])), 10)))
-                        pg.draw.rect(self.screen, black,
-                                     self.camera.offset(
-                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
-                                                 enemy.rect.width, 10)),
-                                     1)
+                self.blit_alpha(self.screen, self.enemies[number].image,
+                                self.camera.offset(self.enemies[number].imgRect),
+                                alpha)
+                pg.draw.rect(self.screen, darkGray,
+                             self.camera.offset(
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                         self.enemies[number].rect.width, 10)))
+                if self.enemies[number].rectHP >= 0:
+                    pg.draw.rect(self.screen, red, self.camera.offset(
+                        pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                (self.enemies[number].rect.width * (
+                                        self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
+                pg.draw.rect(self.screen, black,
+                             self.camera.offset(
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                         self.enemies[number].rect.width, 10)),
+                             1)
 
                 self.screen.blit(cursor.image, self.camera.offset(cursor.rect))
                 enemyNames.draw()
 
                 [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
-                pg.display.flip()
+                if self.pause:
+                    pg.display.flip()
+
+    def enemyCheck(self, enemy, song=None):
+        TextBox(self, enemy, enemy.description)
+        alpha = 255
+        up = True
+        while not enemy.textbox.closing:
+            self.clock.tick(fps)
+            if song is not None:
+                eval(song)
+
+            self.fadeout.update()
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            if up:
+                alpha += 10
+                if alpha >= 255:
+                    up = not up
+            else:
+                alpha -= 10
+                if alpha <= 5:
+                    up = not up
+
+            self.event = pg.event.get().copy()
+
+            enemy.textbox.update()
+
+            self.screen.fill(black)
+            self.drawBattleMenu()
+            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.imgRect), 255)
+            self.screen.blit(s, sRect)
+            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.imgRect), alpha)
+            enemy.textbox.draw()
+
+            pg.display.flip()
+
+        self.pause = False
 
     def greenShell(self, enems, song=None):
         going = True
@@ -689,14 +1840,17 @@ class Game:
                         if shell.speed <= 10 or target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
                             shell.missed = True
                             shell.travelSpeed = (
-                            shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                                shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                            target.hit = True
+                            mario.winPose = True
+                            luigi.winPose = True
                         elif shell.prevTarget == "mario":
                             shell.target = "luigi"
                             luigi.target = True
                             luigi.currentFrame = 0
                             shell.prevTarget = "enemy"
                             sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
-                                       (self.player.stats["pow"] - target.enemy.stats["def"])))
+                                                      (self.player.stats["pow"] - target.enemy.stats["def"])))
                             target.enemy.stats["hp"] -= (self.player.stats["pow"] - target.enemy.stats["def"])
                             self.enemyHitSound.play()
                             if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
@@ -712,6 +1866,7 @@ class Game:
                                     pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
                                                       luigi.rect.centerx, luigi.rect.bottom - 10, (i / shell.speed)))
                             shell.counter = 0
+                            target.hit = True
                         elif shell.prevTarget == "luigi":
                             shell.target = "mario"
                             mario.target = True
@@ -734,6 +1889,7 @@ class Game:
                                     pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
                                                       mario.rect.centerx, mario.rect.bottom - 10, (i / shell.speed)))
                             shell.counter = 0
+                            target.hit = True
                     else:
                         if shell.target == "mario":
                             shell.target = "enemy"
@@ -768,7 +1924,8 @@ class Game:
                                 luigi.currentFrame = 0
                                 luigi.lookAtMario = True
                             shell.missed = True
-                            shell.travelSpeed = (shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                            shell.travelSpeed = (
+                                shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
             if len(enemies) == 0:
                 mario.winPose = True
                 luigi.winPose = True
@@ -791,17 +1948,22 @@ class Game:
                     self.blit_alpha(self.screen, sprite.image, sprite.rect, sprite.alpha)
             for enemy in enemies:
                 pg.draw.rect(self.screen, darkGray,
-                                 pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
-                                         enemy.barRect.width, 10))
+                             pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                     enemy.barRect.width, 10))
                 if enemy.enemy.rectHP >= 0:
                     pg.draw.rect(self.screen, red,
-                        pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
-                                (enemy.barRect.width * (
-                                        enemy.enemy.rectHP / enemy.enemy.stats["maxHP"])), 10))
-                pg.draw.rect(self.screen, black,
                                  pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
-                                         enemy.barRect.width, 10),
+                                         (enemy.barRect.width * (
+                                                 enemy.enemy.rectHP / enemy.enemy.stats["maxHP"])), 10))
+                pg.draw.rect(self.screen, black,
+                             pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                     enemy.barRect.width, 10),
                              1)
+            for sprite in sprites:
+                try:
+                    sprite.draw()
+                except:
+                    pass
             if not started:
                 self.screen.blit(s, sRect)
                 self.screen.blit(button, buRect)
@@ -814,6 +1976,237 @@ class Game:
             [sprite.update() for sprite in sprites]
             self.screen.fill((59, 59, 59))
             self.screen.blit(background, bRect)
+            if luigi.onShell:
+                luigi.rect.centerx = shell.rect.centerx
+                luigi.rect.centery = shell.rect.top - 10
+            if mario.onShell:
+                mario.rect.centerx = shell.rect.centerx
+                mario.rect.centery = shell.rect.top - 10
+            for sprite in sprites:
+                try:
+                    sprite.draw()
+                except:
+                    self.blit_alpha(self.screen, sprite.image, sprite.rect, sprite.alpha)
+            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+
+            pg.display.flip()
+        self.camera.update(self.player.rect)
+        self.room = "battle"
+
+    def redShell(self, enems, song=None):
+        going = True
+        started = False
+        button = pg.image.load("sprites/bros attack start.png").convert_alpha()
+        buRect = button.get_rect()
+        buRect.center = (width / 2, height / 2)
+        s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+        sRect = s.get_rect()
+        s.fill(black)
+        s.set_alpha(125)
+        background = pg.image.load("sprites/maps/Bros Attack.png")
+        bRect = background.get_rect()
+        shell = RedShell(self, 50)
+        mario = MarioShell(self, shell)
+        luigi = LuigiShell(self, shell)
+        self.camera.update(mario.rect)
+        sprites = [mario, luigi]
+        enemies = []
+        for enemy in enems:
+            command = enemy.stats["name"] + "BrosAttack(self, enemy)"
+            en = eval(command)
+            sprites.append(en)
+            enemies.append(en)
+        while going:
+            sprites.sort(key=self.sortByYPos)
+            for sprite in sprites:
+                if sprite in self.ui:
+                    sprites.remove(sprite)
+                    sprites.append(sprite)
+            self.clock.tick(fps)
+            if len(enemies) != 0:
+                target = enemies[0]
+            if song is not None:
+                eval(song)
+            self.event = pg.event.get().copy()
+            keys = pg.key.get_pressed()
+            for event in self.event:
+                if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_F4:
+                        self.fullscreen = not self.fullscreen
+                        if not self.fullscreen:
+                            self.screen = pg.display.set_mode((width, height))
+                        else:
+                            self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
+                    if event.key == pg.K_m and started:
+                        if not mario.kicking and not mario.onShell and not mario.lookAtLuigi and not mario.winPose:
+                            mario.currentFrame = 0
+                            mario.kicking = True
+                    if event.key == pg.K_l and started:
+                        if not luigi.kicking and not luigi.onShell and not luigi.lookAtMario and not luigi.winPose:
+                            luigi.currentFrame = 0
+                            luigi.kicking = True
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if shell not in sprites:
+                            started = True
+                            sprites.append(shell)
+                            mario.currentFrame = 0
+                            mario.kicking = True
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      target.rect.centerx, target.rect.bottom - 10, (i / shell.speed)))
+
+            self.fadeout.update()
+            if shell in sprites:
+                if shell.counter >= shell.speed and not shell.missed:
+                    if shell.target == "enemy":
+                        if shell.speed <= 10 or target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
+                            shell.missed = True
+                            shell.travelSpeed = (
+                                shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                            target.hit = True
+                            mario.winPose = True
+                            luigi.winPose = True
+                        elif shell.prevTarget == "mario":
+                            shell.target = "luigi"
+                            luigi.target = True
+                            luigi.currentFrame = 0
+                            shell.prevTarget = "enemy"
+                            sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
+                                                      (self.player.stats["pow"] - target.enemy.stats["def"])))
+                            target.enemy.stats["hp"] -= (self.player.stats["pow"] - target.enemy.stats["def"])
+                            self.enemyHitSound.play()
+                            if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
+                                shell.travelSpeed = (
+                                    shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                                shell.missed = True
+                            if target.enemy.stats["hp"] <= 0:
+                                enemies.remove(target)
+                                self.enemyDieSound.play()
+                            shell.points = []
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      luigi.rect.centerx, luigi.rect.bottom - 10, (i / shell.speed)))
+                            shell.counter = 0
+                            target.hit = True
+                        elif shell.prevTarget == "luigi":
+                            shell.target = "mario"
+                            mario.target = True
+                            mario.currentFrame = 0
+                            shell.prevTarget = "enemy"
+                            sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
+                                                      (self.follower.stats["pow"] - target.enemy.stats["def"])))
+                            target.enemy.stats["hp"] -= (self.follower.stats["pow"] - target.enemy.stats["def"])
+                            self.enemyHitSound.play()
+                            if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
+                                shell.travelSpeed = (
+                                    shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+                                shell.missed = True
+                            if target.enemy.stats["hp"] <= 0:
+                                enemies.remove(target)
+                                self.enemyDieSound.play()
+                            shell.points = []
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      mario.rect.centerx, mario.rect.bottom - 10, (i / shell.speed)))
+                            shell.counter = 0
+                            target.hit = True
+                    else:
+                        if shell.target == "mario":
+                            shell.target = "enemy"
+                            shell.prevTarget = "mario"
+                            kik = mario.kicking
+                        elif shell.target == "luigi":
+                            shell.target = "enemy"
+                            shell.prevTarget = "luigi"
+                            kik = luigi.kicking
+                        mario.target = False
+                        luigi.target = False
+                        if kik:
+                            if shell.speed != 2:
+                                shell.speed -= 3
+                            shell.points = []
+                            for i in range(shell.speed + 1):
+                                shell.points.append(
+                                    pt.getPointOnLine(shell.rect.centerx, shell.rect.centery,
+                                                      target.rect.centerx, target.rect.bottom - 10, (i / shell.speed)))
+                            shell.counter = 0
+                        else:
+                            if shell.prevTarget == "luigi":
+                                luigi.onShell = True
+                                sprites.remove(luigi)
+                                sprites.append(luigi)
+                                mario.currentFrame = 0
+                                mario.lookAtLuigi = True
+                            if shell.prevTarget == "mario":
+                                mario.onShell = True
+                                sprites.remove(mario)
+                                sprites.append(mario)
+                                luigi.currentFrame = 0
+                                luigi.lookAtMario = True
+                            shell.missed = True
+                            shell.travelSpeed = (
+                                shell.points[1][0] - shell.points[0][0], shell.points[1][1] - shell.points[0][1])
+            if len(enemies) == 0:
+                mario.winPose = True
+                luigi.winPose = True
+            [sprite.update() for sprite in sprites]
+            if luigi.onShell:
+                luigi.rect.centerx = shell.rect.centerx
+                luigi.rect.centery = shell.rect.top - 10
+            if mario.onShell:
+                mario.rect.centerx = shell.rect.centerx
+                mario.rect.centery = shell.rect.top - 10
+            if shell.rect.right < 0 or shell.rect.left > width:
+                going = False
+
+            self.screen.fill((59, 59, 59))
+            self.screen.blit(background, bRect)
+            for sprite in sprites:
+                try:
+                    sprite.draw()
+                except:
+                    self.blit_alpha(self.screen, sprite.image, sprite.rect, sprite.alpha)
+            for enemy in enemies:
+                pg.draw.rect(self.screen, darkGray,
+                             pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                     enemy.barRect.width, 10))
+                if enemy.enemy.rectHP >= 0:
+                    pg.draw.rect(self.screen, red,
+                                 pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                         (enemy.barRect.width * (
+                                                 enemy.enemy.rectHP / enemy.enemy.stats["maxHP"])), 10))
+                pg.draw.rect(self.screen, black,
+                             pg.Rect(enemy.barRect.left, enemy.barRect.bottom + 12,
+                                     enemy.barRect.width, 10),
+                             1)
+            for sprite in sprites:
+                try:
+                    sprite.draw()
+                except:
+                    pass
+            if not started:
+                self.screen.blit(s, sRect)
+                self.screen.blit(button, buRect)
+            [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+
+            pg.display.flip()
+        fad = Fadeout(self, 5)
+        while fad.alpha <= 255:
+            self.fadeout.update()
+            [sprite.update() for sprite in sprites]
+            self.screen.fill((59, 59, 59))
+            self.screen.blit(background, bRect)
+            if luigi.onShell:
+                luigi.rect.centerx = shell.rect.centerx
+                luigi.rect.centery = shell.rect.top - 10
+            if mario.onShell:
+                mario.rect.centerx = shell.rect.centerx
+                mario.rect.centery = shell.rect.top - 10
             for sprite in sprites:
                 try:
                     sprite.draw()
@@ -826,6 +2219,14 @@ class Game:
         self.room = "battle"
 
     def battleOver(self):
+        self.player.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
+                                  "def": randomNumber(3)}
+
+        self.follower.statGrowth = {"maxHP": randomNumber(7), "maxBP": randomNumber(7), "pow": randomNumber(4),
+                                    "def": randomNumber(6)}
+
+        self.player.isHammer = None
+        self.follower.isHammer = None
         pg.mixer.music.stop()
         self.battleEndUI = []
         self.storeData["mario abilities"] = self.player.abilities
@@ -877,6 +2278,10 @@ class Game:
             self.follower.stats = self.storeData["luigi stats"]
         coincollect.exp = self.coins + self.battleCoins
         self.coins += self.battleCoins
+        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5:
+            self.marioLevelUp()
+        elif self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5:
+            self.luigiLevelUp()
         fade = Fadeout(self)
         pg.mixer.music.fadeout(1000)
         while True:
@@ -898,10 +2303,399 @@ class Game:
         if self.player.dead:
             self.player.dead = False
             self.player.stats["hp"] = 1
+            self.player.shadow = self.player.shadowFrames["normal"]
+            self.player.rect = self.player.shadow.get_rect()
         if self.follower.dead:
             self.follower.dead = False
             self.follower.stats["hp"] = 1
+            self.follower.shadow = self.follower.shadowFrames["normal"]
+            self.follower.rect = self.follower.shadow.get_rect()
         self.storeData["mario stats"] = self.player.stats
+        self.storeData["luigi stats"] = self.follower.stats
+        eval(self.prevRoom)
+
+    def marioLevelUp(self, allReadyLeveled=False, currentFrame=0):
+        levelUpChannel = pg.mixer.Channel(0)
+        playedLevelUpSound = False
+        self.player.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(5),
+                                  "def": randomNumber(3)}
+        going = True
+        mario = MarioLevelUp()
+        luigi = LuigiLevelUpLeave()
+        text = MarioLevelUpUI(self)
+        levelUp = pg.image.load("sprites/LevelUpText.png").convert_alpha()
+        levelUpRect = levelUp.get_rect()
+        levelUpRect.center = (width / 2, 120)
+        counter = 0
+        clipTime = fps * 2
+        expClipTime = fps * 3
+        expClipAmount = 0
+        if allReadyLeveled:
+            mario.counter = len(mario.points) - 1
+            mario.currentFrame = currentFrame
+            mario.rect.center = mario.points[mario.counter]
+            expClipAmount = height + 3
+            counter = clipTime
+            luigi.counter = len(luigi.points) - 1
+        while going:
+            self.playSong(5.44, 36.708, "battle victory")
+            self.clock.tick(fps)
+            self.events()
+
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                        going = False
+
+            if allReadyLeveled:
+                if not playedLevelUpSound:
+                    levelUpChannel.play(self.levelUpSound)
+                    self.marioWahoo.play()
+                    playedLevelUpSound = True
+
+            mario.update()
+            if luigi.counter < len(luigi.points) - 1:
+                luigi.update()
+            if mario.counter >= len(mario.points) - 1 and counter < clipTime:
+                counter += 1
+                if not playedLevelUpSound:
+                    levelUpChannel.play(self.levelUpSound)
+                    self.marioWahoo.play()
+                    playedLevelUpSound = True
+
+            if expClipAmount < height:
+                expClipAmount += height / expClipTime
+
+            clipAmount = (counter / clipTime) * height
+
+            self.screen.fill(black)
+            self.screen.set_clip(0, expClipAmount, width, height)
+            for ui in self.battleEndUI:
+                try:
+                    if ui.dead:
+                        ui.draw()
+                except:
+                    pass
+            self.screen.set_clip(None)
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(s, sRect)
+
+            self.screen.set_clip(0, expClipAmount, width, height)
+            for ui in self.battleEndUI:
+                try:
+                    if not ui.dead:
+                        ui.draw()
+                except:
+                    ui.draw()
+
+            self.screen.set_clip(0, 0, width, clipAmount)
+            text.draw(False)
+            self.screen.set_clip(None)
+
+            if mario.counter >= len(mario.points) - 1:
+                self.screen.blit(levelUp, levelUpRect)
+
+            self.screen.blit(mario.image, mario.rect)
+            if luigi.counter < len(luigi.points) - 1:
+                self.screen.blit(luigi.image, luigi.rect)
+
+            pg.display.flip()
+
+        going = True
+        self.marioOhYeah.play()
+        counter = 0
+
+        while going:
+            self.playSong(5.44, 36.708, "battle victory")
+            self.clock.tick(fps)
+            self.events()
+
+            if counter != fps / 2:
+                counter += 1
+                self.expFinishedSound.stop()
+                self.expFinishedSound.play()
+
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                        going = False
+
+            mario.update()
+            self.screen.fill(black)
+
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(s, sRect)
+
+            self.screen.blit(levelUp, levelUpRect)
+            text.draw(True)
+            self.screen.set_clip(None)
+
+            self.screen.blit(mario.image, mario.rect)
+
+            pg.display.flip()
+
+        self.player.stats["level"] += 1
+        self.player.stats["maxHP"] += self.player.statGrowth["maxHP"]
+        self.player.stats["maxBP"] += self.player.statGrowth["maxBP"]
+        self.player.stats["pow"] += self.player.statGrowth["pow"]
+        self.player.stats["def"] += self.player.statGrowth["def"]
+
+        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5:
+            self.marioLevelUp(True, mario.currentFrame)
+        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5:
+            self.luigiLevelUp(False, True)
+
+        fade = Fadeout(self)
+        pg.mixer.music.fadeout(1000)
+        while True:
+            self.clock.tick(fps)
+            self.events()
+            mario.update()
+            self.screen.fill(black)
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(s, sRect)
+
+            self.screen.blit(levelUp, levelUpRect)
+            text.draw(False, False)
+
+            self.screen.blit(mario.image, mario.rect)
+
+            self.screen.blit(fade.image, fade.rect)
+
+            pg.display.flip()
+
+            fade.update()
+            if fade.alpha > 255:
+                self.pause = False
+                break
+
+        if not self.player.dead:
+            self.sprites.remove(self.marioBattleOver)
+        if not self.follower.dead:
+            self.sprites.remove(self.luigiBattleOver)
+        self.room = self.prevRoom
+        self.updateBattleOver()
+        if self.player.dead:
+            self.player.dead = False
+            self.player.stats["hp"] = 1
+            self.player.shadow = self.player.shadowFrames["normal"]
+            self.player.rect = self.player.shadow.get_rect()
+        if self.follower.dead:
+            self.follower.dead = False
+            self.follower.stats["hp"] = 1
+            self.follower.shadow = self.follower.shadowFrames["normal"]
+            self.follower.rect = self.follower.shadow.get_rect()
+        self.storeData["mario stats"] = self.player.stats
+        self.storeData["luigi stats"] = self.follower.stats
+        eval(self.prevRoom)
+
+    def luigiLevelUp(self, allReadyLeveled=False, marioBefore=False, currentFrame=0):
+        levelUpChannel = pg.mixer.Channel(0)
+        playedLevelUpSound = False
+        self.follower.statGrowth = {"maxHP": randomNumber(7), "maxBP": randomNumber(7), "pow": randomNumber(4),
+                                    "def": randomNumber(6)}
+        going = True
+        luigi = LuigiLevelUp()
+        text = LuigiLevelUpUI(self)
+        mario = MarioLevelUpLeave((200, 300))
+        levelUp = pg.image.load("sprites/LevelUpText.png").convert_alpha()
+        levelUpRect = levelUp.get_rect()
+        levelUpRect.center = (width / 2, 120)
+        counter = 0
+        clipTime = fps * 2
+        expClipTime = fps * 3
+        expClipAmount = 0
+        if allReadyLeveled:
+            luigi.counter = len(luigi.points) - 1
+            luigi.currentFrame = currentFrame
+            luigi.rect.center = luigi.points[luigi.counter]
+            expClipAmount = height + 3
+            counter = clipTime
+            mario.counter = len(mario.points) - 1
+        if marioBefore:
+            mario = MarioLevelUpLeave((width / 2 - 5, 385))
+            marioText = MarioLevelUpUI(self)
+            luigi = LuigiLevelUp(True)
+        while going:
+            self.playSong(5.44, 36.708, "battle victory")
+            self.clock.tick(fps)
+            self.events()
+
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                        going = False
+
+            if allReadyLeveled:
+                if not playedLevelUpSound:
+                    levelUpChannel.play(self.levelUpSound)
+                    self.luigiYaHoooo.play()
+                    playedLevelUpSound = True
+
+            luigi.update()
+            if mario.counter < len(mario.points) - 1:
+                mario.update()
+
+            if luigi.counter >= len(luigi.points) - 1 and counter < clipTime:
+                counter += 1
+                if not playedLevelUpSound:
+                    levelUpChannel.play(self.levelUpSound)
+                    self.luigiYaHoooo.play()
+                    playedLevelUpSound = True
+
+            if expClipAmount < height:
+                expClipAmount += height / expClipTime
+
+            clipAmount = (counter / clipTime) * height
+
+            self.screen.fill(black)
+            if not marioBefore:
+                self.screen.set_clip(0, expClipAmount, width, height)
+                for ui in self.battleEndUI:
+                    try:
+                        if ui.dead:
+                            ui.draw()
+                    except:
+                        pass
+                self.screen.set_clip(None)
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(s, sRect)
+
+            if not marioBefore:
+                self.screen.set_clip(0, expClipAmount, width, height)
+                for ui in self.battleEndUI:
+                    try:
+                        if not ui.dead:
+                            ui.draw()
+                    except:
+                        ui.draw()
+            else:
+                if clipAmount < height:
+                    marioText.draw(False, False)
+
+            self.screen.set_clip(0, 0, width, clipAmount)
+            text.draw(False)
+            self.screen.set_clip(None)
+
+            if mario.counter < len(mario.points) - 1:
+                self.screen.blit(mario.image, mario.rect)
+
+            if luigi.counter >= len(luigi.points) - 1:
+                self.screen.blit(levelUp, levelUpRect)
+
+
+            self.screen.blit(luigi.image, luigi.rect)
+
+            pg.display.flip()
+
+        going = True
+        self.luigiOhHoHo.play()
+        counter = 0
+
+        while going:
+            self.playSong(5.44, 36.708, "battle victory")
+            self.clock.tick(fps)
+            self.events()
+
+            if counter != fps / 2:
+                counter += 1
+                self.expFinishedSound.stop()
+                self.expFinishedSound.play()
+
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                        going = False
+
+            luigi.update()
+            self.screen.fill(black)
+
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(s, sRect)
+
+            if luigi.counter >= len(luigi.points) - 1:
+                self.screen.blit(levelUp, levelUpRect)
+            text.draw(True)
+            self.screen.set_clip(None)
+
+            self.screen.blit(luigi.image, luigi.rect)
+
+            pg.display.flip()
+
+        self.follower.stats["level"] += 1
+        self.follower.stats["maxHP"] += self.follower.statGrowth["maxHP"]
+        self.follower.stats["maxBP"] += self.follower.statGrowth["maxBP"]
+        self.follower.stats["pow"] += self.follower.statGrowth["pow"]
+        self.follower.stats["def"] += self.follower.statGrowth["def"]
+
+        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5:
+            self.luigiLevelUp(True, False, luigi.currentFrame)
+
+        fade = Fadeout(self)
+        pg.mixer.music.fadeout(1000)
+        while True:
+            self.clock.tick(fps)
+            self.events()
+            luigi.update()
+            self.screen.fill(black)
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(s, sRect)
+
+            self.screen.blit(levelUp, levelUpRect)
+            text.draw(False, False)
+
+            self.screen.blit(luigi.image, luigi.rect)
+
+            self.screen.blit(fade.image, fade.rect)
+
+            pg.display.flip()
+
+            fade.update()
+            if fade.alpha > 255:
+                self.pause = False
+                break
+
+        if not self.player.dead:
+            self.sprites.remove(self.marioBattleOver)
+        if not self.follower.dead:
+            self.sprites.remove(self.luigiBattleOver)
+        self.room = self.prevRoom
+        self.updateBattleOver()
+        if self.player.dead:
+            self.player.dead = False
+            self.player.stats["hp"] = 1
+            self.player.shadow = self.player.shadowFrames["normal"]
+            self.player.rect = self.player.shadow.get_rect()
+        if self.follower.dead:
+            self.follower.dead = False
+            self.follower.stats["hp"] = 1
+            self.follower.shadow = self.follower.shadowFrames["normal"]
+            self.follower.rect = self.follower.shadow.get_rect()
+        self.storeData["luigi stats"] = self.player.stats
         self.storeData["luigi stats"] = self.follower.stats
         eval(self.prevRoom)
 
@@ -928,21 +2722,6 @@ class Game:
 
                     self.player.rect.center, self.follower.rect.center = self.follower.rect.center, self.player.rect.center
                     self.player.facing, self.follower.facing = self.follower.facing, self.player.facing
-                if event.key == pg.K_f:
-                    self.player.stats["hp"] = self.player.stats["maxHP"]
-                    if self.player.dead:
-                        self.player.dead = False
-                        self.player.shadow = self.player.shadowFrames["normal"]
-                        center = self.player.rect.center
-                        self.player.rect = self.player.shadow.get_rect()
-                        self.player.rect.center = center
-                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
-                    if self.follower.dead:
-                        self.follower.dead = False
-                        center = self.follower.rect.center
-                        self.follower.shadow = self.follower.shadowFrames["normal"]
-                        self.follower.rect = self.follower.shadow.get_rect()
-                        self.follower.rect.center = center
                 if event.key == pg.K_TAB:
                     self.pause = not self.pause
 
@@ -1060,7 +2839,8 @@ class Game:
                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
                                 (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
                 pg.draw.rect(self.screen, black,
-                             self.camera.offset(pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
+                             self.camera.offset(
+                                 pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
                              1)
 
         [ui.draw() for ui in self.ui]
@@ -1075,7 +2855,7 @@ class Game:
 
         pg.display.flip()
 
-    def drawBattleBrosAttack(self):
+    def drawBattleMenu(self):
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
@@ -1123,6 +2903,9 @@ class Game:
         [ui.draw() for ui in self.ui]
         [ui.draw() for ui in self.battleEndUI]
 
+        for item in self.blockContents:
+            item.draw()
+
         for fx in self.effects:
             if fx.offset:
                 self.blit_alpha(self.screen, fx.image, self.camera.offset(fx.rect), fx.alpha)
@@ -1132,6 +2915,31 @@ class Game:
         [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
         pg.display.flip()
+
+    def drawOverworldMenu(self):
+        self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+        self.sprites.sort(key=self.sortByYPos)
+        for sprite in self.sprites:
+            try:
+                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+            except:
+                pass
+
+        for sprite in self.sprites:
+            self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+
+        try:
+            self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
+        except:
+            pass
+
+        for fx in self.effects:
+            if fx.offset:
+                self.blit_alpha(self.screen, fx.image, self.camera.offset(fx.rect), fx.alpha)
+            else:
+                self.blit_alpha(self.screen, fx.image, fx.rect, fx.alpha)
+
+        [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
     def sortByYPos(self, element):
         return element.rect.bottom
@@ -1143,5 +2951,4 @@ class Game:
 game = Game()
 
 while game.running:
-    # game.loadGame()
-    game.loadBowserCastle()
+    game.loadGame()

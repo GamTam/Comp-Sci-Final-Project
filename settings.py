@@ -1,6 +1,10 @@
 import pygame as pg
+import random
+from Libraries import ptext
 import math
 from moviepy.editor import *
+
+ptext.DEFAULT_COLOR = "black"
 
 width = 1280
 height = 720
@@ -54,7 +58,20 @@ battleTransitionSprites = [pg.image.load("sprites/battle intro/battle_transition
                            pg.image.load("sprites/battle intro/battle_transition_23.png").convert_alpha()]
 
 talkAdvanceSprite = pg.image.load("sprites/textboxadvance.png").convert_alpha()
+mushroomSprite = pg.image.load("sprites/item icons/mushroom.png").convert_alpha()
+oneUpSprite = pg.image.load("sprites/item icons/1-UP.png").convert_alpha()
+NutSprite = pg.image.load("sprites/item icons/Nut.png").convert_alpha()
+syrupSprite = pg.image.load("sprites/item icons/syrup.png").convert_alpha()
+candySprite = pg.image.load("sprites/item icons/star candy.png").convert_alpha()
+hpSprite = pg.image.load("sprites/item icons/hpIcon.png").convert_alpha()
+bpSprite = pg.image.load("sprites/item icons/bpIcon.png").convert_alpha()
+powSprite = pg.image.load("sprites/item icons/powIcon.png").convert_alpha()
+defSprite = pg.image.load("sprites/item icons/defIcon.png").convert_alpha()
 
 textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png")}
 
 fadeout = pg.image.load("sprites/fadeout.png").convert_alpha()
+
+
+def randomNumber(max):
+    return random.randint(1, max)

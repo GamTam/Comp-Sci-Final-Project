@@ -1,11 +1,9 @@
 import collections as Q
-from Libraries import ptext
-import random
-import xml.etree.ElementTree as ET
-import pytweening as pt
-from Settings import *
-from BlockContents import *
 
+import pytweening as pt
+
+from BlockContents import *
+from LevelUp import *
 
 class spritesheet:
     def __init__(self, img_file, data_file=None):
@@ -322,7 +320,10 @@ class Mario(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0
         self.moveQueue = Q.deque()
 
-        self.stats = {"level": 1, "maxHP": 10, "maxBP": 5, "pow": 2, "def": 0, "stache": 3, "hp": 10, "bp": 5, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 10, "maxBP": 10, "pow": 2, "def": 0, "hp": 10, "bp": 10, "exp": 0}
+        self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7), "def": randomNumber(3)}
+        self.attackPieces = [["Cavi Cape", 10], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0], ["Toad Town", 0]]
+        self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)", pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -633,6 +634,7 @@ class Mario(pg.sprite.Sprite):
             self.jumpTimer -= 0.9
             self.going = "down"
         if self.jumpTimer <= 0 and self.airTimer != 0:
+            self.airTimer = 0
             self.jumping = False
         jumpOffset = self.jumpTimer * jumpHeight
         self.imgRect.bottom = (self.rect.bottom - 5) - jumpOffset
@@ -725,7 +727,7 @@ class Mario(pg.sprite.Sprite):
                         self.rect.x = self.moveQueue.popleft()
                         self.rect.y = self.moveQueue.popleft()
                         self.facing = self.moveQueue.popleft()
-
+        
         for event in self.game.event:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_m:
@@ -1045,7 +1047,6 @@ class Mario(pg.sprite.Sprite):
                                 self.image = self.standingFrames[7]
                                 self.imgRect = self.image.get_rect()
                                 self.imgRect.center = center
-                            self.currentFrame = 11
                 else:
                     if self.going == "up":
                         if keys[pg.K_w] and keys[pg.K_d]:
@@ -1862,6 +1863,143 @@ class Mario(pg.sprite.Sprite):
                         self.imgRect = self.image.get_rect()
                         self.imgRect.bottom = bottom
                         self.imgRect.left = left
+        elif self.dead:
+            if self.facing == "right":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesRight) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead horizontal"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "left":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesLeft) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead horizontal"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "up":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesUp) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "down":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesDown) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "downleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesDown) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "downright":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesDown) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "upleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesUp) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "upright":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesUp) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
         else:
             if self.facing == "up":
                 center = self.imgRect.center
@@ -1903,7 +2041,7 @@ class Mario(pg.sprite.Sprite):
                 self.image = self.standingFrames[7]
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
-            self.currentFrame = 11
+            
 
         if (self.walking or self.game.player.vx != 0 or self.game.player.vy != 0) and (
                 self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
@@ -1944,7 +2082,16 @@ class Luigi(pg.sprite.Sprite):
         self.going = "irrelevent"
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "stache": 3, "hp": 13, "bp": 5, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "hp": 13, "bp": 5, "exp": 0}
+        self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
+                           "def": randomNumber(5)}
+        self.attackPieces = [["Cavi Cave", 10],
+                             ["Guffawha Ruins", 0],
+                             ["Sammer's Kingdom", 0],
+                             ["Somnom Ruins", 0],
+                             ["Fawful's Castle", 0]]
+        self.brosAttacks = [["Green Shell", "self.greenShell(enemies, song)",
+                             pg.image.load("sprites/bros attacks/icons/greenShellIcon.png").convert_alpha(), 100, 4]]
 
     def hammer(self):
         self.canBeHit = True
@@ -1968,6 +2115,7 @@ class Luigi(pg.sprite.Sprite):
             self.jumpTimer -= 0.9
             self.going = "down"
         if self.jumpTimer <= 0 and self.airTimer != 0:
+            self.airTimer = 0
             self.jumping = False
         jumpOffset = self.jumpTimer * jumpHeight
         self.imgRect.bottom = (self.rect.bottom - 5) - jumpOffset
@@ -2636,7 +2784,7 @@ class Luigi(pg.sprite.Sprite):
                                 self.image = self.standingFrames[7]
                                 self.imgRect = self.image.get_rect()
                                 self.imgRect.center = center
-                            self.currentFrame = 11
+                            
                 else:
                     if self.going == "up":
                         if keys[pg.K_w] and keys[pg.K_d]:
@@ -3335,6 +3483,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead horizontal"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesRight[self.currentFrame]
@@ -3351,6 +3500,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead horizontal"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesLeft[self.currentFrame]
@@ -3367,6 +3517,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesUp[self.currentFrame]
@@ -3383,6 +3534,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesDown[self.currentFrame]
@@ -3399,6 +3551,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesDown[self.currentFrame]
@@ -3415,6 +3568,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesDown[self.currentFrame]
@@ -3431,6 +3585,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesUp[self.currentFrame]
@@ -3447,12 +3602,150 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
+                            
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesUp[self.currentFrame]
                         self.imgRect = self.image.get_rect()
                         self.imgRect.bottom = bottom
                         self.imgRect.left = left
+        elif self.dead:
+            if self.facing == "right":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesRight) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead horizontal"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "left":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesLeft) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead horizontal"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "up":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesUp) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "down":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesDown) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "downleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesDown) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "downright":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesDown) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "upleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesUp) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
+            elif self.facing == "upright":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.deadFramesUp) - 1:
+                        self.currentFrame = (self.currentFrame + 1)
+                    else:
+                        center = self.rect.center
+                        self.shadow = self.shadowFrames["dead vertical"]
+                        self.rect = self.shadow.get_rect()
+                        self.rect.center = center
+
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.deadFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
         else:
             if self.facing == "up":
                 center = self.imgRect.center
@@ -3494,7 +3787,6 @@ class Luigi(pg.sprite.Sprite):
                 self.image = self.standingFrames[7]
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
-            self.currentFrame = 11
 
 
 class MarioBattleComplete(pg.sprite.Sprite):
@@ -3747,7 +4039,8 @@ class Block(pg.sprite.Sprite):
                 self.game.player.airTimer = airTime
                 self.hit = True
                 self.game.blockHitSound.play()
-                self.game.hitBlockList.append(self.ID)
+                if self.ID not in self.game.hitBlockList:
+                    self.game.hitBlockList.append(self.ID)
 
         hits = pg.sprite.collide_rect(self, self.game.follower)
         if hits:
@@ -3762,7 +4055,92 @@ class Block(pg.sprite.Sprite):
                 self.game.follower.airTimer = airTime
                 self.hit = True
                 self.game.blockHitSound.play()
-                self.game.hitBlockList.append(self.ID)
+                if self.ID not in self.game.hitBlockList:
+                    self.game.hitBlockList.append(self.ID)
+
+
+class SaveBlock(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        pg.sprite.Sprite.__init__(self, game.blocks)
+        self.game = game
+        self.game.sprites.append(self)
+        self.ID = -17
+        self.newID = False
+        self.hit = False
+        self.bopped = False
+        self.empty = False
+        self.alpha = 255
+        self.vy = 0
+        self.dy = 0.065
+        self.loadImages()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.image = self.blockSprite
+        self.imgRect = self.image.get_rect()
+        self.imgRect.centerx = self.rect.centerx
+        self.imgRect.centery = self.rect.centery - 200
+        self.up = True
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+        self.blockSprite = sheet.getImageName("save block.png")
+
+        self.hitSprite = sheet.getImageName("save block_hit.png")
+
+    def update(self):
+        if self.hit:
+            if self.up:
+                if self.imgRect.centery > self.rect.centery - 215:
+                    self.imgRect.centery -= 5
+                    bottom = self.imgRect.bottom
+                    self.image = self.hitSprite
+                    self.imgRect.bottom = bottom
+                else:
+                    self.up = False
+            else:
+                if self.imgRect.centery < self.rect.centery - 185:
+                    self.imgRect.centery += 5
+                    bottom = self.imgRect.bottom
+                    self.image = self.blockSprite
+                    self.imgRect.bottom = bottom
+                else:
+                    self.hit = False
+                    self.dy = abs(self.dy)
+                    self.vy = -0.99
+                    self.game.saveGame()
+        else:
+            self.imgRect.y += round(self.vy)
+
+        self.vy += self.dy
+        if self.vy > 1 or self.vy < -1:
+            self.dy *= -1
+
+        hits = pg.sprite.collide_rect(self, self.game.player)
+        if hits:
+            rect = self.rect
+            self.rect = self.imgRect
+            hitsRound2 = pg.sprite.collide_rect(self, self.game.playerCol)
+            self.rect = rect
+            if hitsRound2 and self.game.player.going == "up":
+                self.game.player.airTimer = airTime
+                self.up = True
+                self.hit = True
+                self.game.blockHitSound.play()
+
+        hits = pg.sprite.collide_rect(self, self.game.follower)
+        if hits:
+            rect = self.rect
+            self.rect = self.imgRect
+            hitsRound2 = pg.sprite.collide_rect(self, self.game.followerCol)
+            self.rect = rect
+            if hitsRound2 and self.game.follower.going == "up":
+                self.game.follower.airTimer = airTime
+                self.up = True
+                self.hit = True
+                self.game.blockHitSound.play()
 
 
 class MarioBlock(pg.sprite.Sprite):
@@ -3992,14 +4370,17 @@ class BattleTransition(pg.sprite.Sprite):
 
 
 class TextBox(pg.sprite.Sprite):
-    def __init__(self, game, parent, text, type="dialogue"):
+    def __init__(self, game, parent, text, type="dialogue", dir=None):
         pg.sprite.Sprite.__init__(self, game.ui)
         self.speed = 20
         self.game = game
+        self.game.player.hammering = False
+        self.game.follower.hammering = False
         self.game.textBoxOpenSound.play()
         self.game.player.canMove = False
         self.game.follower.canMove = False
         self.parent = parent
+        self.parent.textbox = self
         self.offset = False
         self.closing = False
         self.advancing = False
@@ -4012,7 +4393,7 @@ class TextBox(pg.sprite.Sprite):
             self.text[i] = self.text[i] + "\n\a"
         self.page = 0
         self.playSound = 0
-        self.currentCharacter = 0
+        self.currentCharacter = 1
         self.points = []
         self.pause = 0
         self.pTimes = 0
@@ -4027,15 +4408,25 @@ class TextBox(pg.sprite.Sprite):
         self.maxRect = self.image.get_rect()
         self.rect.center = self.game.camera.offset(parent.rect).center
         self.advanceRect.center = (
-        self.rect.right - self.advanceRect.width - 20, self.rect.bottom - self.advanceRect.width - 20)
+            self.rect.right - self.advanceRect.width - 20, self.rect.bottom - self.advanceRect.width - 20)
         self.image = pg.transform.scale(textboxSprites[self.type],
                                         (int(self.maxRect.width * self.scale), int(self.maxRect.height * self.scale)))
-        if self.rect.y > height / 2:
+        if dir is None:
+            if self.rect.y > height / 2:
+                for i in range(self.speed + 1):
+                    self.points.append(
+                        pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2, (self.rect.height / 2) + 20,
+                                          (i / self.speed)))
+            else:
+                for i in range(self.speed + 1):
+                    self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2,
+                                                         height - (self.rect.height / 2) - 20, (i / self.speed)))
+        elif dir == "up":
             for i in range(self.speed + 1):
                 self.points.append(
                     pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2, (self.rect.height / 2) + 20,
                                       (i / self.speed)))
-        else:
+        elif dir == "down":
             for i in range(self.speed + 1):
                 self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2,
                                                      height - (self.rect.height / 2) - 20, (i / self.speed)))
@@ -4069,7 +4460,7 @@ class TextBox(pg.sprite.Sprite):
             self.texty -= 10
             if self.texty <= self.rect.top - 220:
                 self.page += 1
-                self.currentCharacter = 0
+                self.currentCharacter = 1
                 self.advancing = False
 
         self.rect.center = self.points[self.counter]
@@ -4122,10 +4513,9 @@ class TextBox(pg.sprite.Sprite):
         completeText = False
         self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
         if self.scale >= 1:
-            text, pos = ptext.draw(character, (self.textx, self.texty), fontname=dialogueFont, color=black, fontsize=35,
-                                   lineheight=0.8, surf=None)
             self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 250))
-            self.game.screen.blit(text, pos)
+            ptext.draw(character, (self.textx, self.texty), lineheight=0.8, surf=self.game.screen,
+                       fontname=dialogueFont, fontsize=35, owidth=-1)
             self.game.screen.set_clip(None)
             if self.pause <= 0:
                 if self.currentCharacter < len(self.text[self.page]):
@@ -4182,6 +4572,7 @@ class TextBox(pg.sprite.Sprite):
                                                               self.game.camera.offset(self.parent.imgRect).centery,
                                                               (i / self.speed)))
                                     self.counter = 0
+                                    self.game.textBoxCloseSound.stop()
                                     self.game.textBoxCloseSound.play()
                                     self.closing = True
                     if not self.advancing:
@@ -4207,7 +4598,7 @@ class MiniTextbox(pg.sprite.Sprite):
         for i in range(len(self.text)):
             self.text[i] = self.text[i] + "\n\a"
         self.page = 0
-        self.currentCharacter = 0
+        self.currentCharacter = 1
         self.points = []
         self.pause = 0
         self.pTimes = 0
@@ -4249,7 +4640,7 @@ class MiniTextbox(pg.sprite.Sprite):
         if self.scale >= 0.3:
             textx = self.game.camera.offset(self.rect).left + 10
             texty = self.game.camera.offset(self.rect).top + 10
-            ptext.draw(character, (textx, texty), fontname=dialogueFont, color=black, fontsize=20,
+            ptext.draw(character, (textx, texty), fontname=dialogueFont, fontsize=20,
                        lineheight=0.8, surf=self.game.screen)
             if self.currentCharacter < len(self.text[self.page]):
                 self.currentCharacter += 2

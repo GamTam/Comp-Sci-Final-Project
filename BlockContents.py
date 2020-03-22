@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import random
+
 from Settings import *
 
 
@@ -42,7 +42,7 @@ class Coin(pg.sprite.Sprite):
                        sheet.getImageName("coin_7.png"),
                        sheet.getImageName("coin_8.png")]
         self.rect = self.block.rect
-        self.image = self.images[random.randrange(0,8)]
+        self.image = self.images[random.randrange(0, 8)]
         self.imgRect = self.image.get_rect()
         self.imgRect.center = self.block.imgRect.center
         self.lastUpdate = 0
@@ -73,3 +73,69 @@ class Coin(pg.sprite.Sprite):
             self.image = self.images[self.currentFrame]
             self.imgRect = self.image.get_rect()
             self.imgRect.center = center
+
+
+class Other(pg.sprite.Sprite):
+    def __init__(self, game, block, item, amount=1):
+        self.game = game
+        self.block = block
+        pg.sprite.Sprite.__init__(self, game.blockContents)
+        self.game.sprites.append(self)
+        self.item = item
+        self.amount = amount
+        sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
+        self.images = {"Mushroom": sheet.getImageName("Mushroom.png"),
+                       "1-UP": sheet.getImageName("1-UP.png"),
+                       "Nut": sheet.getImageName("Nut.png"),
+                       "Syrup": sheet.getImageName("Syrup.png"),
+                       "Star Candy": sheet.getImageName("Star Candy.png")}
+        if "1-UP" in self.item:
+            self.image = self.images["1-UP"]
+        elif "Mushroom" in self.item:
+            self.image = self.images["Mushroom"]
+        elif "Nut" in self.item:
+            self.image = self.images["Nut"]
+        elif "Syrup" in self.item:
+            self.image = self.images["Syrup"]
+        elif "Star Cand" in self.item:
+            self.image = self.images["Star Candy"]
+        self.rect = self.block.rect
+        self.imgRect = self.image.get_rect()
+        self.imgRect.center = self.block.imgRect.center
+        self.alpha = 255
+        self.counter = 0
+        self.game.itemFromBlockSound.play()
+        self.messageImage = pg.image.load("sprites/ui/enemySelectionFullScreen.png").convert_alpha()
+        self.messageImage = pg.transform.flip(self.messageImage, False, True)
+        self.messageRect = self.messageImage.get_rect()
+        self.messageRect.bottom = height
+        for item in self.game.items:
+            if item[0] == self.item:
+                if item[1] < 0:
+                    item[1] = 1
+                else:
+                    item[1] += 1
+
+    def update(self):
+        if self.counter < fps:
+            self.counter += 1
+        else:
+            self.kill()
+            self.game.sprites.remove(self)
+
+        if self.counter < fps / 8:
+            self.imgRect.y -= 10
+
+    def draw(self):
+        self.game.screen.blit(self.messageImage, self.messageRect)
+        if self.item == "Star Cand":
+            if self.amount > 1:
+                ptext.draw(self.item + "ies X" + str(self.amount), (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
+            else:
+                ptext.draw(self.item + "y", (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
+        else:
+            if self.amount > 1:
+                ptext.draw(self.item + "s X" + str(self.amount), (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
+            else:
+                ptext.draw(self.item, (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
+

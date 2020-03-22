@@ -232,7 +232,6 @@ class MarioUI(pg.sprite.Sprite):
             self.numberRect.right = self.rect.right - 70
             self.numberRect.centery = self.rect.bottom - 25
 
-
     def draw(self):
         if self.hp < 0:
             hp = [0]
@@ -469,7 +468,6 @@ class LuigiUI(pg.sprite.Sprite):
 class HitNumbers(pg.sprite.Sprite):
     def __init__(self, game, room, pos, number, type="normal"):
         self.groups = game.ui
-        print(number)
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.offset = True
@@ -720,7 +718,8 @@ class ExpNumbers(pg.sprite.Sprite):
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(round(self.exp)), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        ptext.draw(str(round(self.exp)), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers,
+                   fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class MarioExpNumbers(pg.sprite.Sprite):
@@ -744,7 +743,8 @@ class MarioExpNumbers(pg.sprite.Sprite):
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(round(self.game.player.stats["exp"])), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        ptext.draw(str(round(self.game.player.stats["exp"])), (self.rect.right - 50, self.rect.bottom - 70), owidth=1,
+                   fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class LuigiExpNumbers(pg.sprite.Sprite):
@@ -768,7 +768,8 @@ class LuigiExpNumbers(pg.sprite.Sprite):
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(round(self.game.follower.stats["exp"])), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        ptext.draw(str(round(self.game.follower.stats["exp"])), (self.rect.right - 50, self.rect.bottom - 70), owidth=1,
+                   fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class CoinCollectionSubtract(pg.sprite.Sprite):
@@ -820,7 +821,8 @@ class CoinCollectionSubtract(pg.sprite.Sprite):
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(round(self.exp)), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        ptext.draw(str(round(self.exp)), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers,
+                   fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class CoinCollectionAdd(pg.sprite.Sprite):
@@ -848,20 +850,25 @@ class CoinCollectionAdd(pg.sprite.Sprite):
         elif self.game.expNumbers.exp == 0:
             self.exp = self.totalCoins
 
-
         if self.room != self.game.room:
             self.game.battleEndUI.remove(self)
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(str(round(self.exp) + self.coins), (self.rect.right - 50, self.rect.bottom - 70), owidth=1, fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        if round(self.exp) + self.coins > self.game.coins:
+            ptext.draw(str(round(self.exp) + self.coins), (self.rect.right - 50, self.rect.bottom - 70), owidth=1,
+                       fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
+        else:
+            ptext.draw(str(self.game.coins), (self.rect.right - 50, self.rect.bottom - 70), owidth=1,
+                       fontname=expNumbers, fontsize=40, color=(255, 204, 0), anchor=(1, 0))
 
 
 class Cursor(pg.sprite.Sprite):
-    def __init__(self, game, target):
+    def __init__(self, game, target, speed=20, facing="left"):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         sheet = spritesheet("sprites/ui.png", "sprites/ui.xml")
+        self.facing = facing
         self.sprites = [sheet.getImageName("cursor_1.png"),
                         sheet.getImageName("cursor_2.png"),
                         sheet.getImageName("cursor_3.png"),
@@ -883,10 +890,20 @@ class Cursor(pg.sprite.Sprite):
                         sheet.getImageName("cursor_19.png"),
                         sheet.getImageName("cursor_20.png"),
                         sheet.getImageName("cursor_21.png")]
-        self.image = self.sprites[0]
+        self.reverseSprites = []
+        for sprite in self.sprites:
+            self.reverseSprites.append(pg.transform.flip(sprite, True, False))
+        if self.facing == "left":
+            self.image = self.sprites[0]
+        elif self.facing == "right":
+            self.image = self.reverseSprites[0]
         self.rect = self.image.get_rect()
-        self.rect.left = target.right + 5
-        self.rect.centery = target.top - 10
+        if self.facing == "right":
+            self.rect.left = target.right + 5
+            self.rect.centery = target.top - 10
+        elif self.facing == "left":
+            self.rect.right = target.left - 5
+            self.rect.centery = target.top - 10
         self.target = target
         self.prevTarget = target
         self.lastUpdate = 0
@@ -901,13 +918,23 @@ class Cursor(pg.sprite.Sprite):
             self.counter = 0
             self.prevTarget = target
         elif self.counter != speed:
-            self.rect.left, self.rect.centery = pt.getPointOnLine(self.rect.left, self.rect.centery, target.right + 5, target.top - 10,
-                                                 (self.counter / speed))
+            if self.facing == "right":
+                self.rect.left, self.rect.centery = pt.getPointOnLine(self.rect.left, self.rect.centery,
+                                                                      target.right + 5, target.top - 10,
+                                                                      (self.counter / speed))
+            elif self.facing == "left":
+                self.rect.right, self.rect.centery = pt.getPointOnLine(self.rect.right, self.rect.centery,
+                                                                       target.left - 5, target.top - 10,
+                                                                       (self.counter / speed))
             self.counter += 1
         else:
             self.counter = speed
-            self.rect.left = target.right + 5
-            self.rect.centery = target.top - 10
+            if self.facing == "right":
+                self.rect.left = target.right + 5
+                self.rect.centery = target.top - 10
+            elif self.facing == "left":
+                self.rect.right = target.left - 5
+                self.rect.centery = target.top - 10
 
     def animate(self):
         now = pg.time.get_ticks()
@@ -919,16 +946,22 @@ class Cursor(pg.sprite.Sprite):
             else:
                 self.currentFrame = 0
             center = self.rect.center
-            self.image = self.sprites[self.currentFrame]
+            if self.facing == "right":
+                self.image = self.sprites[self.currentFrame]
+            elif self.facing == "left":
+                self.image = self.reverseSprites[self.currentFrame]
             self.rect = self.image.get_rect()
             self.rect.center = center
 
 
 class EnemyNames(pg.sprite.Sprite):
-    def __init__(self, game, name):
+    def __init__(self, game, name, image=None):
         pg.sprite.Sprite.__init__(self)
         self.game = game
-        self.image = pg.image.load("sprites/ui/enemySelection.png").convert_alpha()
+        if image is None:
+            self.image = pg.image.load("sprites/ui/enemySelection.png").convert_alpha()
+        else:
+            self.image = image
         self.rect = self.image.get_rect()
         self.rect.left = 0
         self.rect.top = 0
@@ -939,9 +972,9 @@ class EnemyNames(pg.sprite.Sprite):
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
-        ptext.draw(self.name, (self.rect.left + 10, self.rect.bottom - 75), fontname=dialogueFont, color=black, fontsize=40,
-                                   lineheight=0.8, surf=self.game.screen)
-
+        ptext.draw(self.name, (self.rect.left + 10, self.rect.bottom - 75), fontname=dialogueFont,
+                   fontsize=40,
+                   lineheight=0.8, surf=self.game.screen)
 
 
 class Fadeout(pg.sprite.Sprite):

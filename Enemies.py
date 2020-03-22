@@ -26,7 +26,7 @@ class spritesheet:
         return self.spritesheet.subsurface(rect)
 
 
-class GoombaO(pg.sprite.Sprite):
+class GoombaODebug(pg.sprite.Sprite):
     def __init__(self, game, x, y, battle):
         self.groups = game.enemies
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -114,10 +114,17 @@ class Goomba(pg.sprite.Sprite):
         self.alpha = 255
         self.speed = 0
         self.mask = pg.mask.from_surface(self.image)
+        self.textbox = None
 
         # Stats
         self.stats = {"maxHP": 4, "hp": 4, "pow": 2, "def": 0, "exp": 2, "coins": 3, "name": "Goomba"}
         self.rectHP = self.stats["hp"]
+
+        self.description = []
+        self.description.append("That's a Goomba!")
+        self.description.append("These little guys will run \nback and forth across the screen\nand hope they hit you.")
+        self.description.append("Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".")
+        self.description.append("I kinda feel bad for their \nincompetence.")
 
     def loadImages(self):
         sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
@@ -394,7 +401,7 @@ class Goomba(pg.sprite.Sprite):
                     self.hit = True
 
 
-class GoombaKing(pg.sprite.Sprite):
+class GoombaKingDebug(pg.sprite.Sprite):
     def __init__(self, game, start):
         pg.sprite.Sprite.__init__(self, game.npcs)
         self.text = []
@@ -436,7 +443,7 @@ class GoombaKing(pg.sprite.Sprite):
             self.game.loadBattle("THB15G")
 
 
-class GoombaSmolText(pg.sprite.Sprite):
+class LinebeckDebug(pg.sprite.Sprite):
     def __init__(self, game, start, hastexted=False):
         pg.sprite.Sprite.__init__(self, game.npcs)
         self.smoltext = []
@@ -446,7 +453,7 @@ class GoombaSmolText(pg.sprite.Sprite):
         self.textbox = None
         self.game.sprites.append(self)
         sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
-        self.image = sheet.getImageName("goomba_walking_down_1.png")
+        self.image = pg.image.load("sprites/linebeck.png").convert_alpha()
         self.shadow = sheet.getImageName("shadow.png")
         self.rect = self.shadow.get_rect()
         self.imgRect = self.image.get_rect()
@@ -470,23 +477,32 @@ class GoombaSmolText(pg.sprite.Sprite):
                     if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
                         if not self.game.player.jumping:
                             self.textbox = TextBox(self.game, self, self.text)
-                            self.game.goombaHasTexted = True
+                            self.game.linebeckHasTexted = True
+                            self.game.playsong = False
+                            self.game.firstLoop = True
+                            self.game.currentPoint += pg.mixer.music.get_pos()
                 elif self.game.leader == "luigi":
                     if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
                         if not self.game.follower.jumping:
                             self.textbox = TextBox(self.game, self, self.text)
-                            self.game.goombaHasTexted = True
+                            self.game.linebeckHasTexted = True
+                            self.game.playsong = False
+                            self.firstloop = self.game.firstLoop
+                            self.game.firstLoop = True
+                            self.game.currentPoint += pg.mixer.music.get_pos()
             elif self.textbox != "complete":
                 pg.event.clear()
+                self.game.playSong(6.402, 33.433, "linebeck's theme")
             else:
                 self.textbox = None
+                self.game.playsong = True
                 self.counter += 1
         elif self.counter == 1:
             self.canTalk = False
             if self.game.leader == "mario":
                 if self.textbox is None:
                     if pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
-                        self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.rect.top - 70))
+                        self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.imgRect.top - 10))
                 elif self.textbox is not None:
                     if not pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
                         self.textbox.closing = True
@@ -499,7 +515,7 @@ class GoombaSmolText(pg.sprite.Sprite):
                         self.textbox.closing = True
 
 
-class CountBleck(pg.sprite.Sprite):
+class CountBleckDebug(pg.sprite.Sprite):
     def __init__(self, game, pos):
         pg.sprite.Sprite.__init__(self, game.npcs)
         self.text = []
@@ -593,7 +609,8 @@ class CountBleck(pg.sprite.Sprite):
                         pg.mixer.music.fadeout(200)
                         self.game.playsong = False
                         self.game.firstLoop = True
-                        self.textbox = TextBox(self.game, self, self.text)
+                        self.textbox = TextBox(self.game, self, self.text, dir="down")
+                        self.game.currentPoint += pg.mixer.music.get_pos()
             elif self.game.leader == "luigi":
                 if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
                     if not self.game.follower.jumping:
@@ -601,13 +618,14 @@ class CountBleck(pg.sprite.Sprite):
                         self.game.playsong = False
                         self.game.firstLoop = True
                         self.textbox = TextBox(self.game, self, self.text)
+                        self.game.currentPoint += pg.mixer.music.get_pos()
         elif self.textbox != "complete":
             if not pg.mixer.music.get_busy() or self.textbox.rect.center == self.textbox.points[-1]:
                 self.game.playSong(10.314, 32.016, "the evil count bleck")
             pg.event.clear()
         else:
             self.textbox = None
-            self.game.loadBattle("self.loadTeeheeValleyBattle15G()")
+            self.game.loadBattle("self.loadMultiEnemyDebug()", currentPoint=False)
 
     def animate(self):
         now = pg.time.get_ticks()
