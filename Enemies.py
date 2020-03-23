@@ -124,7 +124,8 @@ class Goomba(pg.sprite.Sprite):
         self.description.append("That's a Goomba!")
         self.description.append("These little guys will run \nback and forth across the screen\nand hope they hit you.")
         self.description.append("Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".")
-        self.description.append("I kinda feel bad for their \nincompetence.")
+        self.description.append('''The main motto of the Goomba is\n"March straight ahead into\nthe enemy's feet".''')
+        self.description.append("Or,/5 at least that's what Bowser \nsays.")
 
     def loadImages(self):
         sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")

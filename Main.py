@@ -1,5 +1,5 @@
 import pickle
-
+from Settings import *
 from BrosAttacks import *
 from Enemies import *
 
@@ -77,6 +77,7 @@ class Game:
         self.fadeout = pg.sprite.Group()
         self.battleEndUI = []
         self.loadData()
+        self.playtime = 0
         self.goombaHasTexted = False
         self.player = Mario(self, 0, 0)
         self.follower = Luigi(self, 0, 0)
@@ -155,10 +156,469 @@ class Game:
             else:
                 print("YOOOOOOOOO")
 
-    def titleScreen(self):
-        
+    def calculatePlayTime(self):
+        self.playtime += 1
 
-    def saveGame(self, file=1):
+        self.playSeconds = self.playtime // fps
+        self.playMinutes = self.playSeconds // 60
+        self.playHours = self.playMinutes // 60
+
+        if self.playSeconds >= 60:
+            self.playSeconds %= 60
+        if self.playSeconds < 10 and self.playMinutes >= 1:
+            self.playSeconds = "0{0}".format(self.playSeconds)
+        elif self.playSeconds < 10 and self.playHours < 1:
+            self.playSeconds = "00:0{0}".format(self.playSeconds)
+        elif self.playHours < 1:
+            self.playSeconds = "00:{0}".format(self.playSeconds)
+
+        if self.playMinutes >= 60:
+            self.playMinutes %= 60
+        if self.playMinutes == 0:
+            self.playMinutes = ""
+        elif self.playMinutes < 10 and self.playHours >= 1:
+            self.playMinutes = "0{0}:".format(self.playMinutes)
+        else:
+            self.playMinutes = "{0}:".format(self.playMinutes)
+
+        if self.playHours == 0:
+            self.playHours = ""
+        else:
+            self.playHours = "{0}:".format(self.playHours)
+
+        self.playSeconds = str(self.playSeconds)
+        self.playMinutes = str(self.playMinutes)
+        self.playHours = str(self.playHours)
+
+        self.displayTime = self.playHours + self.playMinutes + self.playSeconds
+
+    def titleScreen(self):
+        try:
+            with open("saves/File 1.ini"):
+                pass
+            cont = True
+        except:
+            try:
+                with open("saves/File 2.ini"):
+                    pass
+                cont = True
+            except:
+                try:
+                    with open("saves/File 3.ini"):
+                        pass
+                    cont = True
+                except:
+                    cont = False
+
+        background = pg.image.load("sprites/titleScreen.png").convert_alpha()
+        bRect = background.get_rect()
+        smal = pg.image.load("sprites/super mario & luigi.png").convert_alpha()
+        smalRect = smal.get_rect()
+        smalRect.centerx = width / 2
+        smalRect.top = 25
+        going = True
+        fade = Fadeout(self, 0.5)
+        fade.room = "Nothing"
+        fade.alpha = 255
+        time = 0
+        clipRect = pg.rect.Rect(0, 0, 0, 300)
+        self.room = "Title Screen"
+        sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
+
+        shadow = sheet.getImageName("shadow.png")
+
+        luigiShadowRect = shadow.get_rect()
+        luigiLastUpdate = 0
+        luigiCounter = 0
+        luigiFrames = [sheet.getImageName("luigi_tea_1.png"),
+                       sheet.getImageName("luigi_tea_2.png"),
+                       sheet.getImageName("luigi_tea_3.png"),
+                       sheet.getImageName("luigi_tea_4.png"),
+                       sheet.getImageName("luigi_tea_5.png"),
+                       sheet.getImageName("luigi_tea_6.png"),
+                       sheet.getImageName("luigi_tea_7.png"),
+                       sheet.getImageName("luigi_tea_8.png"),
+                       sheet.getImageName("luigi_tea_9.png"),
+                       sheet.getImageName("luigi_tea_10.png"),
+                       sheet.getImageName("luigi_tea_11.png"),
+                       sheet.getImageName("luigi_tea_12.png"),
+                       sheet.getImageName("luigi_tea_13.png"),
+                       sheet.getImageName("luigi_tea_14.png"),
+                       sheet.getImageName("luigi_tea_15.png"),
+                       sheet.getImageName("luigi_tea_16.png"),
+                       sheet.getImageName("luigi_tea_17.png"),
+                       sheet.getImageName("luigi_tea_18.png"),
+                       sheet.getImageName("luigi_tea_19.png"),
+                       sheet.getImageName("luigi_tea_20.png"),
+                       sheet.getImageName("luigi_tea_21.png"),
+                       sheet.getImageName("luigi_tea_22.png"),
+                       sheet.getImageName("luigi_tea_23.png"),
+                       sheet.getImageName("luigi_tea_24.png"),
+                       sheet.getImageName("luigi_tea_25.png"),
+                       sheet.getImageName("luigi_tea_26.png"),
+                       sheet.getImageName("luigi_tea_27.png"),
+                       sheet.getImageName("luigi_tea_28.png"),
+                       sheet.getImageName("luigi_tea_29.png"),
+                       sheet.getImageName("luigi_tea_30.png"),
+                       sheet.getImageName("luigi_tea_31.png"),
+                       sheet.getImageName("luigi_tea_32.png"),
+                       sheet.getImageName("luigi_tea_33.png"),
+                       sheet.getImageName("luigi_tea_34.png"),
+                       sheet.getImageName("luigi_tea_35.png"),
+                       sheet.getImageName("luigi_tea_36.png"),
+                       sheet.getImageName("luigi_tea_37.png"),
+                       sheet.getImageName("luigi_tea_38.png"),
+                       sheet.getImageName("luigi_tea_39.png"),
+                       sheet.getImageName("luigi_tea_40.png"),
+                       sheet.getImageName("luigi_tea_41.png"),
+                       sheet.getImageName("luigi_tea_42.png"),
+                       sheet.getImageName("luigi_tea_43.png"),
+                       sheet.getImageName("luigi_tea_44.png"),
+                       sheet.getImageName("luigi_tea_45.png"),
+                       sheet.getImageName("luigi_tea_46.png"),
+                       sheet.getImageName("luigi_tea_47.png"),
+                       sheet.getImageName("luigi_tea_48.png"),
+                       sheet.getImageName("luigi_tea_49.png"),
+                       sheet.getImageName("luigi_tea_50.png"),
+                       sheet.getImageName("luigi_tea_51.png"),
+                       sheet.getImageName("luigi_tea_52.png")]
+        luigiRect = luigiFrames[0].get_rect()
+        luigiRect.center = (771, 595)
+        luigiShadowRect.centery = luigiRect.bottom - 10
+        luigiShadowRect.centerx = luigiRect.centerx
+
+        marioShadowRect = shadow.get_rect()
+        marioLastUpdate = 0
+        marioCounter = 0
+        marioFrames = [sheet.getImageName("mario_talking_left_1.png"),
+                       sheet.getImageName("mario_talking_left_2.png"),
+                       sheet.getImageName("mario_talking_left_3.png"),
+                       sheet.getImageName("mario_talking_left_4.png"),
+                       sheet.getImageName("mario_talking_left_5.png"),
+                       sheet.getImageName("mario_talking_left_6.png"),
+                       sheet.getImageName("mario_talking_left_7.png"),
+                       sheet.getImageName("mario_talking_left_8.png"),
+                       sheet.getImageName("mario_talking_left_9.png"),
+                       sheet.getImageName("mario_talking_left_10.png"),
+                       sheet.getImageName("mario_talking_left_11.png"),
+                       sheet.getImageName("mario_talking_left_12.png"),
+                       sheet.getImageName("mario_talking_left_13.png"),
+                       sheet.getImageName("mario_talking_left_14.png"),
+                       sheet.getImageName("mario_talking_left_15.png"),
+                       sheet.getImageName("mario_talking_left_16.png"),
+                       sheet.getImageName("mario_talking_left_17.png"),
+                       sheet.getImageName("mario_talking_left_18.png"),
+                       sheet.getImageName("mario_talking_left_19.png"),
+                       sheet.getImageName("mario_talking_left_20.png"),
+                       sheet.getImageName("mario_talking_left_21.png"),
+                       sheet.getImageName("mario_talking_left_22.png"),
+                       sheet.getImageName("mario_talking_left_23.png"),
+                       sheet.getImageName("mario_talking_left_24.png"),
+                       sheet.getImageName("mario_talking_left_25.png"),
+                       sheet.getImageName("mario_talking_left_26.png"),
+                       sheet.getImageName("mario_talking_left_27.png"),
+                       sheet.getImageName("mario_talking_left_28.png"),
+                       sheet.getImageName("mario_talking_left_29.png"),
+                       sheet.getImageName("mario_talking_left_30.png"),
+                       sheet.getImageName("mario_talking_left_31.png"),
+                       sheet.getImageName("mario_talking_left_32.png"),
+                       sheet.getImageName("mario_talking_left_33.png")]
+        marioRect = marioFrames[0].get_rect()
+        marioRect.center = (width / 2 + 50, 495)
+        marioShadowRect.centery = marioRect.bottom - 10
+        marioShadowRect.centerx = marioRect.centerx
+
+        sheet = spritesheet("sprites/peach.png", "sprites/peach.xml")
+        peachShadow = sheet.getImageName("shadow.png")
+        peachShadowRect = peachShadow.get_rect()
+        peachLastUpdate = 0
+        peachCounter = 0
+        peachFrames = [sheet.getImageName("peach_talking_right_1.png"),
+                       sheet.getImageName("peach_talking_right_2.png"),
+                       sheet.getImageName("peach_talking_right_3.png"),
+                       sheet.getImageName("peach_talking_right_4.png"),
+                       sheet.getImageName("peach_talking_right_5.png"),
+                       sheet.getImageName("peach_talking_right_6.png"),
+                       sheet.getImageName("peach_talking_right_7.png"),
+                       sheet.getImageName("peach_talking_right_8.png"),
+                       sheet.getImageName("peach_talking_right_9.png"),
+                       sheet.getImageName("peach_talking_right_10.png"),
+                       sheet.getImageName("peach_talking_right_11.png"),
+                       sheet.getImageName("peach_talking_right_12.png"),
+                       sheet.getImageName("peach_talking_right_13.png"),
+                       sheet.getImageName("peach_talking_right_14.png"),
+                       sheet.getImageName("peach_talking_right_15.png"),
+                       sheet.getImageName("peach_talking_right_16.png")]
+        peachRect = peachFrames[0].get_rect()
+        peachRect.centerx = width / 2 - 50
+        peachRect.bottom = marioRect.bottom
+        peachShadowRect.centery = peachRect.bottom - 15
+        peachShadowRect.centerx = peachRect.centerx - 3
+
+        select = 0
+
+        cursor = Cursor(self, pg.rect.Rect(width / 2 - 120, height / 2 - 50, 0, 0))
+        while going:
+            self.clock.tick(fps)
+            self.playSong(41.868, 33.329, "Title Screen")
+            time += 1
+
+            now = pg.time.get_ticks()
+            if now - luigiLastUpdate > 75:
+                luigiLastUpdate = now
+                if luigiCounter < len(luigiFrames):
+                    luigiCounter = (luigiCounter + 1) % (len(luigiFrames))
+                else:
+                    luigiCounter = 0
+                bottom = luigiRect.bottom
+                centerx = luigiRect.centerx
+                luigiRect = luigiFrames[luigiCounter].get_rect()
+                luigiRect.bottom = bottom
+                luigiRect.centerx = centerx
+
+            if now - marioLastUpdate > 75:
+                marioLastUpdate = now
+                if marioCounter < len(marioFrames):
+                    marioCounter = (marioCounter + 1) % (len(marioFrames))
+                else:
+                    marioCounter = 0
+                bottom = marioRect.bottom
+                right = marioRect.right
+                marioRect = marioFrames[marioCounter].get_rect()
+                marioRect.bottom = bottom
+                marioRect.right = right
+
+            if now - peachLastUpdate > 75:
+                peachLastUpdate = now
+                if peachCounter < len(peachFrames):
+                    peachCounter = (peachCounter + 1) % (len(peachFrames))
+                else:
+                    peachCounter = 0
+                bottom = peachRect.bottom
+                centerx = peachRect.centerx
+                peachRect = peachFrames[peachCounter].get_rect()
+                peachRect.bottom = bottom
+                peachRect.centerx = centerx
+
+            if time >= fps * 8.5 and clipRect.width < width:
+                clipRect.center = (smalRect.centerx, smalRect.top)
+                clipRect.height += 10
+                clipRect.width += 10
+
+
+            self.events()
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_w or event.key == pg.K_a or event.key == pg.K_s or event.key == pg.K_d:
+                        if select == 0:
+                            select = 1
+                        elif select == 1:
+                            select = 0
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                        if clipRect.width < width:
+                            clipRect.width = width
+                            clipRect.height = height
+                            fade.alpha = 0
+                        else:
+                            if select == 1:
+                                if cont:
+                                    self.menuChooseSound.play()
+                                    going = False
+                                else:
+                                    self.wrongSound.play()
+                            else:
+                                self.menuChooseSound.play()
+                                going = False
+
+            fade.update()
+            if select == 0:
+                cursor.update(pg.rect.Rect(width / 2 - 120, height / 2 - 50, 0, 0), 60)
+            if select == 1:
+                cursor.update(pg.rect.Rect(width / 2 - 100, height / 2 + 25, 0, 0), 60)
+
+            self.screen.fill(black)
+            self.screen.blit(background, bRect)
+            self.screen.blit(shadow, marioShadowRect)
+            self.screen.blit(marioFrames[marioCounter], marioRect)
+            self.screen.blit(peachShadow, peachShadowRect)
+            self.screen.blit(peachFrames[peachCounter], peachRect)
+            self.screen.blit(shadow, luigiShadowRect)
+            self.screen.blit(luigiFrames[luigiCounter], luigiRect)
+            self.screen.set_clip(clipRect.left, clipRect.top, clipRect.width, clipRect.height)
+            self.screen.blit(smal, smalRect)
+            ptext.draw("NEW GAME", (width / 2, height / 2 - 50), surf=self.screen, color=white, owidth=1, fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+            if cont:
+                ptext.draw("CONTINUE", (width / 2, height / 2 + 25), surf=self.screen, color=white, owidth=1,
+                           fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+            else:
+                ptext.draw("CONTINUE", (width / 2, height / 2 + 25), surf=self.screen, color=darkGray, owidth=1,
+                           fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+            ptext.draw(
+                "Mario & Luigi is a registered trademark of Nintendo\nPaper Mario is a registered trademark of Nintendo\nThe Legend of Zelda Phantom Hourglass is a registered trademark of Nintendo\nUNDERTALE is a registered trademark of Royal Sciences, LLC",
+                (width / 2, height - 60), lineheight=0.8, surf=self.screen, color=white,
+                fontname=dialogueFont, anchor=(0.5, 0), fontsize=10, owidth=0.5)
+            self.screen.blit(cursor.image, cursor.rect)
+            self.screen.set_clip(None)
+            self.screen.blit(fade.image, fade.rect)
+
+            pg.display.flip()
+        if select == 0:
+            fade = Fadeout(self)
+            pg.mixer.music.fadeout(1000)
+            while True:
+                self.clock.tick(fps)
+
+                now = pg.time.get_ticks()
+                if now - luigiLastUpdate > 75:
+                    luigiLastUpdate = now
+                    if luigiCounter < len(luigiFrames):
+                        luigiCounter = (luigiCounter + 1) % (len(luigiFrames))
+                    else:
+                        luigiCounter = 0
+                    bottom = luigiRect.bottom
+                    centerx = luigiRect.centerx
+                    luigiRect = luigiFrames[luigiCounter].get_rect()
+                    luigiRect.bottom = bottom
+                    luigiRect.centerx = centerx
+
+                if now - marioLastUpdate > 75:
+                    marioLastUpdate = now
+                    if marioCounter < len(marioFrames):
+                        marioCounter = (marioCounter + 1) % (len(marioFrames))
+                    else:
+                        marioCounter = 0
+                    bottom = marioRect.bottom
+                    right = marioRect.right
+                    marioRect = marioFrames[marioCounter].get_rect()
+                    marioRect.bottom = bottom
+                    marioRect.right = right
+
+                if now - peachLastUpdate > 75:
+                    peachLastUpdate = now
+                    if peachCounter < len(peachFrames):
+                        peachCounter = (peachCounter + 1) % (len(peachFrames))
+                    else:
+                        peachCounter = 0
+                    bottom = peachRect.bottom
+                    centerx = peachRect.centerx
+                    peachRect = peachFrames[peachCounter].get_rect()
+                    peachRect.bottom = bottom
+                    peachRect.centerx = centerx
+
+                self.events()
+
+                fade.update()
+                if fade.alpha >= 255:
+                    self.screen.fill(black)
+                    pg.display.flip()
+                    self.loadDebugLevel()
+
+                if select == 0:
+                    cursor.update(pg.rect.Rect(width / 2 - 120, height / 2 - 50, 0, 0), 60)
+                if select == 1:
+                    cursor.update(pg.rect.Rect(width / 2 - 100, height / 2 + 25, 0, 0), 60)
+
+                self.screen.fill(black)
+                self.screen.blit(background, bRect)
+                self.screen.blit(shadow, marioShadowRect)
+                self.screen.blit(marioFrames[marioCounter], marioRect)
+                self.screen.blit(peachShadow, peachShadowRect)
+                self.screen.blit(peachFrames[peachCounter], peachRect)
+                self.screen.blit(shadow, luigiShadowRect)
+                self.screen.blit(luigiFrames[luigiCounter], luigiRect)
+                self.screen.set_clip(clipRect.left, clipRect.top, clipRect.width, clipRect.height)
+                self.screen.blit(smal, smalRect)
+                ptext.draw("NEW GAME", (width / 2, height / 2 - 50), surf=self.screen, color=white, owidth=1,
+                           fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+                if cont:
+                    ptext.draw("CONTINUE", (width / 2, height / 2 + 25), surf=self.screen, color=white, owidth=1,
+                               fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+                else:
+                    ptext.draw("CONTINUE", (width / 2, height / 2 + 25), surf=self.screen, color=darkGray, owidth=1,
+                               fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+                ptext.draw(
+                    "Mario & Luigi is a registered trademark of Nintendo\nPaper Mario is a registered trademark of Nintendo\nThe Legend of Zelda Phantom Hourglass is a registered trademark of Nintendo\nUNDERTALE is a registered trademark of Royal Sciences, LLC",
+                    (width / 2, height - 60), lineheight=0.8, surf=self.screen, color=white,
+                    fontname=dialogueFont, anchor=(0.5, 0), fontsize=10, owidth=0.5)
+                self.screen.blit(cursor.image, cursor.rect)
+                self.screen.set_clip(None)
+                self.screen.blit(fade.image, fade.rect)
+
+                pg.display.flip()
+        else:
+            saves = [SaveSelection(self, 1), SaveSelection(self, 2), SaveSelection(self, 3)]
+            select = 0
+            going = True
+            while going:
+                self.clock.tick(fps)
+
+                self.events()
+                for event in self.event:
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_a:
+                            if select == 0:
+                                select = 2
+                            else:
+                                select -= 1
+                            self.abilityAdvanceSound.play()
+                        if event.key == pg.K_d:
+                            if select == 2:
+                                select = 0
+                            else:
+                                select += 1
+                            self.abilityAdvanceSound.play()
+                        if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                            going = False
+
+                if select == 0:
+                    cursor.update(saves[0].rect, 60)
+                elif select == 1:
+                    cursor.update(saves[1].rect, 60)
+                elif select == 2:
+                    cursor.update(saves[2].rect, 60)
+
+                self.screen.fill(black)
+                self.screen.blit(background, bRect)
+                [save.draw() for save in saves]
+                ptext.draw(
+                "Mario & Luigi is a registered trademark of Nintendo\nPaper Mario is a registered trademark of Nintendo\nThe Legend of Zelda Phantom Hourglass is a registered trademark of Nintendo\nUNDERTALE is a registered trademark of Royal Sciences, LLC",
+                (width / 2, height - 60), lineheight=0.8, surf=self.screen, color=white,
+                fontname=dialogueFont, anchor=(0.5, 0), fontsize=10, owidth=0.5)
+                self.screen.blit(cursor.image, cursor.rect)
+                self.screen.blit(fade.image, fade.rect)
+
+                pg.display.flip()
+
+            fade = Fadeout(self)
+            pg.mixer.music.fadeout(1000)
+
+            while True:
+                self.clock.tick(fps)
+
+                self.events()
+
+                fade.update()
+                if fade.alpha >= 255:
+                    self.screen.fill(black)
+                    pg.display.flip()
+                    self.loadGame(select + 1)
+
+                cursor.update(saves[select].rect, 60)
+
+                self.screen.fill(black)
+                self.screen.blit(background, bRect)
+                [save.draw() for save in saves]
+                ptext.draw(
+                    "Mario & Luigi is a registered trademark of Nintendo\nPaper Mario is a registered trademark of Nintendo\nThe Legend of Zelda Phantom Hourglass is a registered trademark of Nintendo\nUNDERTALE is a registered trademark of Royal Sciences, LLC",
+                    (width / 2, height - 60), lineheight=0.8, surf=self.screen, color=white,
+                    fontname=dialogueFont, anchor=(0.5, 0), fontsize=10, owidth=0.5)
+                self.screen.blit(cursor.image, cursor.rect)
+                self.screen.blit(fade.image, fade.rect)
+
+                pg.display.flip()
+
+    def saveGame(self):
         self.storeData["mario stats"] = self.player.stats
         self.storeData["mario pos"] = self.player.rect.center
         self.storeData["mario facing"] = self.player.facing
@@ -179,70 +639,82 @@ class Game:
             self.storeData["luigi current ability"] = self.follower.ability
         else:
             self.storeData["luigi current ability"] = self.follower.prevAbility
+        saves = [SaveSelection(self, 1), SaveSelection(self, 2), SaveSelection(self, 3)]
+        cursor = Cursor(self, saves[0].rect)
+        select = 0
+        going = True
+        save = True
+        while going:
+            self.clock.tick(fps)
 
-        if file == 1:
-            with open("saves/File 1.ini", "wb") as file:
+            self.events()
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_a:
+                        if select == 0:
+                            select = 2
+                        else:
+                            select -= 1
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_d:
+                        if select == 2:
+                            select = 0
+                        else:
+                            select += 1
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                        going = False
+                    if event.key == pg.K_TAB:
+                        going = False
+                        save = False
+
+            if select == 0:
+                cursor.update(saves[0].rect, 60)
+            elif select == 1:
+                cursor.update(saves[1].rect, 60)
+            elif select == 2:
+                cursor.update(saves[2].rect, 60)
+
+            self.screen.fill(black)
+            self.drawOverworldMenu()
+            [save.draw() for save in saves]
+            self.screen.blit(cursor.image, cursor.rect)
+
+            pg.display.flip()
+
+        if save:
+            with open("saves/File " + str(select + 1) + ".ini", "wb") as file:
+                pickle.dump(self.area, file)
                 pickle.dump(self.storeData, file)
+                pickle.dump(self.displayTime, file)
+                pickle.dump(self.playtime, file)
                 pickle.dump(self.despawnList, file)
                 pickle.dump(self.hitBlockList, file)
                 pickle.dump(self.coins, file)
                 for item in self.items:
                     pickle.dump(item[1], file)
                 pickle.dump(self.room, file)
-                pickle.dump(self.area, file)
-        if file == 2:
-            with open("saves/File 2.ini", "wb") as file:
-                pickle.dump(self.storeData, file)
-                pickle.dump(self.despawnList, file)
-                pickle.dump(self.hitBlockList, file)
-                pickle.dump(self.coins, file)
-                for item in self.items:
-                    pickle.dump(item[1], file)
-                pickle.dump(self.room, file)
-                pickle.dump(self.area, file)
-        if file == 3:
-            with open("saves/File 3.ini", "wb") as file:
-                pickle.dump(self.storeData, file)
-                pickle.dump(self.despawnList, file)
-                pickle.dump(self.hitBlockList, file)
-                pickle.dump(self.coins, file)
-                for item in self.items:
-                    pickle.dump(item[1], file)
-                pickle.dump(self.room, file)
-                pickle.dump(self.area, file)
+
+        self.player.canMove = False
+        self.follower.canMove = False
+
+        self.saved = True
+        self.pause = False
 
     def loadGame(self, file=1):
         try:
-            if file == 1:
-                with open("saves/File 1.ini", "rb") as file:
-                    self.storeData = pickle.load(file)
-                    self.despawnList = pickle.load(file)
-                    self.hitBlockList = pickle.load(file)
-                    self.coins = pickle.load(file)
-                    for item in self.items:
-                        item[1] = pickle.load(file)
-                    self.room = pickle.load(file)
-                    self.area = pickle.load(file)
-            elif file == 2:
-                with open("saves/File 2.ini", "rb") as file:
-                    self.storeData = pickle.load(file)
-                    self.despawnList = pickle.load(file)
-                    self.hitBlockList = pickle.load(file)
-                    self.coins = pickle.load(file)
-                    for item in self.items:
-                        item[1] = pickle.load(file)
-                    self.room = pickle.load(file)
-                    self.area = pickle.load(file)
-            elif file == 3:
-                with open("saves/File 1.ini", "rb") as file:
-                    self.storeData = pickle.load(file)
-                    self.despawnList = pickle.load(file)
-                    self.hitBlockList = pickle.load(file)
-                    self.coins = pickle.load(file)
-                    for item in self.items:
-                        item[1] = pickle.load(file)
-                    self.room = pickle.load(file)
-                    self.area = pickle.load(file)
+            with open("saves/File " + str(file) + ".ini", "rb") as file:
+                self.area = pickle.load(file)
+                self.storeData = pickle.load(file)
+                self.displayTime = pickle.load(file)
+                self.playtime = pickle.load(file)
+                self.despawnList = pickle.load(file)
+                self.hitBlockList = pickle.load(file)
+                self.coins = pickle.load(file)
+                for item in self.items:
+                    item[1] = pickle.load(file)
+                self.room = pickle.load(file)
+            print(self.storeData)
             eval(self.room)
         except:
             print("File not found.\nStarting a new game...")
@@ -377,11 +849,12 @@ class Game:
             block.ID = counter
             counter += 1
 
-        self.overworld("debug", [6.749, 102.727, "castle bleck"])
+        self.overworld("Debug Area", [6.749, 102.727, "castle bleck"])
 
     def overworld(self, area, songData):
         menud = False
         self.playing = True
+        self.saved = False
         try:
             self.player.ability = self.storeData["mario current ability"]
             self.player.abilities = self.storeData["mario abilities"]
@@ -393,6 +866,7 @@ class Game:
             self.playSong(songData[0], songData[1], songData[2])
             self.area = area
         while self.playing:
+            self.calculatePlayTime()
             if self.playsong:
                 self.playSong(songData[0], songData[1], songData[2], cont=True, fadein=True)
             self.clock.tick(fps)
@@ -413,10 +887,11 @@ class Game:
             self.screen.fill(black)
             self.drawOverworld()
 
-            if menud:
+            if menud or self.saved:
                 self.player.canMove = True
                 self.follower.canMove = True
                 menud = False
+                self.saved = False
 
     def overworldMenu(self, song=None):
         self.menuOpenSound.play()
@@ -449,6 +924,7 @@ class Game:
         currentFrame = 0
         print(song)
         while going and self.pause:
+            self.calculatePlayTime()
             now = pg.time.get_ticks()
             if now - lastUpdate > 45:
                 lastUpdate = now
@@ -824,6 +1300,7 @@ class Game:
             pg.mixer.music.load("music/battle.ogg")
             pg.mixer.music.play(-1)
         while self.playing:
+            self.calculatePlayTime()
             if song is not None:
                 eval(song)
             self.clock.tick(fps)
@@ -872,6 +1349,7 @@ class Game:
         cursor = Cursor(self, itemRect)
         print(song)
         while going and self.pause:
+            self.calculatePlayTime()
             self.clock.tick(fps)
             if song is not None:
                 eval(song)
@@ -1101,6 +1579,7 @@ class Game:
                           pg.image.load("sprites/ui/enemySelectionFullScreen.png").convert_alpha())
 
         while going:
+            self.calculatePlayTime()
             self.fadeout.update()
             self.clock.tick(fps)
             if song is not None:
@@ -1363,6 +1842,7 @@ class Game:
                 icon.color = darkGray
 
         while going:
+            self.calculatePlayTime()
             self.fadeout.update()
             self.clock.tick(fps)
             if song is not None:
@@ -1463,6 +1943,7 @@ class Game:
                 icon.color = darkGray
 
         while going:
+            self.calculatePlayTime()
             self.fadeout.update()
             self.clock.tick(fps)
             if song is not None:
@@ -1560,6 +2041,7 @@ class Game:
         number = 0
         colRect = pg.rect.Rect(0, 0, size, size)
         while going:
+            self.calculatePlayTime()
             self.clock.tick(fps)
             if up:
                 alpha += 10
@@ -1671,6 +2153,7 @@ class Game:
                 if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
                     enemies.append(enemy)
             while True:
+                self.calculatePlayTime()
                 self.clock.tick(fps)
                 s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
                 sRect = s.get_rect()
@@ -1734,6 +2217,7 @@ class Game:
         alpha = 255
         up = True
         while not enemy.textbox.closing:
+            self.calculatePlayTime()
             self.clock.tick(fps)
             if song is not None:
                 eval(song)
@@ -1792,6 +2276,7 @@ class Game:
             sprites.append(en)
             enemies.append(en)
         while going:
+            self.calculatePlayTime()
             sprites.sort(key=self.sortByYPos)
             for sprite in sprites:
                 if sprite in self.ui:
@@ -1972,6 +2457,7 @@ class Game:
             pg.display.flip()
         fad = Fadeout(self, 5)
         while fad.alpha <= 255:
+            self.calculatePlayTime()
             self.fadeout.update()
             [sprite.update() for sprite in sprites]
             self.screen.fill((59, 59, 59))
@@ -2017,6 +2503,7 @@ class Game:
             sprites.append(en)
             enemies.append(en)
         while going:
+            self.calculatePlayTime()
             sprites.sort(key=self.sortByYPos)
             for sprite in sprites:
                 if sprite in self.ui:
@@ -2197,6 +2684,7 @@ class Game:
             pg.display.flip()
         fad = Fadeout(self, 5)
         while fad.alpha <= 255:
+            self.calculatePlayTime()
             self.fadeout.update()
             [sprite.update() for sprite in sprites]
             self.screen.fill((59, 59, 59))
@@ -2257,8 +2745,8 @@ class Game:
         LuigiExpNumbers(self)
         self.coinCollection = CoinCollectionSubtract(self)
         coincollect = CoinCollectionAdd(self)
-        self.dimBackground = fadeout.get_rect()
         while True:
+            self.calculatePlayTime()
             self.playSong(5.44, 36.708, "battle victory")
             self.clock.tick(fps)
             self.events()
@@ -2278,13 +2766,14 @@ class Game:
             self.follower.stats = self.storeData["luigi stats"]
         coincollect.exp = self.coins + self.battleCoins
         self.coins += self.battleCoins
-        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5:
+        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5 and self.player.stats["level"] < 100:
             self.marioLevelUp()
-        elif self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5:
+        elif self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5 and self.follower.stats["level"] < 100:
             self.luigiLevelUp()
         fade = Fadeout(self)
         pg.mixer.music.fadeout(1000)
         while True:
+            self.calculatePlayTime()
             self.clock.tick(fps)
             self.events()
             self.updateBattleOver()
@@ -2330,6 +2819,8 @@ class Game:
         clipTime = fps * 2
         expClipTime = fps * 3
         expClipAmount = 0
+        if self.follower.dead:
+            luigi.counter = len(luigi.points) - 1
         if allReadyLeveled:
             mario.counter = len(mario.points) - 1
             mario.currentFrame = currentFrame
@@ -2338,6 +2829,7 @@ class Game:
             counter = clipTime
             luigi.counter = len(luigi.points) - 1
         while going:
+            self.calculatePlayTime()
             self.playSong(5.44, 36.708, "battle victory")
             self.clock.tick(fps)
             self.events()
@@ -2369,6 +2861,11 @@ class Game:
             clipAmount = (counter / clipTime) * height
 
             self.screen.fill(black)
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.set_clip(0, expClipAmount, width, height)
             for ui in self.battleEndUI:
                 try:
@@ -2377,11 +2874,6 @@ class Game:
                 except:
                     pass
             self.screen.set_clip(None)
-            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
-            sRect = s.get_rect()
-            s.fill(black)
-            s.set_alpha(125)
-            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
             self.screen.set_clip(0, expClipAmount, width, height)
@@ -2410,6 +2902,7 @@ class Game:
         counter = 0
 
         while going:
+            self.calculatePlayTime()
             self.playSong(5.44, 36.708, "battle victory")
             self.clock.tick(fps)
             self.events()
@@ -2448,14 +2941,15 @@ class Game:
         self.player.stats["pow"] += self.player.statGrowth["pow"]
         self.player.stats["def"] += self.player.statGrowth["def"]
 
-        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5:
+        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5 and self.player.stats["level"] < 100:
             self.marioLevelUp(True, mario.currentFrame)
-        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5:
+        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5 and self.follower.stats["level"] < 100:
             self.luigiLevelUp(False, True)
 
         fade = Fadeout(self)
         pg.mixer.music.fadeout(1000)
         while True:
+            self.calculatePlayTime()
             self.clock.tick(fps)
             self.events()
             mario.update()
@@ -2517,6 +3011,8 @@ class Game:
         clipTime = fps * 2
         expClipTime = fps * 3
         expClipAmount = 0
+        if self.player.dead:
+            mario.counter = len(mario.points) - 1
         if allReadyLeveled:
             luigi.counter = len(luigi.points) - 1
             luigi.currentFrame = currentFrame
@@ -2529,6 +3025,7 @@ class Game:
             marioText = MarioLevelUpUI(self)
             luigi = LuigiLevelUp(True)
         while going:
+            self.calculatePlayTime()
             self.playSong(5.44, 36.708, "battle victory")
             self.clock.tick(fps)
             self.events()
@@ -2561,6 +3058,11 @@ class Game:
             clipAmount = (counter / clipTime) * height
 
             self.screen.fill(black)
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             if not marioBefore:
                 self.screen.set_clip(0, expClipAmount, width, height)
                 for ui in self.battleEndUI:
@@ -2570,11 +3072,6 @@ class Game:
                     except:
                         pass
                 self.screen.set_clip(None)
-            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
-            sRect = s.get_rect()
-            s.fill(black)
-            s.set_alpha(125)
-            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
             if not marioBefore:
@@ -2609,6 +3106,7 @@ class Game:
         counter = 0
 
         while going:
+            self.calculatePlayTime()
             self.playSong(5.44, 36.708, "battle victory")
             self.clock.tick(fps)
             self.events()
@@ -2648,12 +3146,13 @@ class Game:
         self.follower.stats["pow"] += self.follower.statGrowth["pow"]
         self.follower.stats["def"] += self.follower.statGrowth["def"]
 
-        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5:
+        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5 and self.follower.stats["level"] < 100:
             self.luigiLevelUp(True, False, luigi.currentFrame)
 
         fade = Fadeout(self)
         pg.mixer.music.fadeout(1000)
         while True:
+            self.calculatePlayTime()
             self.clock.tick(fps)
             self.events()
             luigi.update()
@@ -2695,7 +3194,7 @@ class Game:
             self.follower.stats["hp"] = 1
             self.follower.shadow = self.follower.shadowFrames["normal"]
             self.follower.rect = self.follower.shadow.get_rect()
-        self.storeData["luigi stats"] = self.player.stats
+        self.storeData["mario stats"] = self.player.stats
         self.storeData["luigi stats"] = self.follower.stats
         eval(self.prevRoom)
 
@@ -2950,5 +3449,4 @@ class Game:
 
 game = Game()
 
-while game.running:
-    game.loadGame()
+game.titleScreen()

@@ -70,8 +70,6 @@ defSprite = pg.image.load("sprites/item icons/defIcon.png").convert_alpha()
 
 textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png")}
 
-fadeout = pg.image.load("sprites/fadeout.png").convert_alpha()
-
 
 def randomNumber(max):
     return random.randint(1, max)

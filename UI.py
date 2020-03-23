@@ -1,6 +1,8 @@
+import pickle
 import xml.etree.ElementTree as ET
+
 import pytweening as pt
-from Libraries import ptext
+
 from Settings import *
 
 
@@ -864,7 +866,7 @@ class CoinCollectionAdd(pg.sprite.Sprite):
 
 
 class Cursor(pg.sprite.Sprite):
-    def __init__(self, game, target, speed=20, facing="left"):
+    def __init__(self, game, target, facing="left"):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         sheet = spritesheet("sprites/ui.png", "sprites/ui.xml")
@@ -997,3 +999,38 @@ class Fadeout(pg.sprite.Sprite):
 
         if self.alpha < 0:
             self.kill()
+
+
+class SaveSelection(pg.sprite.Sprite):
+    def __init__(self, game, save):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        try:
+            with open("saves/File " + str(save) + ".ini", "rb") as file:
+                self.image = pg.image.load("sprites/save selection.png").convert_alpha()
+                self.area = pickle.load(file)
+                self.storeData = pickle.load(file)
+                self.playtime = pickle.load(file)
+        except:
+            self.image = pg.image.load("sprites/save selection ng.png").convert_alpha()
+        self.rect = self.image.get_rect()
+        if save == 1:
+            self.rect.center = (217, 360)
+        elif save == 2:
+            self.rect.center = (640, 360)
+        elif save == 3:
+            self.rect.center = (1061, 360)
+
+    def draw(self):
+        self.game.screen.blit(self.image, self.rect)
+        try:
+            ptext.draw("LV " + str(self.storeData["mario stats"]["level"]), (self.rect.left + 30, self.rect.top + 260),
+                       fontname=superMario256, fontsize=25, anchor=(0, 0.5), surf=self.game.screen)
+            ptext.draw("LV " + str(self.storeData["luigi stats"]["level"]), (self.rect.left + 185, self.rect.top + 260),
+                       fontname=superMario256, fontsize=25, anchor=(0, 0.5), surf=self.game.screen)
+            ptext.draw(str(self.area), (self.rect.left + self.rect.width / 2, self.rect.top + 330),
+                       fontname=dialogueFont, fontsize=25, anchor=(0.5, 0.5), surf=self.game.screen)
+            ptext.draw(self.playtime, (self.rect.left + self.rect.width / 2, self.rect.top + 414),
+                       fontname=dialogueFont, fontsize=25, anchor=(0.5, 0.5), surf=self.game.screen)
+        except:
+            pass
