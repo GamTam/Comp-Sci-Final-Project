@@ -199,7 +199,7 @@ class Game:
             self.follower.stats["hp"] = 1
             self.follower.shadow = self.follower.shadowFrames["normal"]
             self.follower.rect = self.follower.shadow.get_rect()
-            
+
         try:
             with open("saves/File 1.ini"):
                 pass

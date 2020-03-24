@@ -322,7 +322,7 @@ class Mario(pg.sprite.Sprite):
 
         self.stats = {"level": 1, "maxHP": 10, "maxBP": 10, "pow": 2, "def": 0, "hp": 10, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7), "def": randomNumber(3)}
-        self.attackPieces = [["Cavi Cape", 10], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0], ["Toad Town", 0]]
+        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0], ["Toad Town", 0]]
         self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)", pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
 
     def loadImages(self):
@@ -752,11 +752,6 @@ class Mario(pg.sprite.Sprite):
                         self.game.abilityAdvanceSound.play()
                     self.ability = (self.ability + 1) % (len(self.abilities) - 2)
                     print(self.abilities[self.ability])
-                if event.key == pg.K_h:
-                    if len(self.abilities) == 3:
-                        self.abilities = ["jump", "hammer", "interact", "talk"]
-                    else:
-                        self.abilities = ["jump", "interact", "talk"]
 
         hits = pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1))
         if hits:
@@ -2085,7 +2080,7 @@ class Luigi(pg.sprite.Sprite):
         self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "hp": 13, "bp": 5, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
                            "def": randomNumber(5)}
-        self.attackPieces = [["Cavi Cave", 10],
+        self.attackPieces = [["Cavi Cave", 0],
                              ["Guffawha Ruins", 0],
                              ["Sammer's Kingdom", 0],
                              ["Somnom Ruins", 0],
@@ -2223,11 +2218,6 @@ class Luigi(pg.sprite.Sprite):
                             self.game.abilityAdvanceSound.play()
                         self.ability = (self.ability + 1) % (len(self.abilities) - 2)
                         print(self.abilities[self.ability])
-                    if event.key == pg.K_h:
-                        if len(self.abilities) == 3:
-                            self.abilities = ["jump", "hammer", "interact", "talk"]
-                        else:
-                            self.abilities = ["jump", "interact", "talk"]
 
         if self.hit:
             self.canBeHit = False
