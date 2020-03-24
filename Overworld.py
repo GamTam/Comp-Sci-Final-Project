@@ -4110,7 +4110,7 @@ class SaveBlock(pg.sprite.Sprite):
                     self.hit = False
                     self.dy = abs(self.dy)
                     self.vy = -0.99
-                    self.game.saveGame()
+                    self.game.save = True
         else:
             self.imgRect.y += round(self.vy)
 

@@ -988,6 +988,7 @@ class Fadeout(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.image.fill(black)
         self.alpha = 1
+        self.image.set_alpha(self.alpha)
         self.room = self.game.room
 
     def update(self):
@@ -999,6 +1000,8 @@ class Fadeout(pg.sprite.Sprite):
 
         if self.alpha < 0:
             self.kill()
+
+        self.image.set_alpha(self.alpha)
 
 
 class SaveSelection(pg.sprite.Sprite):
