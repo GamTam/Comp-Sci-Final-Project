@@ -5,6 +5,12 @@ import math
 from moviepy.editor import *
 
 ptext.DEFAULT_COLOR = "black"
+ptext.DEFAULT_COLOR_TAG = {
+	">>": None,
+	"<<R": (255, 0, 0),
+	"<<B": (0, 0, 255),
+    "<<G": (0, 255, 0)
+}
 
 width = 1280
 height = 720

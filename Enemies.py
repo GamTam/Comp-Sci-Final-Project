@@ -461,59 +461,49 @@ class LinebeckDebug(pg.sprite.Sprite):
         self.rect.center = start
         self.imgRect.bottom = self.rect.bottom - 5
         self.imgRect.centerx = self.rect.centerx
+        self.canShop = False
         self.alpha = 255
         if not hastexted:
             self.counter = 0
         else:
             self.counter = 1
-        self.text.append("Hello.")
-        self.text.append("The phrase that many people use to\nrefer to me is Jeff.")
-        self.smoltext.append("My name's jeff!")
+        self.text.append("Hello!")
+        self.text.append("Would you two fine moustache\nfellows care to buy anything from\n<<Rthe mighty Linebeck>>?")
+        self.text.append("Go on, take a look!")
 
     def update(self):
         if self.counter == 0:
             if self.textbox is None:
-                keys = pg.key.get_pressed()
-                if self.game.leader == "mario":
-                    if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
-                        if not self.game.player.jumping:
-                            self.textbox = TextBox(self.game, self, self.text)
-                            self.game.linebeckHasTexted = True
-                            self.game.playsong = False
-                            self.game.firstLoop = True
-                            self.game.currentPoint += pg.mixer.music.get_pos()
-                elif self.game.leader == "luigi":
-                    if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
-                        if not self.game.follower.jumping:
-                            self.textbox = TextBox(self.game, self, self.text)
-                            self.game.linebeckHasTexted = True
-                            self.game.playsong = False
-                            self.firstloop = self.game.firstLoop
-                            self.game.firstLoop = True
-                            self.game.currentPoint += pg.mixer.music.get_pos()
+                for event in self.game.event:
+                    if event.type == pg.KEYDOWN:
+                        if self.game.leader == "mario":
+                            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and event.key == pg.K_m and self.game.player.canMove and self.game.follower.canMove:
+                                if not self.game.player.jumping:
+                                    self.textbox = TextBox(self.game, self, self.text)
+                                    self.game.linebeckHasTexted = True
+                                    self.canShop = True
+                                    self.game.playsong = False
+                                    self.game.currentPoint += pg.mixer.music.get_pos()
+                        elif self.game.leader == "luigi":
+                            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and event.key == pg.K_l and self.game.player.canMove and self.game.follower.canMove:
+                                if not self.game.follower.jumping:
+                                    self.textbox = TextBox(self.game, self, self.text)
+                                    self.game.linebeckHasTexted = True
+                                    self.canShop = True
+                                    self.game.playsong = False
+                                    self.game.currentPoint += pg.mixer.music.get_pos()
             elif self.textbox != "complete":
                 pg.event.clear()
                 self.game.playSong(6.402, 33.433, "linebeck's theme")
             else:
-                self.textbox = None
-                self.game.playsong = True
-                self.counter += 1
-        elif self.counter == 1:
-            self.canTalk = False
-            if self.game.leader == "mario":
-                if self.textbox is None:
-                    if pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
-                        self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.imgRect.top - 10))
-                elif self.textbox is not None:
-                    if not pg.sprite.collide_rect_ratio(1.5)(self, self.game.player):
-                        self.textbox.closing = True
-            elif self.game.leader == "luigi":
-                if self.textbox is None:
-                    if pg.sprite.collide_rect_ratio(1.5)(self, self.game.follower):
-                        self.textbox = MiniTextbox(self.game, self, self.smoltext, (self.rect.centerx, self.rect.top - 70))
-                elif self.textbox is not None:
-                    if not pg.sprite.collide_rect_ratio(1.5)(self, self.game.follower):
-                        self.textbox.closing = True
+                if self.canShop:
+                    self.game.shop([["Mushroom", 5], ["Super Mushroom", 15], ["1-UP Mushroom", 10], ["1-UP Deluxe", 30],["Syrup", 5], ["Star Cand", 15]], '''self.playSong(6.402, 33.433,
+                    "linebeck's theme")''')
+                    self.canShop = False
+                    self.textbox = TextBox(self.game, self, ["Thank you for your shopping!"])
+                else:
+                    self.textbox = None
+                    self.game.playsong = True
 
 
 class CountBleckDebug(pg.sprite.Sprite):
@@ -539,7 +529,7 @@ class CountBleckDebug(pg.sprite.Sprite):
         self.text.append("But, it is too late./p All worlds\nwill soon be erased, by Count Bleck.")
         self.text.append("Come to grips with that now,\nfor you cannot stop me.")
         self.text.append("I suggest you make yourself\ncomfortable and enjoy this\none, final spectacle!")
-        self.text.append("COUNT BLECK IS THE DELETER\nOF WORLDS! MY FATE IS WRITTEN\nIN THE DARK PROGNOSTICUS!")
+        self.text.append("COUNT BLECK IS THE DELETER\nOF WORLDS! MY FATE IS WRITTEN\nIN THE <<RDARK PROGNOSTICUS>>!")
         self.text.append("ARE YOU PREPARED, HEROES?")
         self.text.append("OUR DUEL WILL BE WORTHY OF\nTHE LAST CLASH THE WORLDS WILL\nEVER SEE!")
 

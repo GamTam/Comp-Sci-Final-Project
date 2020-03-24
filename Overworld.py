@@ -5,6 +5,7 @@ import pytweening as pt
 from BlockContents import *
 from LevelUp import *
 
+
 class spritesheet:
     def __init__(self, img_file, data_file=None):
         self.spritesheet = pg.image.load(img_file).convert_alpha()
@@ -321,9 +322,12 @@ class Mario(pg.sprite.Sprite):
         self.moveQueue = Q.deque()
 
         self.stats = {"level": 1, "maxHP": 10, "maxBP": 10, "pow": 2, "def": 0, "hp": 10, "bp": 10, "exp": 0}
-        self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7), "def": randomNumber(3)}
-        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0], ["Toad Town", 0]]
-        self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)", pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
+        self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
+                           "def": randomNumber(3)}
+        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0],
+                             ["Toad Town", 0]]
+        self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)",
+                             pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -727,7 +731,7 @@ class Mario(pg.sprite.Sprite):
                         self.rect.x = self.moveQueue.popleft()
                         self.rect.y = self.moveQueue.popleft()
                         self.facing = self.moveQueue.popleft()
-        
+
         for event in self.game.event:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_m:
@@ -751,7 +755,6 @@ class Mario(pg.sprite.Sprite):
                     if len(self.abilities) > 3:
                         self.game.abilityAdvanceSound.play()
                     self.ability = (self.ability + 1) % (len(self.abilities) - 2)
-                    print(self.abilities[self.ability])
 
         hits = pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1))
         if hits:
@@ -2036,7 +2039,6 @@ class Mario(pg.sprite.Sprite):
                 self.image = self.standingFrames[7]
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
-            
 
         if (self.walking or self.game.player.vx != 0 or self.game.player.vy != 0) and (
                 self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
@@ -2217,7 +2219,6 @@ class Luigi(pg.sprite.Sprite):
                         if len(self.abilities) > 3:
                             self.game.abilityAdvanceSound.play()
                         self.ability = (self.ability + 1) % (len(self.abilities) - 2)
-                        print(self.abilities[self.ability])
 
         if self.hit:
             self.canBeHit = False
@@ -2774,7 +2775,7 @@ class Luigi(pg.sprite.Sprite):
                                 self.image = self.standingFrames[7]
                                 self.imgRect = self.image.get_rect()
                                 self.imgRect.center = center
-                            
+
                 else:
                     if self.going == "up":
                         if keys[pg.K_w] and keys[pg.K_d]:
@@ -3473,7 +3474,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead horizontal"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesRight[self.currentFrame]
@@ -3490,7 +3491,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead horizontal"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesLeft[self.currentFrame]
@@ -3507,7 +3508,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesUp[self.currentFrame]
@@ -3524,7 +3525,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesDown[self.currentFrame]
@@ -3541,7 +3542,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesDown[self.currentFrame]
@@ -3558,7 +3559,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesDown[self.currentFrame]
@@ -3575,7 +3576,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesUp[self.currentFrame]
@@ -3592,7 +3593,7 @@ class Luigi(pg.sprite.Sprite):
                             self.shadow = self.shadowFrames["dead vertical"]
                             self.rect = self.shadow.get_rect()
                             self.rect.center = center
-                            
+
                         bottom = self.imgRect.bottom
                         left = self.imgRect.left
                         self.image = self.deadFramesUp[self.currentFrame]
@@ -4474,7 +4475,16 @@ class TextBox(pg.sprite.Sprite):
     def draw(self):
         keys = pg.key.get_pressed()
         character = self.text[self.page]
+
+        if character[self.currentCharacter - 1] == "\n":
+            self.currentCharacter += 1
+        if character[self.currentCharacter - 1:self.currentCharacter + 1] == "<<":
+            self.currentCharacter += 3
+        if character[self.currentCharacter - 1:self.currentCharacter + 1] == ">>":
+            self.currentCharacter += 2
+
         character = character[:self.currentCharacter]
+
         if self.currentCharacter < len(self.text[self.page]):
             if self.text[self.page][self.currentCharacter] == "/":
                 if self.text[self.page][self.currentCharacter + 1] == "p":
@@ -4502,10 +4512,10 @@ class TextBox(pg.sprite.Sprite):
                     pass
         completeText = False
         self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
-        if self.scale >= 1:
-            self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 250))
+        if self.scale >= 1 and self.alpha >= 255:
+            self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
             ptext.draw(character, (self.textx, self.texty), lineheight=0.8, surf=self.game.screen,
-                       fontname=dialogueFont, fontsize=35, owidth=-1)
+                       fontname=dialogueFont, fontsize=35, color=black, background=(228, 229, 228))
             self.game.screen.set_clip(None)
             if self.pause <= 0:
                 if self.currentCharacter < len(self.text[self.page]):

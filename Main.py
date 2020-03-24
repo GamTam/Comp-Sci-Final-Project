@@ -113,7 +113,7 @@ class Game:
                       ["Ultra Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 30 BP to one Bro.", 30],
                       ["Max Syrup", -1, syrupSprite, "bp", "maxBP", "Fully restores BP to one Bro.", "maxBP"],
                       ["1-UP Mushroom", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with 1/2 HP.", "maxHP"],
-                      ["1-UP Super", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with full HP.", "maxHP"],
+                      ["1-UP Deluxe", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with full HP.", "maxHP"],
                       ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.", "maxHP"]]
 
     def playSong(self, introLength, loopLength, song, cont=False, fadein=False, fadeinSpeed=0.05):
@@ -839,6 +839,7 @@ class Game:
         self.gameOverMario = pg.mixer.Sound("sounds/gameOverMario.ogg")
         self.gameOverLuigi = pg.mixer.Sound("sounds/gameOverLuigi.ogg")
         self.gameOverBoth = pg.mixer.Sound("sounds/gameOverBoth.ogg")
+        self.buySomethingSound = pg.mixer.Sound("sounds/buySomething.ogg")
 
     def loadDebugLevel(self):
         self.room = "self.loadDebugLevel()"
@@ -962,8 +963,9 @@ class Game:
                 self.follower.canMove = True
                 menud = False
                 self.saved = False
+                print(self.song_playing)
 
-    def overworldMenu(self, song=None):
+    def overworldMenu(self, song):
         self.menuOpenSound.play()
         going = True
         select = 0
@@ -1008,8 +1010,7 @@ class Game:
                 coinIconRect = coinIcon[currentFrame].get_rect()
                 coinIconRect.center = center
             self.clock.tick(fps)
-            if song is not None:
-                self.playSong(song[0], song[1], song[2], cont=True, fadein=True)
+            self.playSong(song[0], song[1], song[2])
 
             self.fadeout.update()
             s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
@@ -1083,6 +1084,156 @@ class Game:
 
             if self.pause:
                 pg.display.flip()
+
+    def shop(self, items, song=None):
+        self.menuOpenSound.play()
+        cursor = Cursor(self, self.player.imgRect)
+        going = True
+        menuIcons = []
+        rect = pg.rect.Rect(0, 0, 0, 0)
+        rect.center = (150, 150)
+        select = 0
+        coinAmount = pg.transform.flip(pg.image.load("sprites/ui/enemySelection.png").convert_alpha(), True, True)
+        sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
+        coinIcon = [sheet.getImageName("coin_1.png"),
+                    sheet.getImageName("coin_2.png"),
+                    sheet.getImageName("coin_3.png"),
+                    sheet.getImageName("coin_4.png"),
+                    sheet.getImageName("coin_5.png"),
+                    sheet.getImageName("coin_6.png"),
+                    sheet.getImageName("coin_7.png"),
+                    sheet.getImageName("coin_8.png")]
+        coinIconRect = coinIcon[0].get_rect()
+        coinRect = coinAmount.get_rect()
+        coinRect.right = width
+        coinRect.bottom = height
+        coinIconRect.center = (coinRect.left + 50, coinRect.centery)
+        lastUpdate = 0
+        currentFrame = 0
+
+        for item in items:
+            for tem in self.items:
+                if tem[0] == item[0]:
+                    if item[0] == "Star Cand":
+                        menuIcons.append(MenuIcon(self, rect.center, item[0] + "y (" + str(item[1]) + " Coins)", tem[2], item + tem))
+                    else:
+                        menuIcons.append(
+                            MenuIcon(self, rect.center, item[0] + " (" + str(item[1]) + " Coins)", tem[2], item + tem))
+
+                        rect.y += 100
+
+        for icon in menuIcons:
+            icon.color = darkGray
+            if self.coins >= icon.info[1]:
+                icon.color = white
+            print(icon.info)
+
+        if len(menuIcons) >= 6:
+            menuCamera = Camera(width, menuIcons[-1].rect.bottom + (width / 2))
+        else:
+            menuCamera = Camera(width, height)
+        name = EnemyNames(self, menuIcons[0].info[-2],
+                          pg.image.load("sprites/ui/enemySelectionFullScreen.png").convert_alpha())
+
+        self.pause = True
+        while going:
+            now = pg.time.get_ticks()
+            if now - lastUpdate > 45:
+                lastUpdate = now
+                if currentFrame < len(coinIcon):
+                    currentFrame = (currentFrame + 1) % (len(coinIcon))
+                else:
+                    currentFrame = 0
+                center = coinIconRect.center
+                coinIconRect = coinIcon[currentFrame].get_rect()
+                coinIconRect.center = center
+
+            self.calculatePlayTime()
+            self.fadeout.update()
+            self.clock.tick(fps)
+            if song is not None:
+                if type(song) is str:
+                    eval(song)
+                elif type(song) is list:
+                    self.playSong(song[0], song[1], song[2], cont=True, fadein=True)
+
+            s = pg.Surface((self.screen.get_width(), self.screen.get_height()))
+            sRect = s.get_rect()
+            s.fill(black)
+            s.set_alpha(125)
+
+            for item in menuIcons:
+                if item.info[1] > self.coins:
+                    item.color = darkGray
+
+            keys = pg.key.get_pressed()
+            self.event = pg.event.get().copy()
+            for event in self.event:
+                if event == pg.QUIT or keys[pg.K_ESCAPE]:
+                    pg.quit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_w or event.key == pg.K_a:
+                        if len(menuIcons) != 1:
+                            select -= 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_s or event.key == pg.K_d:
+                        if len(menuIcons) != 1:
+                            select += 1
+                            if select > len(menuIcons) - 1:
+                                select = 0
+                            if select < 0:
+                                select = len(menuIcons) - 1
+                            self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l:
+                        if menuIcons[select].color != darkGray:
+                            self.menuChooseSound.play()
+                            for item in self.items:
+                                print(item)
+                                if menuIcons[select].info[0] == item[0]:
+                                    if item[1] < 0:
+                                        item[1] = 1
+                                        self.coins -= menuIcons[select].info[1]
+                                        self.buySomethingSound.play()
+                                    else:
+                                        item[1] += 1
+                                        self.coins -= menuIcons[select].info[1]
+                                        self.buySomethingSound.play()
+                        else:
+                            self.wrongSound.play()
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        self.pause = False
+                        going = False
+                        self.menuCloseSound.play()
+
+            cursor.update(menuIcons[select].rect, 60)
+            name.update(menuIcons[select].info[-2])
+            rect.center = cursor.rect.center
+            menuCamera.update(rect)
+
+            self.screen.fill(black)
+            self.drawOverworldMenu()
+            self.screen.blit(s, sRect)
+            [a.draw(menuCamera.offset(a.rect)) for a in menuIcons]
+            self.screen.blit(coinAmount, coinRect)
+            self.screen.blit(coinIcon[currentFrame], coinIconRect)
+            ptext.draw("X" + str(self.coins), (coinRect.left + 100, coinRect.centery), fontname=dialogueFont,
+                       anchor=(0, 0.5),
+                       surf=self.screen, fontsize=40)
+            name.draw()
+            self.screen.blit(cursor.image, menuCamera.offset(cursor.rect))
+            self.fadeout.draw(self.screen)
+
+            if self.pause:
+                pg.display.flip()
+            else:
+                break
+
+        self.pause = False
 
     def brosStats(self, song=None):
         going = True
@@ -1651,7 +1802,10 @@ class Game:
                     if self.player.dead or self.follower.dead:
                         icon.color = white
 
-        menuCamera = Camera(width, menuIcons[-1].rect.bottom + (width / 2))
+        if len(menuIcons) >= 6:
+            menuCamera = Camera(width, menuIcons[-1].rect.bottom + (width / 2))
+        else:
+            menuCamera = Camera(width, height)
         name = EnemyNames(self, menuIcons[0].info[-2],
                           pg.image.load("sprites/ui/enemySelectionFullScreen.png").convert_alpha())
 

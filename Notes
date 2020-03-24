@@ -43,3 +43,18 @@ Linebeck Theme
 Vs Linebeck
     Intro Length: 8.148
     Loop Length: 71.893
+
+
+                            for item in self.items:
+                                print(self.items)
+                                if menuIcons[select].info[0] == item[0]:
+                                    if item[1] < 0:
+                                        item[1] = 1
+                                        self.coins -= menuIcons[select].info[1]
+                                    else:
+                                        item[1] += 1
+                                        self.coins -= menuIcons[select].info[1]
+                                    if menuIcons[select].info[0] > self.coins:
+                                        menuIcons[select].color = darkGray
+                            self.menuChooseSound.play()
+                            pg.quit()
