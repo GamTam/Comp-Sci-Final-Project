@@ -2775,7 +2775,6 @@ class Luigi(pg.sprite.Sprite):
                                 self.image = self.standingFrames[7]
                                 self.imgRect = self.image.get_rect()
                                 self.imgRect.center = center
-
                 else:
                     if self.going == "up":
                         if keys[pg.K_w] and keys[pg.K_d]:
@@ -3779,6 +3778,11 @@ class Luigi(pg.sprite.Sprite):
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
 
+        if (self.walking or self.game.player.vx != 0 or self.game.player.vy != 0) and (
+                self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
+            self.stepSound.stop()
+            pg.mixer.Sound.play(self.stepSound)
+
 
 class MarioBattleComplete(pg.sprite.Sprite):
     def __init__(self, game):
@@ -4361,10 +4365,13 @@ class BattleTransition(pg.sprite.Sprite):
 
 
 class TextBox(pg.sprite.Sprite):
-    def __init__(self, game, parent, text, type="dialogue", dir=None):
+    def __init__(self, game, parent, text, type="dialogue", dir=None, choice=False, sound="default"):
         pg.sprite.Sprite.__init__(self, game.ui)
         self.speed = 20
         self.game = game
+        self.choice = choice
+        self.choosing = False
+        self.talking = False
         self.game.player.hammering = False
         self.game.follower.hammering = False
         self.game.textBoxOpenSound.play()
@@ -4375,6 +4382,8 @@ class TextBox(pg.sprite.Sprite):
         self.offset = False
         self.closing = False
         self.advancing = False
+        self.big = False
+        self.sound = sound
         self.scale = 0
         self.counter = 0
         self.alpha = 0
@@ -4387,17 +4396,16 @@ class TextBox(pg.sprite.Sprite):
         self.currentCharacter = 1
         self.points = []
         self.pause = 0
-        self.pTimes = 0
-        self.PTimes = 0
-        self.numTimes = 0
         self.angle = 0
+        self.deathTimer = int(fps / 5)
         self.angleDir = True
+        self.complete = False
         self.advance = talkAdvanceSprite
         self.advanceRect = self.advance.get_rect()
         self.image = textboxSprites[type]
         self.rect = self.image.get_rect()
         self.maxRect = self.image.get_rect()
-        self.rect.center = self.game.camera.offset(parent.rect).center
+        self.rect.center = self.game.camera.offset(parent.imgRect).center
         self.advanceRect.center = (
             self.rect.right - self.advanceRect.width - 20, self.rect.bottom - self.advanceRect.width - 20)
         self.image = pg.transform.scale(textboxSprites[self.type],
@@ -4421,6 +4429,11 @@ class TextBox(pg.sprite.Sprite):
             for i in range(self.speed + 1):
                 self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2,
                                                      height - (self.rect.height / 2) - 20, (i / self.speed)))
+        elif dir == "None":
+            for i in range(self.speed + 1):
+                self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2,
+                                                     height / 2, (i / self.speed)))
+        self.initialPoints = self.points.copy()
 
     def update(self):
         if not self.closing:
@@ -4435,24 +4448,44 @@ class TextBox(pg.sprite.Sprite):
                 self.scale -= 0.05
             if self.alpha > 0:
                 self.alpha -= 10
+
             if self.counter < len(self.points) - 1:
                 self.counter += 1
+            elif self.deathTimer > 0:
+                self.deathTimer -= 1
             else:
                 self.game.player.canMove = True
                 self.game.follower.canMove = True
                 self.parent.textbox = "complete"
+                self.complete = True
                 self.kill()
 
         if not self.advancing:
             if self.type == "dialogue":
                 self.textx = self.rect.left + 70
                 self.texty = self.rect.top + 40
+            if self.type == "board":
+                self.textx = self.rect.left + 100
+                self.texty = self.rect.top + 100
         else:
             self.texty -= 10
             if self.texty <= self.rect.top - 220:
                 self.page += 1
                 self.currentCharacter = 1
                 self.advancing = False
+
+        if self.text[self.page][0:2] == "/C" and self.choice and self.currentCharacter >= len(self.text[self.page]) - 1:
+            self.choosing = True
+        else:
+            self.choosing = False
+
+        if self.text[self.page][0:2] == "/B":
+            self.big = True
+        else:
+            self.big = False
+
+        if self.text[self.page][-4:-2] == "/S" and self.currentCharacter >= len(self.text[self.page]) - 4 and not self.pause:
+            self.closing = True
 
         self.rect.center = self.points[self.counter]
         center = self.rect.center
@@ -4469,8 +4502,12 @@ class TextBox(pg.sprite.Sprite):
             self.angle -= 2
         self.advance = pg.transform.rotate(talkAdvanceSprite, self.angle)
         self.advanceRect = self.advance.get_rect()
-        self.advanceRect.right = self.rect.right - 50
-        self.advanceRect.bottom = self.rect.bottom - 55
+        if self.type == "dialogue":
+            self.advanceRect.right = self.rect.right - 50
+            self.advanceRect.bottom = self.rect.bottom - 55
+        elif self.type == "board":
+            self.advanceRect.right = self.rect.right - 80
+            self.advanceRect.bottom = self.rect.bottom - 100
 
     def draw(self):
         keys = pg.key.get_pressed()
@@ -4482,101 +4519,119 @@ class TextBox(pg.sprite.Sprite):
             self.currentCharacter += 3
         if character[self.currentCharacter - 1:self.currentCharacter + 1] == ">>":
             self.currentCharacter += 2
+        if character[self.currentCharacter - 1: self.currentCharacter + 1] == "/C":
+            self.currentCharacter += 3
+        if character[self.currentCharacter - 1: self.currentCharacter + 1] == "/B":
+            self.currentCharacter += 3
 
         character = character[:self.currentCharacter]
 
         if self.currentCharacter < len(self.text[self.page]):
             if self.text[self.page][self.currentCharacter] == "/":
                 if self.text[self.page][self.currentCharacter + 1] == "p":
-                    self.pTimes += 1
-                    self.text[self.page] = self.text[self.page].replace("/p", "", self.pTimes)
                     self.pause = fps / 2
                 if self.text[self.page][self.currentCharacter + 1] == "P":
-                    self.PTimes += 1
-                    self.text[self.page] = self.text[self.page].replace("/P", "", self.PTimes)
                     self.pause = 60
                 try:
                     if int(self.text[self.page][self.currentCharacter + 1]) % 1 == 0:
-                        self.numTimes += 1
                         self.pause = int(self.text[self.page][self.currentCharacter + 1])
-                        self.text[self.page] = self.text[self.page].replace("/1", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/2", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/3", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/4", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/5", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/6", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/7", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/8", "", self.numTimes)
-                        self.text[self.page] = self.text[self.page].replace("/9", "", self.numTimes)
                 except:
                     pass
+                self.currentCharacter += 2
+
+        character = character.replace("/p", "")
+        character = character.replace("/P", "")
+        character = character.replace("/1", "")
+        character = character.replace("/2", "")
+        character = character.replace("/3", "")
+        character = character.replace("/4", "")
+        character = character.replace("/5", "")
+        character = character.replace("/6", "")
+        character = character.replace("/7", "")
+        character = character.replace("/8", "")
+        character = character.replace("/9", "")
+
         completeText = False
         self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
         if self.scale >= 1 and self.alpha >= 255:
-            self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
-            ptext.draw(character, (self.textx, self.texty), lineheight=0.8, surf=self.game.screen,
-                       fontname=dialogueFont, fontsize=35, color=black, background=(228, 229, 228))
+            if not self.big:
+                if self.type == "dialogue":
+                    self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
+                    ptext.draw(character, (self.textx, self.texty), lineheight=0.8, surf=self.game.screen,
+                           fontname=dialogueFont, fontsize=35, color=black, background=(228, 229, 228))
+                elif self.type == "board":
+                    self.game.screen.set_clip((self.rect.left, self.rect.top + 61, 1000, 220))
+                    ptext.draw(character, (self.textx, self.texty), lineheight=0.8, surf=self.game.screen,
+                               fontname=dialogueFont, fontsize=35, color=black, background=(225, 223, 225))
+            else:
+                if self.type == "dialogue":
+                    self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
+                    ptext.draw(character, (self.textx - 65, self.texty + 20), lineheight=0.8, surf=self.game.screen,
+                           fontname=dialogueFont, fontsize=95, color=black, background=(228, 229, 228))
+                elif self.type == "board":
+                    self.game.screen.set_clip((self.rect.left, self.rect.top + 61, 1000, 220))
+                    ptext.draw(character, (self.textx - 20, self.texty + 20), lineheight=0.8, surf=self.game.screen,
+                               fontname=dialogueFont, fontsize=95, color=black, background=(225, 223, 225))
             self.game.screen.set_clip(None)
+            if self.currentCharacter < len(self.text[self.page]) and not self.advancing:
+                for event in self.game.event:
+                    if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+                        pg.quit()
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                            completeText = True
+                            self.pause = 0
+                if completeText:
+                    self.currentCharacter = len(self.text[self.page])
+            else:
+                for event in self.game.event:
+                    if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+                        pg.quit()
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                            if self.page < len(self.text) - 1:
+                                if not self.advancing: self.game.talkAdvanceSound.play()
+                                self.advancing = True
+                            else:
+                                self.points = []
+                                for i in range(self.speed + 1):
+                                    self.points.append(
+                                        pt.getPointOnLine(self.rect.centerx, self.rect.centery,
+                                                          self.game.camera.offset(self.parent.imgRect).centerx,
+                                                          self.game.camera.offset(self.parent.imgRect).centery,
+                                                          (i / self.speed)))
+                                self.counter = 0
+                                self.game.textBoxCloseSound.stop()
+                                self.game.textBoxCloseSound.play()
+                                self.closing = True
             if self.pause <= 0:
-                if self.currentCharacter < len(self.text[self.page]):
-                    for event in self.game.event:
-                        if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
-                            pg.quit()
-                        if event.type == pg.KEYDOWN:
-                            if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
-                                completeText = True
-                    if completeText:
-                        self.text[self.page] = self.text[self.page].replace("/P", "")
-                        self.text[self.page] = self.text[self.page].replace("/p", "")
-                        self.text[self.page] = self.text[self.page].replace("/1", "")
-                        self.text[self.page] = self.text[self.page].replace("/2", "")
-                        self.text[self.page] = self.text[self.page].replace("/3", "")
-                        self.text[self.page] = self.text[self.page].replace("/4", "")
-                        self.text[self.page] = self.text[self.page].replace("/5", "")
-                        self.text[self.page] = self.text[self.page].replace("/6", "")
-                        self.text[self.page] = self.text[self.page].replace("/7", "")
-                        self.text[self.page] = self.text[self.page].replace("/8", "")
-                        self.text[self.page] = self.text[self.page].replace("/9", "")
-                        self.currentCharacter = len(self.text[self.page])
+                if self.currentCharacter < len(self.text[self.page]) and not completeText:
+                    pitch = random.randrange(0, 3)
+                    if self.playSound >= 1 and character[-1] != " " and self.sound == "default":
+                        if pitch == 0:
+                            self.game.talkSoundLow.play()
+                        elif pitch == 1:
+                            self.game.talkSoundMed.play()
+                        elif pitch == 2:
+                            self.game.talkSoundHigh.play()
+                        self.playSound = 0
+                    elif self.playSound >= 2 and character[-1] != " " and self.sound == "starlow":
+                        if pitch == 0:
+                            self.game.starlowTalkSoundLow.play()
+                        elif pitch == 1:
+                            self.game.starlowTalkSoundMed.play()
+                        elif pitch == 2:
+                            self.game.starlowTalkSoundHigh.play()
+                        self.playSound = 0
                     else:
-                        if self.playSound == 1:
-                            pitch = random.randrange(0, 3)
-                            if pitch == 0:
-                                self.game.talkSoundLow.play()
-                            elif pitch == 1:
-                                self.game.talkSoundMed.play()
-                            elif pitch == 2:
-                                self.game.talkSoundHigh.play()
-                            self.playSound = 0
-                        else:
-                            self.playSound += 1
-                        self.currentCharacter += 1
+                        self.playSound += 1
+                    self.currentCharacter += 1
+                    self.talking = True
                 else:
-                    for event in self.game.event:
-                        if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
-                            pg.quit()
-                        if event.type == pg.KEYDOWN:
-                            if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
-                                if self.page < len(self.text) - 1:
-                                    if not self.advancing: self.game.talkAdvanceSound.play()
-                                    self.advancing = True
-                                    self.pTimes = 0
-                                    self.PTimes = 0
-                                    self.numTimes = 0
-                                else:
-                                    self.points = []
-                                    for i in range(self.speed + 1):
-                                        self.points.append(
-                                            pt.getPointOnLine(self.rect.centerx, self.rect.centery,
-                                                              self.game.camera.offset(self.parent.imgRect).centerx,
-                                                              self.game.camera.offset(self.parent.imgRect).centery,
-                                                              (i / self.speed)))
-                                    self.counter = 0
-                                    self.game.textBoxCloseSound.stop()
-                                    self.game.textBoxCloseSound.play()
-                                    self.closing = True
+                    self.talking = False
                     if not self.advancing:
-                        self.game.screen.blit(self.advance, self.advanceRect.center)
+                        if not self.choosing:
+                            self.game.screen.blit(self.advance, self.advanceRect.center)
             else:
                 self.pause -= 1
 
@@ -4635,6 +4690,8 @@ class MiniTextbox(pg.sprite.Sprite):
 
     def draw(self):
         character = self.text[self.page]
+        if character[self.currentCharacter - 1] == "\n":
+            self.currentCharacter += 1
         character = character[:self.currentCharacter]
         self.game.blit_alpha(self.game.screen, self.image, self.game.camera.offset(self.rect), self.alpha)
         if self.scale >= 0.3:

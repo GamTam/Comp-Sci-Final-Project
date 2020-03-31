@@ -474,16 +474,6 @@ class HitNumbers(pg.sprite.Sprite):
         self.game = game
         self.offset = True
         sheet = spritesheet("sprites/ui.png", "sprites/ui.xml")
-        self.numbers = [sheet.getImageName("0.png"),
-                        sheet.getImageName("1.png"),
-                        sheet.getImageName("2.png"),
-                        sheet.getImageName("3.png"),
-                        sheet.getImageName("4.png"),
-                        sheet.getImageName("5.png"),
-                        sheet.getImageName("6.png"),
-                        sheet.getImageName("7.png"),
-                        sheet.getImageName("8.png"),
-                        sheet.getImageName("9.png")]
         self.alpha = 255
         if type == "normal":
             self.base = sheet.getImageName("hit.png")
@@ -496,171 +486,12 @@ class HitNumbers(pg.sprite.Sprite):
         self.image = self.base
         self.rect = self.image.get_rect()
         self.rect.center = pos
-        self.number = [int(i) for i in str(number)]
-        if len(self.number) == 1:
-            if self.number[0] == 0:
-                self.numberImg = self.numbers[0]
-            elif self.number[0] == 1:
-                self.numberImg = self.numbers[1]
-            elif self.number[0] == 2:
-                self.numberImg = self.numbers[2]
-            elif self.number[0] == 3:
-                self.numberImg = self.numbers[3]
-            elif self.number[0] == 4:
-                self.numberImg = self.numbers[4]
-            elif self.number[0] == 5:
-                self.numberImg = self.numbers[5]
-            elif self.number[0] == 6:
-                self.numberImg = self.numbers[6]
-            elif self.number[0] == 7:
-                self.numberImg = self.numbers[7]
-            elif self.number[0] == 8:
-                self.numberImg = self.numbers[8]
-            elif self.number[0] == 9:
-                self.numberImg = self.numbers[9]
-
-            self.numberRect = self.numberImg.get_rect()
-            self.numberRect.center = self.rect.center
-        elif len(self.number) == 2:
-            if self.number[0] == 0:
-                self.numberImg1 = self.numbers[0]
-            elif self.number[0] == 1:
-                self.numberImg1 = self.numbers[1]
-            elif self.number[0] == 2:
-                self.numberImg1 = self.numbers[2]
-            elif self.number[0] == 3:
-                self.numberImg1 = self.numbers[3]
-            elif self.number[0] == 4:
-                self.numberImg1 = self.numbers[4]
-            elif self.number[0] == 5:
-                self.numberImg1 = self.numbers[5]
-            elif self.number[0] == 6:
-                self.numberImg1 = self.numbers[6]
-            elif self.number[0] == 7:
-                self.numberImg1 = self.numbers[7]
-            elif self.number[0] == 8:
-                self.numberImg1 = self.numbers[8]
-            elif self.number[0] == 9:
-                self.numberImg1 = self.numbers[9]
-
-            if self.number[1] == 0:
-                self.numberImg2 = self.numbers[0]
-            elif self.number[1] == 1:
-                self.numberImg2 = self.numbers[1]
-            elif self.number[1] == 2:
-                self.numberImg2 = self.numbers[2]
-            elif self.number[1] == 3:
-                self.numberImg2 = self.numbers[3]
-            elif self.number[1] == 4:
-                self.numberImg2 = self.numbers[4]
-            elif self.number[1] == 5:
-                self.numberImg2 = self.numbers[5]
-            elif self.number[1] == 6:
-                self.numberImg2 = self.numbers[6]
-            elif self.number[1] == 7:
-                self.numberImg2 = self.numbers[7]
-            elif self.number[1] == 8:
-                self.numberImg2 = self.numbers[8]
-            elif self.number[1] == 9:
-                self.numberImg2 = self.numbers[9]
-
-            self.numberRect1 = self.numberImg1.get_rect()
-            self.numberRect2 = self.numberImg2.get_rect()
-
-            self.numberRect1.centery = self.rect.centery
-            self.numberRect1.right = self.rect.centerx + 1
-            self.numberRect2.centery = self.rect.centery
-            self.numberRect2.left = self.rect.centerx - 1
-        elif len(self.number) == 3:
-            if self.number[0] == 0:
-                self.numberImg1 = self.numbers[0]
-            elif self.number[0] == 1:
-                self.numberImg1 = self.numbers[1]
-            elif self.number[0] == 2:
-                self.numberImg1 = self.numbers[2]
-            elif self.number[0] == 3:
-                self.numberImg1 = self.numbers[3]
-            elif self.number[0] == 4:
-                self.numberImg1 = self.numbers[4]
-            elif self.number[0] == 5:
-                self.numberImg1 = self.numbers[5]
-            elif self.number[0] == 6:
-                self.numberImg1 = self.numbers[6]
-            elif self.number[0] == 7:
-                self.numberImg1 = self.numbers[7]
-            elif self.number[0] == 8:
-                self.numberImg1 = self.numbers[8]
-            elif self.number[0] == 9:
-                self.numberImg1 = self.numbers[9]
-
-            if self.number[1] == 0:
-                self.numberImg2 = self.numbers[0]
-            elif self.number[1] == 1:
-                self.numberImg2 = self.numbers[1]
-            elif self.number[1] == 2:
-                self.numberImg2 = self.numbers[2]
-            elif self.number[1] == 3:
-                self.numberImg2 = self.numbers[3]
-            elif self.number[1] == 4:
-                self.numberImg2 = self.numbers[4]
-            elif self.number[1] == 5:
-                self.numberImg2 = self.numbers[5]
-            elif self.number[1] == 6:
-                self.numberImg2 = self.numbers[6]
-            elif self.number[1] == 7:
-                self.numberImg2 = self.numbers[7]
-            elif self.number[1] == 8:
-                self.numberImg2 = self.numbers[8]
-            elif self.number[1] == 9:
-                self.numberImg2 = self.numbers[9]
-
-            if self.number[2] == 0:
-                self.numberImg3 = self.numbers[0]
-            elif self.number[2] == 1:
-                self.numberImg3 = self.numbers[1]
-            elif self.number[2] == 2:
-                self.numberImg3 = self.numbers[2]
-            elif self.number[2] == 3:
-                self.numberImg3 = self.numbers[3]
-            elif self.number[2] == 4:
-                self.numberImg3 = self.numbers[4]
-            elif self.number[2] == 5:
-                self.numberImg3 = self.numbers[5]
-            elif self.number[2] == 6:
-                self.numberImg3 = self.numbers[6]
-            elif self.number[2] == 7:
-                self.numberImg3 = self.numbers[7]
-            elif self.number[2] == 8:
-                self.numberImg3 = self.numbers[8]
-            elif self.number[2] == 9:
-                self.numberImg3 = self.numbers[9]
-
-            self.numberRect1 = self.numberImg1.get_rect()
-            self.numberRect2 = self.numberImg2.get_rect()
-            self.numberRect3 = self.numberImg3.get_rect()
-
-            self.numberRect1.centery = self.rect.centery
-            self.numberRect1.right = self.rect.centerx - (self.numberRect2.width / 2) + 2
-            self.numberRect2.center = self.rect.center
-            self.numberRect3.centery = self.rect.centery
-            self.numberRect3.left = self.rect.centerx + (self.numberRect2.width / 2) - 2
+        self.number = str(number)
 
     def draw(self):
         self.game.blit_alpha(self.game.screen, self.image, self.game.camera.offset(self.rect), self.alpha)
-        if len(self.number) == 1:
-            self.game.blit_alpha(self.game.screen, self.numberImg, self.game.camera.offset(self.numberRect), self.alpha)
-        elif len(self.number) == 2:
-            self.game.blit_alpha(self.game.screen, self.numberImg1, self.game.camera.offset(self.numberRect1),
-                                 self.alpha)
-            self.game.blit_alpha(self.game.screen, self.numberImg2, self.game.camera.offset(self.numberRect2),
-                                 self.alpha)
-        elif len(self.number) == 3:
-            self.game.blit_alpha(self.game.screen, self.numberImg1, self.game.camera.offset(self.numberRect1),
-                                 self.alpha)
-            self.game.blit_alpha(self.game.screen, self.numberImg2, self.game.camera.offset(self.numberRect2),
-                                 self.alpha)
-            self.game.blit_alpha(self.game.screen, self.numberImg3, self.game.camera.offset(self.numberRect3),
-                                 self.alpha)
+        ptext.draw(self.number, (self.game.camera.offset(self.rect).centerx, self.game.camera.offset(self.rect).centery + 5), anchor=(0.5, 0.5), color=(255, 213, 0),
+                       gcolor=(242, 113, 100), fontname=superMario256, owidth=0.7, surf=self.game.screen, fontsize=50, alpha=self.alpha / 255)
 
     def update(self):
         self.counter += 1

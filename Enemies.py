@@ -1,7 +1,7 @@
 from Overworld import *
 from UI import *
 from Settings import *
-
+from statemachine import StateMachine, State
 
 class spritesheet:
     def __init__(self, img_file, data_file=None):
@@ -402,48 +402,6 @@ class Goomba(pg.sprite.Sprite):
                     self.hit = True
 
 
-class GoombaKingDebug(pg.sprite.Sprite):
-    def __init__(self, game, start):
-        pg.sprite.Sprite.__init__(self, game.npcs)
-        self.text = []
-        self.game = game
-        self.textbox = None
-        self.canTalk = True
-        self.game.sprites.append(self)
-        sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
-        self.image = sheet.getImageName("goomba_walking_down_1.png")
-        self.shadow = sheet.getImageName("shadow.png")
-        self.rect = self.shadow.get_rect()
-        self.imgRect = self.image.get_rect()
-        self.rect.center = start
-        self.imgRect.bottom = self.rect.bottom - 5
-        self.imgRect.centerx = self.rect.centerx
-        self.alpha = 255
-        self.counter = 0
-        self.text.append("WHO DARES DISTURB THE GREAT \nGOOMBA KING?")
-        self.text.append("Oh./p It's you.")
-        self.text.append(
-            "I have heard about all of your feats\nof strength, and I am telling you\nthat no one is stronger than me!")
-        self.text.append("So,/5/5/5 MARIO!/p LUIGI!/p\nLet the battle of the century.../P\nBEGIN!")
-
-    def update(self):
-        if self.textbox is None:
-            keys = pg.key.get_pressed()
-            if self.game.leader == "mario":
-                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
-                    if not self.game.player.jumping:
-                        self.textbox = TextBox(self.game, self, self.text)
-            elif self.game.leader == "luigi":
-                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
-                    if not self.game.follower.jumping:
-                        self.textbox = TextBox(self.game, self, self.text)
-        elif self.textbox != "complete":
-            pg.event.clear()
-        else:
-            self.textbox = None
-            self.game.loadBattle("THB15G")
-
-
 class LinebeckDebug(pg.sprite.Sprite):
     def __init__(self, game, start, hastexted=False):
         pg.sprite.Sprite.__init__(self, game.npcs)
@@ -632,3 +590,16 @@ class CountBleckDebug(pg.sprite.Sprite):
             self.imgRect = self.image.get_rect()
             self.imgRect.bottom = bottom
             self.imgRect.left = left
+
+
+class TutorialBowser(pg.sprite.Sprite, StateMachine):
+    def __init__(self, game, pos):
+        pg.sprite.Sprite.__init__(self)
+        self.idle = State("Idle", initial=True)
+        self.towardsPlayer = State("Towards Player")
+        self.punch = State("Punch")
+
+        self.startWalking = self.idle.to(self.towardsPlayer)
+        self.attack = self.towardsPlayer.to(self.punch)
+        self.attackOver = self.punch.to(self.idle)
+        self.giveUp = self.towardsPlayer.to(self.idle)

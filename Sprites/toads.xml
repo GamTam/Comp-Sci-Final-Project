@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:03e7379c830c5b62d41b35682659184c:36f6d843935ec74769d04a104d438e9e:14a86492cc52f8b5fd7942ffc8b1ef79$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="toads.png" width="1982" height="80">
+    <sprite n="shadow.png" x="0" y="0" w="38" h="16" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_1.png" x="38" y="0" w="50" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_2.png" x="88" y="0" w="48" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_3.png" x="136" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_4.png" x="184" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_5.png" x="232" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_6.png" x="280" y="0" w="52" h="72" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_7.png" x="332" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_8.png" x="380" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_9.png" x="428" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_10.png" x="476" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_11.png" x="524" y="0" w="50" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_12.png" x="574" y="0" w="48" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_13.png" x="622" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_14.png" x="670" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_15.png" x="718" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_16.png" x="766" y="0" w="52" h="72" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_17.png" x="818" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_18.png" x="866" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_19.png" x="914" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_20.png" x="962" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_21.png" x="1010" y="0" w="50" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_22.png" x="1060" y="0" w="48" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_23.png" x="1108" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_24.png" x="1156" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_25.png" x="1204" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_26.png" x="1252" y="0" w="52" h="72" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_27.png" x="1304" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_28.png" x="1352" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_29.png" x="1400" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_30.png" x="1448" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_31.png" x="1496" y="0" w="50" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_32.png" x="1546" y="0" w="48" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_33.png" x="1594" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_34.png" x="1642" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_35.png" x="1690" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_36.png" x="1738" y="0" w="52" h="72" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_37.png" x="1790" y="0" w="48" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_38.png" x="1838" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_39.png" x="1886" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="toad_freakout_left_40.png" x="1934" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
+</TextureAtlas>

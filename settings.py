@@ -6,10 +6,13 @@ from moviepy.editor import *
 
 ptext.DEFAULT_COLOR = "black"
 ptext.DEFAULT_COLOR_TAG = {
-	">>": None,
-	"<<R": (255, 0, 0),
-	"<<B": (0, 0, 255),
-    "<<G": (0, 255, 0)
+    ">>": None,
+    "<<R": (255, 0, 0),
+    "<<B": (0, 0, 255),
+    "<<G": (0, 225, 0),
+    "/C": None,
+    "/B": None,
+    "/S": None
 }
 
 width = 1280
@@ -74,8 +77,13 @@ bpSprite = pg.image.load("sprites/item icons/bpIcon.png").convert_alpha()
 powSprite = pg.image.load("sprites/item icons/powIcon.png").convert_alpha()
 defSprite = pg.image.load("sprites/item icons/defIcon.png").convert_alpha()
 
-textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png")}
+textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png"),
+                  "board": pg.image.load("sprites/boardTextBox.png")}
 
 
 def randomNumber(max):
     return random.randint(1, max)
+
+
+def nor(a, b):
+    return not (a or b)

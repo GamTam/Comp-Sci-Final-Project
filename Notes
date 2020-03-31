@@ -4,13 +4,17 @@ Title Screen:
     Intro Length: 41.868
     Loop Length: 33.329
 
+Mario Bros. House
+    Intro Length: 8.081
+    Loop Length: 32.578
+
+Bowser's Theme:
+    Intro Length: 12.81
+    Loop Length: 73.815
+
 Joyous Occasion (Battle Victory):
     Intro Length: 5.44
     Loop Length: 36.708
-
-The Last Cackletta (Cackletta battle)
-    Intro Length: 17.235
-    Loop Length: 64.755
 
 Teehee Valley
     Intro Length: 14.764
@@ -43,18 +47,3 @@ Linebeck Theme
 Vs Linebeck
     Intro Length: 8.148
     Loop Length: 71.893
-
-
-                            for item in self.items:
-                                print(self.items)
-                                if menuIcons[select].info[0] == item[0]:
-                                    if item[1] < 0:
-                                        item[1] = 1
-                                        self.coins -= menuIcons[select].info[1]
-                                    else:
-                                        item[1] += 1
-                                        self.coins -= menuIcons[select].info[1]
-                                    if menuIcons[select].info[0] > self.coins:
-                                        menuIcons[select].color = darkGray
-                            self.menuChooseSound.play()
-                            pg.quit()

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:366ebfcda03e16925f788e7f39ab8a38:ec5867f79c38c1f50f05a7659bc5acc6:73e8551da0c5d1346dffc41edacb20b8$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="starlow.png" width="232" height="480">
+    <sprite n="shadow.png" x="0" y="0" w="40" h="19" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_downright_1.png" x="0" y="156" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_downright_2.png" x="190" y="78" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_downright_3.png" x="76" y="78" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_downright_4.png" x="38" y="78" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_downright_5.png" x="114" y="78" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_downright_6.png" x="152" y="78" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_right_1.png" x="156" y="156" w="38" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_right_2.png" x="118" y="316" w="38" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_right_3.png" x="166" y="398" w="40" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_right_4.png" x="194" y="316" w="38" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_right_5.png" x="0" y="236" w="38" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_right_6.png" x="116" y="236" w="38" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_1.png" x="38" y="236" w="38" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_2.png" x="76" y="236" w="40" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_3.png" x="80" y="398" w="42" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_4.png" x="192" y="236" w="40" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_5.png" x="154" y="236" w="38" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_6.png" x="40" y="398" w="40" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_7.png" x="122" y="398" w="44" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_right_8.png" x="0" y="398" w="40" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_1.png" x="194" y="156" w="38" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_2.png" x="38" y="156" w="40" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_3.png" x="0" y="316" w="42" h="74" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_4.png" x="78" y="156" w="40" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_5.png" x="118" y="156" w="38" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_6.png" x="78" y="0" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_7.png" x="40" y="0" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_talking_upright_8.png" x="116" y="0" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_upright_1.png" x="192" y="0" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_upright_2.png" x="156" y="316" w="38" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_upright_3.png" x="42" y="316" w="38" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_upright_4.png" x="80" y="316" w="38" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_upright_5.png" x="154" y="0" w="38" h="78" pX="0.5" pY="0.5"/>
+    <sprite n="starlow_upright_6.png" x="0" y="78" w="38" h="78" pX="0.5" pY="0.5"/>
+</TextureAtlas>
