@@ -605,7 +605,7 @@ class TutorialBowser(StateMachine):
     instaPunch = idle.to(punch)
     idleHit = idle.to(hit)
     moveHit = goingToPlayer.to(hit)
-    punchHit = punch.to(hit)
+    getUp = hit.to(goingToPlayer)
 
     def init(self, game, pos):
         self.game = game
@@ -619,7 +619,6 @@ class TutorialBowser(StateMachine):
         self.speed = 50
         self.lastUpdate = 0
         self.currentFrame = 0
-        self.hit = False
         self.hitTimer = 0
         self.dead = False
         self.facing = "right"
@@ -627,12 +626,13 @@ class TutorialBowser(StateMachine):
         self.imgRect = self.image.get_rect()
         self.shadow = self.shadowFrame
         self.rect = self.shadow.get_rect()
+        self.hpSpeed = 0
         self.rect.center = pos
         self.imgRect.centerx = self.rect.centerx + 5
         self.imgRect.bottom = self.rect.centery + 10
 
         # Stats
-        self.stats = {"maxHP": 10, "hp": 10, "pow": 2, "def": 0, "exp": 3, "coins": 0, "name": "Bowser"}
+        self.stats = {"maxHP": 10, "hp": 10, "pow": 7, "def": 5, "exp": 3, "coins": 0, "name": "Bowser"}
         self.rectHP = self.stats["hp"]
 
         self.description = []
@@ -703,33 +703,132 @@ class TutorialBowser(StateMachine):
                                sheet.getImageName("walking_14.png"),
                                sheet.getImageName("walking_15.png")]
 
+    def hpMath(self):
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+
+        if self.hpSpeed != 0:
+            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+                self.rectHP += self.hpSpeed
+            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+                self.rectHP += self.hpSpeed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.hpSpeed = 0
+
     def update(self):
         self.animate()
+        self.hpMath()
         playerRect = self.rect.copy()
         playerRect.width = playerRect.width * self.hitRange
         playerRect.height = playerRect.height * self.hitRange
 
         if self.is_idle:
-            if playerRect.colliderect(self.game.player.rect) and self.cooldown == 0 and not self.game.player.jumping:
+            if playerRect.colliderect(self.game.player.rect) and self.cooldown == 0 and not self.game.player.jumping and not self.game.player.dead:
                 self.currentFrame = 0
+                self.game.bowserPunch.play()
                 self.instaPunch()
             elif self.cooldown > 0:
                 self.cooldown -= 1
-            chance = random.randrange(0, 100)
-            if chance == 0:
-                self.startWalking()
+            else:
+                chance = random.randrange(0, 100)
+                if chance == 0 and not self.game.player.dead:
+                    self.startWalking()
         elif self.is_goingToPlayer:
-            if playerRect.colliderect(self.game.player.rect) and self.cooldown == 0:
-                self.currentFrame = 0
-                self.attack()
-            elif self.cooldown > 0:
-                self.cooldown -= 1
             dx, dy = (self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)
             stepx, stepy = (dx / self.speed, dy / self.speed)
             self.rect.center = (self.rect.centerx + stepx, self.rect.centery + stepy)
             chance = random.randrange(0, 250)
-            if chance == 0:
+            if chance == 0 or self.game.player.dead:
                 self.giveUp()
+            elif playerRect.colliderect(self.game.player.rect) and self.cooldown == 0:
+                self.currentFrame = 0
+                self.game.bowserPunch.play()
+                self.attack()
+            elif self.cooldown > 0:
+                self.cooldown -= 1
+        elif self.is_punch:
+            if self.game.player.dead:
+                self.attackOver()
+
+        if self.cooldown > 0:
+            self.cooldown -= 1
+
+        if not self.is_punch:
+            if self.game.player.stats["hp"] != 0:
+                keys = pg.key.get_pressed()
+                doubleDamageM = False
+                hits = pg.sprite.collide_rect(self.game.player, self)
+                if hits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                    if keys[
+                        pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                        doubleDamageM = True
+                    if hitsRound2:
+                        if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0 and not self.is_hit and not self.is_punch and self.cooldown == 0:
+                            if doubleDamageM:
+                                HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                           (2 * (self.game.player.stats["pow"] - self.stats["def"])))
+                                self.stats["hp"] -= 2 * (self.game.player.stats["pow"] - self.stats["def"])
+                                if self.stats["hp"] <= 0:
+                                    self.game.enemyDieSound.play()
+                                self.game.enemyHitSound.play()
+                                if self.is_idle:
+                                    self.idleHit()
+                                elif self.is_goingToPlayer:
+                                    self.moveHit()
+                                self.cooldown = fps * 2
+                            else:
+                                HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                           (self.game.player.stats["pow"] - self.stats["def"]))
+                                self.stats["hp"] -= (self.game.player.stats["pow"] - self.stats["def"])
+                                print(self.stats["hp"])
+                                if self.stats["hp"] <= 0:
+                                    self.game.enemyDieSound.play()
+                                self.game.enemyHitSound.play()
+                                if self.is_idle:
+                                    self.idleHit()
+                                elif self.is_goingToPlayer:
+                                    self.moveHit()
+                                self.cooldown = fps * 2
+                            self.game.player.airTimer = 0
+                        else:
+                            if not self.game.player.hit and self.stats["hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
+                                HitNumbers(self.game, self.game.room, (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),(max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                                self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                                if self.game.player.stats["hp"] <= 0:
+                                    self.game.player.stats["hp"] = 0
+                                    self.game.player.currentFrame = 0
+                                self.game.player.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.player.canBeHit = False
+                                self.game.player.hit = True
+        else:
+            if self.game.player.stats["hp"] != 0:
+                hits = self.imgRect.colliderect(self.game.playerCol.rect)
+                if hits:
+                    if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
+                        if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
+                            HitNumbers(self.game, self.game.room, (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),(max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                            self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                            if self.game.player.stats["hp"] <= 0:
+                                self.game.player.stats["hp"] = 0
+                                self.game.player.currentFrame = 0
+                            self.game.player.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.player.canBeHit = False
+                            self.game.player.hit = True
+
+        if self.stats["hp"] <= 0:
+            self.cooldown = 10000
+            self.alpha -= 10
+
+        if self.alpha <= 0:
+            self.game.battleXp += self.stats["exp"]
+            self.game.sprites.remove(self)
+            self.game.enemies.remove(self)
 
         if self.facing == "right":
             self.imgRect.centerx = self.rect.centerx + 5
@@ -793,3 +892,18 @@ class TutorialBowser(StateMachine):
                 self.imgRect = self.image.get_rect()
                 self.imgRect.centerx = centerx
                 self.imgRect.bottom = bottom
+        elif self.is_hit:
+            self.currentFrame = 0
+            centerx = self.imgRect.centerx
+            bottom = self.imgRect.bottom
+            if self.facing == "left":
+                self.image = pg.transform.flip(self.hitFrame, True, False)
+            else:
+                self.image = self.hitFrame
+            self.imgRect = self.image.get_rect()
+            self.imgRect.centerx = centerx
+            self.imgRect.bottom = bottom
+            if self.cooldown == fps:
+                self.getUp()
+            else:
+                self.cooldown -= 1

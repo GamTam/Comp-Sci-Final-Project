@@ -641,6 +641,8 @@ class Game:
                 pg.display.flip()
 
     def newGame(self):
+        self.player.stats["hp"] = self.player.stats["maxHP"]
+        self.follower.stats["hp"] = self.follower.stats["maxHP"]
 
         # openingText = ["This game includes tutorials for those who\nhave not played this game before."]
         # openingText.append("These are designed to help new players\nwith controls and basic mechanics.")
@@ -691,8 +693,6 @@ class Game:
             self.tutorials = True
         else:
             self.tutorials = False
-
-        self.tutorials = True
 
         self.map = Map("Bowser's Castle Floor")
         enemies = []
@@ -2747,45 +2747,81 @@ class Game:
         self.map = Map("bowser's castle")
 
         self.follower.stats["hp"] = self.follower.stats["maxHP"]
-        text = ["Woah!/P That was <<Rdefinately>> a battle!"]
-        self.imgRect = sRect
-        textbox = TextBox(self, self, text, sound="starlow")
+
+        sheet = spritesheet("sprites/bowser.png", "sprites/bowser.xml")
+
+        bowser = sheet.getImageName("bowser_defeated.png")
+        bowserRect = bowser.get_rect()
+        bowserShadowRect.centery += 50
+        bowserRect.centerx = bowserShadowRect.centerx
+        bowserRect.bottom = bowserShadowRect.bottom
 
         sheet = spritesheet("sprites/starlow.png", "sprites/starlow.xml")
 
-        sTalking = [sheet.getImageName("starlow_talking_right_1.png"),
-                    sheet.getImageName("starlow_talking_right_2.png"),
-                    sheet.getImageName("starlow_talking_right_3.png"),
-                    sheet.getImageName("starlow_talking_right_4.png"),
-                    sheet.getImageName("starlow_talking_right_5.png"),
-                    sheet.getImageName("starlow_talking_right_6.png"),
-                    sheet.getImageName("starlow_talking_right_7.png"),
-                    sheet.getImageName("starlow_talking_right_8.png")]
+        sTalking = [sheet.getImageName("starlow_talking_upright_1.png"),
+                    sheet.getImageName("starlow_talking_upright_2.png"),
+                    sheet.getImageName("starlow_talking_upright_3.png"),
+                    sheet.getImageName("starlow_talking_upright_4.png"),
+                    sheet.getImageName("starlow_talking_upright_5.png"),
+                    sheet.getImageName("starlow_talking_upright_6.png"),
+                    sheet.getImageName("starlow_talking_upright_7.png"),
+                    sheet.getImageName("starlow_talking_upright_8.png")]
 
-        starlow = [sheet.getImageName("starlow_right_1.png"),
-                   sheet.getImageName("starlow_right_2.png"),
-                   sheet.getImageName("starlow_right_3.png"),
-                   sheet.getImageName("starlow_right_4.png"),
-                   sheet.getImageName("starlow_right_5.png"),
-                   sheet.getImageName("starlow_right_6.png")]
+        starlow = [sheet.getImageName("starlow_upright_1.png"),
+                   sheet.getImageName("starlow_upright_2.png"),
+                   sheet.getImageName("starlow_upright_3.png"),
+                   sheet.getImageName("starlow_upright_4.png"),
+                   sheet.getImageName("starlow_upright_5.png"),
+                   sheet.getImageName("starlow_upright_6.png")]
+
+        while len(self.fadeout) > 0:
+            now = pg.time.get_ticks()
+            self.calculatePlayTime()
+            self.clock.tick(fps)
+            self.events()
+
+            if now - sLastUpdate > 100:
+                sLastUpdate = now
+                if sFrame < len(sTalking):
+                    sFrame = (sFrame + 1) % (len(sTalking))
+                else:
+                    sFrame = 0
+                sRect = sTalking[sFrame].get_rect()
+
+            sRect.centerx = sShadowRect.centerx
+            sRect.bottom = sShadowRect.top - 25
+
+            textbox.update()
+            cameraRect.update(bowserShadowRect, 60)
+            self.camera.update(cameraRect.rect)
+            self.fadeout.update()
+
+            self.screen.fill(black)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(bowserShadow, self.camera.offset(bowserShadowRect))
+            self.screen.blit(bowser, self.camera.offset(bowserRect))
+            self.screen.blit(marioShadowSprite, self.camera.offset(marioShadowRect))
+            self.screen.blit(luigiShadowSprite, self.camera.offset(luigiShadowRect))
+            self.screen.blit(sShadow, self.camera.offset(sShadowRect))
+            self.screen.blit(mario, self.camera.offset(mRect))
+            self.screen.blit(luigi, self.camera.offset(lRect))
+            try:
+                self.screen.blit(starlow[sFrame], self.camera.offset(sRect))
+            except:
+                self.screen.blit(starlow[0], self.camera.offset(sRect))
+            self.fadeout.draw(self.screen)
+
+            pg.display.flip()
+
+        text = ["Bowser!/p Tell us!/p\nWhere did you put the Princess?"]
+        self.imgRect = sRect
+        textbox = TextBox(self, self, text, sound="starlow")
 
         while not textbox.complete:
             now = pg.time.get_ticks()
             self.calculatePlayTime()
             self.clock.tick(fps)
             self.events()
-
-            if now - bowserLastUpdate > 45:
-                bowserLastUpdate = now
-                if bowserFrame < len(bowser) - 1:
-                    bowserFrame = (bowserFrame + 1) % (len(bowser))
-                else:
-                    bowserFrame = 0
-                bottom = bowserRect.bottom
-                centerx = bowserRect.centerx
-                bowserRect = bowser[bowserFrame].get_rect()
-                bowserRect.bottom = bottom
-                bowserRect.centerx = centerx
 
             if now - sLastUpdate > 100:
                 sLastUpdate = now
@@ -2812,7 +2848,155 @@ class Game:
             self.screen.fill(black)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(bowserShadow, self.camera.offset(bowserShadowRect))
-            self.screen.blit(bowser[bowserFrame], self.camera.offset(bowserRect))
+            self.screen.blit(bowser, self.camera.offset(bowserRect))
+            self.screen.blit(marioShadowSprite, self.camera.offset(marioShadowRect))
+            self.screen.blit(luigiShadowSprite, self.camera.offset(luigiShadowRect))
+            self.screen.blit(sShadow, self.camera.offset(sShadowRect))
+            self.screen.blit(mario, self.camera.offset(mRect))
+            self.screen.blit(luigi, self.camera.offset(lRect))
+            if not textbox.talking:
+                try:
+                    self.screen.blit(starlow[sFrame], self.camera.offset(sRect))
+                except:
+                    self.screen.blit(starlow[0], self.camera.offset(sRect))
+            else:
+                self.screen.blit(sTalking[sFrame], self.camera.offset(sRect))
+            textbox.draw()
+
+            pg.display.flip()
+
+        text = ["I've been trying to tell you...",
+                "Were were just about to launch our\nattack,/p when <<RMario>> and\n<<GGreen 'Stache>> showed up."]
+        self.imgRect = bowserRect
+        textbox = TextBox(self, self, text)
+
+        while not textbox.complete:
+            now = pg.time.get_ticks()
+            self.calculatePlayTime()
+            self.clock.tick(fps)
+            self.events()
+
+            if now - sLastUpdate > 100:
+                sLastUpdate = now
+                if sFrame < len(starlow):
+                    sFrame = (sFrame + 1) % (len(starlow))
+                else:
+                    sFrame = 0
+                sRect = starlow[sFrame].get_rect()
+
+            sRect.centerx = sShadowRect.centerx
+            sRect.bottom = sShadowRect.top - 25
+
+            textbox.update()
+            cameraRect.update(bowserShadowRect, 60)
+            self.camera.update(cameraRect.rect)
+
+            self.screen.fill(black)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(bowserShadow, self.camera.offset(bowserShadowRect))
+            self.screen.blit(bowser, self.camera.offset(bowserRect))
+            self.screen.blit(marioShadowSprite, self.camera.offset(marioShadowRect))
+            self.screen.blit(luigiShadowSprite, self.camera.offset(luigiShadowRect))
+            self.screen.blit(sShadow, self.camera.offset(sShadowRect))
+            self.screen.blit(mario, self.camera.offset(mRect))
+            self.screen.blit(luigi, self.camera.offset(lRect))
+            try:
+                self.screen.blit(starlow[sFrame], self.camera.offset(sRect))
+            except:
+                self.screen.blit(starlow[0], self.camera.offset(sRect))
+            textbox.draw()
+
+            pg.display.flip()
+
+        text = ["Wait,/9/6 so if YOU didn't kidnap Peach,\nthen who did?"]
+        self.imgRect = sRect
+        textbox = TextBox(self, self, text, sound="starlow")
+
+        while not textbox.complete:
+            now = pg.time.get_ticks()
+            self.calculatePlayTime()
+            self.clock.tick(fps)
+            self.events()
+
+            if now - sLastUpdate > 100:
+                sLastUpdate = now
+                if not textbox.talking:
+                    if sFrame < len(starlow):
+                        sFrame = (sFrame + 1) % (len(starlow))
+                    else:
+                        sFrame = 0
+                    sRect = starlow[sFrame].get_rect()
+                elif textbox.pause == 0:
+                    if sFrame < len(sTalking):
+                        sFrame = (sFrame + 1) % (len(sTalking))
+                    else:
+                        sFrame = 0
+                    sRect = sTalking[sFrame].get_rect()
+
+            sRect.centerx = sShadowRect.centerx
+            sRect.bottom = sShadowRect.top - 25
+
+            textbox.update()
+            cameraRect.update(bowserShadowRect, 60)
+            self.camera.update(cameraRect.rect)
+
+            self.screen.fill(black)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(bowserShadow, self.camera.offset(bowserShadowRect))
+            self.screen.blit(bowser, self.camera.offset(bowserRect))
+            self.screen.blit(marioShadowSprite, self.camera.offset(marioShadowRect))
+            self.screen.blit(luigiShadowSprite, self.camera.offset(luigiShadowRect))
+            self.screen.blit(sShadow, self.camera.offset(sShadowRect))
+            self.screen.blit(mario, self.camera.offset(mRect))
+            self.screen.blit(luigi, self.camera.offset(lRect))
+            if not textbox.talking:
+                try:
+                    self.screen.blit(starlow[sFrame], self.camera.offset(sRect))
+                except:
+                    self.screen.blit(starlow[0], self.camera.offset(sRect))
+            else:
+                self.screen.blit(sTalking[sFrame], self.camera.offset(sRect))
+            textbox.draw()
+
+            pg.display.flip()
+
+        text = ["/BI HAVE FURY"]
+        self.imgRect = pg.rect.Rect(0, 1000, 0, 0)
+        self.fawfulHududu.play()
+        textbox = TextBox(self, self, text, complete=True)
+
+        while not textbox.complete:
+            now = pg.time.get_ticks()
+            self.calculatePlayTime()
+            self.clock.tick(fps)
+            self.events()
+
+            if now - sLastUpdate > 100:
+                sLastUpdate = now
+                if not textbox.talking:
+                    if sFrame < len(starlow):
+                        sFrame = (sFrame + 1) % (len(starlow))
+                    else:
+                        sFrame = 0
+                    sRect = starlow[sFrame].get_rect()
+                elif textbox.pause == 0:
+                    if sFrame < len(sTalking):
+                        sFrame = (sFrame + 1) % (len(sTalking))
+                    else:
+                        sFrame = 0
+                    sRect = sTalking[sFrame].get_rect()
+
+            sRect.centerx = sShadowRect.centerx
+            sRect.bottom = sShadowRect.top - 25
+
+            textbox.update()
+            cameraRect.update(bowserShadowRect, 60)
+            self.camera.update(cameraRect.rect)
+
+            self.screen.fill(black)
+            self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
+            self.screen.blit(bowserShadow, self.camera.offset(bowserShadowRect))
+            self.screen.blit(bowser, self.camera.offset(bowserRect))
             self.screen.blit(marioShadowSprite, self.camera.offset(marioShadowRect))
             self.screen.blit(luigiShadowSprite, self.camera.offset(luigiShadowRect))
             self.screen.blit(sShadow, self.camera.offset(sShadowRect))
@@ -3000,6 +3184,7 @@ class Game:
             self.newGame()
 
     def loadData(self):
+        self.fawfulHududu = pg.mixer.Sound("sounds/fawfulHududu.ogg")
         self.ding = pg.mixer.Sound("sounds/ding.ogg")
         self.starlowTwinkle = pg.mixer.Sound("sounds/starLowTwinkle.ogg")
         self.coinSound = pg.mixer.Sound("sounds/coin.ogg")
@@ -3047,10 +3232,13 @@ class Game:
         self.bowserLaugh = pg.mixer.Sound("sounds/bowserLaugh.ogg")
         self.bowserNgha = pg.mixer.Sound("sounds/bowserNgha.ogg")
         self.bowserMario = pg.mixer.Sound("sounds/bowserMario.ogg")
+        self.bowserPunch = pg.mixer.Sound("sounds/bowserPunch.ogg")
         self.crowdSound = pg.mixer.Sound("sounds/crowd.ogg")
 
     def loadDebugLevel(self):
         self.room = "self.loadDebugLevel()"
+        MarioUI(self)
+        LuigiUI(self)
         self.playsong = True
         self.sprites = []
         self.collision = []
@@ -3071,7 +3259,6 @@ class Game:
         self.map = Map("Bowser's Castle")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
-        # GoombaKing(self, (self.map.width / 2 - 2, self.map.height - 620))
         MarioBlock(self, (300, self.map.height - 450))
         LuigiBlock(self, (600, self.map.height - 450))
         Block(self, (900, self.map.height - 450), contents=["Other(self.game, self, 'Max Nut', 1)"])
@@ -3673,17 +3860,15 @@ class Game:
         self.playsong = True
         if self.song_playing != "battle":
             self.firstLoop = True
-        dir = random.randrange(0, 4)
-        if dir == 0:
-            Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "up")
-        elif dir == 1:
-            Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "down")
-        elif dir == 2:
-            Goomba(self, random.randrange(100, 1600), random.randrange(1150, 1300), 4, 4, "left")
-        elif dir == 3:
-            Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "right")
-        bowser = TutorialBowser()
-        bowser.init(self, (500, 1200))
+        # dir = random.randrange(0, 4)
+        # if dir == 0:
+        #     Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "up")
+        # elif dir == 1:
+        #     Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "down")
+        # elif dir == 2:
+        #     Goomba(self, random.randrange(100, 1600), random.randrange(1150, 1300), 4, 4, "left")
+        # elif dir == 3:
+        #     Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "right")
 
         # Top Half Collision
         Wall(self, 96, 1090, 384, 62)
@@ -3742,8 +3927,6 @@ class Game:
         if self.song_playing != "battle":
             self.firstLoop = True
 
-        Goomba(self, 100, 1200, 5, 5)
-
         # Top Half Collision
         Wall(self, -50, 1117, 1889, 27)
         Wall(self, 655, 1138, 297, 48)
@@ -3756,6 +3939,8 @@ class Game:
 
         self.map = Map("Bowser's Castle", True)
         self.camera = Camera(self, self.map.width, self.map.height)
+        bowser = TutorialBowser()
+        bowser.init(self, (self.map.width / 2, 1200))
         self.player.rect.center = (self.map.width / 2, 1278)
         self.player.facing = "up"
         self.playerCol = MarioCollision(self)
@@ -3773,7 +3958,7 @@ class Game:
             self.follower.stats = self.storeData["luigi stats"]
         except:
             pass
-        self.firstTutorialBattle()
+        self.firstTutorialBattle("self.playSong(24.873, 74.996, 'King Bowser')")
 
     def firstTutorialBattle(self, song=None):
         menud = False
@@ -3791,7 +3976,8 @@ class Game:
                 "However, if your <<RHP>> reaches <<B0>>, then\nit IS the end of the world.",
                 "But, the same will happen with\nBowser once you jump on him\nenough times.",
                 "So, try your best to jump on Bowser\nuntill he gets K.O'd!",
-                "Also, if you press <<RTAB>>, then you can\naccess the <<BMenu>> for additional\ninformation."]
+                "Also, if you press <<RTAB>>, then you can\naccess the <<BMenu>> for additional\ninformation.",
+                "But BE CAREFUL!/p When you use\nthe menu, you won't be able to use\nit again for a while."]
         self.cameraRect = CameraRect()
         textboxd = False
         textbox = None
@@ -5308,9 +5494,9 @@ class Game:
             textboxd = False
         else:
             textboxd = True
-        text = ["Oh!/P It looks like you beat Bowser!",
+        text = ["Oh!/p It looks like you beat Bowser!",
                 "After you beat an enemy, you'll gain\nExperience Points, or <<BEXP>> for short.",
-                "If you gain enough <<BEXP>>, you'll\n<<BLevel Up>>, and your stats will increase!",
+                "If you gain enough <<BEXP>>, you'll\n<<BLevel Up>>, and your stats will\nincrease!",
                 "So, try to beat as many enemies as\nyou can!"]
 
         while True:
@@ -5812,8 +5998,6 @@ class Game:
 
                     self.player.rect.center, self.follower.rect.center = self.follower.rect.center, self.player.rect.center
                     self.player.facing, self.follower.facing = self.follower.facing, self.player.facing
-                # if event.key == pg.K_TAB:
-                #     self.pause = not self.pause
 
     def updateBattleOver(self):
         [ui.update() for ui in self.battleEndUI]
@@ -6038,5 +6222,5 @@ class Game:
 
 game = Game()
 
-game.loadDebugLevel()
-# game.titleScreen()
+# game.loadDebugLevel()
+game.titleScreen()

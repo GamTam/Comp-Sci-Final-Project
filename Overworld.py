@@ -321,7 +321,7 @@ class Mario(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0
         self.moveQueue = Q.deque()
 
-        self.stats = {"level": 1, "maxHP": 10, "maxBP": 10, "pow": 2, "def": 0, "hp": 10, "bp": 10, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 10, "maxBP": 10, "pow": 7, "def": 6, "hp": 10, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
                            "def": randomNumber(3)}
         self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0],
@@ -2079,7 +2079,7 @@ class Luigi(pg.sprite.Sprite):
         self.going = "irrelevent"
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 13, "maxBP": 5, "pow": 1, "def": 0, "hp": 13, "bp": 5, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 13, "maxBP": 10, "pow": 5, "def": 8, "hp": 13, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
                            "def": randomNumber(5)}
         self.attackPieces = [["Cavi Cave", 0],
@@ -4365,7 +4365,7 @@ class BattleTransition(pg.sprite.Sprite):
 
 
 class TextBox(pg.sprite.Sprite):
-    def __init__(self, game, parent, text, type="dialogue", dir=None, choice=False, sound="default"):
+    def __init__(self, game, parent, text, type="dialogue", dir=None, choice=False, sound="default", complete=False):
         pg.sprite.Sprite.__init__(self, game.ui)
         self.speed = 20
         self.game = game
@@ -4374,7 +4374,6 @@ class TextBox(pg.sprite.Sprite):
         self.talking = False
         self.game.player.hammering = False
         self.game.follower.hammering = False
-        self.game.textBoxOpenSound.play()
         self.game.player.canMove = False
         self.game.follower.canMove = False
         self.parent = parent
@@ -4384,16 +4383,23 @@ class TextBox(pg.sprite.Sprite):
         self.advancing = False
         self.big = False
         self.sound = sound
-        self.scale = 0
-        self.counter = 0
-        self.alpha = 0
         self.type = type
         self.text = text.copy()
         for i in range(len(self.text)):
             self.text[i] = self.text[i] + "\n\a"
         self.page = 0
         self.playSound = 0
-        self.currentCharacter = 1
+        if complete:
+            self.counter = self.speed - 1
+            self.alpha = 255
+            self.scale = 1
+            self.currentCharacter = len(self.text[0])
+        else:
+            self.game.textBoxOpenSound.play()
+            self.alpha = 0
+            self.scale = 0
+            self.currentCharacter = 1
+            self.counter = 0
         self.points = []
         self.pause = 0
         self.angle = 0
@@ -4433,7 +4439,6 @@ class TextBox(pg.sprite.Sprite):
             for i in range(self.speed + 1):
                 self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2,
                                                      height / 2, (i / self.speed)))
-        self.initialPoints = self.points.copy()
 
     def update(self):
         if not self.closing:
@@ -4566,12 +4571,12 @@ class TextBox(pg.sprite.Sprite):
             else:
                 if self.type == "dialogue":
                     self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
-                    ptext.draw(character, (self.textx - 65, self.texty + 20), lineheight=0.8, surf=self.game.screen,
-                           fontname=dialogueFont, fontsize=95, color=black, background=(228, 229, 228))
+                    ptext.draw(character, (self.rect.centerx - 2, self.texty + 20), lineheight=0.8, surf=self.game.screen,
+                           fontname=dialogueFont, fontsize=95, color=black, background=(228, 229, 228), anchor=(0.5, 0))
                 elif self.type == "board":
                     self.game.screen.set_clip((self.rect.left, self.rect.top + 61, 1000, 220))
-                    ptext.draw(character, (self.textx - 20, self.texty + 20), lineheight=0.8, surf=self.game.screen,
-                               fontname=dialogueFont, fontsize=95, color=black, background=(225, 223, 225))
+                    ptext.draw(character, (self.rect.centerx - 2, self.texty + 20), lineheight=0.8, surf=self.game.screen,
+                               fontname=dialogueFont, fontsize=95, color=black, background=(225, 223, 225), anchor=(0.5, 0))
             self.game.screen.set_clip(None)
             if self.currentCharacter < len(self.text[self.page]) and not self.advancing:
                 for event in self.game.event:
