@@ -1368,26 +1368,29 @@ class Game:
         # time.sleep(2)
         # self.playtime += fps * 2
         #
-        # pg.event.clear()
-        # self.playSong(12.81, 73.815, "Bowser's Theme")
-        # bowserReveal = VideoFileClip("movies/BowserCastleReveal.mp4")
-        # bowserReveal.preview(fps=30)
-        # self.bowserLaugh.play()
-        # self.imgRect = pg.rect.Rect(width / 2, height / 2, 0, 0)
-        # textbox = TextBox(self, self, ["/BBWA HA HA HA!"], dir="None")
-        #
-        # while not textbox.complete:
-        #     self.playSong(12.81, 73.815, "Bowser's Theme")
-        #     self.calculatePlayTime()
-        #     self.clock.tick(fps)
-        #     self.events()
-        #
-        #     textbox.update()
-        #
-        #     self.screen.fill(black)
-        #     textbox.draw()
-        #
-        #     pg.display.flip()
+        pg.event.clear()
+        self.playSong(12.81, 73.815, "Bowser's Theme")
+        bowserReveal = VideoFileClip("movies/BowserCastleReveal.mp4")
+        if self.fullscreen:
+            bowserReveal.preview(fps=30, fullscreen=True)
+        else:
+            bowserReveal.preview(fps=30)
+        self.bowserLaugh.play()
+        self.imgRect = pg.rect.Rect(width / 2, height / 2, 0, 0)
+        textbox = TextBox(self, self, ["/BBWA HA HA HA!"], dir="None")
+
+        while not textbox.complete:
+            self.playSong(12.81, 73.815, "Bowser's Theme")
+            self.calculatePlayTime()
+            self.clock.tick(fps)
+            self.events()
+
+            textbox.update()
+
+            self.screen.fill(black)
+            textbox.draw()
+
+            pg.display.flip()
 
         self.room = "mario's house"
         fade = Fadeout(self, 5)
@@ -3079,7 +3082,7 @@ class Game:
                              "Coin(self.game, self)"])
         SaveBlock(self, (1200, self.map.height - 450))
         LinebeckDebug(self, (self.map.width / 2 - 2, self.map.height - 420), self.goombaHasTexted)
-        GoombaODebug(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadTutorialBowser()")
+        GoombaODebug(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadSingleEnemyDebug()")
         GoombaODebug(self, self.map.width / 2 - 500, self.map.height - 500, "self.loadSingleEnemyDebug()")
         GoombaODebug(self, self.map.width / 2 + 400, self.map.height - 500, "self.loadSingleEnemyDebug()")
         GoombaODebug(self, self.map.width / 2 - 400, self.map.height - 500, "self.loadSingleEnemyDebug()")
@@ -3679,6 +3682,8 @@ class Game:
             Goomba(self, random.randrange(100, 1600), random.randrange(1150, 1300), 4, 4, "left")
         elif dir == 3:
             Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "right")
+        bowser = TutorialBowser()
+        bowser.init(self, (500, 1200))
 
         # Top Half Collision
         Wall(self, 96, 1090, 384, 62)
@@ -6033,5 +6038,5 @@ class Game:
 
 game = Game()
 
-game.tutorials = True
-game.titleScreen()
+game.loadDebugLevel()
+# game.titleScreen()

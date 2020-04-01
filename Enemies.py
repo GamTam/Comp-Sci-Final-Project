@@ -592,14 +592,204 @@ class CountBleckDebug(pg.sprite.Sprite):
             self.imgRect.left = left
 
 
-class TutorialBowser(pg.sprite.Sprite, StateMachine):
-    def __init__(self, game, pos):
-        pg.sprite.Sprite.__init__(self)
-        self.idle = State("Idle", initial=True)
-        self.towardsPlayer = State("Towards Player")
-        self.punch = State("Punch")
+class TutorialBowser(StateMachine):
+    idle = State("Idle", initial=True)
+    goingToPlayer = State("Towards Player")
+    punch = State("Punch")
+    hit = State("hit")
 
-        self.startWalking = self.idle.to(self.towardsPlayer)
-        self.attack = self.towardsPlayer.to(self.punch)
-        self.attackOver = self.punch.to(self.idle)
-        self.giveUp = self.towardsPlayer.to(self.idle)
+    startWalking = idle.to(goingToPlayer)
+    giveUp = goingToPlayer.to(idle)
+    attack = goingToPlayer.to(punch)
+    attackOver = punch.to(idle)
+    instaPunch = idle.to(punch)
+    idleHit = idle.to(hit)
+    moveHit = goingToPlayer.to(hit)
+    punchHit = punch.to(hit)
+
+    def init(self, game, pos):
+        self.game = game
+        self.game.enemies.append(self)
+        self.game.sprites.append(self)
+
+        self.loadImages()
+        self.cooldown = 0
+        self.alpha = 255
+        self.hitRange = 1.3
+        self.speed = 50
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.hit = False
+        self.hitTimer = 0
+        self.dead = False
+        self.facing = "right"
+        self.image = self.idleImages[0]
+        self.imgRect = self.image.get_rect()
+        self.shadow = self.shadowFrame
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect.centerx = self.rect.centerx + 5
+        self.imgRect.bottom = self.rect.centery + 10
+
+        # Stats
+        self.stats = {"maxHP": 10, "hp": 10, "pow": 2, "def": 0, "exp": 3, "coins": 0, "name": "Bowser"}
+        self.rectHP = self.stats["hp"]
+
+        self.description = []
+        self.description.append("It's Bowser!")
+        self.description.append("You know Bowser, right?/p\nHe kidnaps the princess every week?")
+        self.description.append("Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+            self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".")
+        self.description.append("Bowser has NEVER succeeded in\nkidnapping Princess Peach.")
+        self.description.append("So make sure it stays that way and\nwin, Mario!")
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/bowserBattle.png", "sprites/bowserBattle.xml")
+
+        self.shadowFrame = sheet.getImageName("shadow.png")
+
+        self.hitFrame = sheet.getImageName("hit.png")
+
+        self.idleImages = [sheet.getImageName("idle_1.png"),
+                           sheet.getImageName("idle_2.png"),
+                           sheet.getImageName("idle_3.png"),
+                           sheet.getImageName("idle_4.png"),
+                           sheet.getImageName("idle_5.png"),
+                           sheet.getImageName("idle_6.png"),
+                           sheet.getImageName("idle_7.png"),
+                           sheet.getImageName("idle_8.png"),
+                           sheet.getImageName("idle_9.png"),
+                           sheet.getImageName("idle_10.png"),
+                           sheet.getImageName("idle_11.png"),
+                           sheet.getImageName("idle_12.png"),
+                           sheet.getImageName("idle_13.png"),
+                           sheet.getImageName("idle_14.png"),
+                           sheet.getImageName("idle_15.png"),
+                          ]
+
+        self.punchingFrames = [sheet.getImageName("punching_1.png"),
+                              sheet.getImageName("punching_2.png"),
+                              sheet.getImageName("punching_3.png"),
+                              sheet.getImageName("punching_4.png"),
+                              sheet.getImageName("punching_5.png"),
+                              sheet.getImageName("punching_6.png"),
+                              sheet.getImageName("punching_7.png"),
+                              sheet.getImageName("punching_8.png"),
+                              sheet.getImageName("punching_9.png"),
+                              sheet.getImageName("punching_10.png"),
+                              sheet.getImageName("punching_11.png"),
+                              sheet.getImageName("punching_12.png"),
+                              sheet.getImageName("punching_13.png"),
+                              sheet.getImageName("punching_14.png"),
+                              sheet.getImageName("punching_15.png"),
+                              sheet.getImageName("punching_16.png"),
+                              sheet.getImageName("punching_17.png"),
+                              sheet.getImageName("punching_18.png"),
+                              sheet.getImageName("punching_19.png")]
+
+        self.walkingFrames = [sheet.getImageName("walking_1.png"),
+                               sheet.getImageName("walking_2.png"),
+                               sheet.getImageName("walking_3.png"),
+                               sheet.getImageName("walking_4.png"),
+                               sheet.getImageName("walking_5.png"),
+                               sheet.getImageName("walking_6.png"),
+                               sheet.getImageName("walking_7.png"),
+                               sheet.getImageName("walking_8.png"),
+                               sheet.getImageName("walking_9.png"),
+                               sheet.getImageName("walking_10.png"),
+                               sheet.getImageName("walking_11.png"),
+                               sheet.getImageName("walking_12.png"),
+                               sheet.getImageName("walking_13.png"),
+                               sheet.getImageName("walking_14.png"),
+                               sheet.getImageName("walking_15.png")]
+
+    def update(self):
+        self.animate()
+        playerRect = self.rect.copy()
+        playerRect.width = playerRect.width * self.hitRange
+        playerRect.height = playerRect.height * self.hitRange
+
+        if self.is_idle:
+            if playerRect.colliderect(self.game.player.rect) and self.cooldown == 0 and not self.game.player.jumping:
+                self.currentFrame = 0
+                self.instaPunch()
+            elif self.cooldown > 0:
+                self.cooldown -= 1
+            chance = random.randrange(0, 100)
+            if chance == 0:
+                self.startWalking()
+        elif self.is_goingToPlayer:
+            if playerRect.colliderect(self.game.player.rect) and self.cooldown == 0:
+                self.currentFrame = 0
+                self.attack()
+            elif self.cooldown > 0:
+                self.cooldown -= 1
+            dx, dy = (self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)
+            stepx, stepy = (dx / self.speed, dy / self.speed)
+            self.rect.center = (self.rect.centerx + stepx, self.rect.centery + stepy)
+            chance = random.randrange(0, 250)
+            if chance == 0:
+                self.giveUp()
+
+        if self.facing == "right":
+            self.imgRect.centerx = self.rect.centerx + 5
+            self.imgRect.bottom = self.rect.centery + 10
+        else:
+            self.imgRect.centerx = self.rect.centerx - 5
+            self.imgRect.bottom = self.rect.centery + 10
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.is_idle:
+            if now - self.lastUpdate > 45:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.idleImages):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleImages))
+                else:
+                    self.currentFrame = 0
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                if self.game.player.rect.centerx < self.rect.centerx:
+                    self.image = pg.transform.flip(self.idleImages[self.currentFrame], True, False)
+                    self.facing = "left"
+                else:
+                    self.image = self.idleImages[self.currentFrame]
+                    self.facing = "right"
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        elif self.is_goingToPlayer:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.walkingFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFrames))
+                else:
+                    self.currentFrame = 0
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                if self.game.player.rect.centerx < self.rect.centerx:
+                    self.image = pg.transform.flip(self.walkingFrames[self.currentFrame], True, False)
+                    self.facing = "left"
+                else:
+                    self.image = self.walkingFrames[self.currentFrame]
+                    self.facing = "right"
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        elif self.is_punch:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.punchingFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.punchingFrames))
+                else:
+                    self.cooldown = 10
+                    self.attackOver()
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                if self.facing == "left":
+                    self.image = pg.transform.flip(self.punchingFrames[self.currentFrame], True, False)
+                else:
+                    self.image = self.punchingFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
