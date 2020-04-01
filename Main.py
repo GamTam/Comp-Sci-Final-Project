@@ -2961,7 +2961,7 @@ class Game:
             pg.display.flip()
 
         text = ["/BI HAVE FURY"]
-        self.imgRect = pg.rect.Rect(0, 1000, 0, 0)
+        self.imgRect = pg.rect.Rect(0, 900, 0, 0)
         self.fawfulHududu.play()
         textbox = TextBox(self, self, text, complete=True)
 
@@ -3012,6 +3012,11 @@ class Game:
             textbox.draw()
 
             pg.display.flip()
+
+        fawfulPos = [(90,862),
+                     (96,864),
+                     (103,866),
+                     (110,869),]
 
     def gameOver(self, mario=True, luigi=True):
         pg.mixer.music.fadeout(500)
@@ -3860,15 +3865,17 @@ class Game:
         self.playsong = True
         if self.song_playing != "battle":
             self.firstLoop = True
-        # dir = random.randrange(0, 4)
-        # if dir == 0:
-        #     Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "up")
-        # elif dir == 1:
-        #     Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "down")
-        # elif dir == 2:
-        #     Goomba(self, random.randrange(100, 1600), random.randrange(1150, 1300), 4, 4, "left")
-        # elif dir == 3:
-        #     Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "right")
+        bowser = TutorialBowser()
+        bowser.init(self, (self.map.width / 2, 1200))
+        dir = random.randrange(0, 4)
+        if dir == 0:
+            Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "up")
+        elif dir == 1:
+            Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "down")
+        elif dir == 2:
+            Goomba(self, random.randrange(100, 1600), random.randrange(1150, 1300), 4, 4, "left")
+        elif dir == 3:
+            Goomba(self, random.randrange(100, 1600), random.randrange(1200, 1300), 4, 4, "right")
 
         # Top Half Collision
         Wall(self, 96, 1090, 384, 62)

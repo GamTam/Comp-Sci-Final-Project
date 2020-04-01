@@ -2,6 +2,18 @@ from Overworld import *
 from UI import *
 from Settings import *
 from statemachine import StateMachine, State
+from math import sin, cos, pi, atan2
+
+
+def get_angle(origin, destination):
+    x_dist = destination[0] - origin[0]
+    y_dist = destination[1] - origin[1]
+    return atan2(-y_dist, x_dist) % (2 * pi)
+
+
+def project(pos, angle, distance):
+    return (pos[0] + (cos(angle) * distance),
+            pos[1] - (sin(angle) * distance))
 
 class spritesheet:
     def __init__(self, img_file, data_file=None):
@@ -616,7 +628,7 @@ class TutorialBowser(StateMachine):
         self.cooldown = 0
         self.alpha = 255
         self.hitRange = 1.3
-        self.speed = 50
+        self.speed = 5
         self.lastUpdate = 0
         self.currentFrame = 0
         self.hitTimer = 0
@@ -723,7 +735,6 @@ class TutorialBowser(StateMachine):
         self.hpMath()
         playerRect = self.rect.copy()
         playerRect.width = playerRect.width * self.hitRange
-        playerRect.height = playerRect.height * self.hitRange
 
         if self.is_idle:
             if playerRect.colliderect(self.game.player.rect) and self.cooldown == 0 and not self.game.player.jumping and not self.game.player.dead:
@@ -737,13 +748,12 @@ class TutorialBowser(StateMachine):
                 if chance == 0 and not self.game.player.dead:
                     self.startWalking()
         elif self.is_goingToPlayer:
-            dx, dy = (self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)
-            stepx, stepy = (dx / self.speed, dy / self.speed)
-            self.rect.center = (self.rect.centerx + stepx, self.rect.centery + stepy)
+            self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+            self.rect.center = project(self.rect.center, self.angle, self.speed)
             chance = random.randrange(0, 250)
             if chance == 0 or self.game.player.dead:
                 self.giveUp()
-            elif playerRect.colliderect(self.game.player.rect) and self.cooldown == 0:
+            elif playerRect.colliderect(self.game.player.rect) and self.cooldown == 0 and not self.game.player.jumping:
                 self.currentFrame = 0
                 self.game.bowserPunch.play()
                 self.attack()
@@ -784,7 +794,6 @@ class TutorialBowser(StateMachine):
                                 HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                            (self.game.player.stats["pow"] - self.stats["def"]))
                                 self.stats["hp"] -= (self.game.player.stats["pow"] - self.stats["def"])
-                                print(self.stats["hp"])
                                 if self.stats["hp"] <= 0:
                                     self.game.enemyDieSound.play()
                                 self.game.enemyHitSound.play()
