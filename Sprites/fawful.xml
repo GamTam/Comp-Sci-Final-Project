@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:a3a64b8423847c96d1ed3b5133a5fe71:fe03d2fb62ce1458685d71c75cb3861f:0daff5df7ac824521081347212d0ec41$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="fawful.png" width="1559" height="90">
+    <sprite n="laughing_down_1.png" x="0" y="0" w="68" h="76" pX="0.5" pY="0.5"/>
+    <sprite n="laughing_down_2.png" x="68" y="0" w="64" h="80" pX="0.5" pY="0.5"/>
+    <sprite n="laughing_down_3.png" x="132" y="0" w="64" h="84" pX="0.5" pY="0.5"/>
+    <sprite n="laughing_down_4.png" x="196" y="0" w="64" h="82" pX="0.5" pY="0.5"/>
+    <sprite n="platform_1.png" x="260" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="platform_2.png" x="404" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="platform_3.png" x="548" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="platform_4.png" x="692" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="platform_5.png" x="836" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="platform_6.png" x="980" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="platform_7.png" x="1124" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="platform_8.png" x="1268" y="0" w="144" h="90" pX="0.5" pY="0.5"/>
+    <sprite n="shadow.png" x="1412" y="0" w="147" h="41" pX="0.5" pY="0.5"/>
+</TextureAtlas>
