@@ -4628,6 +4628,14 @@ class TextBox(pg.sprite.Sprite):
                         elif pitch == 2:
                             self.game.starlowTalkSoundHigh.play()
                         self.playSound = 0
+                    elif self.playSound >= 3 and character[-1] != " " and self.sound == "fawful":
+                        if pitch == 0:
+                            self.game.fawfulTalkSoundLow.play()
+                        elif pitch == 1:
+                            self.game.fawfulTalkSoundMed.play()
+                        elif pitch == 2:
+                            self.game.fawfulTalkSoundHigh.play()
+                        self.playSound = 0
                     else:
                         self.playSound += 1
                     self.currentCharacter += 1

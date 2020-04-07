@@ -129,7 +129,7 @@ class Goomba(pg.sprite.Sprite):
         self.textbox = None
 
         # Stats
-        self.stats = {"maxHP": 4, "hp": 4, "pow": 2, "def": 0, "exp": 2, "coins": 3, "name": "Goomba"}
+        self.stats = {"maxHP": 4, "hp": 4, "pow": 7, "def": 5, "exp": 2, "coins": 3, "name": "Goomba"}
         self.rectHP = self.stats["hp"]
 
         self.description = []
@@ -628,7 +628,7 @@ class TutorialBowser(StateMachine):
         self.cooldown = 0
         self.alpha = 255
         self.hitRange = 1.3
-        self.speed = 5
+        self.speed = 2.5
         self.lastUpdate = 0
         self.currentFrame = 0
         self.hitTimer = 0

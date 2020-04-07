@@ -440,3 +440,68 @@ class EmptyObject(pg.sprite.Sprite):
         self.imgRect = self.image.get_rect()
         self.imgRect.center = imagePos
         self.alpha = 255
+
+
+class LineFlip(pg.sprite.Sprite):
+    def __init__(self, game, image, pos, turns=2, color=black, sound="default"):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.unharmedImage = image
+        self.image = image
+        self.maxRect = self.image.get_rect()
+        self.maxRect.center = pos
+        self.rect = pg.rect.Rect(pos[0], self.maxRect.top - 10, 0, 0)
+        self.alpha = 255
+        self.scale = 0
+        self.turns = 0
+        self.rate = 0.125
+        self.counter = turns
+        self.game.lineDrawSound.play()
+        self.complete = False
+        self.color = color
+        self.hasPlayedSound = False
+        self.turnSound = pg.mixer.Sound("sounds/" + sound + "TurnSound.ogg")
+
+    def update(self):
+        if self.rect.height < self.maxRect.height + 20 and not self.complete:
+            self.rect.height += round((self.maxRect.height + 20) / (fps / 2.5))
+            self.rect.top = self.maxRect.top - 10
+        elif self.turns < self.counter or self.scale < 1:
+            self.rect.height = self.maxRect.height + 20
+            if not self.hasPlayedSound:
+                self.turnSound.play()
+                self.hasPlayedSound = True
+            if abs(self.scale) < 1:
+                self.scale += self.rate
+                self.rect.width = round(abs((self.maxRect.width + 20) * self.scale))
+            else:
+                self.rate *= -1
+                self.turns += 1
+                self.scale += self.rate
+                self.rect.width = round(abs((self.maxRect.width + 20) * self.scale))
+
+            self.rect.center = self.maxRect.center
+        else:
+            if self.rect.height > 0 - round((self.maxRect.height + 20) / (fps / 2)):
+                self.rect.height -= round((self.maxRect.height + 20) / (fps / 2))
+                self.rect.center = self.maxRect.center
+            if self.rect.height < 0 - round((self.maxRect.height + 20) / (fps / 2)):
+                self.rect.height = 0
+                self.rect.center = self.maxRect.center
+            self.complete = True
+
+    def draw(self):
+        if self.scale < 0:
+            self.image = pg.transform.flip(self.unharmedImage, True, False)
+        else:
+            self.image = self.unharmedImage.copy()
+
+        self.image = pg.transform.scale(self.image, (round(abs((self.maxRect.width * self.scale))), self.maxRect.height))
+
+        self.imgRect = self.image.get_rect()
+        self.imgRect.center = self.rect.center
+
+        if self.rect.height >= (self.maxRect.height + 20) - round((self.maxRect.height + 20) / (fps / 2)):
+            self.game.screen.blit(self.image, self.game.camera.offset(self.imgRect))
+        if self.rect.height > 0 - round((self.maxRect.height + 20) / (fps / 2)):
+            pg.draw.rect(self.game.screen, black, self.game.camera.offset(self.rect), 3)

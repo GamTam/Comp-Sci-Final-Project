@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:3034756515147bb84c932e61aa880231:91af3164edeac907d1cf5ba71475e04a:9d66e8fd382b8de9a9e634795aa8fd6a$ -->
+<!-- $TexturePacker:SmartUpdate:6e412ab950297c6af66827ba604e5577:d9af257c39a2442aa4b9983c4e82939b:9d66e8fd382b8de9a9e634795aa8fd6a$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -19,21 +19,25 @@ vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
 verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
 triangles  => sprite triangulation, 3 vertex indices per triangle
 -->
-<TextureAtlas imagePath="peach.png" width="228" height="812">
+<TextureAtlas imagePath="peach.png" width="228" height="948">
+    <sprite n="peach_scared_1.png" x="76" y="674" w="58" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_scared_2.png" x="76" y="810" w="62" h="138" pX="0.5" pY="0.5"/>
+    <sprite n="peach_scared_3.png" x="152" y="266" w="66" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_scared_4.png" x="76" y="402" w="62" h="136" pX="0.5" pY="0.5"/>
     <sprite n="peach_talking_right_1.png" x="0" y="266" w="76" h="134" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_2.png" x="76" y="538" w="76" h="136" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_3.png" x="152" y="538" w="76" h="136" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_4.png" x="0" y="674" w="76" h="138" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_5.png" x="76" y="266" w="76" h="136" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_6.png" x="152" y="402" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_2.png" x="0" y="674" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_3.png" x="0" y="538" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_4.png" x="138" y="810" w="76" h="138" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_5.png" x="0" y="402" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_6.png" x="138" y="402" w="76" h="136" pX="0.5" pY="0.5"/>
     <sprite n="peach_talking_right_7.png" x="0" y="132" w="76" h="134" pX="0.5" pY="0.5"/>
     <sprite n="peach_talking_right_8.png" x="152" y="0" w="76" h="132" pX="0.5" pY="0.5"/>
     <sprite n="peach_talking_right_9.png" x="76" y="132" w="76" h="134" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_10.png" x="0" y="402" w="76" h="136" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_11.png" x="76" y="402" w="76" h="136" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_12.png" x="76" y="674" w="76" h="138" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_13.png" x="0" y="538" w="76" h="136" pX="0.5" pY="0.5"/>
-    <sprite n="peach_talking_right_14.png" x="152" y="266" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_10.png" x="76" y="266" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_11.png" x="76" y="538" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_12.png" x="0" y="810" w="76" h="138" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_13.png" x="152" y="538" w="76" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="peach_talking_right_14.png" x="134" y="674" w="76" h="136" pX="0.5" pY="0.5"/>
     <sprite n="peach_talking_right_15.png" x="152" y="132" w="76" h="134" pX="0.5" pY="0.5"/>
     <sprite n="peach_talking_right_16.png" x="76" y="0" w="76" h="132" pX="0.5" pY="0.5"/>
     <sprite n="shadow.png" x="0" y="0" w="76" h="39" pX="0.5" pY="0.5"/>
