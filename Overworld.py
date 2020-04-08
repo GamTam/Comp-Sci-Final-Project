@@ -2079,7 +2079,7 @@ class Luigi(pg.sprite.Sprite):
         self.going = "irrelevent"
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 13, "maxBP": 10, "pow": 5, "def": 8, "hp": 13, "bp": 10, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 13, "maxBP": 10, "pow": 6, "def": 8, "hp": 13, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
                            "def": randomNumber(5)}
         self.attackPieces = [["Cavi Cave", 0],
@@ -4395,7 +4395,7 @@ class TextBox(pg.sprite.Sprite):
             self.scale = 1
             self.currentCharacter = len(self.text[0])
         else:
-            self.game.textBoxOpenSound.play()
+            # self.game.textBoxOpenSound.play()
             self.alpha = 0
             self.scale = 0
             self.currentCharacter = 1

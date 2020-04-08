@@ -504,61 +504,68 @@ class CountBleckDebug(pg.sprite.Sprite):
         self.text.append("OUR DUEL WILL BE WORTHY OF\nTHE LAST CLASH THE WORLDS WILL\nEVER SEE!")
 
     def loadImages(self):
-        sheet = spritesheet("sprites/count bleck_idle.png", "sprites/count bleck_idle.xml")
+        sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
 
-        self.sprites = [sheet.getImageName("count_bleck_idle_00.png"),
-                        sheet.getImageName("count_bleck_idle_01.png"),
-                        sheet.getImageName("count_bleck_idle_02.png"),
-                        sheet.getImageName("count_bleck_idle_03.png"),
-                        sheet.getImageName("count_bleck_idle_04.png"),
-                        sheet.getImageName("count_bleck_idle_05.png"),
-                        sheet.getImageName("count_bleck_idle_06.png"),
-                        sheet.getImageName("count_bleck_idle_07.png"),
-                        sheet.getImageName("count_bleck_idle_08.png"),
-                        sheet.getImageName("count_bleck_idle_09.png"),
-                        sheet.getImageName("count_bleck_idle_10.png"),
-                        sheet.getImageName("count_bleck_idle_11.png"),
-                        sheet.getImageName("count_bleck_idle_12.png"),
-                        sheet.getImageName("count_bleck_idle_13.png"),
-                        sheet.getImageName("count_bleck_idle_14.png"),
-                        sheet.getImageName("count_bleck_idle_15.png"),
-                        sheet.getImageName("count_bleck_idle_16.png"),
-                        sheet.getImageName("count_bleck_idle_17.png"),
-                        sheet.getImageName("count_bleck_idle_18.png"),
-                        sheet.getImageName("count_bleck_idle_19.png"),
-                        sheet.getImageName("count_bleck_idle_20.png"),
-                        sheet.getImageName("count_bleck_idle_21.png"),
-                        sheet.getImageName("count_bleck_idle_22.png"),
-                        sheet.getImageName("count_bleck_idle_23.png"),
-                        sheet.getImageName("count_bleck_idle_24.png"),
-                        sheet.getImageName("count_bleck_idle_25.png"),
-                        sheet.getImageName("count_bleck_idle_26.png"),
-                        sheet.getImageName("count_bleck_idle_27.png"),
-                        sheet.getImageName("count_bleck_idle_28.png"),
-                        sheet.getImageName("count_bleck_idle_29.png"),
-                        sheet.getImageName("count_bleck_idle_30.png"),
-                        sheet.getImageName("count_bleck_idle_31.png"),
-                        sheet.getImageName("count_bleck_idle_32.png"),
-                        sheet.getImageName("count_bleck_idle_33.png"),
-                        sheet.getImageName("count_bleck_idle_34.png"),
-                        sheet.getImageName("count_bleck_idle_35.png"),
-                        sheet.getImageName("count_bleck_idle_36.png"),
-                        sheet.getImageName("count_bleck_idle_37.png"),
-                        sheet.getImageName("count_bleck_idle_38.png"),
-                        sheet.getImageName("count_bleck_idle_39.png"),
-                        sheet.getImageName("count_bleck_idle_40.png"),
-                        sheet.getImageName("count_bleck_idle_41.png"),
-                        sheet.getImageName("count_bleck_idle_42.png"),
-                        sheet.getImageName("count_bleck_idle_43.png"),
-                        sheet.getImageName("count_bleck_idle_44.png"),
-                        sheet.getImageName("count_bleck_idle_45.png"),
-                        sheet.getImageName("count_bleck_idle_46.png"),
-                        sheet.getImageName("count_bleck_idle_47.png"),
-                        sheet.getImageName("count_bleck_idle_48.png"),
-                        sheet.getImageName("count_bleck_idle_49.png"),
-                        sheet.getImageName("count_bleck_idle_50.png")]
+        self.sprites = [sheet.getImageName("idle_1.png"),
+                        sheet.getImageName("idle_2.png"),
+                        sheet.getImageName("idle_3.png"),
+                        sheet.getImageName("idle_4.png"),
+                        sheet.getImageName("idle_5.png"),
+                        sheet.getImageName("idle_6.png"),
+                        sheet.getImageName("idle_7.png"),
+                        sheet.getImageName("idle_8.png"),
+                        sheet.getImageName("idle_9.png"),
+                        sheet.getImageName("idle_10.png"),
+                        sheet.getImageName("idle_11.png"),
+                        sheet.getImageName("idle_12.png"),
+                        sheet.getImageName("idle_13.png"),
+                        sheet.getImageName("idle_14.png"),
+                        sheet.getImageName("idle_15.png"),
+                        sheet.getImageName("idle_16.png"),
+                        sheet.getImageName("idle_17.png"),
+                        sheet.getImageName("idle_18.png"),
+                        sheet.getImageName("idle_19.png"),
+                        sheet.getImageName("idle_20.png"),
+                        sheet.getImageName("idle_21.png"),
+                        sheet.getImageName("idle_22.png"),
+                        sheet.getImageName("idle_23.png"),
+                        sheet.getImageName("idle_24.png"),
+                        sheet.getImageName("idle_25.png"),
+                        sheet.getImageName("idle_26.png"),
+                        sheet.getImageName("idle_27.png"),
+                        sheet.getImageName("idle_28.png"),
+                        sheet.getImageName("idle_29.png"),
+                        sheet.getImageName("idle_30.png"),
+                        sheet.getImageName("idle_31.png"),
+                        sheet.getImageName("idle_32.png"),
+                        sheet.getImageName("idle_33.png"),
+                        sheet.getImageName("idle_34.png"),
+                        sheet.getImageName("idle_35.png"),
+                        sheet.getImageName("idle_36.png"),
+                        sheet.getImageName("idle_37.png"),
+                        sheet.getImageName("idle_38.png"),
+                        sheet.getImageName("idle_39.png"),
+                        sheet.getImageName("idle_40.png"),
+                        sheet.getImageName("idle_41.png"),
+                        sheet.getImageName("idle_42.png"),
+                        sheet.getImageName("idle_43.png"),
+                        sheet.getImageName("idle_44.png"),
+                        sheet.getImageName("idle_45.png"),
+                        sheet.getImageName("idle_46.png"),
+                        sheet.getImageName("idle_47.png"),
+                        sheet.getImageName("idle_48.png"),
+                        sheet.getImageName("idle_49.png"),
+                        sheet.getImageName("idle_50.png"),
+                        sheet.getImageName("idle_51.png")]
 
-        self.shadow = sheet.getImageName("count_bleck_shadow.png")
+        self.talking = [sheet.getImageName("talking_1.png"),
+                        sheet.getImageName("talking_2.png"),
+                        sheet.getImageName("talking_3.png"),
+                        sheet.getImageName("talking_4.png"),
+                        sheet.getImageName("talking_5.png"),
+                        sheet.getImageName("talking_6.png")]
+
+        self.shadow = sheet.getImageName("shadow.png")
 
     def update(self):
         self.animate()
@@ -590,18 +597,46 @@ class CountBleckDebug(pg.sprite.Sprite):
 
     def animate(self):
         now = pg.time.get_ticks()
-        if now - self.lastUpdate > 2:
-            self.lastUpdate = now
-            if self.currentFrame < len(self.sprites):
-                self.currentFrame = (self.currentFrame + 1) % (len(self.sprites))
+        if self.textbox is None:
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.sprites):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.sprites))
+                else:
+                    self.currentFrame = 0
+                bottom = self.imgRect.bottom
+                left = self.imgRect.left
+                self.image = self.sprites[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.bottom = bottom
+                self.imgRect.left = left
+        elif self.textbox != "complete":
+            if self.textbox.talking:
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talking):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talking))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.talking[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
             else:
-                self.currentFrame = 0
-            bottom = self.imgRect.bottom
-            left = self.imgRect.left
-            self.image = self.sprites[self.currentFrame]
-            self.imgRect = self.image.get_rect()
-            self.imgRect.bottom = bottom
-            self.imgRect.left = left
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.sprites):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.sprites))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    left = self.imgRect.left
+                    self.image = self.sprites[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.left = left
 
 
 class TutorialBowser(StateMachine):
