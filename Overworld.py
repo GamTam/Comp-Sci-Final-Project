@@ -297,7 +297,7 @@ class Mario(pg.sprite.Sprite):
         self.hitTime = 0
         self.ability = 0
         self.prevAbility = 12
-        self.abilities = ["jump", "interact", "talk"]
+        self.abilities = ["jump", "hammer", "interact", "talk"]
         self.alpha = 255
         self.stepSound = self.game.coinSound
         self.walking = False
@@ -321,10 +321,10 @@ class Mario(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0
         self.moveQueue = Q.deque()
 
-        self.stats = {"level": 1, "maxHP": 10, "maxBP": 10, "pow": 7, "def": 6, "hp": 10, "bp": 10, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 20, "maxBP": 10, "pow": 7, "def": 6, "hp": 20, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
                            "def": randomNumber(3)}
-        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0],
+        self.attackPieces = [["Cavi Cape", 10], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0],
                              ["Toad Town", 0]]
         self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)",
                              pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
@@ -2061,7 +2061,7 @@ class Luigi(pg.sprite.Sprite):
         self.alpha = 255
         self.ability = 0
         self.prevAbility = 12
-        self.abilities = ["jump", "interact", "talk"]
+        self.abilities = ["jump", "hammer", "interact", "talk"]
         self.loadImages()
         self.facing = "right"
         self.lastUpdate = 0
@@ -2079,10 +2079,10 @@ class Luigi(pg.sprite.Sprite):
         self.going = "irrelevent"
         self.vx, self.vy = 0, 0
 
-        self.stats = {"level": 1, "maxHP": 13, "maxBP": 10, "pow": 6, "def": 8, "hp": 13, "bp": 10, "exp": 0}
+        self.stats = {"level": 1, "maxHP": 23, "maxBP": 10, "pow": 6, "def": 8, "hp": 23, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
                            "def": randomNumber(5)}
-        self.attackPieces = [["Cavi Cave", 0],
+        self.attackPieces = [["Cavi Cave", 10],
                              ["Guffawha Ruins", 0],
                              ["Sammer's Kingdom", 0],
                              ["Somnom Ruins", 0],
@@ -4395,7 +4395,7 @@ class TextBox(pg.sprite.Sprite):
             self.scale = 1
             self.currentCharacter = len(self.text[0])
         else:
-            # self.game.textBoxOpenSound.play()
+            self.game.textBoxOpenSound.play()
             self.alpha = 0
             self.scale = 0
             self.currentCharacter = 1
@@ -4406,6 +4406,7 @@ class TextBox(pg.sprite.Sprite):
         self.deathTimer = int(fps / 5)
         self.angleDir = True
         self.complete = False
+        self.startAdvance = False
         self.advance = talkAdvanceSprite
         self.advanceRect = self.advance.get_rect()
         self.image = textboxSprites[type]
@@ -4417,7 +4418,7 @@ class TextBox(pg.sprite.Sprite):
         self.image = pg.transform.scale(textboxSprites[self.type],
                                         (int(self.maxRect.width * self.scale), int(self.maxRect.height * self.scale)))
         if dir is None:
-            if self.rect.y > height / 2:
+            if self.rect.centery >= height / 2:
                 for i in range(self.speed + 1):
                     self.points.append(
                         pt.getPointOnLine(self.rect.centerx, self.rect.centery, width / 2, (self.rect.height / 2) + 20,
@@ -4515,6 +4516,7 @@ class TextBox(pg.sprite.Sprite):
             self.advanceRect.bottom = self.rect.bottom - 100
 
     def draw(self):
+        self.startAdvance = False
         keys = pg.key.get_pressed()
         character = self.text[self.page]
 
@@ -4640,6 +4642,9 @@ class TextBox(pg.sprite.Sprite):
                         self.playSound += 1
                     self.currentCharacter += 1
                     self.talking = True
+
+                    if self.currentCharacter >= len(self.text[self.page]) - 1:
+                        self.startAdvance = True
                 else:
                     self.talking = False
                     if not self.advancing:

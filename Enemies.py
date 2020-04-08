@@ -15,6 +15,7 @@ def project(pos, angle, distance):
     return (pos[0] + (cos(angle) * distance),
             pos[1] - (sin(angle) * distance))
 
+
 class spritesheet:
     def __init__(self, img_file, data_file=None):
         self.spritesheet = pg.image.load(img_file).convert_alpha()
@@ -611,6 +612,8 @@ class CountBleckDebug(pg.sprite.Sprite):
                 self.imgRect.bottom = bottom
                 self.imgRect.left = left
         elif self.textbox != "complete":
+            if self.textbox.startAdvance:
+                self.currentFrame = 25
             if self.textbox.talking:
                 if now - self.lastUpdate > 30:
                     self.lastUpdate = now
@@ -679,7 +682,7 @@ class TutorialBowser(StateMachine):
         self.imgRect.bottom = self.rect.centery + 10
 
         # Stats
-        self.stats = {"maxHP": 10, "hp": 10, "pow": 7, "def": 5, "exp": 3, "coins": 0, "name": "Bowser"}
+        self.stats = {"maxHP": 10, "hp": 10, "pow": 9, "def": 5, "exp": 3, "coins": 0, "name": "Bowser"}
         self.rectHP = self.stats["hp"]
 
         self.description = []
