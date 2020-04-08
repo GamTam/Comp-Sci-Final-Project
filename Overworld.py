@@ -297,7 +297,7 @@ class Mario(pg.sprite.Sprite):
         self.hitTime = 0
         self.ability = 0
         self.prevAbility = 12
-        self.abilities = ["jump", "hammer", "interact", "talk"]
+        self.abilities = ["jump", "interact", "talk"]
         self.alpha = 255
         self.stepSound = self.game.coinSound
         self.walking = False
@@ -324,7 +324,7 @@ class Mario(pg.sprite.Sprite):
         self.stats = {"level": 1, "maxHP": 20, "maxBP": 10, "pow": 7, "def": 6, "hp": 20, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
                            "def": randomNumber(3)}
-        self.attackPieces = [["Cavi Cape", 10], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0],
+        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0],
                              ["Toad Town", 0]]
         self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)",
                              pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
@@ -2061,7 +2061,7 @@ class Luigi(pg.sprite.Sprite):
         self.alpha = 255
         self.ability = 0
         self.prevAbility = 12
-        self.abilities = ["jump", "hammer", "interact", "talk"]
+        self.abilities = ["jump", "interact", "talk"]
         self.loadImages()
         self.facing = "right"
         self.lastUpdate = 0
@@ -2082,7 +2082,7 @@ class Luigi(pg.sprite.Sprite):
         self.stats = {"level": 1, "maxHP": 23, "maxBP": 10, "pow": 6, "def": 8, "hp": 23, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
                            "def": randomNumber(5)}
-        self.attackPieces = [["Cavi Cave", 10],
+        self.attackPieces = [["Cavi Cave", 0],
                              ["Guffawha Ruins", 0],
                              ["Sammer's Kingdom", 0],
                              ["Somnom Ruins", 0],

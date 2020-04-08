@@ -613,7 +613,7 @@ class CountBleckDebug(pg.sprite.Sprite):
                 self.imgRect.left = left
         elif self.textbox != "complete":
             if self.textbox.startAdvance:
-                self.currentFrame = 25
+                self.currentFrame = 23
             if self.textbox.talking:
                 if now - self.lastUpdate > 30:
                     self.lastUpdate = now
