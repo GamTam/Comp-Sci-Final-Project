@@ -4648,9 +4648,11 @@ class TextBox(pg.sprite.Sprite):
                 else:
                     self.talking = False
                     if not self.advancing:
+                        self.playSound = 0
                         if not self.choosing:
                             self.game.screen.blit(self.advance, self.advanceRect.center)
             else:
+                self.playSound = 0
                 self.pause -= 1
 
 
