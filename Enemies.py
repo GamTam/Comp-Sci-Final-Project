@@ -1,4 +1,5 @@
 from Overworld import *
+from CutsceneObjects import *
 from UI import *
 from Settings import *
 from statemachine import StateMachine, State
@@ -136,7 +137,8 @@ class Goomba(pg.sprite.Sprite):
         self.description = []
         self.description.append("That's a Goomba!")
         self.description.append("These little guys will run \nback and forth across the screen\nand hope they hit you.")
-        self.description.append("Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".")
+        self.description.append("Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+            self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".")
         self.description.append('''The main motto of the Goomba is\n"March straight ahead into\nthe enemy's feet".''')
         self.description.append("Or,/5 at least that's what Bowser \nsays.")
 
@@ -323,24 +325,27 @@ class Goomba(pg.sprite.Sprite):
                     if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
                         if doubleDamageM:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                       (2 * (self.game.player.stats["pow"] - self.stats["def"])))
-                            self.stats["hp"] -= 2 * (self.game.player.stats["pow"] - self.stats["def"])
+                                       (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 0)))
+                            self.stats["hp"] -= (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 0))
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
                             self.hit = True
                         else:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                       (self.game.player.stats["pow"] - self.stats["def"]))
-                            self.stats["hp"] -= (self.game.player.stats["pow"] - self.stats["def"])
+                                       (max(self.game.player.stats["pow"] - self.stats["def"], 0)))
+                            self.stats["hp"] -= (max(self.game.player.stats["pow"] - self.stats["def"], 0))
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
                             self.hit = True
                         self.game.player.airTimer = 0
                     else:
-                        if not self.game.player.hit and self.stats["hp"] > 0 and not self.hit and self.game.player.canBeHit:
-                            HitNumbers(self.game, self.game.room, (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),(max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                        if not self.game.player.hit and self.stats[
+                            "hp"] > 0 and not self.hit and self.game.player.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
                             if self.game.player.stats["hp"] <= 0:
                                 self.game.player.stats["hp"] = 0
@@ -361,25 +366,29 @@ class Goomba(pg.sprite.Sprite):
                     if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
                         if doubleDamageL:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                       (2 * (self.game.follower.stats["pow"] - self.stats["def"])))
-                            self.stats["hp"] -= 2 * (self.game.follower.stats["pow"] - self.stats["def"])
+                                       (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 0)))
+                            self.stats["hp"] -= (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 0))
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
                             self.hit = True
                         else:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                       (self.game.follower.stats["pow"] - self.stats["def"]))
-                            self.stats["hp"] -= (self.game.follower.stats["pow"] - self.stats["def"])
+                                       (max(self.game.follower.stats["pow"] - self.stats["def"], 0)))
+                            self.stats["hp"] -= (max(self.game.follower.stats["pow"] - self.stats["def"], 0))
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
                             self.hit = True
                         self.game.follower.airTimer = 0
                     else:
-                        if not self.game.follower.hit and self.stats["hp"] > 0 and not self.hit and self.game.follower.canBeHit:
-                            HitNumbers(self.game, self.game.room, (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2), (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
-                            self.game.follower.stats["hp"] -= (max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                        if not self.game.follower.hit and self.stats[
+                            "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                            self.game.follower.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.follower.stats["def"], 1))
                             if self.game.follower.stats["hp"] <= 0:
                                 self.game.follower.stats["hp"] = 0
                                 self.game.follower.currentFrame = 0
@@ -394,8 +403,8 @@ class Goomba(pg.sprite.Sprite):
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
                 if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                               round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5))
-                    self.stats["hp"] -= round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5)
+                               max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0))
+                    self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0)
                     if self.stats["hp"] <= 0:
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
@@ -407,8 +416,8 @@ class Goomba(pg.sprite.Sprite):
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
                 if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                               round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5))
-                    self.stats["hp"] -= round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5)
+                               max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 0))
+                    self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 0)
                     if self.stats["hp"] <= 0:
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
@@ -433,6 +442,7 @@ class LinebeckDebug(pg.sprite.Sprite):
         self.imgRect.bottom = self.rect.bottom - 5
         self.imgRect.centerx = self.rect.centerx
         self.canShop = False
+        self.cutscene = None
         self.alpha = 255
         if not hastexted:
             self.counter = 0
@@ -443,38 +453,37 @@ class LinebeckDebug(pg.sprite.Sprite):
         self.text.append("Go on, take a look!")
 
     def update(self):
-        if self.counter == 0:
-            if self.textbox is None:
-                for event in self.game.event:
-                    if event.type == pg.KEYDOWN:
-                        if self.game.leader == "mario":
-                            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and event.key == pg.K_m and self.game.player.canMove and self.game.follower.canMove:
-                                if not self.game.player.jumping:
-                                    self.textbox = TextBox(self.game, self, self.text)
-                                    self.game.linebeckHasTexted = True
-                                    self.canShop = True
-                                    self.game.playsong = False
-                                    self.game.currentPoint += pg.mixer.music.get_pos()
-                        elif self.game.leader == "luigi":
-                            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and event.key == pg.K_l and self.game.player.canMove and self.game.follower.canMove:
-                                if not self.game.follower.jumping:
-                                    self.textbox = TextBox(self.game, self, self.text)
-                                    self.game.linebeckHasTexted = True
-                                    self.canShop = True
-                                    self.game.playsong = False
-                                    self.game.currentPoint += pg.mixer.music.get_pos()
-            elif self.textbox != "complete":
-                pg.event.clear()
-                self.game.playSong(6.402, 33.433, "linebeck's theme")
+        if self.textbox is None:
+            for event in self.game.event:
+                if event.type == pg.KEYDOWN:
+                    if self.game.leader == "mario":
+                        if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and event.key == pg.K_m and self.game.player.canMove and self.game.follower.canMove:
+                            if not self.game.player.jumping:
+                                self.textbox = TextBox(self.game, self, self.text)
+                                self.game.linebeckHasTexted = True
+                                self.canShop = True
+                                self.game.playsong = False
+                                self.game.currentPoint += pg.mixer.music.get_pos()
+                    elif self.game.leader == "luigi":
+                        if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and event.key == pg.K_l and self.game.player.canMove and self.game.follower.canMove:
+                            if not self.game.follower.jumping:
+                                self.textbox = TextBox(self.game, self, self.text)
+                                self.game.linebeckHasTexted = True
+                                self.canShop = True
+                                self.game.playsong = False
+                                self.game.currentPoint += pg.mixer.music.get_pos()
+        elif self.textbox != "complete":
+            pg.event.clear()
+            self.game.playSong(6.402, 33.433, "linebeck's theme")
+        else:
+            if self.canShop:
+                self.game.shop([["Mushroom", 5], ["Super Mushroom", 15], ["1-UP Mushroom", 10], ["1-UP Deluxe", 30],["Syrup", 5], ["Star Cand", 15]], '''self.playSong(6.402, 33.433,
+                "linebeck's theme")''')
+                self.canShop = False
+                self.textbox = TextBox(self.game, self, ["Thank you for your shopping!"])
             else:
-                if self.canShop:
-                    self.game.shop([["Mushroom", 5], ["Super Mushroom", 15], ["1-UP Mushroom", 10], ["1-UP Deluxe", 30],["Syrup", 5], ["Star Cand", 15]], '''self.playSong(6.402, 33.433,
-                    "linebeck's theme")''')
-                    self.canShop = False
-                    self.textbox = TextBox(self.game, self, ["Thank you for your shopping!"])
-                else:
-                    self.textbox = None
-                    self.game.playsong = True
+                self.textbox = None
+                self.game.playsong = True
 
 
 class CountBleckDebug(pg.sprite.Sprite):
@@ -715,43 +724,43 @@ class TutorialBowser(StateMachine):
                            sheet.getImageName("idle_13.png"),
                            sheet.getImageName("idle_14.png"),
                            sheet.getImageName("idle_15.png"),
-                          ]
+                           ]
 
         self.punchingFrames = [sheet.getImageName("punching_1.png"),
-                              sheet.getImageName("punching_2.png"),
-                              sheet.getImageName("punching_3.png"),
-                              sheet.getImageName("punching_4.png"),
-                              sheet.getImageName("punching_5.png"),
-                              sheet.getImageName("punching_6.png"),
-                              sheet.getImageName("punching_7.png"),
-                              sheet.getImageName("punching_8.png"),
-                              sheet.getImageName("punching_9.png"),
-                              sheet.getImageName("punching_10.png"),
-                              sheet.getImageName("punching_11.png"),
-                              sheet.getImageName("punching_12.png"),
-                              sheet.getImageName("punching_13.png"),
-                              sheet.getImageName("punching_14.png"),
-                              sheet.getImageName("punching_15.png"),
-                              sheet.getImageName("punching_16.png"),
-                              sheet.getImageName("punching_17.png"),
-                              sheet.getImageName("punching_18.png"),
-                              sheet.getImageName("punching_19.png")]
+                               sheet.getImageName("punching_2.png"),
+                               sheet.getImageName("punching_3.png"),
+                               sheet.getImageName("punching_4.png"),
+                               sheet.getImageName("punching_5.png"),
+                               sheet.getImageName("punching_6.png"),
+                               sheet.getImageName("punching_7.png"),
+                               sheet.getImageName("punching_8.png"),
+                               sheet.getImageName("punching_9.png"),
+                               sheet.getImageName("punching_10.png"),
+                               sheet.getImageName("punching_11.png"),
+                               sheet.getImageName("punching_12.png"),
+                               sheet.getImageName("punching_13.png"),
+                               sheet.getImageName("punching_14.png"),
+                               sheet.getImageName("punching_15.png"),
+                               sheet.getImageName("punching_16.png"),
+                               sheet.getImageName("punching_17.png"),
+                               sheet.getImageName("punching_18.png"),
+                               sheet.getImageName("punching_19.png")]
 
         self.walkingFrames = [sheet.getImageName("walking_1.png"),
-                               sheet.getImageName("walking_2.png"),
-                               sheet.getImageName("walking_3.png"),
-                               sheet.getImageName("walking_4.png"),
-                               sheet.getImageName("walking_5.png"),
-                               sheet.getImageName("walking_6.png"),
-                               sheet.getImageName("walking_7.png"),
-                               sheet.getImageName("walking_8.png"),
-                               sheet.getImageName("walking_9.png"),
-                               sheet.getImageName("walking_10.png"),
-                               sheet.getImageName("walking_11.png"),
-                               sheet.getImageName("walking_12.png"),
-                               sheet.getImageName("walking_13.png"),
-                               sheet.getImageName("walking_14.png"),
-                               sheet.getImageName("walking_15.png")]
+                              sheet.getImageName("walking_2.png"),
+                              sheet.getImageName("walking_3.png"),
+                              sheet.getImageName("walking_4.png"),
+                              sheet.getImageName("walking_5.png"),
+                              sheet.getImageName("walking_6.png"),
+                              sheet.getImageName("walking_7.png"),
+                              sheet.getImageName("walking_8.png"),
+                              sheet.getImageName("walking_9.png"),
+                              sheet.getImageName("walking_10.png"),
+                              sheet.getImageName("walking_11.png"),
+                              sheet.getImageName("walking_12.png"),
+                              sheet.getImageName("walking_13.png"),
+                              sheet.getImageName("walking_14.png"),
+                              sheet.getImageName("walking_15.png")]
 
     def hpMath(self):
         if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
@@ -775,7 +784,8 @@ class TutorialBowser(StateMachine):
         playerRect.width = playerRect.width * self.hitRange
 
         if self.is_idle:
-            if playerRect.colliderect(self.game.player.rect) and self.cooldown == 0 and not self.game.player.jumping and not self.game.player.dead:
+            if playerRect.colliderect(
+                    self.game.player.rect) and self.cooldown == 0 and not self.game.player.jumping and not self.game.player.dead:
                 self.currentFrame = 0
                 self.game.bowserPunch.play()
                 self.instaPunch()
@@ -815,7 +825,8 @@ class TutorialBowser(StateMachine):
                         pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
                         doubleDamageM = True
                     if hitsRound2:
-                        if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0 and not self.is_hit and not self.is_punch and self.cooldown == 0:
+                        if self.game.player.going == "down" and self.game.player.jumping and self.stats[
+                            "hp"] > 0 and not self.is_hit and not self.is_punch and self.cooldown == 0:
                             if doubleDamageM:
                                 HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                            (2 * (self.game.player.stats["pow"] - self.stats["def"])))
@@ -842,9 +853,13 @@ class TutorialBowser(StateMachine):
                                 self.cooldown = fps * 2
                             self.game.player.airTimer = 0
                         else:
-                            if not self.game.player.hit and self.stats["hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
-                                HitNumbers(self.game, self.game.room, (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),(max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
-                                self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                            if not self.game.player.hit and self.stats[
+                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                                self.game.player.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.player.stats["def"], 1))
                                 if self.game.player.stats["hp"] <= 0:
                                     self.game.player.stats["hp"] = 0
                                     self.game.player.currentFrame = 0
@@ -858,7 +873,9 @@ class TutorialBowser(StateMachine):
                 if hits:
                     if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
                         if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
-                            HitNumbers(self.game, self.game.room, (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),(max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
                             if self.game.player.stats["hp"] <= 0:
                                 self.game.player.stats["hp"] = 0

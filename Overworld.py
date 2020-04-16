@@ -1,8 +1,7 @@
 import collections as Q
-
 import pytweening as pt
-
 from BlockContents import *
+from UI import *
 from LevelUp import *
 
 
@@ -324,7 +323,7 @@ class Mario(pg.sprite.Sprite):
         self.stats = {"level": 1, "maxHP": 20, "maxBP": 10, "pow": 7, "def": 6, "hp": 20, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
                            "def": randomNumber(3)}
-        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Sammer's Kingdom", 0], ["Somnom Woods", 0],
+        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Somnom Woods", 0],
                              ["Toad Town", 0]]
         self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)",
                              pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
@@ -914,8 +913,8 @@ class Mario(pg.sprite.Sprite):
                             self.imgRect = self.image.get_rect()
                             self.imgRect.center = center
                 elif not self.jumping:
-                    if not self.hit and not self.game.player.hit:
-                        if self.walking or self.game.player.vx != 0 or self.game.player.vy != 0:
+                    if not self.hit and not self.game.follower.hit:
+                        if self.walking or self.game.follower.vx != 0 or self.game.follower.vy != 0:
                             if self.facing == "upright":
                                 if now - self.lastUpdate > 25:
                                     self.lastUpdate = now
@@ -2084,7 +2083,6 @@ class Luigi(pg.sprite.Sprite):
                            "def": randomNumber(5)}
         self.attackPieces = [["Cavi Cave", 0],
                              ["Guffawha Ruins", 0],
-                             ["Sammer's Kingdom", 0],
                              ["Somnom Ruins", 0],
                              ["Fawful's Castle", 0]]
         self.brosAttacks = [["Green Shell", "self.greenShell(enemies, song)",
@@ -4366,7 +4364,7 @@ class BattleTransition(pg.sprite.Sprite):
 
 class TextBox(pg.sprite.Sprite):
     def __init__(self, game, parent, text, type="dialogue", dir=None, choice=False, sound="default", complete=False):
-        pg.sprite.Sprite.__init__(self, game.ui)
+        pg.sprite.Sprite.__init__(self, game.ui, game.textboxes)
         self.speed = 20
         self.game = game
         self.choice = choice
@@ -4386,9 +4384,10 @@ class TextBox(pg.sprite.Sprite):
         self.type = type
         self.text = text.copy()
         for i in range(len(self.text)):
+            self.text[i] = self.text[i].replace("/n", "\n")
             self.text[i] = self.text[i] + "\n\a"
         self.page = 0
-        self.playSound = 0
+        self.playSound = 10
         if complete:
             self.counter = self.speed - 1
             self.alpha = 255
@@ -4648,11 +4647,11 @@ class TextBox(pg.sprite.Sprite):
                 else:
                     self.talking = False
                     if not self.advancing:
-                        self.playSound = 0
+                        self.playSound = 10
                         if not self.choosing:
                             self.game.screen.blit(self.advance, self.advanceRect.center)
             else:
-                self.playSound = 0
+                self.playSound = 10
                 self.pause -= 1
 
 
@@ -4723,3 +4722,86 @@ class MiniTextbox(pg.sprite.Sprite):
                 self.currentCharacter += 2
                 if self.currentCharacter > len(self.text[self.page]):
                     self.currentCharacter = len(self.text[self.page])
+
+
+class RoomTransition:
+    def __init__(self, game, initialRoom, room, size, pos, playerPos):
+        self.game = game
+        self.game.transistors.append(self)
+        self.initialRoom = initialRoom
+        self.room = room
+        self.rect = pg.rect.Rect(0, 0, size, size)
+        self.rect.center = pos
+        self.playerPos = playerPos
+        self.fadeout = None
+
+    def update(self):
+        room = self.room.replace(".game", "")
+
+        if self.game.leader == "mario":
+            if self.rect.colliderect(self.game.player.rect):
+                if self.fadeout == None:
+                    self.fadeout = Fadeout(self.game, 10)
+        if self.game.leader == "luigi":
+            if self.rect.colliderect(self.game.follower.rect):
+                if self.fadeout == None:
+                    self.fadeout = Fadeout(self.game, 10)
+
+        if self.fadeout is not None:
+            if self.fadeout.alpha >= 255:
+                self.game.storeData["mario facing"] = self.game.player.facing
+                self.game.storeData["luigi facing"] = self.game.follower.facing
+                self.game.storeData["mario pos"] = self.playerPos
+                self.game.storeData["luigi pos"] = self.playerPos
+                self.game.storeData["mario stats"] = self.game.player.stats
+                self.game.storeData["luigi stats"] = self.game.follower.stats
+                self.game.storeData["mario abilities"] = self.game.player.abilities
+                self.game.storeData["luigi abilities"] = self.game.follower.abilities
+                self.game.storeData["move"] = Q.deque()
+                eval(self.room)
+
+
+class Void(pg.sprite.Sprite):
+    def __init__(self, game, size):
+        self.game = game
+        self.game.void = self
+        self.alpha = 255
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.speed = 0
+        self.scale = size
+        self.image = pg.transform.scale(voidSprites[self.currentFrame], (round(voidSprites[self.currentFrame].get_width() * self.scale), round(voidSprites[self.currentFrame].get_height() * self.scale)))
+        self.rect = self.image.get_rect()
+        self.rect.center = (width / 2, 200)
+    
+    def update(self, size):
+        if self.scale > size and self.speed == 0:
+            self.speed = (self.scale - size) / 180 * -1
+        elif self.scale < size and self.speed == 0:
+            self.speed = (size - self.scale) / 180
+
+        self.speed = round(self.speed, 3)
+
+        if self.speed != 0:
+            if self.scale > size and self.speed < 0:
+                self.scale += self.speed
+            elif self.scale < size and self.speed > 0:
+                self.scale += self.speed
+            else:
+                print("john from garfield")
+                self.scale = size
+                self.speed = 0
+
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 30:
+            self.lastUpdate = now
+            if self.currentFrame < len(voidSprites):
+                self.currentFrame = (self.currentFrame + 1) % (len(voidSprites))
+            else:
+                self.currentFrame = 0
+            center = self.rect.center
+            self.image = pg.transform.scale(voidSprites[self.currentFrame], (
+                round(voidSprites[self.currentFrame].get_width() * abs(self.scale)),
+                round(voidSprites[self.currentFrame].get_height() * abs(self.scale))))
+            self.rect = self.image.get_rect()
+            self.rect.center = center
