@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:290a6854c72393a5bbee3252559c9392:6fd928851bc75f12df07ff9451aa5f8d:91dc7b365859d28f850275e364d50ca2$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="you got an egg mcmuffin.png" width="3648" height="2272">
+    <sprite n="1.png" x="0" y="0" w="608" h="142"/>
+    <sprite n="2.png" x="608" y="0" w="608" h="142"/>
+    <sprite n="3.png" x="1216" y="0" w="608" h="142"/>
+    <sprite n="4.png" x="1824" y="0" w="608" h="142"/>
+    <sprite n="5.png" x="2432" y="0" w="608" h="142"/>
+    <sprite n="6.png" x="3040" y="0" w="608" h="142"/>
+    <sprite n="7.png" x="0" y="142" w="608" h="142"/>
+    <sprite n="8.png" x="608" y="142" w="608" h="142"/>
+    <sprite n="9.png" x="1216" y="142" w="608" h="142"/>
+    <sprite n="10.png" x="1824" y="142" w="608" h="142"/>
+    <sprite n="11.png" x="2432" y="142" w="608" h="142"/>
+    <sprite n="12.png" x="3040" y="142" w="608" h="142"/>
+    <sprite n="13.png" x="0" y="284" w="608" h="142"/>
+    <sprite n="14.png" x="608" y="284" w="608" h="142"/>
+    <sprite n="15.png" x="1216" y="284" w="608" h="142"/>
+    <sprite n="16.png" x="1824" y="284" w="608" h="142"/>
+    <sprite n="17.png" x="2432" y="284" w="608" h="142"/>
+    <sprite n="18.png" x="3040" y="284" w="608" h="142"/>
+    <sprite n="19.png" x="0" y="426" w="608" h="142"/>
+    <sprite n="20.png" x="608" y="426" w="608" h="142"/>
+    <sprite n="21.png" x="1216" y="426" w="608" h="142"/>
+    <sprite n="22.png" x="1824" y="426" w="608" h="142"/>
+    <sprite n="23.png" x="2432" y="426" w="608" h="142"/>
+    <sprite n="24.png" x="3040" y="426" w="608" h="142"/>
+    <sprite n="25.png" x="0" y="568" w="608" h="142"/>
+    <sprite n="26.png" x="608" y="568" w="608" h="142"/>
+    <sprite n="27.png" x="1216" y="568" w="608" h="142"/>
+    <sprite n="28.png" x="1824" y="568" w="608" h="142"/>
+    <sprite n="29.png" x="2432" y="568" w="608" h="142"/>
+    <sprite n="30.png" x="3040" y="568" w="608" h="142"/>
+    <sprite n="31.png" x="0" y="710" w="608" h="142"/>
+    <sprite n="32.png" x="608" y="710" w="608" h="142"/>
+    <sprite n="33.png" x="1216" y="710" w="608" h="142"/>
+    <sprite n="34.png" x="1824" y="710" w="608" h="142"/>
+    <sprite n="35.png" x="2432" y="710" w="608" h="142"/>
+    <sprite n="36.png" x="3040" y="710" w="608" h="142"/>
+    <sprite n="37.png" x="0" y="852" w="608" h="142"/>
+    <sprite n="38.png" x="608" y="852" w="608" h="142"/>
+    <sprite n="39.png" x="1216" y="852" w="608" h="142"/>
+    <sprite n="40.png" x="1824" y="852" w="608" h="142"/>
+    <sprite n="41.png" x="2432" y="852" w="608" h="142"/>
+    <sprite n="42.png" x="3040" y="852" w="608" h="142"/>
+    <sprite n="43.png" x="0" y="994" w="608" h="142"/>
+    <sprite n="44.png" x="608" y="994" w="608" h="142"/>
+    <sprite n="45.png" x="1216" y="994" w="608" h="142"/>
+    <sprite n="46.png" x="1824" y="994" w="608" h="142"/>
+    <sprite n="47.png" x="2432" y="994" w="608" h="142"/>
+    <sprite n="48.png" x="3040" y="994" w="608" h="142"/>
+    <sprite n="49.png" x="0" y="1136" w="608" h="142"/>
+    <sprite n="50.png" x="608" y="1136" w="608" h="142"/>
+    <sprite n="51.png" x="1216" y="1136" w="608" h="142"/>
+    <sprite n="52.png" x="1824" y="1136" w="608" h="142"/>
+    <sprite n="53.png" x="2432" y="1136" w="608" h="142"/>
+    <sprite n="54.png" x="3040" y="1136" w="608" h="142"/>
+    <sprite n="55.png" x="0" y="1278" w="608" h="142"/>
+    <sprite n="56.png" x="608" y="1278" w="608" h="142"/>
+    <sprite n="57.png" x="1216" y="1278" w="608" h="142"/>
+    <sprite n="58.png" x="1824" y="1278" w="608" h="142"/>
+    <sprite n="59.png" x="2432" y="1278" w="608" h="142"/>
+    <sprite n="60.png" x="3040" y="1278" w="608" h="142"/>
+    <sprite n="61.png" x="0" y="1420" w="608" h="142"/>
+    <sprite n="62.png" x="608" y="1420" w="608" h="142"/>
+    <sprite n="63.png" x="1216" y="1420" w="608" h="142"/>
+    <sprite n="64.png" x="1824" y="1420" w="608" h="142"/>
+    <sprite n="65.png" x="2432" y="1420" w="608" h="142"/>
+    <sprite n="66.png" x="3040" y="1420" w="608" h="142"/>
+    <sprite n="67.png" x="0" y="1562" w="608" h="142"/>
+    <sprite n="68.png" x="608" y="1562" w="608" h="142"/>
+    <sprite n="69.png" x="1216" y="1562" w="608" h="142"/>
+    <sprite n="70.png" x="1824" y="1562" w="608" h="142"/>
+    <sprite n="71.png" x="2432" y="1562" w="608" h="142"/>
+    <sprite n="72.png" x="3040" y="1562" w="608" h="142"/>
+    <sprite n="73.png" x="0" y="1704" w="608" h="142"/>
+    <sprite n="74.png" x="608" y="1704" w="608" h="142"/>
+    <sprite n="75.png" x="1216" y="1704" w="608" h="142"/>
+    <sprite n="76.png" x="1824" y="1704" w="608" h="142"/>
+    <sprite n="77.png" x="2432" y="1704" w="608" h="142"/>
+    <sprite n="78.png" x="3040" y="1704" w="608" h="142"/>
+    <sprite n="79.png" x="0" y="1846" w="608" h="142"/>
+    <sprite n="80.png" x="608" y="1846" w="608" h="142"/>
+    <sprite n="81.png" x="1216" y="1846" w="608" h="142"/>
+    <sprite n="82.png" x="1824" y="1846" w="608" h="142"/>
+    <sprite n="83.png" x="2432" y="1846" w="608" h="142"/>
+    <sprite n="84.png" x="3040" y="1846" w="608" h="142"/>
+    <sprite n="85.png" x="0" y="1988" w="608" h="142"/>
+    <sprite n="86.png" x="608" y="1988" w="608" h="142"/>
+    <sprite n="87.png" x="1216" y="1988" w="608" h="142"/>
+    <sprite n="88.png" x="1824" y="1988" w="608" h="142"/>
+    <sprite n="89.png" x="2432" y="1988" w="608" h="142"/>
+    <sprite n="90.png" x="3040" y="1988" w="608" h="142"/>
+    <sprite n="91.png" x="0" y="2130" w="608" h="142"/>
+    <sprite n="92.png" x="608" y="2130" w="608" h="142"/>
+    <sprite n="93.png" x="1216" y="2130" w="608" h="142"/>
+    <sprite n="94.png" x="1824" y="2130" w="608" h="142"/>
+    <sprite n="95.png" x="2432" y="2130" w="608" h="142"/>
+    <sprite n="96.png" x="3040" y="2130" w="608" h="142"/>
+</TextureAtlas>

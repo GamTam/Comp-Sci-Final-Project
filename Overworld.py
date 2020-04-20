@@ -3,7 +3,7 @@ import pytweening as pt
 from BlockContents import *
 from UI import *
 from LevelUp import *
-
+from CutsceneObjects import *
 
 class spritesheet:
     def __init__(self, img_file, data_file=None):
@@ -4736,15 +4736,17 @@ class RoomTransition:
         self.fadeout = None
 
     def update(self):
-        room = self.room.replace(".game", "")
-
         if self.game.leader == "mario":
             if self.rect.colliderect(self.game.player.rect):
                 if self.fadeout == None:
+                    self.game.player.canMove = False
+                    self.game.follower.canMove = False
                     self.fadeout = Fadeout(self.game, 10)
         if self.game.leader == "luigi":
             if self.rect.colliderect(self.game.follower.rect):
                 if self.fadeout == None:
+                    self.game.player.canMove = False
+                    self.game.follower.canMove = False
                     self.fadeout = Fadeout(self.game, 10)
 
         if self.fadeout is not None:
@@ -4758,7 +4760,26 @@ class RoomTransition:
                 self.game.storeData["mario abilities"] = self.game.player.abilities
                 self.game.storeData["luigi abilities"] = self.game.follower.abilities
                 self.game.storeData["move"] = Q.deque()
+                self.game.player.canMove = True
+                self.game.follower.canMove = True
                 eval(self.room)
+
+
+class Decoration(pg.sprite.Sprite):
+    def __init__(self, game, image, pos):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.alpha = 255
+        self.game.sprites.append(self)
+        self.image = pg.image.load("sprites/decorations/" + image).convert_alpha()
+        self.imgRect = self.image.get_rect()
+        self.imgRect.center = pos
+        self.rect = self.imgRect
+        self.room = self.game.room
+
+    def update(self):
+        if self.room != self.game.room:
+            self.game.sprites.remove(self)
 
 
 class Void(pg.sprite.Sprite):
@@ -4788,7 +4809,6 @@ class Void(pg.sprite.Sprite):
             elif self.scale < size and self.speed > 0:
                 self.scale += self.speed
             else:
-                print("john from garfield")
                 self.scale = size
                 self.speed = 0
 

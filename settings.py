@@ -41,6 +41,10 @@ yellow = (225, 225, 0)
 lightBlue = (0, 155, 155)
 sansEye = (132, 255, 242)
 
+pg.display.set_icon(icon)
+pg.mixer.pre_init(44100, -16, 2, 2048)
+pg.init()
+pg.display.set_caption(title)
 screen = pg.display.set_mode((width, height))
 
 battleTransitionSprites = [pg.image.load("sprites/battle intro/battle_transition_1.png").convert_alpha(),
@@ -320,6 +324,8 @@ voidSprites = [pg.image.load("sprites/the void/1.png").convert_alpha(),
                pg.image.load("sprites/the void/237.png").convert_alpha(),
                pg.image.load("sprites/the void/238.png").convert_alpha(),
                pg.image.load("sprites/the void/239.png").convert_alpha()]
+
+pg.event.clear()
 
 
 def randomNumber(max):

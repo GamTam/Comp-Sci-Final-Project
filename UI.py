@@ -698,7 +698,7 @@ class CoinCollectionAdd(pg.sprite.Sprite):
 
 class Cursor(pg.sprite.Sprite):
     def __init__(self, game, target, facing="left"):
-        pg.sprite.Sprite.__init__(self)
+        pg.sprite.Sprite.__init__(self, game.cursors)
         self.game = game
         sheet = spritesheet("sprites/ui.png", "sprites/ui.xml")
         self.facing = facing
@@ -824,10 +824,12 @@ class Fadeout(pg.sprite.Sprite):
 
     def update(self):
         self.image.set_alpha(self.alpha)
-        if self.room == self.game.room and self.alpha <= 255:
+        if self.room == self.game.room and self.alpha < 255:
             self.alpha += self.speed
         elif self.room != self.game.room:
             self.alpha -= self.speed
+        elif self.alpha > 255:
+            self.alpha = 255
 
         if self.alpha < 0:
             self.kill()

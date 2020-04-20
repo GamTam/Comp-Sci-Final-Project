@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:7b27a1b3552dae35fcdbbb38f181c140:975f641ac8f102f62cc41f234df3e982:f12a2139786b5fc059fbcfdac19ab29e$ -->
+<!-- $TexturePacker:SmartUpdate:e7fe2102e6ca746e72e241b99c8b6d67:eaa398d9cc92ea3d9cdc7dc4c66278dc:f12a2139786b5fc059fbcfdac19ab29e$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -19,20 +19,27 @@ vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
 verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
 triangles  => sprite triangulation, 3 vertex indices per triangle
 -->
-<TextureAtlas imagePath="toadley.png" width="236" height="248">
-    <sprite n="shadow.png" x="0" y="0" w="45" h="22" pX="0.5" pY="0.5"/>
-    <sprite n="standing_down.png" x="94" y="162" w="46" h="86" pX="0.5" pY="0.5"/>
-    <sprite n="standing_downleft.png" x="140" y="80" w="48" h="82" pX="0.5" pY="0.5"/>
-    <sprite n="talking_down_1.png" x="140" y="162" w="46" h="86" pX="0.5" pY="0.5"/>
-    <sprite n="talking_down_2.png" x="186" y="162" w="46" h="86" pX="0.5" pY="0.5"/>
-    <sprite n="talking_down_3.png" x="94" y="80" w="46" h="82" pX="0.5" pY="0.5"/>
-    <sprite n="talking_down_4.png" x="45" y="0" w="46" h="80" pX="0.5" pY="0.5"/>
-    <sprite n="talking_down_5.png" x="48" y="80" w="46" h="82" pX="0.5" pY="0.5"/>
-    <sprite n="talking_down_6.png" x="0" y="162" w="46" h="84" pX="0.5" pY="0.5"/>
-    <sprite n="talking_downleft_1.png" x="46" y="162" w="48" h="82" pX="0.5" pY="0.5"/>
-    <sprite n="talking_downleft_2.png" x="188" y="80" w="48" h="82" pX="0.5" pY="0.5"/>
-    <sprite n="talking_downleft_3.png" x="91" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
-    <sprite n="talking_downleft_4.png" x="139" y="0" w="48" h="78" pX="0.5" pY="0.5"/>
-    <sprite n="talking_downleft_5.png" x="0" y="80" w="48" h="80" pX="0.5" pY="0.5"/>
-    <sprite n="talking_downleft_6.png" x="187" y="0" w="48" h="80" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="toadley.png" width="50" height="1714">
+    <sprite n="shadow.png" x="0" y="0" w="45" h="22"/>
+    <sprite n="standing_down.png" x="0" y="22" w="46" h="86"/>
+    <sprite n="standing_downleft.png" x="0" y="108" w="48" h="82"/>
+    <sprite n="standing_upleft.png" x="0" y="190" w="48" h="80"/>
+    <sprite n="talking_down_1.png" x="0" y="270" w="46" h="86"/>
+    <sprite n="talking_down_2.png" x="0" y="356" w="46" h="86"/>
+    <sprite n="talking_down_3.png" x="0" y="442" w="46" h="82"/>
+    <sprite n="talking_down_4.png" x="0" y="524" w="46" h="80"/>
+    <sprite n="talking_down_5.png" x="0" y="604" w="46" h="82"/>
+    <sprite n="talking_down_6.png" x="0" y="686" w="46" h="84"/>
+    <sprite n="talking_downleft_1.png" x="0" y="770" w="48" h="82"/>
+    <sprite n="talking_downleft_2.png" x="0" y="852" w="48" h="82"/>
+    <sprite n="talking_downleft_3.png" x="0" y="934" w="48" h="78"/>
+    <sprite n="talking_downleft_4.png" x="0" y="1012" w="48" h="78"/>
+    <sprite n="talking_downleft_5.png" x="0" y="1090" w="48" h="80"/>
+    <sprite n="talking_downleft_6.png" x="0" y="1170" w="48" h="80"/>
+    <sprite n="talking_upleft_1.png" x="0" y="1250" w="48" h="80"/>
+    <sprite n="talking_upleft_2.png" x="0" y="1330" w="48" h="80"/>
+    <sprite n="talking_upleft_3.png" x="0" y="1410" w="48" h="76"/>
+    <sprite n="talking_upleft_4.png" x="0" y="1486" w="50" h="74"/>
+    <sprite n="talking_upleft_5.png" x="0" y="1560" w="50" h="76"/>
+    <sprite n="talking_upleft_6.png" x="0" y="1636" w="48" h="78"/>
 </TextureAtlas>
