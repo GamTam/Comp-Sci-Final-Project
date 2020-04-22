@@ -75,6 +75,7 @@ class Game:
         self.tutorials = False
         self.voidSize = 0.1
         self.void = Void(self, self.voidSize)
+        self.mcMuffins = 1
         self.screen = pg.display.set_mode((width, height))
         self.camera = Camera(self, width, height)
         self.imgRect = pg.rect.Rect(width / 2, height / 2, 0, 0)
@@ -2783,6 +2784,7 @@ class Game:
         self.loadBattle("self.loadTutorialBowser()", luigi=False)
         self.map = Map("bowser's castle")
 
+        self.player.stats["hp"] = self.player.stats["maxHP"]
         self.follower.stats["hp"] = self.follower.stats["maxHP"]
 
         sheet = spritesheet("sprites/bowser.png", "sprites/bowser.xml")
@@ -8147,6 +8149,7 @@ class Game:
                             pickle.dump(self.leader, file)
                             pickle.dump(self.voidSize, file)
                             pickle.dump(self.tutorials, file)
+                            pickle.dump(self.mcMuffins, file)
                         saves = [SaveSelection(self, 1), SaveSelection(self, 2), SaveSelection(self, 3)]
                     if event.key == pg.K_TAB:
                         cursor.kill()
@@ -8198,6 +8201,7 @@ class Game:
             self.leader = pickle.load(file)
             self.voidSize = pickle.load(file)
             self.tutorials = pickle.load(file)
+            self.mcMuffins = pickle.load(file)
         self.currentPoint = 0
         eval(self.room)
         # except:
@@ -8594,7 +8598,7 @@ class Game:
                            """self.setVar('self.game.player.facing = "left"')""",
                            "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id=1)
 
-        McMuffinWarp(self, (1665, 1405), black, "self.game.loadDebugLevel()", -1, "Bowser's Castle")
+        McMuffinWarp(self, (1665, 1405), black, "self.game.loadDebugLevel()", 1, "Cavi Cape")
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width, (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
 
@@ -8654,6 +8658,15 @@ class Game:
         SaveBlock(self, (self.map.width / 2, 256))
 
         RoomTransition(self, self.room, "self.game.loadFlipsideTower()", self.map.width, (self.map.width / 2, (self.map.width / 2) * -1), (2400, 1880))
+
+        broq = BroqueMonsieurShop(self, (3200, 1025), [0, 95.997, "flipside"])
+        broq.shopContents = None
+        broq.text = ["Bonjour monsieur Red and Green!",
+                     "I am Broque Monsieur.",
+                     "I am looking to open un item shop.",
+                     "It will have zee pizaz!/p\nIt will have zee wow!",
+                     "But it iz not open yet./p\nPlease retournez later."]
+        ToadleyOverworld(self, (730, 1343))
 
         Wall(self, 3585, 512, 64, 1086)
         Wall(self, 2752, 512, 64, 1086)
@@ -9518,6 +9531,7 @@ class Game:
                                 self.wrongSound.play()
                             else:
                                 going = False
+                                cursor.kill()
                                 self.menuChooseSound.play()
                                 self.brosAttackSelect(song)
                         if select == 0:
@@ -9527,6 +9541,7 @@ class Game:
                                     canMenu = True
                             if canMenu:
                                 going = False
+                                cursor.kill()
                                 self.menuChooseSound.play()
                                 self.itemSelect(song)
                             else:
@@ -9534,6 +9549,7 @@ class Game:
                         if select == 2:
                             self.menuChooseSound.play()
                             going = False
+                            cursor.kill()
                             self.enemySelect("self.enemyCheck(enemies[0], song=song)", song=song, fadeout=False)
                     if event.key == pg.K_TAB:
                         cursor.kill()

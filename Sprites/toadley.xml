@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:e7fe2102e6ca746e72e241b99c8b6d67:eaa398d9cc92ea3d9cdc7dc4c66278dc:f12a2139786b5fc059fbcfdac19ab29e$ -->
+<!-- $TexturePacker:SmartUpdate:b0eea5360f84a38c414e668cdb7621d8:3e3be663f81f4733c096311aa9866521:f12a2139786b5fc059fbcfdac19ab29e$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -19,27 +19,62 @@ vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
 verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
 triangles  => sprite triangulation, 3 vertex indices per triangle
 -->
-<TextureAtlas imagePath="toadley.png" width="50" height="1714">
+<TextureAtlas imagePath="toadley.png" width="478" height="474">
     <sprite n="shadow.png" x="0" y="0" w="45" h="22"/>
-    <sprite n="standing_down.png" x="0" y="22" w="46" h="86"/>
-    <sprite n="standing_downleft.png" x="0" y="108" w="48" h="82"/>
-    <sprite n="standing_upleft.png" x="0" y="190" w="48" h="80"/>
-    <sprite n="talking_down_1.png" x="0" y="270" w="46" h="86"/>
-    <sprite n="talking_down_2.png" x="0" y="356" w="46" h="86"/>
-    <sprite n="talking_down_3.png" x="0" y="442" w="46" h="82"/>
-    <sprite n="talking_down_4.png" x="0" y="524" w="46" h="80"/>
-    <sprite n="talking_down_5.png" x="0" y="604" w="46" h="82"/>
-    <sprite n="talking_down_6.png" x="0" y="686" w="46" h="84"/>
-    <sprite n="talking_downleft_1.png" x="0" y="770" w="48" h="82"/>
-    <sprite n="talking_downleft_2.png" x="0" y="852" w="48" h="82"/>
-    <sprite n="talking_downleft_3.png" x="0" y="934" w="48" h="78"/>
-    <sprite n="talking_downleft_4.png" x="0" y="1012" w="48" h="78"/>
-    <sprite n="talking_downleft_5.png" x="0" y="1090" w="48" h="80"/>
-    <sprite n="talking_downleft_6.png" x="0" y="1170" w="48" h="80"/>
-    <sprite n="talking_upleft_1.png" x="0" y="1250" w="48" h="80"/>
-    <sprite n="talking_upleft_2.png" x="0" y="1330" w="48" h="80"/>
-    <sprite n="talking_upleft_3.png" x="0" y="1410" w="48" h="76"/>
-    <sprite n="talking_upleft_4.png" x="0" y="1486" w="50" h="74"/>
-    <sprite n="talking_upleft_5.png" x="0" y="1560" w="50" h="76"/>
-    <sprite n="talking_upleft_6.png" x="0" y="1636" w="48" h="78"/>
+    <sprite n="standing_down.png" x="282" y="388" w="46" h="86"/>
+    <sprite n="standing_downleft.png" x="0" y="388" w="48" h="82"/>
+    <sprite n="standing_downright.png" x="144" y="308" w="48" h="80"/>
+    <sprite n="standing_left.png" x="190" y="230" w="48" h="78"/>
+    <sprite n="standing_right.png" x="0" y="230" w="48" h="78"/>
+    <sprite n="standing_up.png" x="142" y="152" w="46" h="76"/>
+    <sprite n="standing_upleft.png" x="0" y="308" w="48" h="80"/>
+    <sprite n="standing_upright.png" x="236" y="152" w="48" h="78"/>
+    <sprite n="talking_down_1.png" x="374" y="388" w="46" h="86"/>
+    <sprite n="talking_down_2.png" x="328" y="388" w="46" h="86"/>
+    <sprite n="talking_down_3.png" x="96" y="388" w="46" h="82"/>
+    <sprite n="talking_down_4.png" x="336" y="308" w="46" h="80"/>
+    <sprite n="talking_down_5.png" x="142" y="388" w="46" h="82"/>
+    <sprite n="talking_down_6.png" x="236" y="388" w="46" h="84"/>
+    <sprite n="talking_downleft_1.png" x="48" y="388" w="48" h="82"/>
+    <sprite n="talking_downleft_2.png" x="188" y="388" w="48" h="82"/>
+    <sprite n="talking_downleft_3.png" x="188" y="152" w="48" h="78"/>
+    <sprite n="talking_downleft_4.png" x="238" y="230" w="48" h="78"/>
+    <sprite n="talking_downleft_5.png" x="382" y="308" w="48" h="80"/>
+    <sprite n="talking_downleft_6.png" x="288" y="308" w="48" h="80"/>
+    <sprite n="talking_downright_1.png" x="192" y="308" w="48" h="80"/>
+    <sprite n="talking_downright_2.png" x="430" y="308" w="48" h="80"/>
+    <sprite n="talking_downright_3.png" x="142" y="230" w="48" h="78"/>
+    <sprite n="talking_downright_4.png" x="386" y="76" w="48" h="76"/>
+    <sprite n="talking_downright_5.png" x="334" y="230" w="48" h="78"/>
+    <sprite n="talking_downright_6.png" x="240" y="308" w="48" h="80"/>
+    <sprite n="talking_left_1.png" x="382" y="230" w="48" h="78"/>
+    <sprite n="talking_left_2.png" x="94" y="152" w="48" h="76"/>
+    <sprite n="talking_left_3.png" x="0" y="76" w="48" h="76"/>
+    <sprite n="talking_left_4.png" x="143" y="0" w="48" h="74"/>
+    <sprite n="talking_left_5.png" x="383" y="0" w="48" h="76"/>
+    <sprite n="talking_left_6.png" x="284" y="152" w="48" h="78"/>
+    <sprite n="talking_right_1.png" x="332" y="152" w="48" h="78"/>
+    <sprite n="talking_right_2.png" x="335" y="0" w="48" h="76"/>
+    <sprite n="talking_right_3.png" x="287" y="0" w="48" h="76"/>
+    <sprite n="talking_right_4.png" x="45" y="0" w="48" h="74"/>
+    <sprite n="talking_right_5.png" x="48" y="76" w="48" h="76"/>
+    <sprite n="talking_right_6.png" x="380" y="152" w="48" h="78"/>
+    <sprite n="talking_up_1.png" x="96" y="230" w="46" h="78"/>
+    <sprite n="talking_up_2.png" x="240" y="76" w="46" h="76"/>
+    <sprite n="talking_up_3.png" x="96" y="76" w="46" h="76"/>
+    <sprite n="talking_up_4.png" x="191" y="0" w="46" h="74"/>
+    <sprite n="talking_up_5.png" x="48" y="152" w="46" h="76"/>
+    <sprite n="talking_up_6.png" x="428" y="152" w="46" h="78"/>
+    <sprite n="talking_upleft_1.png" x="48" y="308" w="48" h="80"/>
+    <sprite n="talking_upleft_2.png" x="96" y="308" w="48" h="80"/>
+    <sprite n="talking_upleft_3.png" x="0" y="152" w="48" h="76"/>
+    <sprite n="talking_upleft_4.png" x="93" y="0" w="50" h="74"/>
+    <sprite n="talking_upleft_5.png" x="336" y="76" w="50" h="76"/>
+    <sprite n="talking_upleft_6.png" x="48" y="230" w="48" h="78"/>
+    <sprite n="talking_upright_1.png" x="430" y="230" w="48" h="78"/>
+    <sprite n="talking_upright_2.png" x="286" y="76" w="50" h="76"/>
+    <sprite n="talking_upright_3.png" x="190" y="76" w="50" h="76"/>
+    <sprite n="talking_upright_4.png" x="237" y="0" w="50" h="74"/>
+    <sprite n="talking_upright_5.png" x="142" y="76" w="48" h="76"/>
+    <sprite n="talking_upright_6.png" x="286" y="230" w="48" h="78"/>
 </TextureAtlas>

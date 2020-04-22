@@ -2389,7 +2389,6 @@ class McMuffinText(pg.sprite.Sprite):
             self.imgRect.center = self.rect.center
 
 
-
 class McMuffinWarp(pg.sprite.Sprite):
     def __init__(self, game, pos, color, warpSpot, world, location):
         self.game = game
@@ -2427,7 +2426,7 @@ class McMuffinWarp(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
 
         if self.game.leader == "mario":
-            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and self.textbox is None and keys[pg.K_m]:
+            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and self.textbox is None and keys[pg.K_m] and self.fade is None:
                 self.textbox = TextBox(self.game, self, self.text, type="board", dir="None", choice=True)
 
         if self.fade is not None:
@@ -2445,10 +2444,10 @@ class McMuffinWarp(pg.sprite.Sprite):
                               ["self.changeSong([0, 95.997, 'flipside'])"],
                               ["self.wait(0.2)"],
                               [
-                                  "self.flipOut([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 5))",
+                                  "self.flipOut([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
                                   "self.command('self.game.cutsceneSprites.remove(self.game.mario)')"],
                               [
-                                  "self.flipOut([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 5))",
+                                  "self.flipOut([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
                                   "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')"],
                               ["self.command('Fadeout(self.game, 5)')"],
                               ["self.wait(5)"]
@@ -2463,7 +2462,7 @@ class McMuffinWarp(pg.sprite.Sprite):
 
                 for event in self.game.event:
                     if event.type == pg.KEYDOWN:
-                        if event.key == pg.K_a or event.key == pg.K_d:
+                        if (event.key == pg.K_a or event.key == pg.K_d) and self.cursor in self.game.cursors:
                             if self.select == 1:
                                 self.select = 0
                             elif self.select == 0:

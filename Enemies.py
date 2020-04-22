@@ -442,7 +442,6 @@ class LinebeckDebug(pg.sprite.Sprite):
         self.imgRect.bottom = self.rect.bottom - 5
         self.imgRect.centerx = self.rect.centerx
         self.canShop = False
-        self.cutscene = None
         self.alpha = 255
         if not hastexted:
             self.counter = 0

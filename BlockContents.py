@@ -88,7 +88,8 @@ class Other(pg.sprite.Sprite):
                        "1-UP": sheet.getImageName("1-UP.png"),
                        "Nut": sheet.getImageName("Nut.png"),
                        "Syrup": sheet.getImageName("Syrup.png"),
-                       "Star Candy": sheet.getImageName("Star Candy.png")}
+                       "Star Candy": sheet.getImageName("Star Candy.png"),
+                       "Attack Piece": sheet.getImageName("Attack Piece.png")}
         if "1-UP" in self.item:
             self.image = self.images["1-UP"]
         elif "Mushroom" in self.item:
@@ -99,6 +100,8 @@ class Other(pg.sprite.Sprite):
             self.image = self.images["Syrup"]
         elif "Star Cand" in self.item:
             self.image = self.images["Star Candy"]
+        elif "Attack Piece" in self.item:
+            self.image = self.images["Attack Piece"]
         self.rect = self.block.rect
         self.imgRect = self.image.get_rect()
         self.imgRect.center = self.block.imgRect.center
@@ -112,9 +115,18 @@ class Other(pg.sprite.Sprite):
         for item in self.game.items:
             if item[0] == self.item:
                 if item[1] < 0:
-                    item[1] = 1
-                else:
-                    item[1] += 1
+                    item[1] = 0
+                item[1] += amount
+
+        for item in self.game.player.attackPieces:
+            if item[0] in self.item:
+                item[1] += amount
+                self.playerItem = item
+
+        for item in self.game.follower.attackPieces:
+            if item[0] in self.item:
+                item[1] += amount
+                self.playerItem = item
 
     def update(self):
         if self.counter < fps:
@@ -133,9 +145,16 @@ class Other(pg.sprite.Sprite):
                 ptext.draw(self.item + "ies X" + str(self.amount), (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
             else:
                 ptext.draw(self.item + "y", (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
-        else:
+        elif "Attack Piece" not in self.item:
             if self.amount > 1:
                 ptext.draw(self.item + "s X" + str(self.amount), (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
             else:
                 ptext.draw(self.item, (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
+        else:
+            if self.amount > 1:
+                ptext.draw(self.item + "s X" + str(self.amount)+ " (" + str(10 - int(self.playerItem[1])) + " left)", (width / 2, height - 46), fontname=dialogueFont, owidth=1,
+                           anchor=(0.5, 0.5), surf=self.game.screen, fontsize=50, color=white)
+            else:
+                ptext.draw(self.item + " (" + str(10 - int(self.playerItem[1])) + " left)", (width / 2, height - 46), fontname=dialogueFont, owidth=1, anchor=(0.5, 0.5),
+                           surf=self.game.screen, fontsize=50, color=white)
 
