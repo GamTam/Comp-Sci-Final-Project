@@ -73,11 +73,6 @@ class MarioUI(pg.sprite.Sprite):
         else:
             hp = [int(i) for i in str(round(self.hp))]
 
-        if self.game.player.abilities[self.game.player.ability] == "jump":
-            self.image = self.sprites[0]
-        elif self.game.player.abilities[self.game.player.ability] == "hammer":
-            self.image = self.sprites[1]
-
         if len(hp) == 1:
             if hp[0] == 0:
                 self.numberImg = self.numbers[0]
@@ -103,7 +98,9 @@ class MarioUI(pg.sprite.Sprite):
             self.numberRect = self.numberImg.get_rect()
             self.numberRect.right = self.rect.right - 65
             self.numberRect.centery = self.rect.bottom - 25
+            self.numberImg1 = None
         elif len(hp) == 2:
+            self.numberImg3 = None
             if hp[0] == 0:
                 self.numberImg1 = self.numbers[0]
             elif hp[0] == 1:
@@ -228,27 +225,28 @@ class MarioUI(pg.sprite.Sprite):
             self.numberRect1.centery = self.rect.bottom - 25
             self.numberRect1.right = self.numberRect2.left
         else:
-            self.numberImg = self.numbers[9]
+            self.numberImg = self.numbers[7]
 
             self.numberRect = self.numberImg.get_rect()
             self.numberRect.right = self.rect.right - 70
             self.numberRect.centery = self.rect.bottom - 25
 
+        if self.game.player.abilities[self.game.player.ability] == "jump":
+            self.image = self.sprites[0]
+        elif self.game.player.abilities[self.game.player.ability] == "hammer":
+            self.image = self.sprites[1]
+
     def draw(self):
-        if self.hp < 0:
-            hp = [0]
-        else:
-            hp = [int(i) for i in str(round(self.hp))]
         self.game.screen.blit(self.image, self.rect)
-        if len(hp) == 1:
+        try:
+            self.game.screen.blit(self.numberImg1, self.numberRect1)
+            self.game.screen.blit(self.numberImg2, self.numberRect2)
+            try:
+                self.game.screen.blit(self.numberImg3, self.numberRect3)
+            except:
+                pass
+        except:
             self.game.screen.blit(self.numberImg, self.numberRect)
-        elif len(hp) == 2:
-            self.game.screen.blit(self.numberImg1, self.numberRect1)
-            self.game.screen.blit(self.numberImg2, self.numberRect2)
-        elif len(hp) == 3:
-            self.game.screen.blit(self.numberImg1, self.numberRect1)
-            self.game.screen.blit(self.numberImg2, self.numberRect2)
-            self.game.screen.blit(self.numberImg3, self.numberRect3)
 
 
 class LuigiUI(pg.sprite.Sprite):
@@ -276,6 +274,12 @@ class LuigiUI(pg.sprite.Sprite):
         self.hp = self.game.follower.stats["hp"]
 
     def update(self):
+        if self.game.follower.abilities[self.game.follower.ability] == "jump":
+            self.image = self.sprites[0]
+        elif self.game.follower.abilities[self.game.follower.ability] == "hammer":
+            self.image = self.sprites[1]
+
+    def draw(self):
         if self.hp > self.game.follower.stats["hp"] and self.speed == 0:
             self.speed = ((self.hp - self.game.follower.stats["hp"]) / 30) * -1
         elif self.hp < self.game.follower.stats["hp"] and self.speed == 0:
@@ -290,17 +294,14 @@ class LuigiUI(pg.sprite.Sprite):
                 self.hp = self.game.follower.stats["hp"]
                 self.speed = 0
 
-        if self.game.follower.abilities[self.game.follower.ability] == "jump":
-            self.image = self.sprites[0]
-        elif self.game.follower.abilities[self.game.follower.ability] == "hammer":
-            self.image = self.sprites[1]
-
         if self.hp < 0:
             hp = [0]
         else:
             hp = [int(i) for i in str(round(self.hp))]
 
         if len(hp) == 1:
+            self.numberImg1 = None
+
             if hp[0] == 0:
                 self.numberImg = self.numbers[0]
             elif hp[0] == 1:
@@ -326,6 +327,7 @@ class LuigiUI(pg.sprite.Sprite):
             self.numberRect.right = self.rect.right - 45
             self.numberRect.centery = self.rect.bottom - 25
         elif len(hp) == 2:
+            self.numberImg3 = None
             if hp[0] == 0:
                 self.numberImg1 = self.numbers[0]
             elif hp[0] == 1:
@@ -449,22 +451,23 @@ class LuigiUI(pg.sprite.Sprite):
             self.numberRect2.centery = self.rect.bottom - 25
             self.numberRect1.centery = self.rect.bottom - 25
             self.numberRect1.right = self.numberRect2.left
-
-    def draw(self):
-        if self.hp < 0:
-            hp = [0]
         else:
-            hp = [int(i) for i in str(round(self.hp))]
+            self.numberImg = self.numbers[9]
+
+            self.numberRect = self.numberImg.get_rect()
+            self.numberRect.right = self.rect.right - 70
+            self.numberRect.centery = self.rect.bottom - 25
+
         self.game.screen.blit(self.image, self.rect)
-        if len(hp) == 1:
+        try:
             self.game.screen.blit(self.numberImg, self.numberRect)
-        elif len(hp) == 2:
+        except:
             self.game.screen.blit(self.numberImg1, self.numberRect1)
             self.game.screen.blit(self.numberImg2, self.numberRect2)
-        elif len(hp) == 3:
-            self.game.screen.blit(self.numberImg1, self.numberRect1)
-            self.game.screen.blit(self.numberImg2, self.numberRect2)
-            self.game.screen.blit(self.numberImg3, self.numberRect3)
+            try:
+                self.game.screen.blit(self.numberImg3, self.numberRect3)
+            except:
+                pass
 
 
 class HitNumbers(pg.sprite.Sprite):

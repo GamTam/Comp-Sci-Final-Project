@@ -1,5 +1,4 @@
 import pickle
-import numpy as np
 import time
 from moviepy.editor import *
 from Settings import *
@@ -56,7 +55,7 @@ class CameraRect:
 
 
 class Map:
-    def __init__(self, mapname, foreground=False, background=False):
+    def __init__(self, mapname, foreground=False, background=None):
         self.image = pg.image.load("sprites/maps/" + mapname + ".png").convert_alpha()
         self.width = self.image.get_width()
         self.height = self.image.get_height()
@@ -65,8 +64,8 @@ class Map:
         if foreground:
             self.foreground = pg.image.load("sprites/maps/" + mapname + "_foreground.png").convert_alpha()
 
-        if background:
-            self.background = pg.image.load("sprites/maps/" + mapname + "_background.png").convert_alpha()
+        if background is not None:
+            self.background = pg.image.load("sprites/maps/" + background + "_background.png").convert_alpha()
 
 
 class Game:
@@ -96,6 +95,8 @@ class Game:
         self.goombaHasTexted = False
         self.player = Mario(self, 0, 0)
         self.follower = Luigi(self, 0, 0)
+        MarioUI(self)
+        LuigiUI(self)
         self.file = 1
         self.song_playing = ""
         self.storeData = {}
@@ -2782,6 +2783,9 @@ class Game:
         self.fadeout = pg.sprite.Group()
 
         self.loadBattle("self.loadTutorialBowser()", luigi=False)
+        self.ui = pg.sprite.Group()
+        MarioUI(self)
+        LuigiUI(self)
         self.map = Map("bowser's castle")
 
         self.player.stats["hp"] = self.player.stats["maxHP"]
@@ -8363,15 +8367,13 @@ class Game:
 
     def loadFlipsideTower(self):
         self.room = "self.loadFlipsideTower()"
-        MarioUI(self)
-        LuigiUI(self)
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
-        self.map = Map("flipside center", background=True)
+        self.map = Map("flipside center", background="Flipside")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
         self.player.rect.center = (self.map.width / 2, 1178)
@@ -8598,7 +8600,7 @@ class Game:
                            """self.setVar('self.game.player.facing = "left"')""",
                            "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id=1)
 
-        McMuffinWarp(self, (1665, 1405), black, "self.game.loadDebugLevel()", 1, "Cavi Cape")
+        McMuffinWarp(self, (1665, 1405), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width, (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
 
@@ -8633,15 +8635,13 @@ class Game:
 
     def loadFlipsideShopping(self):
         self.room = "self.loadFlipsideShopping()"
-        MarioUI(self)
-        LuigiUI(self)
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = pg.sprite.Group()
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
-        self.map = Map("flipside shopping district", background=True)
+        self.map = Map("flipside shopping district", background="Flipside")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
         self.player.rect.center = (self.map.width / 2, 1178)
@@ -8660,13 +8660,14 @@ class Game:
         RoomTransition(self, self.room, "self.game.loadFlipsideTower()", self.map.width, (self.map.width / 2, (self.map.width / 2) * -1), (2400, 1880))
 
         broq = BroqueMonsieurShop(self, (3200, 1025), [0, 95.997, "flipside"])
-        broq.shopContents = None
-        broq.text = ["Bonjour monsieur Red and Green!",
-                     "I am Broque Monsieur.",
-                     "I am looking to open un item shop.",
-                     "It will have zee pizaz!/p\nIt will have zee wow!",
-                     "But it iz not open yet./p\nPlease retournez later."]
-        ToadleyOverworld(self, (730, 1343))
+        todd = ToadleyOverworld(self, (730, 1343))
+        if self.mcMuffins == 1:
+            broq.shopContents = None
+            broq.text = ["Bonjour monsieur Red and Green!",
+                         "I am Broque Monsieur.",
+                         "I am looking to open un item shop.",
+                         "It will have zee pizaz!/p\nIt will have zee wow!",
+                         "But it iz not open yet./p\nPlease retournez later."]
 
         Wall(self, 3585, 512, 64, 1086)
         Wall(self, 2752, 512, 64, 1086)
@@ -8703,6 +8704,49 @@ class Game:
             pass
 
         self.overworld("Flipside", [0, 95.997, "flipside"])
+
+    def loadCaviCapeEnterance(self):
+        self.room = "self.loadCaviCapeEnterance()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = pg.sprite.Group()
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map("Cavi Cape Enterance", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (600, 440)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (600, 440)
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        SaveBlock(self, (680, 280))
+
+        try:
+            self.player.rect.center = self.storeData["mario pos"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+            pass
+
+        self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
 
     def overworld(self, area, songData):
         menud = False

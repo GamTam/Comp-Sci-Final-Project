@@ -299,7 +299,7 @@ class Mario(pg.sprite.Sprite):
         self.prevAbility = 12
         self.abilities = ["jump", "interact", "talk"]
         self.alpha = 255
-        self.stepSound = self.game.coinSound
+        self.stepSound = self.game.stoneSound
         self.walking = False
         self.jumping = False
         self.isHammer = None
@@ -2050,7 +2050,7 @@ class Luigi(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
         pg.sprite.Sprite.__init__(self)
-        self.stepSound = self.game.coinSound
+        self.stepSound = self.game.stoneSound
         self.moveQueue = Q.deque()
         self.hit = False
         self.dead = False
