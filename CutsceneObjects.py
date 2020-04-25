@@ -2,9 +2,11 @@ from Overworld import *
 
 
 class Cutscene:
-    def __init__(self, game, scenes):
+    def __init__(self, game, scenes, parent=None):
         self.over = False
         self.game = game
+        self.game.cutsceneSprites = []
+        self.parent = parent
         self.scenes = scenes
         self.song = None
         self.textbox = [None,
@@ -347,7 +349,6 @@ class LoadCutscene:
         self.scenes = scenes
         self.game.cutscenes.append(self)
         self.id = id
-        self.game.cutsceneSprites = []
 
     def update(self):
         if self.id not in self.game.usedCutscenes:
@@ -1756,8 +1757,8 @@ class starlowCutscene(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game.cutsceneSprites.append(self)
         self.loadImages()
-        self.image = self.game.player.image
-        self.shadow = self.game.player.shadow
+        self.image = self.idleFramesDown[0]
+        self.shadow = self.shadow
         self.rect = self.shadow.get_rect()
         self.rect.center = pos
         self.imgRect = self.image.get_rect()
@@ -1779,12 +1780,40 @@ class starlowCutscene(pg.sprite.Sprite):
                                     sheet.getImageName("starlow_downright_5.png"),
                                     sheet.getImageName("starlow_downright_6.png")]
 
+        self.idleFramesDownLeft = [sheet.getImageName("starlow_downleft_1.png"),
+                                    sheet.getImageName("starlow_downleft_2.png"),
+                                    sheet.getImageName("starlow_downleft_3.png"),
+                                    sheet.getImageName("starlow_downleft_4.png"),
+                                    sheet.getImageName("starlow_downleft_5.png"),
+                                    sheet.getImageName("starlow_downleft_6.png")]
+
         self.idleFramesRight = [sheet.getImageName("starlow_right_1.png"),
                                 sheet.getImageName("starlow_right_2.png"),
                                 sheet.getImageName("starlow_right_3.png"),
                                 sheet.getImageName("starlow_right_4.png"),
                                 sheet.getImageName("starlow_right_5.png"),
                                 sheet.getImageName("starlow_right_6.png")]
+
+        self.idleFramesUp = [sheet.getImageName("starlow_up_1.png"),
+                                sheet.getImageName("starlow_up_2.png"),
+                                sheet.getImageName("starlow_up_3.png"),
+                                sheet.getImageName("starlow_up_4.png"),
+                                sheet.getImageName("starlow_up_5.png"),
+                                sheet.getImageName("starlow_up_6.png")]
+
+        self.idleFramesDown = [sheet.getImageName("starlow_down_1.png"),
+                                sheet.getImageName("starlow_down_2.png"),
+                                sheet.getImageName("starlow_down_3.png"),
+                                sheet.getImageName("starlow_down_4.png"),
+                                sheet.getImageName("starlow_down_5.png"),
+                                sheet.getImageName("starlow_down_6.png")]
+
+        self.idleFramesLeft = [sheet.getImageName("starlow_left_1.png"),
+                                sheet.getImageName("starlow_left_2.png"),
+                                sheet.getImageName("starlow_left_3.png"),
+                                sheet.getImageName("starlow_left_4.png"),
+                                sheet.getImageName("starlow_left_5.png"),
+                                sheet.getImageName("starlow_left_6.png")]
 
         self.idleFramesUpRight = [sheet.getImageName("starlow_upright_1.png"),
                                   sheet.getImageName("starlow_upright_2.png"),
@@ -1799,6 +1828,33 @@ class starlowCutscene(pg.sprite.Sprite):
                                   sheet.getImageName("starlow_upleft_4.png"),
                                   sheet.getImageName("starlow_upleft_5.png"),
                                   sheet.getImageName("starlow_upleft_6.png")]
+
+        self.talkingFramesUp = [sheet.getImageName("starlow_talking_up_1.png"),
+                                   sheet.getImageName("starlow_talking_up_2.png"),
+                                   sheet.getImageName("starlow_talking_up_3.png"),
+                                   sheet.getImageName("starlow_talking_up_4.png"),
+                                   sheet.getImageName("starlow_talking_up_5.png"),
+                                   sheet.getImageName("starlow_talking_up_6.png"),
+                                   sheet.getImageName("starlow_talking_up_7.png"),
+                                   sheet.getImageName("starlow_talking_up_8.png")]
+
+        self.talkingFramesDown = [sheet.getImageName("starlow_talking_down_1.png"),
+                                   sheet.getImageName("starlow_talking_down_2.png"),
+                                   sheet.getImageName("starlow_talking_down_3.png"),
+                                   sheet.getImageName("starlow_talking_down_4.png"),
+                                   sheet.getImageName("starlow_talking_down_5.png"),
+                                   sheet.getImageName("starlow_talking_down_6.png"),
+                                   sheet.getImageName("starlow_talking_down_7.png"),
+                                   sheet.getImageName("starlow_talking_down_8.png")]
+
+        self.talkingFramesLeft = [sheet.getImageName("starlow_talking_left_1.png"),
+                                   sheet.getImageName("starlow_talking_left_2.png"),
+                                   sheet.getImageName("starlow_talking_left_3.png"),
+                                   sheet.getImageName("starlow_talking_left_4.png"),
+                                   sheet.getImageName("starlow_talking_left_5.png"),
+                                   sheet.getImageName("starlow_talking_left_6.png"),
+                                   sheet.getImageName("starlow_talking_left_7.png"),
+                                   sheet.getImageName("starlow_talking_left_8.png")]
 
         self.talkingFramesRight = [sheet.getImageName("starlow_talking_right_1.png"),
                                    sheet.getImageName("starlow_talking_right_2.png"),
@@ -1826,6 +1882,24 @@ class starlowCutscene(pg.sprite.Sprite):
                                      sheet.getImageName("starlow_talking_upleft_6.png"),
                                      sheet.getImageName("starlow_talking_upleft_7.png"),
                                      sheet.getImageName("starlow_talking_upleft_8.png")]
+
+        self.talkingFramesDownRight = [sheet.getImageName("starlow_talking_downright_1.png"),
+                                     sheet.getImageName("starlow_talking_downright_2.png"),
+                                     sheet.getImageName("starlow_talking_downright_3.png"),
+                                     sheet.getImageName("starlow_talking_downright_4.png"),
+                                     sheet.getImageName("starlow_talking_downright_5.png"),
+                                     sheet.getImageName("starlow_talking_downright_6.png"),
+                                     sheet.getImageName("starlow_talking_downright_7.png"),
+                                     sheet.getImageName("starlow_talking_downright_8.png")]
+
+        self.talkingFramesDownLeft = [sheet.getImageName("starlow_talking_downleft_1.png"),
+                                    sheet.getImageName("starlow_talking_downleft_2.png"),
+                                    sheet.getImageName("starlow_talking_downleft_3.png"),
+                                    sheet.getImageName("starlow_talking_downleft_4.png"),
+                                    sheet.getImageName("starlow_talking_downleft_5.png"),
+                                    sheet.getImageName("starlow_talking_downleft_6.png"),
+                                    sheet.getImageName("starlow_talking_downleft_7.png"),
+                                    sheet.getImageName("starlow_talking_downleft_8.png")]
 
         self.shadow = sheet.getImageName("shadow.png")
 
@@ -1863,6 +1937,50 @@ class starlowCutscene(pg.sprite.Sprite):
                         self.currentFrame = 0
                     center = self.imgRect.center
                     self.image = self.talkingFramesDownRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "downleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFramesDownLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesDownLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.talkingFramesDownLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.talkingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "down":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.talkingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.talkingFramesLeft[self.currentFrame]
                     self.imgRect = self.image.get_rect()
                     self.imgRect.center = center
             elif self.facing == "right":
@@ -1910,6 +2028,50 @@ class starlowCutscene(pg.sprite.Sprite):
                     self.image = self.idleFramesDownRight[self.currentFrame]
                     self.imgRect = self.image.get_rect()
                     self.imgRect.center = center
+            elif self.facing == "downleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.idleFramesDownLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.idleFramesDownLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.idleFramesDownLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.idleFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.idleFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.idleFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "down":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.idleFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.idleFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.idleFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.idleFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.idleFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.idleFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
             elif self.facing == "right":
                 if now - self.lastUpdate > 100:
                     self.lastUpdate = now
@@ -1921,7 +2083,7 @@ class starlowCutscene(pg.sprite.Sprite):
                     self.image = self.idleFramesRight[self.currentFrame]
                     self.imgRect = self.image.get_rect()
                     self.imgRect.center = center
-        self.imgRect.bottom = self.rect.top - 25
+        self.imgRect.centery = self.rect.top - 75
         self.imgRect.centerx = self.rect.centerx
 
 
@@ -2390,14 +2552,16 @@ class McMuffinText(pg.sprite.Sprite):
 
 
 class McMuffinWarp(pg.sprite.Sprite):
-    def __init__(self, game, pos, color, warpSpot, world, location):
+    def __init__(self, game, pos, color, warpSpot, world, location, goBack=False):
         self.game = game
-        pg.sprite.Sprite.__init__(self, self.game.blocks, self.game.npcs)
+        pg.sprite.Sprite.__init__(self, self.game.npcs)
         self.game.sprites.append(self)
         self.image = pg.image.load("sprites/Egg McMuffin.png").convert_alpha()
         self.shadow = pg.image.load("sprites/mcMuffin Shadow.png").convert_alpha()
         self.rect = self.shadow.get_rect()
-        self.image.fill(color, special_flags=pg.BLEND_ADD)
+        self.type = "interact"
+        self.color = color
+        self.image.fill(self.color, special_flags=pg.BLEND_ADD)
         self.imgRect = self.image.get_rect()
         self.rect.center = pos
         self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.top - 30
@@ -2411,8 +2575,12 @@ class McMuffinWarp(pg.sprite.Sprite):
         self.fade = None
         self.canTalk = True
         self.select = 0
-        self.text = ["You are about to go to/nworld {}, {}.".format(world, location),
+        self.goBack = goBack
+        if not goBack:
+            self.text = ["You are about to go to/nworld {}, {}.".format(world, location),
                      "/CDo you want to proceed?\n\a\n\a                 YES                        NO"]
+        else:
+            self.text =  ["/CDo you want to return to Flipside?\n\a\n\a                 YES                        NO"]
 
     def update(self):
         self.vy += self.dy
@@ -2428,10 +2596,14 @@ class McMuffinWarp(pg.sprite.Sprite):
         if self.game.leader == "mario":
             if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and self.textbox is None and keys[pg.K_m] and self.fade is None:
                 self.textbox = TextBox(self.game, self, self.text, type="board", dir="None", choice=True)
+        elif self.game.leader == "luigi":
+            if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and self.textbox is None and keys[pg.K_l] and self.fade is None:
+                self.textbox = TextBox(self.game, self, self.text, type="board", dir="None", choice=True)
 
         if self.fade is not None:
             self.game.storeData["mario pos"] = "beef"
             self.game.storeData["luigi pos"] = "beef"
+            self.game.storeData["move"] = Q.deque()
             eval(self.warpSpot)
 
         if self.textbox == "complete":
@@ -2440,8 +2612,8 @@ class McMuffinWarp(pg.sprite.Sprite):
             if self.select == 0:
                 Cutscene(self.game,
                              [["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-                                  "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')"],
-                              ["self.changeSong([0, 95.997, 'flipside'])"],
+                                  "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                               "self.setVar('self.game.muff = EggMcMuffin(self.parent.rect.center, self.parent.color, self.game)')", "self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
                               ["self.wait(0.2)"],
                               [
                                   "self.flipOut([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
@@ -2449,9 +2621,12 @@ class McMuffinWarp(pg.sprite.Sprite):
                               [
                                   "self.flipOut([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
                                   "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')"],
+                              [
+                                  "self.flipOut([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.rect.centerx, self.game.muff.rect.top - 39))",
+                                  "self.command('self.game.cutsceneSprites.remove(self.game.muff)')"],
                               ["self.command('Fadeout(self.game, 5)')"],
                               ["self.wait(5)"]
-                              ])
+                              ], parent=self)
                 self.fade = 5
 
         if self.textbox is not None:

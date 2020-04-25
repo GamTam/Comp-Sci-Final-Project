@@ -325,6 +325,8 @@ voidSprites = [pg.image.load("sprites/the void/1.png").convert_alpha(),
                pg.image.load("sprites/the void/238.png").convert_alpha(),
                pg.image.load("sprites/the void/239.png").convert_alpha()]
 
+voidSpot = (width / 2, 100)
+
 pg.event.clear()
 
 
@@ -334,3 +336,15 @@ def randomNumber(max):
 
 def nor(a, b):
     return not (a or b)
+
+
+def luigiLevelFormula(game):
+    exponent = 1.6
+    baseXp = 10
+    return round(baseXp * (game.follower.stats["level"] ** exponent))
+
+
+def marioLevelFormula(game):
+    exponent = 1.5
+    baseXp = 7
+    return round(baseXp * (game.player.stats["level"] ** exponent))

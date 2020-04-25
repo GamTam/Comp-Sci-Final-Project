@@ -45,7 +45,11 @@ class MarioUI(pg.sprite.Sprite):
                         sheet.getImageName("7_hp.png"),
                         sheet.getImageName("8_hp.png"),
                         sheet.getImageName("9_hp.png")]
-        self.sprites = [pg.image.load("sprites/ui/mariojump.png"), pg.image.load("sprites/ui/mariohammer.png")]
+        self.sprites = [pg.image.load("sprites/ui/mariojump.png"),
+                        pg.image.load("sprites/ui/mariohammer.png"),
+                        pg.image.load("sprites/ui/MarioInteract.png"),
+                        pg.image.load("sprites/ui/MarioTalk.png"),
+                        pg.image.load("sprites/ui/MarioFire.png")]
         self.image = self.sprites[0]
         self.rect = self.image.get_rect()
         self.rect.left = 0
@@ -235,6 +239,12 @@ class MarioUI(pg.sprite.Sprite):
             self.image = self.sprites[0]
         elif self.game.player.abilities[self.game.player.ability] == "hammer":
             self.image = self.sprites[1]
+        elif self.game.player.abilities[self.game.player.ability] == "interact":
+            self.image = self.sprites[2]
+        elif self.game.player.abilities[self.game.player.ability] == "talk":
+            self.image = self.sprites[3]
+        elif self.game.player.abilities[self.game.player.ability] == "fire":
+            self.image = self.sprites[4]
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect)
@@ -265,7 +275,11 @@ class LuigiUI(pg.sprite.Sprite):
                         sheet.getImageName("7_hp.png"),
                         sheet.getImageName("8_hp.png"),
                         sheet.getImageName("9_hp.png")]
-        self.sprites = [pg.image.load("sprites/ui/LuigiJump.png"), pg.image.load("sprites/ui/LuigiHammer.png")]
+        self.sprites = [pg.image.load("sprites/ui/LuigiJump.png"),
+                        pg.image.load("sprites/ui/LuigiHammer.png"),
+                        pg.image.load("sprites/ui/LuigiInteract.png"),
+                        pg.image.load("sprites/ui/LuigiTalk.png"),
+                        pg.image.load("sprites/ui/LuigiThunder.png")]
         self.image = self.sprites[0]
         self.rect = self.image.get_rect()
         self.rect.right = width
@@ -278,6 +292,16 @@ class LuigiUI(pg.sprite.Sprite):
             self.image = self.sprites[0]
         elif self.game.follower.abilities[self.game.follower.ability] == "hammer":
             self.image = self.sprites[1]
+        elif self.game.follower.abilities[self.game.follower.ability] == "interact":
+            self.image = self.sprites[2]
+        elif self.game.follower.abilities[self.game.follower.ability] == "talk":
+            self.image = self.sprites[3]
+        elif self.game.follower.abilities[self.game.follower.ability] == "thunder":
+            self.image = self.sprites[4]
+
+        self.rect = self.image.get_rect()
+        self.rect.right = width
+        self.rect.top = 0
 
     def draw(self):
         if self.hp > self.game.follower.stats["hp"] and self.speed == 0:

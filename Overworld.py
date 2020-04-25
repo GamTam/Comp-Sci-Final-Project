@@ -292,6 +292,7 @@ class Mario(pg.sprite.Sprite):
         self.hit = False
         self.dead = False
         self.hammering = False
+        self.firing = True
         self.canMove = True
         self.canBeHit = True
         self.hitTime = 0
@@ -656,6 +657,12 @@ class Mario(pg.sprite.Sprite):
             self.currentFrame = 0
             self.hammering = False
 
+    def fire(self):
+        self.canBeHit = True
+        if self.alpha != 255:
+            self.alpha = 255
+        self.walking = False
+
     def update(self):
         self.animate()
 
@@ -735,15 +742,19 @@ class Mario(pg.sprite.Sprite):
         for event in self.game.event:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_m:
-                    if self.ability == 0:
+                    if self.abilities[self.ability] == "jump":
                         if not self.jumping and not self.hit and not self.dead and self.canMove:
                             self.jumping = True
                             self.jumpTimer = 1
                             self.airTimer = 0
                             self.game.jumpSound.play()
-                    elif self.ability == 1:
+                    elif self.abilities[self.ability] == "hammer":
                         if not self.hammering and not self.hit and not self.dead and self.canMove:
                             self.hammering = True
+                            self.currentFrame = 0
+                    elif self.abilities[self.ability] == "fire":
+                        if not self.firing and not self.hit and not self.dead and self.canMove:
+                            self.firing = True
                             self.currentFrame = 0
                 if event.key == pg.K_SPACE:
                     if not self.jumping and not self.hit and not self.dead and self.canMove:
@@ -756,12 +767,21 @@ class Mario(pg.sprite.Sprite):
                         self.game.abilityAdvanceSound.play()
                     self.ability = (self.ability + 1) % (len(self.abilities) - 2)
 
+        if self.abilities[self.ability] == "fire":
+            if self.game.leader == "luigi":
+                self.ability = 0
+
         hits = pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1))
-        if hits:
+        if hits and self.game.leader == "mario":
             if hits.canTalk:
-                if self.prevAbility == 12:
-                    self.prevAbility = self.ability
-                self.ability = len(self.abilities) - 1
+                if hits.type == "talk":
+                    if self.prevAbility == 12:
+                        self.prevAbility = self.ability
+                    self.ability = len(self.abilities) - 1
+                elif hits.type == "interact":
+                    if self.prevAbility == 12:
+                        self.prevAbility = self.ability
+                    self.ability = len(self.abilities) - 2
         else:
             if self.prevAbility != 12:
                 self.ability = self.prevAbility
@@ -770,6 +790,8 @@ class Mario(pg.sprite.Sprite):
         if self.hit:
             if self.hammering:
                 self.hammering = False
+            if self.firing:
+                self.firing = False
             if now - self.hitTime > 250:
                 self.hit = False
 
@@ -790,6 +812,8 @@ class Mario(pg.sprite.Sprite):
             self.imgRect.centerx = self.rect.centerx
         if self.hammering:
             self.hammer()
+        elif self.firing:
+            self.fire()
 
         if self.game.follower.hammering:
             self.walking = False
@@ -2198,13 +2222,13 @@ class Luigi(pg.sprite.Sprite):
             for event in self.game.event:
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_l:
-                        if self.ability == 0:
+                        if self.abilities[self.ability] == "jump":
                             if not self.jumping and not self.hit and not self.dead and self.canMove:
                                 self.jumping = True
                                 self.jumpTimer = 1
                                 self.airTimer = 0
                                 self.game.jumpSound.play()
-                        elif self.ability == 1:
+                        elif self.abilities[self.ability] == "hammer":
                             if not self.hammering and not self.hit and not self.dead and self.canMove:
                                 self.hammering = True
                                 self.currentFrame = 0
@@ -2234,6 +2258,26 @@ class Luigi(pg.sprite.Sprite):
             if now - self.hitTime > 1000:
                 self.alpha = 255
                 self.canBeHit = True
+
+        if self.abilities[self.ability] == "thunder":
+            if self.game.leader == "mario":
+                self.ability = 0
+
+        hits = pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1))
+        if hits and self.game.leader == "luigi":
+            if hits.canTalk:
+                if hits.type == "talk":
+                    if self.prevAbility == 12:
+                        self.prevAbility = self.ability
+                    self.ability = len(self.abilities) - 1
+                elif hits.type == "interact":
+                    if self.prevAbility == 12:
+                        self.prevAbility = self.ability
+                    self.ability = len(self.abilities) - 2
+        else:
+            if self.prevAbility != 12:
+                self.ability = self.prevAbility
+                self.prevAbility = 12
 
         if not self.jumping:
             self.imgRect.bottom = self.rect.bottom - 5
@@ -4801,7 +4845,7 @@ class Void(pg.sprite.Sprite):
         round(voidSprites[self.currentFrame].get_width() * self.scale),
         round(voidSprites[self.currentFrame].get_height() * self.scale)))
         self.rect = self.image.get_rect()
-        self.rect.center = (width / 2, 200)
+        self.rect.center = voidSpot
 
     def update(self, size):
         if self.scale > size and self.speed == 0:
@@ -4852,6 +4896,7 @@ class BroqueMonsieurShop(pg.sprite.Sprite):
         self.imgRect.bottom = self.rect.bottom - 5
         self.imgRect.centerx = self.rect.centerx
         self.canShop = False
+        self.type = "talk"
         self.lastUpdate = 0
         self.currentFrame = 0
         self.alpha = 255
@@ -5103,6 +5148,7 @@ class ToadleyOverworld(pg.sprite.Sprite):
         self.textbox = None
         self.game.sprites.append(self)
         self.loadImages()
+        self.type = "talk"
         self.facing = "left"
         self.talking = False
         self.image = self.idleFrames["down"]

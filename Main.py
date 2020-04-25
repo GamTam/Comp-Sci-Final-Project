@@ -39,6 +39,10 @@ class CameraRect:
         self.counter = -17
 
     def update(self, target, speed):
+        if speed == 0:
+            self.counter = speed
+            self.rect.center = target.center
+
         if target != self.prevTarget:
             if self.prevTarget == pg.rect.Rect(0, 0, 0, 0):
                 self.counter = speed
@@ -73,8 +77,8 @@ class Game:
         self.playing = False
         self.tutorials = False
         self.voidSize = 0.1
-        self.void = Void(self, self.voidSize)
         self.mcMuffins = 1
+        self.void = Void(self, self.voidSize)
         self.screen = pg.display.set_mode((width, height))
         self.camera = Camera(self, width, height)
         self.imgRect = pg.rect.Rect(width / 2, height / 2, 0, 0)
@@ -2345,7 +2349,7 @@ class Game:
 
             pg.display.flip()
 
-        text = ["Sorry I'm late,/9/6 there was a surprising\namount of traffic for the road\nto Bowser's Castle."]
+        text = ["Sorry I'm late,/9/6 there was a surprising\namount of traffic on the road\nto Bowser's Castle."]
         self.imgRect = sRect
         textbox = TextBox(self, self, text, sound="starlow")
 
@@ -8206,6 +8210,7 @@ class Game:
             self.voidSize = pickle.load(file)
             self.tutorials = pickle.load(file)
             self.mcMuffins = pickle.load(file)
+        self.void = Void(self, self.voidSize)
         self.currentPoint = 0
         eval(self.room)
         # except:
@@ -8240,6 +8245,7 @@ class Game:
         self.coinSound = pg.mixer.Sound("sounds/coin.ogg")
         self.sandSound = pg.mixer.Sound("sounds/sand footsteps.ogg")
         self.stoneSound = pg.mixer.Sound("sounds/stone footsteps.ogg")
+        self.grassSound = pg.mixer.Sound("sounds/grass footsteps.ogg")
         self.jumpSound = pg.mixer.Sound("sounds/jump.ogg")
         self.battleSound = pg.mixer.Sound("sounds/startbattle.ogg")
         self.marioBattleSound = pg.mixer.Sound("sounds/startBattle_mario.ogg")
@@ -8296,7 +8302,7 @@ class Game:
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
+        self.enemies = []
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
         self.map = Map("Bowser's Castle")
@@ -8358,7 +8364,7 @@ class Game:
             enemy.ID = counter
             counter += 1
 
-        counter = 0
+        counter = -100
         for block in self.blocks:
             block.ID = counter
             counter += 1
@@ -8370,15 +8376,17 @@ class Game:
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
+        self.enemies = []
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
         self.map = Map("flipside center", background="Flipside")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
-        self.player.rect.center = (self.map.width / 2, 1178)
+        self.player.rect.center = (self.map.width / 2, self.map.rect.bottom - 220)
         self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (self.map.width / 2, 1178)
+        self.follower.rect.center = (self.map.width / 2, self.map.rect.bottom - 120)
+        self.player.facing = "up"
+        self.follower.facing = "up"
         self.followerCol = LuigiCollision(self)
         self.playerHammer = HammerCollisionMario(self)
         self.followerHammer = HammerCollisionLuigi(self)
@@ -8387,6 +8395,7 @@ class Game:
         self.follower.stepSound = self.stoneSound
         self.player.stepSound = self.stoneSound
 
+        self.cameraRect.update(self.player.rect, 0)
 
         if not self.tutorials:
             LoadCutscene(self, self.player.rect, True, True,
@@ -8395,7 +8404,7 @@ class Game:
                           ['''self.setVar('self.game.mario.facing = "up"')''', '''self.setVar('self.game.luigi.facing = "up"')''', '''self.setVar('self.game.starlow.facing = "upright"')''', '''self.setVar('self.game.toadley.facing = "down"')'''],
                           ["self.move(self.game.cameraRect, self.game.map.width / 2, 0, False, 2)"],
                           ["self.wait(5)"],
-                          ["self.move(self.game.cameraRect, 0, self.game.map.rect.bottom - 200, True, 300)",  "self.move(self.game.void, width / 2, 200, False, 300, id=1)"],
+                          ["self.move(self.game.cameraRect, 0, self.game.map.rect.bottom - 200, True, 300)",  "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, id=1)"],
                           ["self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], ((self.game.map.width / 2) + 75, self.game.cameraRect.rect.y + 20))", "if self.currentSubscene > 0: self.setVar('self.game.luigi.rect.bottom, self.game.luigi.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
                           ["self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], ((self.game.map.width / 2) - 75, self.game.cameraRect.rect.y + 20))",
                               "if self.currentSubscene > 0: self.setVar('self.game.mario.rect.bottom, self.game.mario.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
@@ -8426,7 +8435,7 @@ class Game:
                               "All worlds,/p All dimensions...",
                               "This void was created by Count/nBleck,/p who wields the/n<<RDark Prognosticus>>."])"""],
                           ["self.move(self.game.cameraRect, 0, 800, True, 300)",
-                           "self.move(self.game.void, width / 2, 200, False, 300, 1)"],
+                           "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, 1)"],
                           ["""self.textBox(self.game.toadley,
                               ["I have been spending all my/nefforts looking over the <<RLight/nPrognosticus>>.",
                               "It is the book of prophesies/nwhich was written against the/ndark one, and says the following:",
@@ -8489,7 +8498,7 @@ class Game:
                           ["self.move(self.game.cameraRect, self.game.map.width / 2, 0, False, 2)"],
                           ["self.wait(5)"],
                           ["self.move(self.game.cameraRect, 0, self.game.map.rect.bottom - 200, True, 300)",
-                           "self.move(self.game.void, width / 2, 200, False, 300, id=1)"],
+                           "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, id=1)"],
                           [
                               "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], ((self.game.map.width / 2) + 75, self.game.cameraRect.rect.y + 20))",
                               "if self.currentSubscene > 0: self.setVar('self.game.luigi.rect.bottom, self.game.luigi.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
@@ -8528,7 +8537,7 @@ class Game:
                                           "All worlds,/p All dimensions...",
                                           "This void was created by Count/nBleck,/p who wields the/n<<RDark Prognosticus>>."])"""],
                           ["self.move(self.game.cameraRect, 0, 800, True, 300)",
-                           "self.move(self.game.void, width / 2, 200, False, 300, 1)"],
+                           "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, 1)"],
                           ["""self.textBox(self.game.toadley,
                                           ["I have been spending all my/nefforts looking over the <<RLight/nPrognosticus>>.",
                                           "It is the book of prophesies/nwhich was written against the/ndark one, and says the following:",
@@ -8588,6 +8597,7 @@ class Game:
                                        ["Well, I guess we have to collect/nall five <<REgg McMuffins>> in order/nto beat Count Bleck.",
                                        "Let's get to it then!",
                                        "Luigi, you press <<GL>> to jump like mario.",
+                                       "And, you can use the menu while you're/nnot in battle!",
                                        "Also, if you press <<REnter>>, you can/nswitch which of you is in front!",
                                        "Ok, now we can get to it!"], sound='starlow')"""],
                           [
@@ -8600,18 +8610,43 @@ class Game:
                            """self.setVar('self.game.player.facing = "left"')""",
                            "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id=1)
 
+        if self.area != "Flipside" and self.area != "title screen":
+            Cutscene(self,
+                     [["self.changeSong([0, 95.997, 'flipside'])"],
+                      ["self.wait(1)"],
+                      ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                       "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                       "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                       "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                       "self.setVar('self.game.muff = EggMcMuffin((520, 640), black, self.game)')"],
+                      ["self.command('self.game.mario.update()')",
+                       "self.command('self.game.luigi.update()')"],
+                      ["self.wait(0.2)"],
+                      [
+                          "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                      ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                      [
+                          "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                      ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                      ["self.wait(0.5)"],
+                      ["self.setVar('self.game.luigi.walking = True')",
+                       "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                      ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+                      ])
+            self.cutsceneSprites = []
+
         McMuffinWarp(self, (1665, 1405), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width, (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
 
-        Wall(self, 256, 1184, 4224, 32)
+        Wall(self, 256, 1248, 4224, 32)
         Wall(self, 224, 1344, 32, 550)
-        Wall(self, 256, 1216, 128, 128)
-        Wall(self, 1152, 1216, 256, 128)
-        Wall(self, 1920, 1216, 256, 128)
-        Wall(self, 2688, 1216, 256, 128)
-        Wall(self, 3456, 1216, 256, 128)
-        Wall(self, 4480, 1216, 128, 128)
+        Wall(self, 256, 1280, 128, 128)
+        Wall(self, 1152, 1280, 256, 128)
+        Wall(self, 1920, 1280, 256, 128)
+        Wall(self, 2688, 1280, 256, 128)
+        Wall(self, 3456, 1280, 256, 128)
+        Wall(self, 4480, 1280, 128, 128)
         Wall(self, 4608, 1344, 32, 550)
 
         try:
@@ -8628,8 +8663,12 @@ class Game:
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
 
+
         except:
-            pass
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
 
         self.overworld("Flipside", [0, 95.997, "flipside"])
 
@@ -8638,7 +8677,7 @@ class Game:
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
+        self.enemies = []
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
         self.map = Map("flipside shopping district", background="Flipside")
@@ -8699,10 +8738,11 @@ class Game:
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
-
         except:
-            pass
+            self.player.moveQueue = Q.deque()
+            self.follower.moveQueue = Q.deque()
 
+        self.cameraRect.update(self.player.rect, 0)
         self.overworld("Flipside", [0, 95.997, "flipside"])
 
     def loadCaviCapeEnterance(self):
@@ -8710,24 +8750,36 @@ class Game:
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
-        self.enemies = pg.sprite.Group()
+        self.enemies = []
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
         self.map = Map("Cavi Cape Enterance", background="Cavi Cape")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
-        self.player.rect.center = (600, 440)
+        self.player.rect.center = (760, 640)
+        self.player.facing = "left"
         self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (600, 440)
+        self.follower.rect.center = (860, 640)
+        self.follower.facing = "left"
         self.followerCol = LuigiCollision(self)
         self.playerHammer = HammerCollisionMario(self)
         self.followerHammer = HammerCollisionLuigi(self)
         self.sprites.append(self.follower)
         self.sprites.append(self.player)
-        self.follower.stepSound = self.stoneSound
-        self.player.stepSound = self.stoneSound
+        self.follower.stepSound = self.grassSound
+        self.player.stepSound = self.grassSound
 
-        SaveBlock(self, (680, 280))
+        SaveBlock(self, (840, 360))
+        McMuffinWarp(self, (680, 640), black,  "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
+        RoomTransition(self, self.room, "self.game.loadCaviCapeRoom1()", 160, (self.map.width + 80, 640), (40, 400))
+
+        Wall(self, 240, 320, 80, 640)
+        Wall(self, 1040, 320, 80, 240)
+        Wall(self, 1040, 720, 80, 240)
+        Wall(self, 320, 240, 720, 80)
+        Wall(self, 320, 960, 720, 80)
+        Wall(self, 1120, 480, 880, 80)
+        Wall(self, 1120, 720, 880, 80)
 
         try:
             self.player.rect.center = self.storeData["mario pos"]
@@ -8744,12 +8796,175 @@ class Game:
                 self.player.moveQueue = self.storeData["move"]
 
         except:
-            pass
 
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+        if self.area != "Cavi Cape" and self.area != "title screen":
+            if 2 in self.usedCutscenes:
+                Cutscene(self,
+                         [["self.changeSong([5.75, 65.468, 'Cavi Cape'])"],
+                          ["self.wait(1)"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')", "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')", "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                           "self.setVar('self.game.muff = EggMcMuffin((680, 640), black, self.game)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                              ],["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                              ],["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          [
+                              "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.rect.centerx, self.game.muff.rect.top - 39))",
+                             ], ["self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                          ["self.wait(0.5)"],
+                          ["self.setVar('self.game.luigi.walking = True')",
+                                  "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60)"],
+                          ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+                          ])
+            else:
+                Cutscene(self,
+                         [["self.changeSong([5.75, 65.468, 'Cavi Cape'])"],
+                          ["self.wait(1)"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                           "self.setVar('self.game.muff = EggMcMuffin((680, 640), black, self.game)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          [
+                              "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.rect.centerx, self.game.muff.rect.top - 39))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                          ["self.wait(0.5)"]
+                          ])
+            LoadCutscene(self, self.player.rect, True, True, [
+                ['self.changeSong([5.75, 65.468, "Cavi Cape"])', "self.command('self.game.cutsceneSprites.append(self.game.mario)')", "self.command('self.game.cutsceneSprites.append(self.game.luigi)')", "self.command('self.game.cutsceneSprites.append(self.game.muff)')",
+                 "self.setVar('self.game.starlow = starlowCutscene(self.game, self.game.player.rect.center)')", "self.command('self.game.starlowTwinkle.play()')","""self.setVar('self.game.starlow.facing = "up"')"""],
+                ["""self.setVar('self.game.mario.facing = "up"')""","""self.setVar('self.game.luigi.facing = "upleft"')"""],
+                ["self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery - 100, False, 30)"],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "down"')"""],
+                ["""self.textBox(self.game.starlow,
+                   ["So this is where the Egg McMuffin/nbrought us..."], sound='starlow')"""],
+                ["""self.setVar('self.game.starlow.facing = "left"')"""],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "down"')"""],
+                ["""self.textBox(self.game.starlow,
+                    ["Well, what are we waiting for?",
+                    "Let's go find the next one!"], sound='starlow')"""],
+                ["self.setVar('self.game.luigi.walking = True')",
+                 """self.setVar('self.game.luigi.facing = "left"')""",
+                 "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 0)",
+                 "self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')",
+                 """self.setVar('self.game.player.facing = "up"')""",
+                 """self.setVar('self.game.follower.facing = "up"')"""]
+            ], id=2)
+            self.cutsceneSprites = []
+        self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
+
+    def loadCaviCapeRoom1(self):
+        self.room = "self.loadCaviCapeRoom1()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map("Cavi Cape Room 1", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (760, 640)
+        self.player.facing = "right"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (860, 640)
+        self.follower.facing = "right"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.grassSound
+        self.player.stepSound = self.grassSound
+
+        Wall(self, 0, 240, 1280, 80)
+        Wall(self, 0, 480, 1120, 80)
+        Wall(self, 480, 880, 640, 80)
+        Wall(self, 1280, 880, 720, 80)
+        Wall(self, 960, 1360, 480, 80)
+        Wall(self, 480, 1600, 480, 80)
+        Wall(self, 1440, 1760, 560, 80)
+        Wall(self, 2000, 1440, 160, 80)
+        Wall(self, 2000, 1680, 160, 80)
+
+        Wall(self, 1040, 480, 80, 480)
+        Wall(self, 1280, 320, 80, 640)
+        Wall(self, 400, 960, 80, 640)
+        Wall(self, 2000, 960, 80, 560)
+        Wall(self, 960, 1360, 80, 240)
+        Wall(self, 1360, 1360, 80, 400)
+
+        RoomTransition(self, self.room, "self.game.loadCaviCapeEnterance()", 160, (-80, 400), (1880, 640))
+        
+        goom = GoombaOverworld()
+        goom.init(self, 720, 1120, "self.loadCaviCapeBattle1G()")
+        goom = GoombaOverworld()
+        goom.init(self, 1760, 1280, "self.loadCaviCapeBattle1G()")
+
+        Block(self, (720, 1440), ["Other(self.game, self, 'Mushroom', 1)"])
+        Block(self, (1360, 1200))
+
+        counter = 1.1
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.001
+
+        counter = 1.1
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.001
+
+        try:
+            self.player.rect.center = self.storeData["mario pos"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
         self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
 
     def overworld(self, area, songData):
         menud = False
+        self.blockContents = pg.sprite.Group()
         self.playsong = True
         self.playing = True
         self.saved = False
@@ -9088,7 +9303,7 @@ class Game:
         Mexp = MenuIcon(self, (750, height / 2), "EXP: " + str(self.player.stats["exp"]), None)
         if self.player.stats["level"] < 100:
             MnextLevel = MenuIcon(self, (750, height / 2 + 40),
-                                  "NEXT LEVEL: " + str(round((4 * (self.player.stats["level"] ** 3)) / 5) + 5), None)
+                                  "NEXT LEVEL: " + str(marioLevelFormula(self)), None)
         else:
             MnextLevel = MenuIcon(self, (750, height / 2 + 40),
                                   "NEXT LEVEL: N/A", None)
@@ -9104,7 +9319,7 @@ class Game:
         Lexp = MenuIcon(self, (750, height / 2), "EXP: " + str(self.follower.stats["exp"]), None)
         if self.follower.stats["level"] < 100:
             LnextLevel = MenuIcon(self, (750, height / 2 + 40),
-                                  "NEXT LEVEL: " + str(round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5),
+                                  "NEXT LEVEL: " + str(luigiLevelFormula(self)),
                                   None)
         else:
             LnextLevel = MenuIcon(self, (750, height / 2 + 40),
@@ -9299,8 +9514,7 @@ class Game:
         self.npcs = pg.sprite.Group()
         self.enemies = []
         self.playsong = True
-        if self.song_playing != "battle":
-            self.firstLoop = True
+        
         bowser = TutorialBowser()
         bowser.init(self, (self.map.width / 2, 1200))
         dir = random.randrange(0, 4)
@@ -9367,8 +9581,7 @@ class Game:
         self.npcs = pg.sprite.Group()
         self.enemies = []
         self.playsong = True
-        if self.song_playing != "battle":
-            self.firstLoop = True
+        
 
         # Top Half Collision
         Wall(self, -50, 1117, 1889, 27)
@@ -9466,6 +9679,88 @@ class Game:
                 menud = False
 
         self.battleOver(luigi=False, tutorial=True)
+
+    def loadCaviCapeBattle1G(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+            
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+        
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        Wall(self, 720, 240, 480, 80)
+        Wall(self, 720, 1600, 480, 80)
+        Wall(self, 320, 640, 400, 80)
+        Wall(self, 1200, 640, 400, 80)
+        Wall(self, 320, 1200, 400, 80)
+        Wall(self, 1200, 1200, 400, 80)
+
+        Wall(self, 240, 720, 80, 480)
+        Wall(self, 1600, 720, 80, 480)
+        Wall(self, 640, 320, 80, 400)
+        Wall(self, 1200, 320, 80, 400)
+        Wall(self, 640, 1200, 80, 400)
+        Wall(self, 1200, 1200, 80, 400)
+
+        self.map = Map("Cavi Cape Battle", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (960, 960)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (960, 960)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
 
     def battle(self, song=None):
         menud = False
@@ -10987,10 +11282,10 @@ class Game:
             self.follower.stats = self.storeData["luigi stats"]
         coincollect.exp = self.coins + self.battleCoins
         self.coins += self.battleCoins
-        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5 and self.player.stats[
+        if self.player.stats["exp"] >= marioLevelFormula(self) and self.player.stats[
             "level"] < 100:
             self.marioLevelUp()
-        elif self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5 and \
+        elif self.follower.stats["exp"] >= luigiLevelFormula(self) and \
                 self.follower.stats["level"] < 100:
             self.luigiLevelUp()
         fade = Fadeout(self)
@@ -11093,9 +11388,10 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             try:
-                self.screen.blit(self.map.background, self.map.rect)
+                self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
+            self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.set_clip(0, expClipAmount, width, height)
             for ui in self.battleEndUI:
@@ -11156,9 +11452,10 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             try:
-                self.screen.blit(self.map.background, self.map.rect)
+                self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
+            self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -11176,10 +11473,10 @@ class Game:
         self.player.stats["pow"] += self.player.statGrowth["pow"]
         self.player.stats["def"] += self.player.statGrowth["def"]
 
-        if self.player.stats["exp"] >= round((4 * (self.player.stats["level"] ** 3)) / 5) + 5 and self.player.stats[
+        if self.player.stats["exp"] >= marioLevelFormula(self) and self.player.stats[
             "level"] < 100:
             self.marioLevelUp(True, mario.currentFrame)
-        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5 and \
+        if self.follower.stats["exp"] >= luigiLevelFormula(self) and \
                 self.follower.stats["level"] < 100:
             self.luigiLevelUp(False, True)
 
@@ -11196,9 +11493,10 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             try:
-                self.screen.blit(self.map.background, self.map.rect)
+                self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
+            self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -11304,9 +11602,10 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             try:
-                self.screen.blit(self.map.background, self.map.rect)
+                self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
+            self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             if not marioBefore:
                 self.screen.set_clip(0, expClipAmount, width, height)
@@ -11373,9 +11672,10 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             try:
-                self.screen.blit(self.map.background, self.map.rect)
+                self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
+            self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -11394,7 +11694,7 @@ class Game:
         self.follower.stats["pow"] += self.follower.statGrowth["pow"]
         self.follower.stats["def"] += self.follower.statGrowth["def"]
 
-        if self.follower.stats["exp"] >= round((4 * (self.follower.stats["level"] ** 3)) / 4.9) + 5 and \
+        if self.follower.stats["exp"] >= luigiLevelFormula(self) and \
                 self.follower.stats["level"] < 100:
             self.luigiLevelUp(True, False, luigi.currentFrame)
 
@@ -11411,9 +11711,10 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             try:
-                self.screen.blit(self.map.background, self.map.rect)
+                self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
+            self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -11490,6 +11791,7 @@ class Game:
 
     def updateBattle(self):
         self.fadeout.update()
+        self.void.update(self.voidSize)
         self.effects.update()
         [sprite.update() for sprite in self.sprites]
         self.ui.update()
@@ -11531,6 +11833,11 @@ class Game:
         sRect = s.get_rect()
         s.fill(black)
         s.set_alpha(125)
+        try:
+            self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
+        except:
+            pass
+        self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         for sprite in self.sprites:
             if sprite.dead:
@@ -11558,6 +11865,12 @@ class Game:
         [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
     def drawBattle(self):
+        try:
+            self.screen.blit(self.map.background, self.map.rect)
+        except:
+            pass
+        self.screen.blit(self.void.image, self.void.rect)
+
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
@@ -11606,6 +11919,11 @@ class Game:
         pg.display.flip()
 
     def drawBattleMenu(self):
+        try:
+            self.screen.blit(self.map.background, self.map.rect)
+        except:
+            pass
+        self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
@@ -11670,6 +11988,7 @@ class Game:
                 self.blit_alpha(self.screen, fx.image, fx.rect, fx.alpha)
 
         [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
+        # [pg.draw.rect(self.screen, sansEye, self.camera.offset(wall.rect)) for wall in self.walls]
 
         pg.display.flip()
 
