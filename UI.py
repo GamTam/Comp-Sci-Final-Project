@@ -58,6 +58,18 @@ class MarioUI(pg.sprite.Sprite):
         self.hp = self.game.player.stats["hp"]
 
     def update(self):
+        if self.game.player.abilities[self.game.player.ability] == "jump":
+            self.image = self.sprites[0]
+        elif self.game.player.abilities[self.game.player.ability] == "hammer":
+            self.image = self.sprites[1]
+        elif self.game.player.abilities[self.game.player.ability] == "interact":
+            self.image = self.sprites[2]
+        elif self.game.player.abilities[self.game.player.ability] == "talk":
+            self.image = self.sprites[3]
+        elif self.game.player.abilities[self.game.player.ability] == "fire":
+            self.image = self.sprites[4]
+
+    def draw(self):
         if self.hp > self.game.player.stats["hp"] and self.speed == 0:
             self.speed = ((self.hp - self.game.player.stats["hp"]) / 30) * -1
         elif self.hp < self.game.player.stats["hp"] and self.speed == 0:
@@ -235,18 +247,6 @@ class MarioUI(pg.sprite.Sprite):
             self.numberRect.right = self.rect.right - 70
             self.numberRect.centery = self.rect.bottom - 25
 
-        if self.game.player.abilities[self.game.player.ability] == "jump":
-            self.image = self.sprites[0]
-        elif self.game.player.abilities[self.game.player.ability] == "hammer":
-            self.image = self.sprites[1]
-        elif self.game.player.abilities[self.game.player.ability] == "interact":
-            self.image = self.sprites[2]
-        elif self.game.player.abilities[self.game.player.ability] == "talk":
-            self.image = self.sprites[3]
-        elif self.game.player.abilities[self.game.player.ability] == "fire":
-            self.image = self.sprites[4]
-
-    def draw(self):
         self.game.screen.blit(self.image, self.rect)
         try:
             self.game.screen.blit(self.numberImg1, self.numberRect1)
@@ -351,6 +351,7 @@ class LuigiUI(pg.sprite.Sprite):
             self.numberRect.right = self.rect.right - 45
             self.numberRect.centery = self.rect.bottom - 25
         elif len(hp) == 2:
+            self.numberImg = None
             self.numberImg3 = None
             if hp[0] == 0:
                 self.numberImg1 = self.numbers[0]

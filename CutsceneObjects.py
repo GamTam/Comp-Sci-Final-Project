@@ -254,9 +254,6 @@ class Cutscene:
             self.move(self.game.mcMuffin, width / 2, (height / 2) + 80, False, round(fps * 6.1), 2)
             self.move(self.game.mario, 460, 250, False, round(fps * 6.1), 0)
             self.move(self.game.luigi, 780, 250, False, round(fps * 6.1), 1)
-            print(self.points[0][0][0] - self.points[0][-1][0], self.points[0][0][1] - self.points[0][-1][1])
-            print(self.points[1][0][0] - self.points[1][-1][0], self.points[1][0][1] - self.points[1][-1][1])
-            print(self.points[2][0][0] - self.points[2][-1][0], self.points[2][0][1] - self.points[2][-1][1])
             Fadeout(self.game, 1)
         if self.game.song_playing != "mcMuffin Get":
             self.prevSong = self.song.copy()
@@ -2604,6 +2601,7 @@ class McMuffinWarp(pg.sprite.Sprite):
             self.game.storeData["mario pos"] = "beef"
             self.game.storeData["luigi pos"] = "beef"
             self.game.storeData["move"] = Q.deque()
+            self.game.currentPoint = 0
             eval(self.warpSpot)
 
         if self.textbox == "complete":

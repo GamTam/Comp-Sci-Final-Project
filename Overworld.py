@@ -259,6 +259,242 @@ class Hammer(pg.sprite.Sprite):
                 self.imgRect.center = center
 
 
+class Fireball(pg.sprite.Sprite):
+    def __init__(self, game, parent):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.game.fireballSound.play()
+        self.dead = False
+        self.parent = parent
+        self.game.sprites.append(self)
+        self.game.entities.append(self)
+        self.alpha = 255
+        self.currentFrame = 0
+        self.offset = 20
+        self.maxOffset = 50
+        self.bounceSpeed = 5
+        self.speed = 7
+        self.vx = 0
+        self.vy = 0
+
+        if parent.facing == "left":
+            self.vx = -self.speed
+        elif parent.facing == "right":
+            self.vx = self.speed
+        elif parent.facing == "up":
+            self.vy = -self.speed
+        elif parent.facing == "down":
+            self.vy = self.speed
+        elif parent.facing == "upleft":
+            self.vy = -self.speed
+            self.vx = -self.speed
+        elif parent.facing == "upright":
+            self.vy = -self.speed
+            self.vx = self.speed
+        elif parent.facing == "downleft":
+            self.vy = self.speed
+            self.vx = -self.speed
+        elif parent.facing == "downright":
+            self.vy = self.speed
+            self.vx = self.speed
+
+        self.loadImages()
+        self.image = self.images[0]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = self.parent.rect.center
+        self.imgRect.centerx, self.imgRect.centery = self.rect.centerx, self.rect.centery - self.offset
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/fireball.png", "sprites/fireball.xml")
+
+        self.images = [sheet.getImageName("1.png"),
+                       sheet.getImageName("2.png"),
+                       sheet.getImageName("3.png"),
+                       sheet.getImageName("4.png"),
+                       sheet.getImageName("5.png"),
+                       sheet.getImageName("6.png"),
+                       sheet.getImageName("7.png"),
+                       sheet.getImageName("8.png"),
+                       sheet.getImageName("9.png"),
+                       sheet.getImageName("10.png"),
+                       sheet.getImageName("11.png"),
+                       sheet.getImageName("12.png"),
+                       sheet.getImageName("13.png"),
+                       sheet.getImageName("14.png"),
+                       sheet.getImageName("15.png"),
+                       sheet.getImageName("16.png"),
+                       sheet.getImageName("17.png"),
+                       sheet.getImageName("18.png"),
+                       sheet.getImageName("19.png"),
+                       sheet.getImageName("20.png"),
+                       sheet.getImageName("21.png"),
+                       sheet.getImageName("22.png"),
+                       sheet.getImageName("23.png"),
+                       sheet.getImageName("24.png"),
+                       sheet.getImageName("25.png"),
+                       sheet.getImageName("26.png"),
+                       sheet.getImageName("27.png"),
+                       sheet.getImageName("28.png"),
+                       sheet.getImageName("29.png"),
+                       sheet.getImageName("30.png")]
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+    def update(self):
+        if self.currentFrame < len(self.images) - 1:
+            self.currentFrame = (self.currentFrame + 1) % (len(self.images))
+        else:
+            self.currentFrame = 0
+        center = self.imgRect.center
+        self.image = self.images[self.currentFrame]
+        self.imgRect = self.image.get_rect()
+        self.imgRect.center = center
+
+        self.rect.x += self.vx
+        self.rect.y += self.vy
+
+        for wall in self.game.walls:
+            if pg.sprite.collide_rect(self, wall):
+                self.dead = True
+
+        if self.rect.right < 0 or self.rect.left > self.game.map.width or self.rect.top > self.game.map.height + 100 or self.rect.bottom < 0:
+                self.dead = True
+
+        if self.dead:
+            self.game.sprites.remove(self)
+            self.game.entities.remove(self)
+            self.game.fireballHitSound.play()
+            self.parent.fireball = None
+            self.parent.firing = False
+
+        self.offset += self.bounceSpeed
+        if self.offset >= self.maxOffset or self.offset <= 0:
+            self.bounceSpeed *= -1
+
+        self.imgRect.centerx = self.rect.centerx
+        self.imgRect.bottom = self.rect.centery - self.offset + 10
+
+
+class Lightning(pg.sprite.Sprite):
+    def __init__(self, game, parent):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.dead = False
+        self.playedThunderSound = False
+        self.parent = parent
+        self.game.sprites.append(self)
+        self.game.entities.append(self)
+        self.alpha = 255
+        self.currentFrame = 0
+        self.maxOffset = 50
+        self.bounceSpeed = 5
+        self.speed = 7
+        self.vx = 0
+        self.vy = 0
+
+        if parent.facing == "left":
+            self.vx = -self.speed
+        elif parent.facing == "right":
+            self.vx = self.speed
+        elif parent.facing == "up":
+            self.vy = -self.speed
+        elif parent.facing == "down":
+            self.vy = self.speed
+        elif parent.facing == "upleft":
+            self.vy = -self.speed
+            self.vx = -self.speed
+        elif parent.facing == "upright":
+            self.vy = -self.speed
+            self.vx = self.speed
+        elif parent.facing == "downleft":
+            self.vy = self.speed
+            self.vx = -self.speed
+        elif parent.facing == "downright":
+            self.vy = self.speed
+            self.vx = self.speed
+
+        self.images = lightningSprites
+        self.shadow = pg.image.load("sprites/lightning/shadow.png").convert_alpha()
+        self.image = self.images[0]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = self.parent.rect.center
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.centery
+        self.shootCounter = 0
+        self.stop = False
+        self.armed = False
+        self.moveCounter = 0
+        self.shooting = False
+
+    def update(self):
+        if self.shooting:
+            if self.currentFrame < len(self.images) - 1:
+                self.currentFrame = (self.currentFrame + 1) % (len(self.images))
+            else:
+                self.currentFrame = len(self.images) - 1
+                self.dead = True
+            center = self.imgRect.center
+            self.image = self.images[self.currentFrame]
+            self.imgRect = self.image.get_rect()
+            self.imgRect.center = center
+
+        if not self.shooting:
+            if self.moveCounter <= fps * 5:
+                self.rect.x += self.vx
+                self.rect.y += self.vy
+            elif self.moveCounter <= fps * 8:
+                self.rect.x += self.vx / 2
+                self.rect.y += self.vy / 2
+            elif self.moveCounter <= fps * 10:
+                self.rect.x += self.vx / 4
+                self.rect.y += self.vy / 4
+            else:
+                self.armed = True
+                self.moveCounter = fps * 10
+        elif not self.playedThunderSound:
+            self.game.thunderSound.play()
+            self.playedThunderSound = True
+
+        self.moveCounter += 1
+
+        for wall in self.game.walls:
+            if pg.sprite.collide_rect(self, wall):
+                if self.rect.left < wall.rect.right or self.rect.right > wall.rect.left:
+                    self.vx *= -1
+                if self.rect.top < wall.rect.bottom or self.rect.bottom > wall.rect.top:
+                    self.vy *= -1
+
+                self.rect.x += self.vx
+                self.rect.y += self.vy
+
+        if self.armed:
+            self.shootCounter += 1
+            if self.shootCounter >= fps * 60:
+                self.moveCounter = fps * 10
+                self.shooting = True
+
+        for enemy in self.game.enemies:
+            if pg.sprite.collide_rect(self, enemy):
+                self.shooting = True
+
+        if self.rect.right < 0 or self.rect.left > self.game.map.width or self.rect.top > self.game.map.height + 100 or self.rect.bottom < 0:
+                self.dead = True
+
+        if self.dead:
+            self.game.sprites.remove(self)
+            self.game.entities.remove(self)
+            self.parent.lightning = None
+            self.parent.lightninging = False
+
+        if self.shooting:
+            self.imgRect.centerx = self.rect.centerx
+            self.imgRect.bottom = self.rect.centery + 5
+        else:
+            self.imgRect.centerx = -1000
+            self.imgRect.centery = -1000
+
+
 class MarioCollision(pg.sprite.Sprite):
     def __init__(self, game):
         self.game = game
@@ -292,7 +528,7 @@ class Mario(pg.sprite.Sprite):
         self.hit = False
         self.dead = False
         self.hammering = False
-        self.firing = True
+        self.firing = False
         self.canMove = True
         self.canBeHit = True
         self.hitTime = 0
@@ -304,6 +540,7 @@ class Mario(pg.sprite.Sprite):
         self.walking = False
         self.jumping = False
         self.isHammer = None
+        self.fireball = None
         self.jumpTimer = 0
         self.airTimer = 0
         self.facing = "right"
@@ -313,6 +550,7 @@ class Mario(pg.sprite.Sprite):
         self.shadow = self.shadowFrames["normal"]
         self.lastUpdate = 0
         self.currentFrame = 0
+        self.fireCounter = 0
         self.speed = playerSpeed
         self.imgRect = self.image.get_rect()
         self.rect = self.shadow.get_rect()
@@ -341,6 +579,15 @@ class Mario(pg.sprite.Sprite):
                                sheet.getImageName("mario_standing_upright.png"),
                                sheet.getImageName("mario_standing_downleft.png"),
                                sheet.getImageName("mario_standing_upleft.png")]
+
+        self.fireFrames = [sheet.getImageName("mario_fire_up.png"),
+                               sheet.getImageName("mario_fire_down.png"),
+                               sheet.getImageName("mario_fire_left.png"),
+                               sheet.getImageName("mario_fire_right.png"),
+                               sheet.getImageName("mario_fire_downright.png"),
+                               sheet.getImageName("mario_fire_upright.png"),
+                               sheet.getImageName("mario_fire_downleft.png"),
+                               sheet.getImageName("mario_fire_upleft.png")]
 
         self.walkingFramesUp = [sheet.getImageName("mario_walking_up_1.png"),
                                 sheet.getImageName("mario_walking_up_2.png"),
@@ -648,7 +895,7 @@ class Mario(pg.sprite.Sprite):
         self.canBeHit = True
         if self.alpha != 255:
             self.alpha = 255
-        if self.isHammer == None:
+        if self.isHammer is None:
             self.isHammer = Hammer(self.game, self)
         self.walking = False
         if self.currentFrame < len(self.hammerFramesLeft) - 1:
@@ -661,7 +908,20 @@ class Mario(pg.sprite.Sprite):
         self.canBeHit = True
         if self.alpha != 255:
             self.alpha = 255
+        if self.fireball is None:
+            self.fireball = Fireball(self.game, self)
         self.walking = False
+
+        self.fireCounter += 1
+
+        if self.fireCounter >= fps / 2:
+            self.fireCounter = 0
+            self.firing = False
+
+        if self.fireball not in self.game.entities:
+            self.fireCounter = 0
+            self.firing = False
+            self.fireball = None
 
     def update(self):
         self.animate()
@@ -680,7 +940,7 @@ class Mario(pg.sprite.Sprite):
 
         if self.game.leader == "mario":
             if not self.dead and self.canMove and not self.hammering:
-                if not self.hit and not self.game.follower.hit and not self.game.follower.hammering:
+                if not self.hit and not self.game.follower.hit and not self.game.follower.hammering and not self.firing:
                     if self.jumping and not hits:
                         if keys[pg.K_w]:
                             self.vy = -playerSpeed
@@ -810,6 +1070,7 @@ class Mario(pg.sprite.Sprite):
         else:
             self.jump()
             self.imgRect.centerx = self.rect.centerx
+
         if self.hammering:
             self.hammer()
         elif self.firing:
@@ -1396,6 +1657,47 @@ class Mario(pg.sprite.Sprite):
                             self.image = self.hammerFramesDownright[self.currentFrame]
                             self.imgRect = self.image.get_rect()
                             self.imgRect.center = center
+                elif self.firing:
+                    if self.facing == "up":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[0]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "down":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[1]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "left":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[2]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "right":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[3]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "downright":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[4]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "upright":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[5]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "downleft":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[6]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "upleft":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[7]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
                 elif not self.jumping:
                     if keys[pg.K_w] and keys[pg.K_d]:
                         self.facing = "upright"
@@ -2095,6 +2397,9 @@ class Luigi(pg.sprite.Sprite):
         self.canBeHit = True
         self.jumpTimer = 0
         self.airTimer = 0
+        self.lightninging = False
+        self.lightning = None
+        self.lightningCounter = 0
         self.image = self.standingFrames[0]
         self.shadow = self.shadowFrames["normal"]
         self.imgRect = self.image.get_rect()
@@ -2124,6 +2429,25 @@ class Luigi(pg.sprite.Sprite):
         else:
             self.currentFrame = 0
             self.hammering = False
+
+    def lightningFire(self):
+        self.canBeHit = True
+        if self.alpha != 255:
+            self.alpha = 255
+        if self.lightning is None:
+            self.lightning = Lightning(self.game, self)
+        self.walking = False
+
+        self.lightningCounter += 1
+
+        if self.lightningCounter >= fps / 2:
+            self.lightningCounter = 0
+            self.lightninging = False
+
+        if self.lightning not in self.game.entities:
+            self.lightning = None
+            self.lightninging = False
+            self.lightningCounter = 0
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
@@ -2168,6 +2492,8 @@ class Luigi(pg.sprite.Sprite):
             self.game.leader = "mario"
         self.animate()
 
+        self.vx, self.vy = 0, 0
+
         now = pg.time.get_ticks()
         keys = pg.key.get_pressed()
         if self.game.leader == "mario" and not self.dead:
@@ -2181,8 +2507,7 @@ class Luigi(pg.sprite.Sprite):
                         self.rect.x = self.moveQueue.popleft()
                         self.rect.y = self.moveQueue.popleft()
                         self.facing = self.moveQueue.popleft()
-        elif self.game.leader == "luigi" and self.canMove and not self.hammering and not self.game.player.hammering:
-            self.vx, self.vy = 0, 0
+        elif self.game.leader == "luigi" and self.canMove and not self.hammering and not self.game.player.hammering and not self.lightninging:
             if not self.hit and self.canMove:
                 if keys[pg.K_w]:
                     self.vy = -playerSpeed
@@ -2231,6 +2556,10 @@ class Luigi(pg.sprite.Sprite):
                         elif self.abilities[self.ability] == "hammer":
                             if not self.hammering and not self.hit and not self.dead and self.canMove:
                                 self.hammering = True
+                                self.currentFrame = 0
+                        elif self.abilities[self.ability] == "thunder":
+                            if not self.lightninging and not self.hit and not self.dead and self.canMove:
+                                self.lightninging = True
                                 self.currentFrame = 0
                     if event.key == pg.K_SPACE:
                         if not self.jumping and not self.hit and not self.dead and self.canMove:
@@ -2285,8 +2614,11 @@ class Luigi(pg.sprite.Sprite):
         else:
             self.jump()
             self.imgRect.centerx = self.rect.centerx
+
         if self.hammering:
             self.hammer()
+        elif self.lightninging:
+            self.lightningFire()
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
@@ -2321,6 +2653,15 @@ class Luigi(pg.sprite.Sprite):
                                sheet.getImageName("luigi_standing_upright.png"),
                                sheet.getImageName("luigi_standing_downleft.png"),
                                sheet.getImageName("luigi_standing_upleft.png")]
+
+        self.fireFrames = [sheet.getImageName("luigi_fire_up.png"),
+                           sheet.getImageName("luigi_fire_down.png"),
+                           sheet.getImageName("luigi_fire_left.png"),
+                           sheet.getImageName("luigi_fire_right.png"),
+                           sheet.getImageName("luigi_fire_downright.png"),
+                           sheet.getImageName("luigi_fire_upright.png"),
+                           sheet.getImageName("luigi_fire_downleft.png"),
+                           sheet.getImageName("luigi_fire_upleft.png")]
 
         self.walkingFramesUp = [sheet.getImageName("luigi_walking_up_1.png"),
                                 sheet.getImageName("luigi_walking_up_2.png"),
@@ -3145,6 +3486,47 @@ class Luigi(pg.sprite.Sprite):
                             self.image = self.hammerFramesDownright[self.currentFrame]
                             self.imgRect = self.image.get_rect()
                             self.imgRect.center = center
+                elif self.lightninging:
+                    if self.facing == "up":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[0]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "down":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[1]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "left":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[2]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "right":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[3]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "downright":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[4]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "upright":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[5]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "downleft":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[6]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
+                    if self.facing == "upleft":
+                        center = self.imgRect.center
+                        self.image = self.fireFrames[7]
+                        self.imgRect = self.image.get_rect()
+                        self.imgRect.center = center
                 elif not self.jumping:
                     if keys[pg.K_w] and keys[pg.K_d]:
                         self.facing = "upright"
@@ -4026,6 +4408,9 @@ class Block(pg.sprite.Sprite):
         self.imgRect = self.image.get_rect()
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.centery = self.rect.centery - 200
+        self.contents = [content for content in self.contents if content != ""]
+        if len(self.contents) == 0:
+            self.contents = ["Coin(self.game, self)"]
 
     def loadImages(self):
         sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
@@ -4204,6 +4589,9 @@ class MarioBlock(pg.sprite.Sprite):
         self.imgRect = self.image.get_rect()
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.centery = self.rect.centery - 200
+        self.contents = [content for content in self.contents if content != ""]
+        if len(self.contents) == 0:
+            self.contents = ["Coin(self.game, self)"]
 
     def loadImages(self):
         sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
@@ -4292,6 +4680,9 @@ class LuigiBlock(pg.sprite.Sprite):
         self.imgRect = self.image.get_rect()
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.centery = self.rect.centery - 200
+        self.contents = [content for content in self.contents if content != ""]
+        if len(self.contents) == 0:
+            self.contents = ["Coin(self.game, self)"]
 
     def loadImages(self):
         sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
@@ -4628,7 +5019,7 @@ class TextBox(pg.sprite.Sprite):
                                surf=self.game.screen,
                                fontname=dialogueFont, fontsize=95, color=black, background=(225, 223, 225),
                                anchor=(0.5, 0))
-            self.game.screen.set_clip(None)
+            self.game.screen.set_clip(0, 0, width, height)
             if self.currentCharacter < len(self.text[self.page]) and not self.advancing:
                 for event in self.game.event:
                     if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
@@ -4775,13 +5166,16 @@ class MiniTextbox(pg.sprite.Sprite):
 
 
 class RoomTransition:
-    def __init__(self, game, initialRoom, room, size, pos, playerPos):
+    def __init__(self, game, initialRoom, room, size, pos, playerPos, width=None, height=None):
         self.game = game
         self.game.transistors.append(self)
         self.initialRoom = initialRoom
         self.room = room
-        self.rect = pg.rect.Rect(0, 0, size, size)
-        self.rect.center = pos
+        if width is None:
+            self.rect = pg.rect.Rect(0, 0, size, size)
+            self.rect.center = pos
+        else:
+            self.rect = pg.rect.Rect(pos[0], pos[1], width, height)
         self.playerPos = playerPos
         self.fadeout = None
 
@@ -4791,12 +5185,16 @@ class RoomTransition:
                 if self.fadeout == None:
                     self.game.player.canMove = False
                     self.game.follower.canMove = False
+                    self.game.player.walking = False
+                    self.game.follower.walking = False
                     self.fadeout = Fadeout(self.game, 10)
         if self.game.leader == "luigi":
             if self.rect.colliderect(self.game.follower.rect):
                 if self.fadeout == None:
                     self.game.player.canMove = False
                     self.game.follower.canMove = False
+                    self.game.player.walking = False
+                    self.game.follower.walking = False
                     self.fadeout = Fadeout(self.game, 10)
 
         if self.fadeout is not None:
@@ -4813,6 +5211,9 @@ class RoomTransition:
                 self.game.player.canMove = True
                 self.game.follower.canMove = True
                 eval(self.room)
+
+        if self.initialRoom != self.game.room:
+            self.game.transistors.remove(self)
 
 
 class Decoration(pg.sprite.Sprite):

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:26c1ec5162c4a95511d6d3c5e3d91726:02ecba007585836c99a320caf109bbcc:a4d7bce03b6669a0116dd24a0455bec9$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="fireball.png" width="1619" height="55">
+    <sprite n="1.png" x="0" y="0" w="56" h="52"/>
+    <sprite n="2.png" x="56" y="0" w="54" h="51"/>
+    <sprite n="3.png" x="110" y="0" w="52" h="51"/>
+    <sprite n="4.png" x="162" y="0" w="52" h="51"/>
+    <sprite n="5.png" x="214" y="0" w="53" h="52"/>
+    <sprite n="6.png" x="267" y="0" w="53" h="54"/>
+    <sprite n="7.png" x="320" y="0" w="51" h="55"/>
+    <sprite n="8.png" x="371" y="0" w="52" h="54"/>
+    <sprite n="9.png" x="423" y="0" w="53" h="54"/>
+    <sprite n="10.png" x="476" y="0" w="53" h="53"/>
+    <sprite n="11.png" x="529" y="0" w="52" h="53"/>
+    <sprite n="12.png" x="581" y="0" w="52" h="53"/>
+    <sprite n="13.png" x="633" y="0" w="52" h="53"/>
+    <sprite n="14.png" x="685" y="0" w="53" h="53"/>
+    <sprite n="15.png" x="738" y="0" w="54" h="52"/>
+    <sprite n="16.png" x="792" y="0" w="55" h="53"/>
+    <sprite n="17.png" x="847" y="0" w="53" h="52"/>
+    <sprite n="18.png" x="900" y="0" w="53" h="52"/>
+    <sprite n="19.png" x="953" y="0" w="53" h="52"/>
+    <sprite n="20.png" x="1006" y="0" w="52" h="52"/>
+    <sprite n="21.png" x="1058" y="0" w="51" h="54"/>
+    <sprite n="22.png" x="1109" y="0" w="51" h="53"/>
+    <sprite n="23.png" x="1160" y="0" w="51" h="53"/>
+    <sprite n="24.png" x="1211" y="0" w="51" h="54"/>
+    <sprite n="25.png" x="1262" y="0" w="51" h="53"/>
+    <sprite n="26.png" x="1313" y="0" w="50" h="52"/>
+    <sprite n="27.png" x="1363" y="0" w="51" h="50"/>
+    <sprite n="28.png" x="1414" y="0" w="53" h="52"/>
+    <sprite n="29.png" x="1467" y="0" w="55" h="54"/>
+    <sprite n="30.png" x="1522" y="0" w="56" h="53"/>
+    <sprite n="shadow.png" x="1578" y="0" w="41" h="30"/>
+</TextureAtlas>
