@@ -845,6 +845,7 @@ class Fadeout(pg.sprite.Sprite):
         self.speed = speed
         self.image = pg.Surface((self.game.screen.get_width(), self.game.screen.get_height()))
         self.rect = self.image.get_rect()
+        self.imgRect = self.rect
         self.image.fill(black)
         self.alpha = 1
         self.image.set_alpha(self.alpha)

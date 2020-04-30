@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:93137a34e7a4ddc98700f4bddc970e43:e664f2b3904a8f004097de9a2fe16e11:f50082f42bd026b8575ce32aba5f421a$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="Mammoshka Battle.png" width="1908" height="1886">
+    <sprite n="charging_1.png" x="394" y="0" w="210" h="254" pX="0.5" pY="0.5"/>
+    <sprite n="charging_2.png" x="1072" y="256" w="214" h="260" pX="0.5" pY="0.5"/>
+    <sprite n="charging_3.png" x="1620" y="0" w="224" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="charging_4.png" x="858" y="256" w="214" h="260" pX="0.5" pY="0.5"/>
+    <sprite n="charging_5.png" x="0" y="256" w="224" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="charging_6.png" x="1286" y="256" w="220" h="260" pX="0.5" pY="0.5"/>
+    <sprite n="charging_7.png" x="1208" y="0" w="208" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="charging_8.png" x="654" y="256" w="204" h="258" pX="0.5" pY="0.5"/>
+    <sprite n="charging_9.png" x="604" y="0" w="200" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="charging_10.png" x="1416" y="0" w="204" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="hit.png" x="422" y="1600" w="244" h="278" pX="0.5" pY="0.5"/>
+    <sprite n="idle_1.png" x="824" y="1324" w="206" h="274" pX="0.5" pY="0.5"/>
+    <sprite n="idle_2.png" x="1030" y="1324" w="206" h="274" pX="0.5" pY="0.5"/>
+    <sprite n="idle_3.png" x="1680" y="1052" w="206" h="272" pX="0.5" pY="0.5"/>
+    <sprite n="idle_4.png" x="422" y="1052" w="206" h="270" pX="0.5" pY="0.5"/>
+    <sprite n="idle_5.png" x="1448" y="782" w="206" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="idle_6.png" x="828" y="782" w="206" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="idle_7.png" x="834" y="1052" w="206" h="270" pX="0.5" pY="0.5"/>
+    <sprite n="idle_8.png" x="412" y="1324" w="206" h="272" pX="0.5" pY="0.5"/>
+    <sprite n="idle_9.png" x="618" y="1324" w="206" h="274" pX="0.5" pY="0.5"/>
+    <sprite n="idle_10.png" x="1236" y="1324" w="206" h="274" pX="0.5" pY="0.5"/>
+    <sprite n="idle_11.png" x="206" y="1324" w="206" h="272" pX="0.5" pY="0.5"/>
+    <sprite n="idle_12.png" x="1654" y="782" w="206" h="270" pX="0.5" pY="0.5"/>
+    <sprite n="idle_13.png" x="1242" y="782" w="206" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="idle_14.png" x="420" y="782" w="206" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="idle_15.png" x="628" y="1052" w="206" h="270" pX="0.5" pY="0.5"/>
+    <sprite n="idle_16.png" x="0" y="1324" w="206" h="272" pX="0.5" pY="0.5"/>
+    <sprite n="jumping_1.png" x="862" y="1600" w="244" h="280" pX="0.5" pY="0.5"/>
+    <sprite n="jumping_2.png" x="1348" y="1600" w="242" h="282" pX="0.5" pY="0.5"/>
+    <sprite n="jumping_3.png" x="1590" y="1600" w="240" h="286" pX="0.5" pY="0.5"/>
+    <sprite n="jumping_4.png" x="1106" y="1600" w="242" h="282" pX="0.5" pY="0.5"/>
+    <sprite n="land_1.png" x="1652" y="1324" w="238" h="276" pX="0.5" pY="0.5"/>
+    <sprite n="land_2.png" x="810" y="516" w="242" h="264" pX="0.5" pY="0.5"/>
+    <sprite n="land_3.png" x="224" y="256" w="234" h="258" pX="0.5" pY="0.5"/>
+    <sprite n="land_4.png" x="172" y="0" w="222" h="250" pX="0.5" pY="0.5"/>
+    <sprite n="land_5.png" x="1000" y="0" w="208" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="land_6.png" x="612" y="516" w="198" h="264" pX="0.5" pY="0.5"/>
+    <sprite n="running_1.png" x="626" y="782" w="202" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="running_2.png" x="0" y="516" w="196" h="260" pX="0.5" pY="0.5"/>
+    <sprite n="running_3.png" x="804" y="0" w="196" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="running_4.png" x="1506" y="256" w="196" h="260" pX="0.5" pY="0.5"/>
+    <sprite n="running_5.png" x="1278" y="516" w="200" h="266" pX="0.5" pY="0.5"/>
+    <sprite n="running_6.png" x="214" y="1052" w="208" h="270" pX="0.5" pY="0.5"/>
+    <sprite n="running_7.png" x="0" y="1052" w="214" h="270" pX="0.5" pY="0.5"/>
+    <sprite n="running_8.png" x="1254" y="1052" w="230" h="272" pX="0.5" pY="0.5"/>
+    <sprite n="running_9.png" x="0" y="1600" w="220" h="276" pX="0.5" pY="0.5"/>
+    <sprite n="running_10.png" x="1442" y="1324" w="210" h="274" pX="0.5" pY="0.5"/>
+    <sprite n="shadow.png" x="0" y="0" w="172" h="37" pX="0.5" pY="0.5"/>
+    <sprite n="walking_1.png" x="1702" y="256" w="200" h="260" pX="0.5" pY="0.5"/>
+    <sprite n="walking_2.png" x="1034" y="782" w="208" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="walking_3.png" x="1040" y="1052" w="214" h="270" pX="0.5" pY="0.5"/>
+    <sprite n="walking_4.png" x="1688" y="516" w="220" h="266" pX="0.5" pY="0.5"/>
+    <sprite n="walking_5.png" x="0" y="782" w="224" h="266" pX="0.5" pY="0.5"/>
+    <sprite n="walking_6.png" x="1052" y="516" w="226" h="264" pX="0.5" pY="0.5"/>
+    <sprite n="walking_7.png" x="196" y="516" w="220" h="262" pX="0.5" pY="0.5"/>
+    <sprite n="walking_8.png" x="1478" y="516" w="210" h="266" pX="0.5" pY="0.5"/>
+    <sprite n="walking_9.png" x="220" y="1600" w="202" h="276" pX="0.5" pY="0.5"/>
+    <sprite n="walking_10.png" x="666" y="1600" w="196" h="278" pX="0.5" pY="0.5"/>
+    <sprite n="walking_11.png" x="1484" y="1052" w="196" h="272" pX="0.5" pY="0.5"/>
+    <sprite n="walking_12.png" x="224" y="782" w="196" h="266" pX="0.5" pY="0.5"/>
+    <sprite n="walking_13.png" x="416" y="516" w="196" h="262" pX="0.5" pY="0.5"/>
+    <sprite n="walking_14.png" x="458" y="256" w="196" h="258" pX="0.5" pY="0.5"/>
+</TextureAtlas>

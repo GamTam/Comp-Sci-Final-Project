@@ -168,7 +168,6 @@ class Cutscene:
             self.timer = 0
             self.sceneEnd()
 
-
     def setVar(self, var):
         exec(var)
         self.sceneEnd()
@@ -242,6 +241,7 @@ class Cutscene:
             self.timer = 0
             self.game.mario.spinning = True
             self.game.luigi.spinning = True
+            self.fade = None
             self.mcMuffinSprites.append(self.game.mario)
             self.mcMuffinSprites.append(self.game.luigi)
             self.mcMuffinSprites.append(self.game.mcMuffin)
@@ -256,7 +256,10 @@ class Cutscene:
             self.move(self.game.luigi, 780, 250, False, round(fps * 6.1), 1)
             Fadeout(self.game, 1)
         if self.game.song_playing != "mcMuffin Get":
-            self.prevSong = self.song.copy()
+            try:
+                self.prevSong = self.song.copy()
+            except:
+                pass
             self.song = [14.221, 16.601, "mcMuffin Get"]
 
         if self.pointCounter[0] < len(self.points[0]):
@@ -290,12 +293,12 @@ class Cutscene:
             for event in self.game.event:
                 if event.type == pg.KEYDOWN:
                     if event.key != pg.K_F4:
-                        self.mcMuffinSprites = []
-                        if self.mcMuffinText in self.game.cutsceneSprites: self.game.cutsceneSprites.remove(self.mcMuffinText)
-                        self.game.mario.rect.center = self.prevCenters[0]
-                        self.game.luigi.rect.center = self.prevCenters[1]
-                        self.game.mcMuffin.rect.center = self.prevCenters[2]
                         if not endChapter:
+                            self.mcMuffinSprites = []
+                            if self.mcMuffinText in self.game.cutsceneSprites: self.game.cutsceneSprites.remove(self.mcMuffinText)
+                            self.game.mario.rect.center = self.prevCenters[0]
+                            self.game.luigi.rect.center = self.prevCenters[1]
+                            self.game.mcMuffin.rect.center = self.prevCenters[2]
                             self.song = self.prevSong
                             for fade in self.game.fadeout: fade.speed = 20
                             self.game.room = self.room
@@ -334,6 +337,49 @@ class Cutscene:
                             self.pointCounter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                             self.timer = 0
                             self.sceneEnd()
+                        else:
+                            self.fade = Fadeout(self.game, 5)
+                            self.mcMuffinSprites.append(self.fade)
+
+            if self.fade is not None:
+                if self.fade.alpha >= 255:
+                    self.xDest = [-69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69]
+                    self.yDest = [-69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69,
+                                  -69]
+                    self.points = [[],
+                                   [],
+                                   [],
+                                   [],
+                                   [],
+                                   [],
+                                   [],
+                                   [],
+                                   [],
+                                   []]
+                    self.pointCounter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    self.timer = 0
+                    self.game.storeData["mario pos"] = "beef"
+                    self.game.storeData["luigi pos"] = "beef"
+                    self.game.storeData["move"] = Q.deque()
+                    self.game.currentPoint = 0
+                    self.sceneEnd()
 
 
 class LoadCutscene:
@@ -2091,7 +2137,6 @@ class toadleyCutscene(pg.sprite.Sprite):
         self.game.cutsceneSprites.append(self)
         self.loadImages()
         self.image = self.game.player.image
-        self.shadow = self.game.player.shadow
         self.rect = self.shadow.get_rect()
         self.rect.center = pos
         self.imgRect = self.image.get_rect()
@@ -2106,32 +2151,269 @@ class toadleyCutscene(pg.sprite.Sprite):
     def loadImages(self):
         sheet = spritesheet("sprites/toadley.png", "sprites/toadley.xml")
 
+        self.shadow = sheet.getImageName("shadow.png")
+
+        self.idleFrames = {"up": sheet.getImageName("standing_up.png"),
+                           "down": sheet.getImageName("standing_down.png"),
+                           "left": sheet.getImageName("standing_left.png"),
+                           "right": sheet.getImageName("standing_right.png")
+                           }
+
+        self.talkingFrames = {"up": [sheet.getImageName("talking_up_1.png"),
+                                     sheet.getImageName("talking_up_2.png"),
+                                     sheet.getImageName("talking_up_3.png"),
+                                     sheet.getImageName("talking_up_4.png"),
+                                     sheet.getImageName("talking_up_5.png"),
+                                     sheet.getImageName("talking_up_6.png")],
+                              "down": [sheet.getImageName("talking_down_1.png"),
+                                       sheet.getImageName("talking_down_2.png"),
+                                       sheet.getImageName("talking_down_3.png"),
+                                       sheet.getImageName("talking_down_4.png"),
+                                       sheet.getImageName("talking_down_5.png"),
+                                       sheet.getImageName("talking_down_6.png")],
+                              "left": [sheet.getImageName("talking_left_1.png"),
+                                       sheet.getImageName("talking_left_2.png"),
+                                       sheet.getImageName("talking_left_3.png"),
+                                       sheet.getImageName("talking_left_4.png"),
+                                       sheet.getImageName("talking_left_5.png"),
+                                       sheet.getImageName("talking_left_6.png")],
+                              "right": [sheet.getImageName("talking_right_1.png"),
+                                        sheet.getImageName("talking_right_2.png"),
+                                        sheet.getImageName("talking_right_3.png"),
+                                        sheet.getImageName("talking_right_4.png"),
+                                        sheet.getImageName("talking_right_5.png"),
+                                        sheet.getImageName("talking_right_6.png")]
+                              }
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if not self.talking:
+            if self.facing == "down":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["down"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+            elif self.facing == "up":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["up"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+            elif self.facing == "left":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["left"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+            elif self.facing == "right":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["right"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        else:
+            if self.facing == "down":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["down"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["down"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["down"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
+            elif self.facing == "up":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["up"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["up"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["up"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
+            elif self.facing == "left":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["left"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["left"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["left"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
+            elif self.facing == "right":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["right"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["right"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["right"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
+
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+
+
+class FawfulOnCopter(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.cutsceneSprites.append(self)
+        self.loadImages()
+        self.image = self.game.player.image
+        self.fawful = self.game.player.image
+        self.copter = self.game.player.image
+        self.fRect = self.fawful.get_rect()
+        self.cRect = self.copter.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect = self.image.get_rect()
+        self.cRect.centerx, self.cRect.bottom = self.rect.centerx, self.rect.top - 50
+        self.fRect.centerx, self.fRect.bottom = self.cRect.centerx, self.cRect.top + 27
+        self.lastUpdate = 0
+        self.copterLastUpdate = 0
+        self.currentFrame = 0
+        self.copterCurrentFrame = 0
+        self.alpha = 255
+        self.talking = False
+        self.laughing = False
+        self.facing = "down"
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/fawful.png", "sprites/fawful.xml")
+
+        self.talkingFramesUp = [sheet.getImageName("talking_up_1.png"),
+                                  sheet.getImageName("talking_up_2.png"),
+                                  sheet.getImageName("talking_up_3.png"),
+                                  sheet.getImageName("talking_up_4.png"),
+                                  sheet.getImageName("talking_up_5.png"),
+                                  sheet.getImageName("talking_up_6.png"),
+                                  sheet.getImageName("talking_up_7.png"),
+                                  sheet.getImageName("talking_up_8.png")]
+
         self.talkingFramesDown = [sheet.getImageName("talking_down_1.png"),
                                   sheet.getImageName("talking_down_2.png"),
                                   sheet.getImageName("talking_down_3.png"),
                                   sheet.getImageName("talking_down_4.png"),
                                   sheet.getImageName("talking_down_5.png"),
-                                  sheet.getImageName("talking_down_6.png")]
+                                  sheet.getImageName("talking_down_6.png"),
+                                  sheet.getImageName("talking_down_7.png"),
+                                  sheet.getImageName("talking_down_8.png")]
+
+        self.talkingFramesLeft = [sheet.getImageName("talking_left_1.png"),
+                                  sheet.getImageName("talking_left_2.png"),
+                                  sheet.getImageName("talking_left_3.png"),
+                                  sheet.getImageName("talking_left_4.png"),
+                                  sheet.getImageName("talking_left_5.png"),
+                                  sheet.getImageName("talking_left_6.png"),
+                                  sheet.getImageName("talking_left_7.png"),
+                                  sheet.getImageName("talking_left_8.png")]
+
+        self.talkingFramesRight = [sheet.getImageName("talking_right_1.png"),
+                                  sheet.getImageName("talking_right_2.png"),
+                                  sheet.getImageName("talking_right_3.png"),
+                                  sheet.getImageName("talking_right_4.png"),
+                                  sheet.getImageName("talking_right_5.png"),
+                                  sheet.getImageName("talking_right_6.png"),
+                                  sheet.getImageName("talking_right_7.png"),
+                                  sheet.getImageName("talking_right_8.png")]
 
         self.talkingFramesUpLeft = [sheet.getImageName("talking_upleft_1.png"),
                                   sheet.getImageName("talking_upleft_2.png"),
                                   sheet.getImageName("talking_upleft_3.png"),
                                   sheet.getImageName("talking_upleft_4.png"),
                                   sheet.getImageName("talking_upleft_5.png"),
-                                  sheet.getImageName("talking_upleft_6.png")]
+                                  sheet.getImageName("talking_upleft_6.png"),
+                                  sheet.getImageName("talking_upleft_7.png"),
+                                  sheet.getImageName("talking_upleft_8.png")]
 
         self.talkingFramesDownLeft = [sheet.getImageName("talking_downleft_1.png"),
                                       sheet.getImageName("talking_downleft_2.png"),
                                       sheet.getImageName("talking_downleft_3.png"),
                                       sheet.getImageName("talking_downleft_4.png"),
                                       sheet.getImageName("talking_downleft_5.png"),
-                                      sheet.getImageName("talking_downleft_6.png")]
+                                      sheet.getImageName("talking_downleft_6.png"),
+                                      sheet.getImageName("talking_downleft_7.png"),
+                                      sheet.getImageName("talking_downleft_8.png")]
+
+        self.talkingFramesUpRight = [sheet.getImageName("talking_upright_1.png"),
+                                    sheet.getImageName("talking_upright_2.png"),
+                                    sheet.getImageName("talking_upright_3.png"),
+                                    sheet.getImageName("talking_upright_4.png"),
+                                    sheet.getImageName("talking_upright_5.png"),
+                                    sheet.getImageName("talking_upright_6.png"),
+                                    sheet.getImageName("talking_upright_7.png"),
+                                    sheet.getImageName("talking_upright_8.png")]
+
+        self.talkingFramesDownRight = [sheet.getImageName("talking_downright_1.png"),
+                                      sheet.getImageName("talking_downright_2.png"),
+                                      sheet.getImageName("talking_downright_3.png"),
+                                      sheet.getImageName("talking_downright_4.png"),
+                                      sheet.getImageName("talking_downright_5.png"),
+                                      sheet.getImageName("talking_downright_6.png"),
+                                      sheet.getImageName("talking_downright_7.png"),
+                                      sheet.getImageName("talking_downright_8.png")]
+
+        self.laughingFramesUp = [sheet.getImageName("laughing_up_1.png"),
+                                 sheet.getImageName("laughing_up_2.png"),
+                                 sheet.getImageName("laughing_up_3.png"),
+                                 sheet.getImageName("laughing_up_4.png")]
+
+        self.laughingFramesDown = [sheet.getImageName("laughing_down_1.png"),
+                                   sheet.getImageName("laughing_down_2.png"),
+                                   sheet.getImageName("laughing_down_3.png"),
+                                   sheet.getImageName("laughing_down_4.png")]
+
+        self.laughingFramesLeft = [sheet.getImageName("laughing_left_1.png"),
+                                   sheet.getImageName("laughing_left_2.png"),
+                                   sheet.getImageName("laughing_left_3.png"),
+                                   sheet.getImageName("laughing_left_4.png")]
+
+        self.laughingFramesRight = [sheet.getImageName("laughing_right_1.png"),
+                                    sheet.getImageName("laughing_right_2.png"),
+                                    sheet.getImageName("laughing_right_3.png"),
+                                    sheet.getImageName("laughing_right_4.png")]
+
+        self.platformFrames = [sheet.getImageName("platform_1.png"),
+                            sheet.getImageName("platform_2.png"),
+                            sheet.getImageName("platform_3.png"),
+                            sheet.getImageName("platform_4.png")]
+
+        self.idleFrameUp = sheet.getImageName("standing_up.png")
 
         self.idleFrameDown = sheet.getImageName("standing_down.png")
 
-        self.idleFrameDownleft = sheet.getImageName("standing_downleft.png")
+        self.idleFrameLeft = sheet.getImageName("standing_left.png")
 
-        self.idleFrameUpleft = sheet.getImageName("standing_upleft.png")
+        self.idleFrameRight = sheet.getImageName("standing_right.png")
+
+        self.idleFrameDownLeft = sheet.getImageName("standing_downleft.png")
+
+        self.idleFrameUpLeft = sheet.getImageName("standing_upleft.png")
+
+        self.idleFrameDownRight = sheet.getImageName("standing_downright.png")
+
+        self.idleFrameUpRight = sheet.getImageName("standing_upright.png")
 
         self.shadow = sheet.getImageName("shadow.png")
 
@@ -2145,10 +2427,12 @@ class toadleyCutscene(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesUpRight))
                     else:
                         self.currentFrame = 0
-                    center = self.imgRect.center
-                    self.image = self.talkingFramesUpRight[self.currentFrame]
-                    self.imgRect = self.image.get_rect()
-                    self.imgRect.center = center
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesUpRight[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
             elif self.facing == "upleft":
                 if now - self.lastUpdate > 100:
                     self.lastUpdate = now
@@ -2156,10 +2440,12 @@ class toadleyCutscene(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesUpLeft))
                     else:
                         self.currentFrame = 0
-                    center = self.imgRect.center
-                    self.image = self.talkingFramesUpLeft[self.currentFrame]
-                    self.imgRect = self.image.get_rect()
-                    self.imgRect.center = center
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesUpLeft[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
             elif self.facing == "downright":
                 if now - self.lastUpdate > 100:
                     self.lastUpdate = now
@@ -2167,10 +2453,12 @@ class toadleyCutscene(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesDownRight))
                     else:
                         self.currentFrame = 0
-                    center = self.imgRect.center
-                    self.image = self.talkingFramesDownRight[self.currentFrame]
-                    self.imgRect = self.image.get_rect()
-                    self.imgRect.center = center
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesDownRight[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
             elif self.facing == "downleft":
                 if now - self.lastUpdate > 100:
                     self.lastUpdate = now
@@ -2178,21 +2466,25 @@ class toadleyCutscene(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesDownLeft))
                     else:
                         self.currentFrame = 0
-                    center = self.imgRect.center
-                    self.image = self.talkingFramesDownLeft[self.currentFrame]
-                    self.imgRect = self.image.get_rect()
-                    self.imgRect.center = center
-            elif self.facing == "right":
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesDownLeft[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
+            elif self.facing == "up":
                 if now - self.lastUpdate > 100:
                     self.lastUpdate = now
-                    if self.currentFrame < len(self.talkingFramesRight):
-                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesRight))
+                    if self.currentFrame < len(self.talkingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesUp))
                     else:
                         self.currentFrame = 0
-                    center = self.imgRect.center
-                    self.image = self.talkingFramesRight
-                    self.imgRect = self.image.get_rect()
-                    self.imgRect.center = center
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesUp[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
             elif self.facing == "down":
                 if now - self.lastUpdate > 100:
                     self.lastUpdate = now
@@ -2200,43 +2492,152 @@ class toadleyCutscene(pg.sprite.Sprite):
                         self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesDown))
                     else:
                         self.currentFrame = 0
-                    center = self.imgRect.center
-                    self.image = self.talkingFramesDown[self.currentFrame]
-                    self.imgRect = self.image.get_rect()
-                    self.imgRect.center = center
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesDown[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
+            elif self.facing == "left":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesLeft[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
+            elif self.facing == "right":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.talkingFramesRight[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
+        elif self.laughing:
+            if self.facing == "up":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.laughingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.laughingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.laughingFramesUp[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
+            elif self.facing == "down":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.laughingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.laughingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.laughingFramesDown[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
+            elif self.facing == "left":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.laughingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.laughingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.laughingFramesLeft[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
+            elif self.facing == "right":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.laughingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.laughingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.fRect.bottom
+                    centerx = self.fRect.centerx
+                    self.fawful = self.laughingFramesRight[self.currentFrame]
+                    self.fRect = self.fawful.get_rect()
+                    self.fRect.bottom = bottom
+                    self.fRect.centerx = centerx
         else:
             if self.facing == "upright":
-                center = self.imgRect.center
-                self.image = self.idleFrameUpRight
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "downright":
-                center = self.imgRect.center
-                self.image = self.idleFrameDownRight
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "right":
-                center = self.imgRect.center
-                self.image = self.idleFrameRight
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "down":
-                center = self.imgRect.center
-                self.image = self.idleFrameDown
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-            elif self.facing == "downleft":
-                center = self.imgRect.center
-                self.image = self.idleFrameDownleft
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
+                center = self.fRect.center
+                self.fawful = self.idleFrameUpRight
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
             elif self.facing == "upleft":
-                center = self.imgRect.center
-                self.image = self.idleFrameUpleft
-                self.imgRect = self.image.get_rect()
-                self.imgRect.center = center
-        self.imgRect.bottom = self.rect.bottom - 2
-        self.imgRect.centerx = self.rect.centerx
+                center = self.fRect.center
+                self.fawful = self.idleFrameUpLeft
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
+            elif self.facing == "downright":
+                center = self.fRect.center
+                self.fawful = self.idleFrameDownRight
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
+            elif self.facing == "downleft":
+                center = self.fRect.center
+                self.fawful = self.idleFrameDownLeft
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
+            elif self.facing == "up":
+                center = self.fRect.center
+                self.fawful = self.idleFrameUp
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
+            elif self.facing == "down":
+                center = self.fRect.center
+                self.fawful = self.idleFrameDown
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
+            elif self.facing == "left":
+                center = self.fRect.center
+                self.fawful = self.idleFrameLeft
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
+            elif self.facing == "right":
+                center = self.fRect.center
+                self.fawful = self.idleFrameRight
+                self.fRect = self.fawful.get_rect()
+                self.fRect.center = center
+
+        if now - self.copterLastUpdate > 50:
+            self.copterLastUpdate = now
+            if self.copterCurrentFrame < len(self.platformFrames):
+                self.copterCurrentFrame = (self.copterCurrentFrame + 1) % (len(self.platformFrames))
+            else:
+                self.copterCurrentFrame = 0
+            center = self.cRect.center
+            self.copter = self.platformFrames[self.copterCurrentFrame]
+            self.cRect = self.copter.get_rect()
+            self.cRect.center = center
+
+        self.cRect.centerx = self.rect.centerx
+        self.cRect.bottom = self.rect.top - 50
+        self.fRect.centerx = self.cRect.centerx
+        self.fRect.bottom = self.cRect.top + 27
+
+        combine = CombineSprites([self.copter, self.fawful], [self.cRect, self.fRect])
+        self.image = combine.image
+        self.imgRect = combine.rect
 
 
 class LineFlipAppear(pg.sprite.Sprite):
@@ -2644,6 +3045,110 @@ class McMuffinWarp(pg.sprite.Sprite):
                         if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
                             self.cursor.kill()
                             self.game.menuChooseSound.play()
+
+
+class mammoshkaOverworld(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.cutsceneSprites.append(self)
+        self.loadImages()
+        self.image = self.idleFrames[0]
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect = self.image.get_rect()
+        self.imgRect.bottom = self.rect.bottom - 15
+        self.imgRect.centerx = self.rect.centerx
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.roar = False
+        self.done = False
+        self.alpha = 255
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/mammoshka overworld.png", "sprites/mammoshka overworld.xml")
+
+        self.idleFrames = [sheet.getImageName("angry_1.png"),
+                           sheet.getImageName("angry_2.png"),
+                           sheet.getImageName("angry_3.png"),
+                           sheet.getImageName("angry_4.png"),
+                           sheet.getImageName("angry_5.png"),
+                           sheet.getImageName("angry_6.png"),
+                           sheet.getImageName("angry_7.png"),
+                           sheet.getImageName("angry_8.png"),
+                           sheet.getImageName("angry_9.png"),
+                           sheet.getImageName("angry_10.png")]
+
+        self.roarFrames = [sheet.getImageName("roar_1.png"),
+                           sheet.getImageName("roar_2.png"),
+                           sheet.getImageName("roar_3.png"),
+                           sheet.getImageName("roar_4.png"),
+                           sheet.getImageName("roar_5.png"),
+                           sheet.getImageName("roar_6.png"),
+                           sheet.getImageName("roar_7.png"),
+                           sheet.getImageName("roar_8.png"),
+                           sheet.getImageName("roar_9.png"),
+                           sheet.getImageName("roar_10.png"),
+                           sheet.getImageName("roar_11.png"),
+                           sheet.getImageName("roar_12.png"),
+                           sheet.getImageName("roar_13.png"),
+                           sheet.getImageName("roar_14.png"),
+                           sheet.getImageName("roar_15.png"),
+                           sheet.getImageName("roar_16.png"),
+                           sheet.getImageName("roar_17.png"),
+                           sheet.getImageName("roar_18.png"),
+                           sheet.getImageName("roar_19.png"),
+                           sheet.getImageName("roar_20.png"),
+                           sheet.getImageName("roar_21.png"),
+                           sheet.getImageName("roar_22.png"),
+                           sheet.getImageName("roar_23.png"),
+                           sheet.getImageName("roar_24.png"),
+                           sheet.getImageName("roar_25.png"),
+                           sheet.getImageName("roar_26.png"),
+                           sheet.getImageName("roar_27.png"),
+                           sheet.getImageName("roar_28.png"),
+                           sheet.getImageName("roar_29.png"),
+                           sheet.getImageName("roar_30.png"),
+                           sheet.getImageName("roar_31.png"),
+                           sheet.getImageName("roar_32.png"),
+                           sheet.getImageName("roar_33.png"),
+                           sheet.getImageName("roar_34.png"),
+                           sheet.getImageName("roar_35.png"),
+                           sheet.getImageName("roar_36.png"),
+                           sheet.getImageName("roar_37.png"),
+                           sheet.getImageName("roar_38.png"),
+                           sheet.getImageName("roar_39.png")]
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if not self.roar:
+            if now - self.lastUpdate > 50:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.idleFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.idleFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        else:
+            if now - self.lastUpdate > 50:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.roarFrames) - 1:
+                    self.currentFrame = self.currentFrame + 1
+                else:
+                    self.currentFrame = len(self.roarFrames) - 1
+                    self.done = True
+                center = self.imgRect.center
+                self.image = self.roarFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+
+        self.imgRect.bottom = self.rect.bottom - 15
+        self.imgRect.centerx = self.rect.centerx
 
 
 # Skrx on Stack Overflow

@@ -38,6 +38,7 @@ class CameraRect:
         self.prevTarget = pg.rect.Rect(0, 0, 0, 0)
         self.points = []
         self.counter = -17
+        self.imgRect = self.rect
 
     def update(self, target, speed):
         if speed == 0:
@@ -57,6 +58,8 @@ class CameraRect:
         else:
             self.counter = speed
             self.rect.center = target.center
+
+        self.imgRect = self.rect
 
 
 class PngMap:
@@ -95,6 +98,9 @@ class Map:
             elif object.name == "Enemy":
                 if object.type == "Goomba":
                     goom = GoombaOverworld()
+                    goom.init(self.game, object.x, object.y, object.battle)
+                elif object.type == "Koopa":
+                    goom = KoopaOverworld()
                     goom.init(self.game, object.x, object.y, object.battle)
             elif object.name == "Block":
                 if object.type == "Normal":
@@ -3934,7 +3940,7 @@ class Game:
 
         sheet = spritesheet("sprites/fawful.png", "sprites/fawful.xml")
 
-        fawful = sheet.getImageName("standing_upright.png")
+        fawful = sheet.getImageName("standing_upleft.png")
 
         fTalking = [sheet.getImageName("talking_upleft_1.png"),
                     sheet.getImageName("talking_upleft_2.png"),
@@ -8278,6 +8284,7 @@ class Game:
             self.mcMuffins = pickle.load(file)
         self.void = Void(self, self.voidSize)
         self.currentPoint = 0
+        self.area = "title screen"
         eval(self.room)
         # except:
         #     print("File not found.\nStarting a new game...")
@@ -8303,6 +8310,8 @@ class Game:
         #     self.newGame()
 
     def loadData(self):
+        self.mammoshkaBounce = pg.mixer.Sound("sounds/mammoshkaBounce.ogg")
+        self.mammoshkaRoar = pg.mixer.Sound("sounds/mammoshkaRoar.ogg")
         self.fireballSound = pg.mixer.Sound("sounds/fireBall.ogg")
         self.fireballHitSound = pg.mixer.Sound("sounds/fireBallHit.ogg")
         self.lineDrawSound = pg.mixer.Sound("sounds/lineDraw.ogg")
@@ -8351,6 +8360,7 @@ class Game:
         self.marioTalk1 = pg.mixer.Sound("sounds/marioTalk1.ogg")
         self.luigiYaHoooo = pg.mixer.Sound("sounds/luigiYaHoooo.ogg")
         self.luigiOhHoHo = pg.mixer.Sound("sounds/luigiOhHoHo.ogg")
+        self.earthquakeSound = pg.mixer.Sound("sounds/earthquake.ogg")
         self.itemFromBlockSound = pg.mixer.Sound("sounds/itemFromBlock.ogg")
         self.gameOverMario = pg.mixer.Sound("sounds/gameOverMario.ogg")
         self.gameOverLuigi = pg.mixer.Sound("sounds/gameOverLuigi.ogg")
@@ -8389,7 +8399,7 @@ class Game:
         self.cameraRect = CameraRect()
         MarioBlock(self, (300, self.map.height - 450))
         LuigiBlock(self, (600, self.map.height - 450))
-        Block(self, (900, self.map.height - 450), contents=["Other(self.game, self, 'Max Nut', 1)"])
+        Block(self, (900, self.map.height - 450), contents=["Other(self.game, self, 'Cavi Cape Attack Piece', 10)"])
         LuigiBlock(self, (1100, self.map.height - 450),
                    contents=["Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)",
                              "Coin(self.game, self)", "Coin(self.game, self)", "Coin(self.game, self)",
@@ -8397,7 +8407,7 @@ class Game:
                              "Coin(self.game, self)"])
         SaveBlock(self, (1200, self.map.height - 450))
         LinebeckDebug(self, (self.map.width / 2 - 2, self.map.height - 420), self.goombaHasTexted)
-        GoombaODebug(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadSingleEnemyDebug()")
+        GoombaODebug(self, self.map.width / 2 + 500, self.map.height - 500, "self.loadCaviCapeBoss()")
         GoombaODebug(self, self.map.width / 2 - 500, self.map.height - 500, "self.loadSingleEnemyDebug()")
         GoombaODebug(self, self.map.width / 2 + 400, self.map.height - 500, "self.loadSingleEnemyDebug()")
         GoombaODebug(self, self.map.width / 2 - 400, self.map.height - 500, "self.loadSingleEnemyDebug()")
@@ -8465,6 +8475,8 @@ class Game:
         self.player.stepSound = self.stoneSound
 
         McMuffinWarp(self, (1665, 1405), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
+        if self.mcMuffins >= 2:
+            McMuffinWarp(self, (2430, 1405), red, "self.game.loadCaviCapeEnterance()", 2, "Teehee Valley")
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width, (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
 
@@ -8682,14 +8694,14 @@ class Game:
                                                   "It is the book of prophesies/nwhich was written against the/ndark one, and says the following:",
                                                   '''"The Void will swallow all.../nNaught can stop it..."''',
                                                   '''"Unless the one protected by the/ndark power is destroyed."''',
-                                                  '''"The heroes with the power of the/nfive Egg McMuffins will rise to the/ntask."''',
+                                                  '''"The heroes with the power of the/nthree Egg McMuffins will rise to the/ntask."''',
                                                   "...So it is written."])"""],
                           [
                               "self.setVar('self.game.mcMuffin = EggMcMuffin((self.game.toadley.rect.centerx, self.game.toadley.rect.bottom + 35), black, self.game)')",
                               "self.command('self.game.cutsceneSprites.append(self.game.mcMuffin)')"],
                           ["self.wait(1)"],
                           ["""self.textBox(self.game.toadley,
-                                                  ["This is one of the five Egg McMuffins.",
+                                                  ["This is one of the three Egg McMuffins.",
                                                   "You are surely the heroes spoken of/nin the pages of the Light/nPrognosticus.",
                                                   "You are the only one who can defeat/nCount Bleck and save all worlds!",
                                                   "<<RMario>>!/p <<GLuigi>>!/p Take/9/6./9/6./9/6./p THIS!"])"""],
@@ -8749,29 +8761,128 @@ class Game:
                            """self.setVar('self.game.player.facing = "left"')""",
                            "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id=1)
 
+        if self.mcMuffins == 2:
+            LoadCutscene(self, self.player.rect, True, True, [
+                ["self.changeSong([0, 95.997, 'flipside'])"],
+                ["self.setVar('self.game.player.rect.center = (self.game.map.width / 2 - 50, self.game.map.rect.bottom - 220)')",
+                 "self.setVar('self.game.follower.rect.center = (self.game.map.width / 2 + 50, self.game.map.rect.bottom - 220)')"],
+                ["self.wait(5)"],
+                ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                "self.setVar('self.game.muff = EggMcMuffin((2430, self.game.map.rect.bottom - 230), red, self.game)')"],
+                [
+                  "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                ], [
+                  "self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                [
+                  "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                ], [
+                  "self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                [
+                    "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.imgRect.centerx, self.game.muff.rect.top - 39))",
+                ], [
+                    "self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                ["self.wait(1)"],
+                ["self.move(self.game.muff, 2430, 1405, False, 180)"],
+                ["self.setVar('self.game.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom + 100))')",
+                 """self.setVar('self.game.toadley.facing = "up"')"""],
+                ["""self.textBox(self.game.toadley, [
+                    "Oh ho!/p/nYou've returned!"])"""],
+                ["""self.setVar('self.game.mario.facing = "down"')""",
+                 """self.setVar('self.game.luigi.facing = "down"')""",
+                 """self.setVar('self.game.toadley.talking = True')""",
+                 "self.move(self.game.toadley, self.game.map.width / 2, self.game.map.rect.bottom - 120, False, 180)"],
+                ["""self.textBox(self.game.toadley, [
+                                "I can see that you've/nretrieved the Egg McMuffin!",
+                                "Before you move on to the/nnext world, however, I would/nlike to give you this!"])"""],
+                ["""self.textBox(self.game.cameraRect, ["You've unlocked <<RBros. Attacks>>!"], type="board", dir="None")"""],
+                ["""self.textBox(self.game.toadley, [
+                    "I've just given both of/nyou <<RBros. Attacks>>!",
+                    "These are special attacks/nthat require both of you/nto use.",
+                    "So make sure that you're/nboth alive!"])"""],
+                ["self.wait(2)"],
+                ["""self.textBox(self.game.toadley, [
+                    "Really?/p Nothing?",
+                    "I thought it was funny.",
+                    "Anyways, these require <<RBP>> to/nuse, so make sure you/nhave syrup!",
+                    "Also, I heard that Broque/nMonsieur has opened his/nshop!",
+                    "So,/p you know,/p check it out."])"""],
+                ["self.command('self.game.earthquakeSound.play()')",
+                 """self.setVar('self.game.mario.facing = "up"')""",
+                 """self.setVar('self.game.luigi.facing = "up"')""",
+                 "self.move(self.game.cameraRect, 0, -800, True, 300)",
+                 "self.move(self.game.void, width / 2, height / 2, False, 300, 1)"],
+                ["self.setVar('self.game.voidSize = 1')", "self.wait(5)"],
+                ["""self.textBox(self.game.toadley, [
+                    "The void is expanding...",
+                    "We're running out of time..."])"""],
+                ["self.move(self.game.cameraRect, 0, 800, True, 300)",
+                 "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, 1)"],
+                ["""self.setVar('self.game.mario.facing = "down"')""",
+                """self.setVar('self.game.luigi.facing = "down"')"""],
+                ["""self.textBox(self.game.toadley, [
+                    "I must return to my corner to/nsee if there's anything/nelse I can do to help.",
+                    "Good luck with the saving/nof the worlds and all/nthat!"])"""],
+                ["self.move(self.game.toadley, self.game.toadley.rect.centerx, self.game.map.rect.bottom + 75, False, 300)",
+                  """self.setVar('self.game.toadley.talking = True')""",
+                 """self.setVar('self.game.toadley.facing = "down"')"""],
+                ["self.setVar('self.game.luigi.walking = True')",
+                 """self.setVar('self.game.luigi.facing = "left"')""",
+                 """self.setVar('self.game.follower.attackPieces[0][1] = 10')""",
+                 """self.setVar('self.game.player.attackPieces[0][1] = 10')""",
+                 "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+                ], id="Bros Attack Intro")
+
         if self.area != "Flipside" and self.area != "title screen":
-            Cutscene(self,
-                     [["self.changeSong([0, 95.997, 'flipside'])"],
-                      ["self.wait(1)"],
-                      ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-                       "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
-                       "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
-                       "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
-                       "self.setVar('self.game.muff = EggMcMuffin((520, 640), black, self.game)')"],
-                      ["self.command('self.game.mario.update()')",
-                       "self.command('self.game.luigi.update()')"],
-                      ["self.wait(0.2)"],
-                      [
-                          "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
-                      ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
-                      [
-                          "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
-                      ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
-                      ["self.wait(0.5)"],
-                      ["self.setVar('self.game.luigi.walking = True')",
-                       "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
-                      ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
-                      ])
+            if self.mcMuffins >= 2:
+                Cutscene(self,
+                         [["self.changeSong([0, 95.997, 'flipside'])"],
+                          ["self.wait(1)"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                           "self.setVar('self.game.muff = EggMcMuffin((2430, 1405), red, self.game)')",
+                           "self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          ["self.wait(0.5)"],
+                          ["self.setVar('self.game.luigi.walking = True')",
+                           "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                          ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+                          ])
+            else:
+                Cutscene(self,
+                         [["self.changeSong([0, 95.997, 'flipside'])"],
+                          ["self.wait(1)"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          ["self.wait(0.5)"],
+                          ["self.setVar('self.game.luigi.walking = True')",
+                           "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                          ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+                          ])
             self.cutsceneSprites = []
 
         self.overworld("Flipside", [1, 95.997, "flipside"])
@@ -8811,6 +8922,15 @@ class Game:
                          "I am looking to open un item shop.",
                          "It will have zee pizaz!/p\nIt will have zee wow!",
                          "But it iz not open yet./p\nPlease retournez later."]
+        elif self.mcMuffins == 2:
+            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["1-UP Mushroom", 50],
+                             ["Syrup", 7], ["Super Syrup", 25], ["Star Cand", 100]]
+            broq.text = ["Bonjour monsieur Red and Green!",
+                         "I have opened zee Shop!",
+                         "Take a look, s'il vous plaît!"]
+
+            todd.text = ["There's only one McMuffin/nleft!",
+                         "Go get it!"]
 
         Wall(self, 3585, 512, 64, 1086)
         Wall(self, 2752, 512, 64, 1086)
@@ -9205,6 +9325,44 @@ class Game:
         self.follower.stepSound = self.grassSound
         self.player.stepSound = self.grassSound
 
+        LoadCutscene(self, pg.rect.Rect(320, 720, 80, 160), True, False,
+                     [["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                       "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                       """self.setVar('self.hammers = EmptyObject(pg.image.load("sprites/Hammers.png").convert_alpha(), pg.image.load("sprites/Hammers.png").convert_alpha(), (1600, 800), (1600, 800))')""",
+                       "self.command('self.game.cutsceneSprites.append(self.hammers)')"],
+                      ["self.changeSong([5.75, 65.468, 'Cavi Cape'])"],
+                      ["self.move(self.game.cameraRect, 1600, 800, False, 60)"],
+                      ["""self.setVar('self.mario.facing = "right"')""",
+                       """self.setVar('self.luigi.facing = "right"')""",
+                       """self.setVar('self.mario.walking = True')""",
+                       """self.setVar('self.luigi.walking = True')"""],
+                      ["self.move(self.mario, 1500, 750, False, 180, 1)",
+                       "self.move(self.luigi, 1500, 850, False, 180, 2)"],
+                      ["self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+                       "self.command('self.game.starlowTwinkle.play()')",
+                       """self.setVar('self.starlow.facing = "right"')""",
+                       """self.setVar('self.mario.walking = False')""",
+                       """self.setVar('self.luigi.walking = False')"""
+                       ],
+                      ["self.move(self.starlow, 1700, 800, False, 30)"],
+                      ["""self.setVar('self.starlow.facing = "left"')"""],
+                      ["""self.textBox(self.starlow, [
+                      "Those are <<RHammers>>!", "Those are really useful/nin battle!"], sound="starlow")"""],
+                      ["self.command('self.game.cutsceneSprites.remove(self.hammers)')", """self.textBox(self.hammers, [
+                      "You got hammers!",
+                      "Press <<RLeft Shift>> or <<GRight Shift>> to/nswitch your ability to Hammer!"], type="board", dir="None")"""],
+                      ["""self.textBox(self.starlow, [
+                       "Now that we have those, we'll be/nable to beat Count Bleck!"], sound="starlow")"""],
+                      ["""self.setVar('self.luigi.facing = "up"')""",
+                       """self.setVar('self.luigi.walking = True')"""],
+                      ["self.move(self.starlow, self.mario.rect.centerx, self.mario.rect.centery, False, 60, 1)",
+                       "self.move(self.luigi, self.mario.rect.centerx, self.mario.rect.centery, False, 60, 2)"],
+                      ["self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+                       "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')"],
+                      ["""self.setVar('self.game.player.abilities = ["jump", "hammer", "interact", "talk"]')""",
+                       """self.setVar('self.game.follower.abilities = ["jump", "hammer", "interact", "talk"]')"""]
+                      ], id=3)
+
         counter = 1.4
         for enemy in self.enemies:
             enemy.ID = counter
@@ -9295,15 +9453,15 @@ class Game:
         self.cameraRect.update(self.player.rect, 0)
         self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
 
-    def loadCaviCapeRoom6(self):
-        self.room = "self.loadCaviCapeRoom6()"
+    def loadCaviCapeBossRoom(self):
+        self.room = "self.loadCaviCapeBossRoom()"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = []
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
-        self.map = Map(self, "Cavi Cape Room 6", background="Cavi Cape")
+        self.map = Map(self, "Cavi Cape Boss Room", background="Cavi Cape")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
         self.player.rect.center = (760, 640)
@@ -9318,6 +9476,115 @@ class Game:
         self.sprites.append(self.player)
         self.follower.stepSound = self.grassSound
         self.player.stepSound = self.grassSound
+
+        # LoadCutscene(self, pg.rect.Rect(1200, 1600, 160, 80), True, False,[
+        #     ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+        #                "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+        #                "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), red, self.game)')",
+        #                "self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
+        #               ["self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
+        #               ["self.move(self.game.cameraRect, 1280, 880, False, 60)"],
+        #               ["""self.setVar('self.mario.facing = "up"')""",
+        #                """self.setVar('self.luigi.facing = "up"')""",
+        #                """self.setVar('self.mario.walking = True')""",
+        #                """self.setVar('self.luigi.walking = True')""",
+        #                "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+        #                """self.setVar('self.starlow.facing = "up"')""",
+        #                "self.command('self.game.starlowTwinkle.play()')"
+        #                ],
+        #               ["self.move(self.mario, 1200, 1050, False, 180, 1)",
+        #                "self.move(self.luigi, 1360, 1050, False, 180, 2)",
+        #                "self.move(self.starlow, 1280, 1050, False, 180, 3)"],
+        #               [
+        #                """self.setVar('self.mario.walking = False')""",
+        #                """self.setVar('self.luigi.walking = False')""",
+        #                   """self.setVar('self.mario.facing = "upright"')""",
+        #                   """self.setVar('self.luigi.facing = "upleft"')""",
+        #                ],
+        #               ["""self.textBox(self.starlow, [
+        #                 "Look!/p It's the Egg McMuffin!"], sound="starlow")"""],
+        #               ["""self.setVar('self.starlow.facing = "down"')"""],
+        #               ["self.wait(1)"],
+        #               ["""self.setVar('self.starlow.facing = "left"')"""],
+        #               ["self.wait(1)"],
+        #               ["""self.setVar('self.starlow.facing = "right"')"""],
+        #               ["self.wait(1)"],
+        #               ["""self.setVar('self.starlow.facing = "up"')"""],
+        #               ["""self.textBox(self.starlow, [
+        #                         "That's weird...",
+        #                         "There's usually some kind of/nmonster guarding these types/nof things..."], sound="starlow")"""],
+        #               ["self.wait(5)"],
+        #               ["""self.textBox(self.starlow, [
+        #                         "Guess not.",
+        #                         "Let's grab it!"], sound="starlow")"""],
+        #               ["self.setVar('self.fawful = FawfulOnCopter(self.game, (0, 700))')"],
+        #               ["""self.textBox(self.fawful, ["/BI HAVE FURY!!!"], complete=True)""", "self.command('self.game.fawfulHududu.play()')"],
+        #               ["""self.changeSong([10.88, 30.471, "Fawful's Theme"])""", "self.setVar('self.fawful.laughing = True')", "self.command('self.game.fawfulcopterSound.play(-1)')"],
+        #               ["self.move(self.fawful, 1100, 850, False, 300)",
+        #                """self.setVar('self.mario.facing = "upleft"')""",
+        #                """self.setVar('self.luigi.facing = "upleft"')""",
+        #                """self.setVar('self.starlow.facing = "upleft"')"""],
+        #               ["""self.textBox(self.fawful, ["You are trying to collect the/nEgg McMuffins!",
+        #               "Fawful laughs at your foolishness!"], sound="fawful")""", "self.setVar('self.fawful.laughing = False')", """self.setVar('self.fawful.facing = "downright"')"""],
+        #               ["""self.textBox(self.starlow, [
+        #                         "Fawful!",
+        #                         "So, you've become a minion of/nCount Bleck!",
+        #                         "Do you even know what he's/ntrying to do?"], sound="starlow")"""],
+        #               ["""self.textBox(self.fawful, ["Yes!/p Fawful knows!",
+        #               "The great Count Bleck will erase/nall of the worlds!",
+        #               "And YOU fink-rats are trying to/nerase The Count's erasing!",
+        #               "/BBUT!",
+        #               "Now is when the talking stops!",
+        #               "You are looking for a battle?/P/nYou will have a battle!!!"], sound="fawful")"""],
+        #               ["self.setVar('self.mammoshka = mammoshkaOverworld(self.game, (1280, 925))')",
+        #                "self.command('self.game.cutsceneSprites.remove(self.mammoshka)')",
+        #                """self.setVar('self.mario.facing = "up"')""",
+        #                """self.setVar('self.luigi.facing = "up"')""",
+        #                """self.setVar('self.starlow.facing = "up"')""",
+        #                "self.flipIn([[self.mammoshka.shadow, self.mammoshka.image], [self.mammoshka.rect, self.mammoshka.imgRect]], (self.mammoshka.imgRect.centerx, self.mammoshka.imgRect.centery + 7))"],
+        #               ["self.command('self.game.cutsceneSprites.append(self.mammoshka)')"],
+        #               ["""self.textBox(self.fawful, ["Mammoshka will be the one to/ndefeat you!",
+        #               "Mammoshka has previously defeated/nthe Great Koopa King during/ntesting!",
+        #               "\a/nAND NEXT IT IS THE TURN OF YOU!"], sound="fawful")""", "if self.textbox[0].page == 2: self.setVar('self.fawful.laughing = True')", """if self.textbox[0].page == 2: self.setVar('self.fawful.facing = "down"')"""],
+        #               ["self.command('self.game.fawfulcopterSound.fadeout(5000)')",
+        #                "self.move(self.fawful, 0, -500, True, 300)"],
+        #               ["self.setVar('self.mammoshka.currentFrame = 0')", "self.setVar('self.mammoshka.roar = True')", "if self.mammoshka.currentFrame >= 7: self.command('self.game.mammoshkaRoar.play()')"],
+        #               ["self.setVar('self.game.player.rect.center = self.mario.rect.center')", "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')"],
+        #               ["self.command('self.game.sprites.append(self.mario)')", "self.command('self.game.sprites.append(self.luigi)')", "self.command('self.game.sprites.append(self.starlow)')", "self.command('self.game.sprites.append(self.mammoshka)')", """if self.mammoshka.done: self.command('self.game.loadBattle("self.loadCaviCapeBoss()", currentPoint=False)')"""]
+        #               ], id=4)
+
+        LoadCutscene(self, pg.rect.Rect(320, 800, 4000, 600), True, False, [
+            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+            "self.setVar('self.luigi = luigiCutscene(self.game, (1360, 1050))')",
+            "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), red, self.game)')",
+            "self.command('self.game.cutsceneSprites.append(self.mcMuffin)')",
+             "self.setVar('self.starlow = starlowCutscene(self.game, (1280, 1050))')",
+             """self.setVar('self.game.player.stats["hp"] = self.game.player.stats["maxHP"]')""",
+             """self.setVar('self.game.follower.stats["hp"] = self.game.follower.stats["maxHP"]')""",
+             """self.setVar('self.game.player.stats["bp"] = self.game.player.stats["maxBP"]')""",
+             """self.setVar('self.game.follower.stats["bp"] = self.game.follower.stats["maxBP"]')""",
+             """self.setVar('self.starlow.facing = "up"')""",
+             """self.setVar('self.mario.facing = "up"')""",
+             """self.setVar('self.luigi.facing = "up"')""",
+             "self.changeSong(None)", "self.command('pg.mixer.music.fadeout(1)')",
+             "self.move(self.game.cameraRect, 1280, 880, False, 0)"
+             ],
+            ["""self.textBox(self.starlow, [
+                                "Perhaps I spoke too soon.",
+                                "Anyways,/p NOW we can grab it!",
+                                "and do it quickly, before something/nelse shows up."], sound="starlow")"""],
+            ["self.setVar('self.game.mario = self.mario')",
+             "self.setVar('self.game.luigi = self.luigi')",
+             "self.setVar('self.game.mcMuffin = self.mcMuffin')",
+             "self.mcMuffinGet()"],
+            ["self.wait(2)", """self.changeSong([14.221, 16.601, "mcMuffin Get"], False)"""],
+            ["""self.textBox(self.game.cameraRect, ["And so, Mario and Luigi had located/nthe second Egg McMuffin.",
+            "With only one left to go,/nthey hurried back to Flipside/nin order to hear from Dr. Toadley.",
+            "Will they be able to collect/nthe last one before it's/ntoo late?"], type="board", dir="None")"""],
+            ["self.setVar('self.game.mcMuffins = 2')","self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
+            ["self.wait(5)", "self.setVar('self.game.fadeout = pg.sprite.Group()')", "self.setVar('self.fade = Fadeout(self.game, 10)')", "self.setVar('self.fade.alpha = 255')"],
+            ["""self.setVar('self.game.area = "title screen"')"""],
+            ["self.command('self.game.loadFlipsideTower()')"]], id=5)
 
         counter = 1.6
         for enemy in self.enemies:
@@ -9328,234 +9595,6 @@ class Game:
         for block in self.blocks:
             block.ID = counter
             counter += 0.00001
-
-        try:
-            self.player.rect.center = self.storeData["mario pos"]
-            self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
-            self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
-            self.player.abilities = self.storeData["mario abilities"]
-            self.follower.abilities = self.storeData["luigi abilities"]
-            if self.leader == "mario":
-                self.follower.moveQueue = self.storeData["move"]
-            elif self.leader == "luigi":
-                self.player.moveQueue = self.storeData["move"]
-
-        except:
-
-            self.player.moveQueue = Q.deque()
-
-            self.follower.moveQueue = Q.deque()
-
-        self.cameraRect.update(self.player.rect, 0)
-        self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
-
-    def loadCaviCapeRoom7(self):
-        self.room = "self.loadCaviCapeRoom7()"
-        self.sprites = []
-        self.collision = []
-        self.walls = pg.sprite.Group()
-        self.enemies = []
-        self.blocks = pg.sprite.Group()
-        self.npcs = pg.sprite.Group()
-        self.map = Map(self, "Cavi Cape Room 7", background="Cavi Cape")
-        self.camera = Camera(self, self.map.width, self.map.height)
-        self.cameraRect = CameraRect()
-        self.player.rect.center = (760, 640)
-        self.player.facing = "right"
-        self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (860, 640)
-        self.follower.facing = "right"
-        self.followerCol = LuigiCollision(self)
-        self.playerHammer = HammerCollisionMario(self)
-        self.followerHammer = HammerCollisionLuigi(self)
-        self.sprites.append(self.follower)
-        self.sprites.append(self.player)
-        self.follower.stepSound = self.grassSound
-        self.player.stepSound = self.grassSound
-
-        counter = 1.7
-        for enemy in self.enemies:
-            enemy.ID = counter
-            counter += 0.00001
-
-        counter = 1.7
-        for block in self.blocks:
-            block.ID = counter
-            counter += 0.00001
-
-        try:
-            self.player.rect.center = self.storeData["mario pos"]
-            self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
-            self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
-            self.player.abilities = self.storeData["mario abilities"]
-            self.follower.abilities = self.storeData["luigi abilities"]
-            if self.leader == "mario":
-                self.follower.moveQueue = self.storeData["move"]
-            elif self.leader == "luigi":
-                self.player.moveQueue = self.storeData["move"]
-
-        except:
-
-            self.player.moveQueue = Q.deque()
-
-            self.follower.moveQueue = Q.deque()
-
-        self.cameraRect.update(self.player.rect, 0)
-        self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
-
-    def loadCaviCapeRoom8(self):
-        self.room = "self.loadCaviCapeRoom8()"
-        self.sprites = []
-        self.collision = []
-        self.walls = pg.sprite.Group()
-        self.enemies = []
-        self.blocks = pg.sprite.Group()
-        self.npcs = pg.sprite.Group()
-        self.map = Map(self, "Cavi Cape Room 8", background="Cavi Cape")
-        self.camera = Camera(self, self.map.width, self.map.height)
-        self.cameraRect = CameraRect()
-        self.player.rect.center = (760, 640)
-        self.player.facing = "right"
-        self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (860, 640)
-        self.follower.facing = "right"
-        self.followerCol = LuigiCollision(self)
-        self.playerHammer = HammerCollisionMario(self)
-        self.followerHammer = HammerCollisionLuigi(self)
-        self.sprites.append(self.follower)
-        self.sprites.append(self.player)
-        self.follower.stepSound = self.grassSound
-        self.player.stepSound = self.grassSound
-
-        counter = 1.8
-        for enemy in self.enemies:
-            enemy.ID = counter
-            counter += 0.00001
-
-        counter = 1.8
-        for block in self.blocks:
-            block.ID = counter
-            counter += 0.00001
-
-        try:
-            self.player.rect.center = self.storeData["mario pos"]
-            self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
-            self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
-            self.player.abilities = self.storeData["mario abilities"]
-            self.follower.abilities = self.storeData["luigi abilities"]
-            if self.leader == "mario":
-                self.follower.moveQueue = self.storeData["move"]
-            elif self.leader == "luigi":
-                self.player.moveQueue = self.storeData["move"]
-
-        except:
-
-            self.player.moveQueue = Q.deque()
-
-            self.follower.moveQueue = Q.deque()
-
-        self.cameraRect.update(self.player.rect, 0)
-        self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
-
-    def loadCaviCapeRoom9(self):
-        self.room = "self.loadCaviCapeRoom9()"
-        self.sprites = []
-        self.collision = []
-        self.walls = pg.sprite.Group()
-        self.enemies = []
-        self.blocks = pg.sprite.Group()
-        self.npcs = pg.sprite.Group()
-        self.map = Map(self, "Cavi Cape Room 9", background="Cavi Cape")
-        self.camera = Camera(self, self.map.width, self.map.height)
-        self.cameraRect = CameraRect()
-        self.player.rect.center = (760, 640)
-        self.player.facing = "right"
-        self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (860, 640)
-        self.follower.facing = "right"
-        self.followerCol = LuigiCollision(self)
-        self.playerHammer = HammerCollisionMario(self)
-        self.followerHammer = HammerCollisionLuigi(self)
-        self.sprites.append(self.follower)
-        self.sprites.append(self.player)
-        self.follower.stepSound = self.grassSound
-        self.player.stepSound = self.grassSound
-
-        counter = 1.9
-        for enemy in self.enemies:
-            enemy.ID = counter
-            counter += 0.00001
-
-        counter = 1.9
-        for block in self.blocks:
-            block.ID = counter
-            counter += 0.00001
-
-        try:
-            self.player.rect.center = self.storeData["mario pos"]
-            self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
-            self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
-            self.player.abilities = self.storeData["mario abilities"]
-            self.follower.abilities = self.storeData["luigi abilities"]
-            if self.leader == "mario":
-                self.follower.moveQueue = self.storeData["move"]
-            elif self.leader == "luigi":
-                self.player.moveQueue = self.storeData["move"]
-
-        except:
-
-            self.player.moveQueue = Q.deque()
-
-            self.follower.moveQueue = Q.deque()
-
-        self.cameraRect.update(self.player.rect, 0)
-        self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
-
-    def loadCaviCapeRoom10(self):
-        self.room = "self.loadCaviCapeRoom10()"
-        self.sprites = []
-        self.collision = []
-        self.walls = pg.sprite.Group()
-        self.enemies = []
-        self.blocks = pg.sprite.Group()
-        self.npcs = pg.sprite.Group()
-        self.map = Map(self, "Cavi Cape Room 10", background="Cavi Cape")
-        self.camera = Camera(self, self.map.width, self.map.height)
-        self.cameraRect = CameraRect()
-        self.player.rect.center = (760, 640)
-        self.player.facing = "right"
-        self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (860, 640)
-        self.follower.facing = "right"
-        self.followerCol = LuigiCollision(self)
-        self.playerHammer = HammerCollisionMario(self)
-        self.followerHammer = HammerCollisionLuigi(self)
-        self.sprites.append(self.follower)
-        self.sprites.append(self.player)
-        self.follower.stepSound = self.grassSound
-        self.player.stepSound = self.grassSound
-
-        counter = 1.101
-        for enemy in self.enemies:
-            enemy.ID = counter
-            counter += 0.000001
-
-        counter = 1.101
-        for block in self.blocks:
-            block.ID = counter
-            counter += 0.000001
 
         try:
             self.player.rect.center = self.storeData["mario pos"]
@@ -10501,6 +10540,742 @@ class Game:
             pass
         self.battle()
 
+    def loadCaviCapeBattle1K(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        Wall(self, 720, 240, 480, 80)
+        Wall(self, 720, 1600, 480, 80)
+        Wall(self, 320, 640, 400, 80)
+        Wall(self, 1200, 640, 400, 80)
+        Wall(self, 320, 1200, 400, 80)
+        Wall(self, 1200, 1200, 400, 80)
+
+        Wall(self, 240, 720, 80, 480)
+        Wall(self, 1600, 720, 80, 480)
+        Wall(self, 640, 320, 80, 400)
+        Wall(self, 1200, 320, 80, 400)
+        Wall(self, 640, 1200, 80, 400)
+        Wall(self, 1200, 1200, 80, 400)
+
+        self.map = PngMap("Cavi Cape Battle", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (960, 960)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (960, 960)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadCaviCapeBattle1K1G(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        Wall(self, 720, 240, 480, 80)
+        Wall(self, 720, 1600, 480, 80)
+        Wall(self, 320, 640, 400, 80)
+        Wall(self, 1200, 640, 400, 80)
+        Wall(self, 320, 1200, 400, 80)
+        Wall(self, 1200, 1200, 400, 80)
+
+        Wall(self, 240, 720, 80, 480)
+        Wall(self, 1600, 720, 80, 480)
+        Wall(self, 640, 320, 80, 400)
+        Wall(self, 1200, 320, 80, 400)
+        Wall(self, 640, 1200, 80, 400)
+        Wall(self, 1200, 1200, 80, 400)
+
+        self.map = PngMap("Cavi Cape Battle", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (960, 960)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (960, 960)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadCaviCapeBattle1K2G(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        Wall(self, 720, 240, 480, 80)
+        Wall(self, 720, 1600, 480, 80)
+        Wall(self, 320, 640, 400, 80)
+        Wall(self, 1200, 640, 400, 80)
+        Wall(self, 320, 1200, 400, 80)
+        Wall(self, 1200, 1200, 400, 80)
+
+        Wall(self, 240, 720, 80, 480)
+        Wall(self, 1600, 720, 80, 480)
+        Wall(self, 640, 320, 80, 400)
+        Wall(self, 1200, 320, 80, 400)
+        Wall(self, 640, 1200, 80, 400)
+        Wall(self, 1200, 1200, 80, 400)
+
+        self.map = PngMap("Cavi Cape Battle", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (960, 960)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (960, 960)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadCaviCapeBattle2K2G(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        Wall(self, 720, 240, 480, 80)
+        Wall(self, 720, 1600, 480, 80)
+        Wall(self, 320, 640, 400, 80)
+        Wall(self, 1200, 640, 400, 80)
+        Wall(self, 320, 1200, 400, 80)
+        Wall(self, 1200, 1200, 400, 80)
+
+        Wall(self, 240, 720, 80, 480)
+        Wall(self, 1600, 720, 80, 480)
+        Wall(self, 640, 320, 80, 400)
+        Wall(self, 1200, 320, 80, 400)
+        Wall(self, 640, 1200, 80, 400)
+        Wall(self, 1200, 1200, 80, 400)
+
+        self.map = PngMap("Cavi Cape Battle", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (960, 960)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (960, 960)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadCaviCapeBattle4K4G(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Koopa()
+            koop.init(self, (560, 960))
+        elif quadrant == 1:
+            koop = Koopa()
+            koop.init(self, (960, 489))
+        elif quadrant == 2:
+            koop = Koopa()
+            koop.init(self, (1440, 960))
+        elif quadrant == 3:
+            koop = Koopa()
+            koop.init(self, (960, 1360))
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        dir = random.randrange(0, 4)
+        quadrant = random.randrange(0, 4)
+
+        if dir == 0:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "up")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "up")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "up")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "up")
+        elif dir == 1:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "down")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "down")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "down")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "down")
+        elif dir == 2:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "left")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "left")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "left")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "left")
+        elif dir == 3:
+            if quadrant == 0:
+                Goomba(self, 560, 960, 4, 4, "right")
+            elif quadrant == 1:
+                Goomba(self, 960, 489, 4, 4, "right")
+            elif quadrant == 2:
+                Goomba(self, 1440, 960, 4, 4, "right")
+            elif quadrant == 3:
+                Goomba(self, 960, 1360, 4, 4, "right")
+
+        Wall(self, 720, 240, 480, 80)
+        Wall(self, 720, 1600, 480, 80)
+        Wall(self, 320, 640, 400, 80)
+        Wall(self, 1200, 640, 400, 80)
+        Wall(self, 320, 1200, 400, 80)
+        Wall(self, 1200, 1200, 400, 80)
+
+        Wall(self, 240, 720, 80, 480)
+        Wall(self, 1600, 720, 80, 480)
+        Wall(self, 640, 320, 80, 400)
+        Wall(self, 1200, 320, 80, 400)
+        Wall(self, 640, 1200, 80, 400)
+        Wall(self, 1200, 1200, 80, 400)
+
+        self.map = PngMap("Cavi Cape Battle", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (960, 960)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (960, 960)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadCaviCapeBoss(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        mam = Mammoshka()
+        mam.init(self, (1515, 765))
+
+        self.map = Map(self, "Cavi Cape Boss", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, 1280)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, 1280)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle("""self.playSong(7.047, 48.306, "mammoshka battle")""")
+
     def battle(self, song=None):
         menud = False
         self.countdown = 0
@@ -10918,10 +11693,7 @@ class Game:
                         self.abilityAdvanceSound.play()
                     if event.key == pg.K_m or event.key == pg.K_l:
                         if select == 1:
-                            cursor.kill()
-                            self.pause = False
-                            going = False
-                            self.menuChooseSound.play()
+                            dont = False
                             if "Nut" in info[0]:
                                 if "Max" in info[0]:
                                     self.follower.stats["hp"] = self.follower.stats["maxHP"]
@@ -10935,35 +11707,43 @@ class Game:
                             elif "Max " in info[0]:
                                 self.follower.stats[info[3]] = self.follower.stats[info[4]]
                             elif "1-UP " in info[0]:
-                                if "Mushroom" in info[0]:
-                                    self.follower.stats["hp"] = round(self.follower.stats["maxHP"] / 2)
+                                if self.follower.dead:
+                                    if "Mushroom" in info[0]:
+                                        self.follower.stats["hp"] = round(self.follower.stats["maxHP"] / 2)
+                                    else:
+                                        self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                                    self.follower.dead = False
+                                    center = self.follower.rect.center
+                                    self.follower.shadow = self.follower.shadowFrames["normal"]
+                                    self.follower.rect = self.follower.shadow.get_rect()
+                                    self.follower.rect.center = center
+                                    self.follower.jumping = True
+                                    self.jumpSound.play()
                                 else:
-                                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
-                                self.follower.dead = False
-                                center = self.follower.rect.center
-                                self.follower.shadow = self.follower.shadowFrames["normal"]
-                                self.follower.rect = self.follower.shadow.get_rect()
-                                self.follower.rect.center = center
-                                self.follower.jumping = True
-                                self.jumpSound.play()
-                            else:
-                                self.follower.stats[info[3]] += info[-1]
+                                    dont = True
+                            elif "Mushroom" in info[0]:
+                                if not self.follower.dead:
+                                    self.follower.stats[info[3]] += info[-1]
+                                else:
+                                    dont = True
 
-                            if self.player.stats["hp"] > self.player.stats["maxHP"]:
-                                self.player.stats["hp"] = self.player.stats["maxHP"]
-                            if self.player.stats["bp"] > self.player.stats["maxBP"]:
-                                self.player.stats["bp"] = self.player.stats["maxBP"]
-                            if self.follower.stats["hp"] > self.follower.stats["maxHP"]:
-                                self.follower.stats["hp"] = self.follower.stats["maxHP"]
-                            if self.follower.stats["bp"] > self.follower.stats["maxBP"]:
-                                self.follower.stats["bp"] = self.follower.stats["maxBP"]
-                            info[1] -= 1
-                            pg.event.clear()
+                            if not dont:
+                                if self.player.stats["hp"] > self.player.stats["maxHP"]:
+                                    self.player.stats["hp"] = self.player.stats["maxHP"]
+                                if self.player.stats["bp"] > self.player.stats["maxBP"]:
+                                    self.player.stats["bp"] = self.player.stats["maxBP"]
+                                if self.follower.stats["hp"] > self.follower.stats["maxHP"]:
+                                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                                if self.follower.stats["bp"] > self.follower.stats["maxBP"]:
+                                    self.follower.stats["bp"] = self.follower.stats["maxBP"]
+                                info[1] -= 1
+                                cursor.kill()
+                                self.pause = False
+                                going = False
+                                self.menuChooseSound.play()
+                                pg.event.clear()
                         if select == 0:
-                            cursor.kill()
-                            self.pause = False
-                            self.menuChooseSound.play()
-                            going = False
+                            dont = False
                             if "Nut" in info[0]:
                                 if "Max" in info[0]:
                                     self.follower.stats["hp"] = self.follower.stats["maxHP"]
@@ -10977,41 +11757,57 @@ class Game:
                             elif "Max " in info[0]:
                                 self.player.stats[info[3]] = self.player.stats[info[4]]
                             elif "1-UP " in info[0]:
-                                if "Mushroom" in info[0]:
-                                    self.player.stats["hp"] = round(self.player.stats["maxHP"] / 2)
+                                if self.player.dead:
+                                    if "Mushroom" in info[0]:
+                                        self.player.stats["hp"] = round(self.player.stats["maxHP"] / 2)
+                                    else:
+                                        self.player.stats["hp"] = self.player.stats["maxHP"]
+                                    self.player.dead = False
+                                    center = self.player.rect.center
+                                    self.player.shadow = self.player.shadowFrames["normal"]
+                                    self.player.rect = self.player.shadow.get_rect()
+                                    self.player.rect.center = center
+                                    self.player.jumping = True
+                                    self.jumpSound.play()
                                 else:
-                                    self.player.stats["hp"] = self.player.stats["maxHP"]
-                                self.player.dead = False
-                                center = self.player.rect.center
-                                self.player.shadow = self.player.shadowFrames["normal"]
-                                self.player.rect = self.player.shadow.get_rect()
-                                self.player.rect.center = center
-                                self.player.jumping = True
-                                self.jumpSound.play()
-                            else:
-                                self.player.stats[info[3]] += info[-1]
-                            if self.player.stats["hp"] > self.player.stats["maxHP"]:
-                                self.player.stats["hp"] = self.player.stats["maxHP"]
-                            if self.player.stats["bp"] > self.player.stats["maxBP"]:
-                                self.player.stats["bp"] = self.player.stats["maxBP"]
-                            if self.follower.stats["hp"] > self.follower.stats["maxHP"]:
-                                self.follower.stats["hp"] = self.follower.stats["maxHP"]
-                            if self.follower.stats["bp"] > self.follower.stats["maxBP"]:
-                                self.follower.stats["bp"] = self.follower.stats["maxBP"]
-                            info[1] -= 1
-                            pg.event.clear()
-                        if "1-UP" in info[0]:
-                            self.fullRestoreSound.play()
-                        elif "Super" in info[0]:
-                            self.medRestoreSound.play()
-                        elif "Ultra" in info[0]:
-                            self.medRestoreSound.play()
-                        elif "Max" in info[0]:
-                            self.fullRestoreSound.play()
-                        else:
-                            self.smallRestoreSound.play()
+                                    dont = True
+                            elif "Mushroom" in info[0]:
+                                if not self.player.dead:
+                                    self.player.stats[info[3]] += info[-1]
+                                else:
+                                    dont = True
 
-                        self.countdown = fps * 10
+                            if not dont:
+                                if self.player.stats["hp"] > self.player.stats["maxHP"]:
+                                    self.player.stats["hp"] = self.player.stats["maxHP"]
+                                if self.player.stats["bp"] > self.player.stats["maxBP"]:
+                                    self.player.stats["bp"] = self.player.stats["maxBP"]
+                                if self.follower.stats["hp"] > self.follower.stats["maxHP"]:
+                                    self.follower.stats["hp"] = self.follower.stats["maxHP"]
+                                if self.follower.stats["bp"] > self.follower.stats["maxBP"]:
+                                    self.follower.stats["bp"] = self.follower.stats["maxBP"]
+                                info[1] -= 1
+                                cursor.kill()
+                                self.pause = False
+                                self.menuChooseSound.play()
+                                going = False
+                                pg.event.clear()
+
+                        if not dont:
+                            if "1-UP" in info[0]:
+                                self.fullRestoreSound.play()
+                            elif "Super" in info[0]:
+                                self.medRestoreSound.play()
+                            elif "Ultra" in info[0]:
+                                self.medRestoreSound.play()
+                            elif "Max" in info[0]:
+                                self.fullRestoreSound.play()
+                            else:
+                                self.smallRestoreSound.play()
+
+                            self.countdown = fps * 10
+                        else:
+                            self.wrongSound.play()
                     if event.key == pg.K_TAB:
                         cursor.kill()
                         self.pause = False
@@ -11287,7 +12083,7 @@ class Game:
             keys = pg.key.get_pressed()
             cursor.update(self.enemies[number].imgRect, 60)
             enemyNames.update(self.enemies[number].stats["name"])
-            self.cameraRect.update(self.enemies[number].rect, 60)
+            self.cameraRect.update(self.enemies[number].imgRect, 60)
             self.camera.update(self.cameraRect.rect)
             self.ui.update()
             self.event = pg.event.get().copy()
@@ -11560,9 +12356,8 @@ class Game:
                             luigi.target = True
                             luigi.currentFrame = 0
                             shell.prevTarget = "enemy"
-                            sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
-                                                      (self.player.stats["pow"] - target.enemy.stats["def"])))
-                            target.enemy.stats["hp"] -= (self.player.stats["pow"] - target.enemy.stats["def"])
+                            sprites.append(HitNumbers(max(self.player.stats["pow"] - target.enemy.stats["def"], 1)))
+                            target.enemy.stats["hp"] -= (max(self.player.stats["pow"] - target.enemy.stats["def"], 1))
                             self.enemyHitSound.play()
                             if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
                                 shell.travelSpeed = (
@@ -11584,8 +12379,8 @@ class Game:
                             mario.currentFrame = 0
                             shell.prevTarget = "enemy"
                             sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
-                                                      (self.follower.stats["pow"] - target.enemy.stats["def"])))
-                            target.enemy.stats["hp"] -= (self.follower.stats["pow"] - target.enemy.stats["def"])
+                                                      (max(self.follower.stats["pow"] - target.enemy.stats["def"], 1))))
+                            target.enemy.stats["hp"] -= (max(self.follower.stats["pow"] - target.enemy.stats["def"], 1))
                             self.enemyHitSound.play()
                             if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
                                 shell.travelSpeed = (
@@ -11788,8 +12583,8 @@ class Game:
                             luigi.currentFrame = 0
                             shell.prevTarget = "enemy"
                             sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
-                                                      (self.player.stats["pow"] - target.enemy.stats["def"])))
-                            target.enemy.stats["hp"] -= (self.player.stats["pow"] - target.enemy.stats["def"])
+                                                      (max(self.player.stats["pow"] - target.enemy.stats["def"], 1))))
+                            target.enemy.stats["hp"] -= (max(self.player.stats["pow"] - target.enemy.stats["def"], 1))
                             self.enemyHitSound.play()
                             if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
                                 shell.travelSpeed = (
@@ -11811,8 +12606,8 @@ class Game:
                             mario.currentFrame = 0
                             shell.prevTarget = "enemy"
                             sprites.append(HitNumbers(self, self.room, (target.rect.centerx, target.rect.top),
-                                                      (self.follower.stats["pow"] - target.enemy.stats["def"])))
-                            target.enemy.stats["hp"] -= (self.follower.stats["pow"] - target.enemy.stats["def"])
+                                                      (max(self.follower.stats["pow"] - target.enemy.stats["def"], 1))))
+                            target.enemy.stats["hp"] -= (max(self.follower.stats["pow"] - target.enemy.stats["def"], 1))
                             self.enemyHitSound.play()
                             if target.enemy.stats["hp"] <= 0 and len(enemies) == 1:
                                 shell.travelSpeed = (
@@ -11933,11 +12728,11 @@ class Game:
         self.room = "battle"
 
     def battleOver(self, mario=True, luigi=True, tutorial=False):
-        self.player.statGrowth = {"maxHP": randomNumber(10), "maxBP": randomNumber(4), "pow": randomNumber(7),
+        self.player.statGrowth = {"maxHP": randomNumber(10), "maxBP": randomNumber(4), "pow": randomNumber(4),
                                   "def": randomNumber(3)}
 
-        self.follower.statGrowth = {"maxHP": randomNumber(13), "maxBP": randomNumber(7), "pow": randomNumber(4),
-                                    "def": randomNumber(6)}
+        self.follower.statGrowth = {"maxHP": randomNumber(13), "maxBP": randomNumber(5), "pow": randomNumber(3),
+                                    "def": randomNumber(5)}
 
         self.player.isHammer = None
         self.follower.isHammer = None

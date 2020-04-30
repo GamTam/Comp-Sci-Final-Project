@@ -4852,6 +4852,12 @@ class TextBox(pg.sprite.Sprite):
             self.rect.right - self.advanceRect.width - 20, self.rect.bottom - self.advanceRect.width - 20)
         self.image = pg.transform.scale(textboxSprites[self.type],
                                         (int(self.maxRect.width * self.scale), int(self.maxRect.height * self.scale)))
+        if self.type == "dialogue":
+            self.textx = self.rect.left + 70
+            self.texty = self.rect.top + 40
+        if self.type == "board":
+            self.textx = self.rect.left + 100
+            self.texty = self.rect.top + 100
         if dir is None:
             if self.rect.centery >= height / 2:
                 for i in range(self.speed + 1):

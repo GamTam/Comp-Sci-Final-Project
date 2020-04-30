@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:0bf92193dba49cdc7c04b325a1f35db6:6f296808e719bd5675afb4d8509564f8:f3e0c22742c6635bae57ccacba2b0855$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="mamoshka overworld.png" width="1900" height="1238">
+    <sprite n="angry_1.png" x="190" y="216" w="190" h="220" pX="0.5" pY="0.5"/>
+    <sprite n="angry_2.png" x="380" y="216" w="190" h="220" pX="0.5" pY="0.5"/>
+    <sprite n="angry_3.png" x="570" y="216" w="190" h="220" pX="0.5" pY="0.5"/>
+    <sprite n="angry_4.png" x="1330" y="216" w="190" h="226" pX="0.5" pY="0.5"/>
+    <sprite n="angry_5.png" x="1140" y="216" w="190" h="222" pX="0.5" pY="0.5"/>
+    <sprite n="angry_6.png" x="760" y="216" w="190" h="220" pX="0.5" pY="0.5"/>
+    <sprite n="angry_7.png" x="1511" y="0" w="190" h="216" pX="0.5" pY="0.5"/>
+    <sprite n="angry_8.png" x="941" y="0" w="190" h="214" pX="0.5" pY="0.5"/>
+    <sprite n="angry_9.png" x="371" y="0" w="190" h="210" pX="0.5" pY="0.5"/>
+    <sprite n="angry_10.png" x="751" y="0" w="190" h="212" pX="0.5" pY="0.5"/>
+    <sprite n="roar_1.png" x="950" y="216" w="190" h="220" pX="0.5" pY="0.5"/>
+    <sprite n="roar_2.png" x="1701" y="0" w="190" h="216" pX="0.5" pY="0.5"/>
+    <sprite n="roar_3.png" x="1131" y="0" w="190" h="214" pX="0.5" pY="0.5"/>
+    <sprite n="roar_4.png" x="181" y="0" w="190" h="208" pX="0.5" pY="0.5"/>
+    <sprite n="roar_5.png" x="561" y="0" w="190" h="212" pX="0.5" pY="0.5"/>
+    <sprite n="roar_6.png" x="1321" y="0" w="190" h="214" pX="0.5" pY="0.5"/>
+    <sprite n="roar_7.png" x="0" y="216" w="190" h="218" pX="0.5" pY="0.5"/>
+    <sprite n="roar_8.png" x="380" y="458" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_9.png" x="1710" y="458" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_10.png" x="1140" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_11.png" x="1520" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_12.png" x="570" y="458" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_13.png" x="190" y="970" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_14.png" x="570" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_15.png" x="1520" y="216" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_16.png" x="1140" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_17.png" x="380" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_18.png" x="570" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_19.png" x="950" y="458" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_20.png" x="950" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_21.png" x="760" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_22.png" x="760" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_23.png" x="1330" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_24.png" x="760" y="458" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_25.png" x="0" y="970" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_26.png" x="1330" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_27.png" x="1710" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_28.png" x="190" y="458" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_29.png" x="380" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_30.png" x="950" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_31.png" x="1710" y="216" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_32.png" x="1140" y="458" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_33.png" x="1710" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_34.png" x="1520" y="458" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_35.png" x="0" y="458" w="190" h="242" pX="0.5" pY="0.5"/>
+    <sprite n="roar_36.png" x="0" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_37.png" x="1520" y="970" w="190" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="roar_38.png" x="190" y="714" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="roar_39.png" x="1330" y="458" w="190" h="256" pX="0.5" pY="0.5"/>
+    <sprite n="shadow.png" x="0" y="0" w="181" h="63" pX="0.5" pY="0.5"/>
+</TextureAtlas>
