@@ -279,6 +279,7 @@ class Game:
         self.displayTime = self.playHours + self.playMinutes + self.playSeconds
 
     def titleScreen(self, fadein=True):
+        self.__init__()
         if self.player.dead:
             self.player.dead = False
             self.player.stats["hp"] = 1
@@ -8134,7 +8135,8 @@ class Game:
         elif luigi:
             self.gameOverLuigi.play()
         fade = Fadeout(self)
-        while True:
+        going = True
+        while going:
             alpha += 1
 
             self.events()
@@ -8144,7 +8146,7 @@ class Game:
 
             try:
                 if fade.alpha >= 255:
-                    self.titleScreen()
+                    going = False
             except:
                 pass
 
@@ -8161,6 +8163,8 @@ class Game:
             self.screen.blit(fade.image, fade.rect)
 
             pg.display.flip()
+
+        self.titleScreen()
 
     def saveGame(self, song=None):
         self.menuOpenSound.play()
@@ -8476,7 +8480,7 @@ class Game:
 
         McMuffinWarp(self, (1665, 1405), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
         if self.mcMuffins >= 2:
-            McMuffinWarp(self, (2430, 1405), red, "self.game.loadCaviCapeEnterance()", 2, "Teehee Valley")
+            McMuffinWarp(self, (2430, 1405), red, "self.game.loadTeeheeValleyEnterance()", 2, "Teehee Valley")
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width, (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
 
@@ -9480,8 +9484,8 @@ class Game:
         LoadCutscene(self, pg.rect.Rect(1200, 1600, 160, 80), True, False,[
             ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
                        "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
-                       "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), red, self.game)')",
-                       "self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
+                       "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), red, self.game)')"],
+                       ["self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
                       ["self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
                       ["self.move(self.game.cameraRect, 1280, 880, False, 60)"],
                       ["""self.setVar('self.mario.facing = "up"')""",
@@ -9618,6 +9622,129 @@ class Game:
 
         self.cameraRect.update(self.player.rect, 0)
         self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
+
+    def loadTeeheeValleyEnterance(self):
+        self.room = "self.loadTeeheeValleyEnterance()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = PngMap("Cavi Cape Enterance", background="Cavi Cape")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (760, 640)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (860, 640)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.grassSound
+        self.player.stepSound = self.grassSound
+
+        McMuffinWarp(self, (960, 960), black,  "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
+
+        try:
+            self.player.rect.center = self.storeData["mario pos"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+        if self.area != "Teehee Valley" and self.area != "title screen":
+            if "teehee valley entrance" in self.usedCutscenes:
+                Cutscene(self,
+                         [["self.changeSong([14.764, 42.501, 'Teehee Valley'])"],
+                          ["self.wait(1)"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')", "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')", "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                           "self.setVar('self.game.muff = EggMcMuffin((680, 640), black, self.game)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                              ],["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                              ],["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          [
+                              "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.rect.centerx, self.game.muff.rect.top - 39))",
+                             ], ["self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                          ["self.wait(0.5)"],
+                          ["self.setVar('self.game.luigi.walking = True')",
+                                  "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60)"],
+                          ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+                          ])
+            else:
+                Cutscene(self,
+                         [["self.changeSong([14.764, 42.501, 'Teehee Valley'])"],
+                          ["self.wait(1)"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                           "self.setVar('self.game.muff = EggMcMuffin((680, 640), black, self.game)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          [
+                              "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.rect.centerx, self.game.muff.rect.top - 39))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                          ["self.wait(0.5)"]
+                          ])
+            LoadCutscene(self, self.player.rect, True, True, [
+                ['self.changeSong([14.764, 42.501, "Teehee Valley"])', "self.command('self.game.cutsceneSprites.append(self.game.mario)')", "self.command('self.game.cutsceneSprites.append(self.game.luigi)')", "self.command('self.game.cutsceneSprites.append(self.game.muff)')",
+                 "self.setVar('self.game.starlow = starlowCutscene(self.game, self.game.player.rect.center)')", "self.command('self.game.starlowTwinkle.play()')","""self.setVar('self.game.starlow.facing = "up"')"""],
+                ["""self.setVar('self.game.mario.facing = "up"')""","""self.setVar('self.game.luigi.facing = "upleft"')"""],
+                ["self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery - 100, False, 30)"],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "down"')"""],
+                ["""self.textBox(self.game.starlow,
+                   ["So this is where the Egg McMuffin/nbrought us..."], sound='starlow')"""],
+                ["""self.setVar('self.game.starlow.facing = "left"')"""],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "down"')"""],
+                ["""self.textBox(self.game.starlow,
+                    ["Well, what are we waiting for?",
+                    "Let's go find the next one!"], sound='starlow')"""],
+                ["self.setVar('self.game.luigi.walking = True')",
+                 """self.setVar('self.game.luigi.facing = "left"')""",
+                 "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 0)",
+                 "self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')",
+                 """self.setVar('self.game.player.facing = "up"')""",
+                 """self.setVar('self.game.follower.facing = "up"')"""]
+            ], id="teehee valley entrance")
+            self.cutsceneSprites = []
+        self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
 
     def overworld(self, area, songData):
         menud = False
@@ -10159,7 +10286,7 @@ class Game:
         self.sprites.append(self.player)
         self.follower.stepSound = self.sandSound
         self.player.stepSound = self.sandSound
-        self.map = PngMap("teehee valley battle", True)
+        self.map = PngMap("debug battle", True)
         self.camera = Camera(self, self.map.width, self.map.height)
         # self.battle('self.playSong(54.965, 191.98, "New Soup Final Boss")')
         self.battle('self.playSong(8.148, 71.893, "Vs Linebeck")')
@@ -10208,7 +10335,7 @@ class Game:
         Wall(self, 1407, 1486, 116, 72)
         Wall(self, 1522, 1455, 200, 72)
 
-        self.map = PngMap("teehee valley battle", True)
+        self.map = PngMap("debug battle", True)
         self.camera = Camera(self, self.map.width, self.map.height)
         self.player.rect.center = (width / 2, 1278)
         self.playerCol = MarioCollision(self)

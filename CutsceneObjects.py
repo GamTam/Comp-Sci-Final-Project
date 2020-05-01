@@ -2,7 +2,7 @@ from Overworld import *
 
 
 class Cutscene:
-    def __init__(self, game, scenes, parent=None):
+    def __init__(self, game, scenes, parent=None, currentScene=0, currentSubscene=0):
         self.over = False
         self.game = game
         self.game.cutsceneSprites = []
@@ -29,10 +29,9 @@ class Cutscene:
                      None,
                      None,
                      None]
-        self.currentScene = 0
-        self.currentSubscene = 0
+        self.currentScene = currentScene
+        self.currentSubscene = currentSubscene
         self.action = 0
-
         self.xDest = [-69,
                       -69,
                       -69,
@@ -389,7 +388,7 @@ class LoadCutscene:
         self.rect = rect
         self.delete = delete
         self.auto = auto
-        self.scenes = scenes
+        self.scenes = scenes.copy()
         self.game.cutscenes.append(self)
         self.id = id
 
