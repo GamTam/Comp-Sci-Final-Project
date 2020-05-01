@@ -2244,7 +2244,7 @@ class Mammoshka(StateMachine):
             self.rect.center = project(self.rect.center, self.angle, self.speed * 5)
             for wall in self.game.walls:
                 if wall.rect.colliderect(self.rect):
-                    if not self.is_hit:
+                    if self.is_run:
                         self.cooldown = fps
                         self.stop()
                         self.idleHit()
