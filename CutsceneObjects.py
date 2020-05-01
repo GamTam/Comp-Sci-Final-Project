@@ -111,7 +111,8 @@ class Cutscene:
                 self.game.cutsceneSprites.sort(key=self.game.sortByYPos)
                 for sprite in self.game.cutsceneSprites:
                     try:
-                        self.game.screen.blit(sprite.shadow, self.game.camera.offset(sprite.rect))
+                        if sprite not in self.mcMuffinSprites:
+                            self.game.screen.blit(sprite.shadow, self.game.camera.offset(sprite.rect))
                     except:
                         pass
 
@@ -3025,6 +3026,7 @@ class McMuffinWarp(pg.sprite.Sprite):
                               ["self.command('Fadeout(self.game, 5)')"],
                               ["self.wait(5)"]
                               ], parent=self)
+                print("ryan")
                 self.fade = 5
 
         if self.textbox is not None:

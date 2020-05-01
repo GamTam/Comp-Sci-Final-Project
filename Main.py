@@ -142,13 +142,16 @@ class Map:
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, fullscreen=False):
         self.playing = False
         self.tutorials = False
         self.voidSize = 0.1
         self.mcMuffins = 1
         self.void = Void(self, self.voidSize)
-        self.screen = pg.display.set_mode((width, height))
+        if not fullscreen:
+            self.screen = pg.display.set_mode((width, height))
+        else:
+            self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
         self.camera = Camera(self, width, height)
         self.imgRect = pg.rect.Rect(width / 2, height / 2, 0, 0)
         self.clock = pg.time.Clock()
@@ -185,7 +188,7 @@ class Game:
         self.loops = 0
         self.running = True
         self.pause = False
-        self.fullscreen = False
+        self.fullscreen = fullscreen
         self.leader = "mario"
         self.coins = 0
         self.items = [["Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 30 HP to one Bro.", 30],
@@ -279,7 +282,9 @@ class Game:
         self.displayTime = self.playHours + self.playMinutes + self.playSeconds
 
     def titleScreen(self, fadein=True):
-        self.__init__()
+        full = self.fullscreen
+        self.__init__(full)
+        pg.event.clear()
         if self.player.dead:
             self.player.dead = False
             self.player.stats["hp"] = 1
@@ -530,6 +535,7 @@ class Game:
                         if clipRect.width < width:
                             clipRect.width = width
                             clipRect.height = height
+                            clipRect.centerx = width / 2
                             fade.alpha = 0
                         else:
                             if select == 1:
@@ -8480,7 +8486,7 @@ class Game:
 
         McMuffinWarp(self, (1665, 1405), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
         if self.mcMuffins >= 2:
-            McMuffinWarp(self, (2430, 1405), red, "self.game.loadTeeheeValleyEnterance()", 2, "Teehee Valley")
+            McMuffinWarp(self, (2430, 1405), red, "self.game.loadTeeheeValleyEntrance()", 2, "Teehee Valley")
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width, (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
 
@@ -8806,7 +8812,7 @@ class Game:
                     "I've just given both of/nyou <<RBros. Attacks>>!",
                     "These are special attacks/nthat require both of you/nto use.",
                     "So make sure that you're/nboth alive!"])"""],
-                ["self.wait(2)"],
+                ["self.wait(2)", "self.setVar('self.game.fadeout = pg.sprite.Group()')"],
                 ["""self.textBox(self.game.toadley, [
                     "Really?/p Nothing?",
                     "I thought it was funny.",
@@ -8843,14 +8849,14 @@ class Game:
         if self.area != "Flipside" and self.area != "title screen":
             if self.mcMuffins >= 2:
                 Cutscene(self,
-                         [["self.changeSong([0, 95.997, 'flipside'])"],
+                         [["self.changeSong([0, 95.997, 'flipside'])",
+                           "self.setVar('self.game.muff = EggMcMuffin((2430, 1405), red, self.game)')",
+                           "self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
                           ["self.wait(1)"],
                           ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
                            "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
                            "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
-                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
-                           "self.setVar('self.game.muff = EggMcMuffin((2430, 1405), red, self.game)')",
-                           "self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')"],
                           ["self.command('self.game.mario.update()')",
                            "self.command('self.game.luigi.update()')"],
                           ["self.wait(0.2)"],
@@ -9581,7 +9587,7 @@ class Game:
              "self.setVar('self.game.luigi = self.luigi')",
              "self.setVar('self.game.mcMuffin = self.mcMuffin')",
              "self.mcMuffinGet()"],
-            ["self.wait(2)", """self.changeSong([14.221, 16.601, "mcMuffin Get"], False)"""],
+            ["self.command('self.fade.kill')", "self.setVar('self.mcMuffinSprites = []')", "self.wait(2)", """self.changeSong([14.221, 16.601, "mcMuffin Get"], False)"""],
             ["""self.textBox(self.game.cameraRect, ["And so, Mario and Luigi had located/nthe second Egg McMuffin.",
             "With only one left to go,/nthey hurried back to Flipside/nin order to hear from Dr. Toadley.",
             "Will they be able to collect/nthe last one before it's/ntoo late?"], type="board", dir="None")"""],
@@ -9623,31 +9629,31 @@ class Game:
         self.cameraRect.update(self.player.rect, 0)
         self.overworld("Cavi Cape", [5.75, 65.468, "Cavi Cape"])
 
-    def loadTeeheeValleyEnterance(self):
-        self.room = "self.loadTeeheeValleyEnterance()"
+    def loadTeeheeValleyEntrance(self):
+        self.room = "self.loadTeeheeValleyEntrance()"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
         self.enemies = []
         self.blocks = pg.sprite.Group()
         self.npcs = pg.sprite.Group()
-        self.map = PngMap("Cavi Cape Enterance", background="Cavi Cape")
+        self.map = Map(self, "Teehee Valley Entrance", background="Teehee Valley")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
-        self.player.rect.center = (760, 640)
+        self.player.rect.center = (1060, 960)
         self.player.facing = "left"
         self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (860, 640)
+        self.follower.rect.center = (1160, 960)
         self.follower.facing = "left"
         self.followerCol = LuigiCollision(self)
         self.playerHammer = HammerCollisionMario(self)
         self.followerHammer = HammerCollisionLuigi(self)
         self.sprites.append(self.follower)
         self.sprites.append(self.player)
-        self.follower.stepSound = self.grassSound
-        self.player.stepSound = self.grassSound
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
 
-        McMuffinWarp(self, (960, 960), black,  "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
+        McMuffinWarp(self, (960, 960), red,  "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
 
         try:
             self.player.rect.center = self.storeData["mario pos"]
@@ -9670,6 +9676,7 @@ class Game:
             self.follower.moveQueue = Q.deque()
 
         self.cameraRect.update(self.player.rect, 0)
+
         if self.area != "Teehee Valley" and self.area != "title screen":
             if "teehee valley entrance" in self.usedCutscenes:
                 Cutscene(self,
@@ -9677,7 +9684,7 @@ class Game:
                           ["self.wait(1)"],
                           ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')", "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
                            "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')", "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
-                           "self.setVar('self.game.muff = EggMcMuffin((680, 640), black, self.game)')"],
+                           "self.setVar('self.game.muff = EggMcMuffin((960, 960), red, self.game)')"],
                           ["self.command('self.game.mario.update()')",
                            "self.command('self.game.luigi.update()')"],
                           ["self.wait(0.2)"],
@@ -9703,7 +9710,7 @@ class Game:
                            "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
                            "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
                            "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
-                           "self.setVar('self.game.muff = EggMcMuffin((680, 640), black, self.game)')"],
+                           "self.setVar('self.game.muff = EggMcMuffin((960, 960), red, self.game)')"],
                           ["self.command('self.game.mario.update()')",
                            "self.command('self.game.luigi.update()')"],
                           ["self.wait(0.2)"],
@@ -9726,15 +9733,16 @@ class Game:
                 ["self.wait(1)"],
                 ["""self.setVar('self.game.starlow.facing = "down"')"""],
                 ["""self.textBox(self.game.starlow,
-                   ["So this is where the Egg McMuffin/nbrought us..."], sound='starlow')"""],
+                   ["This place feels like it/nshould belong in a western.",
+                   "I feel like it's not big/nenough for all of us."], sound='starlow')"""],
                 ["""self.setVar('self.game.starlow.facing = "left"')"""],
                 ["self.wait(1)"],
                 ["""self.setVar('self.game.starlow.facing = "right"')"""],
                 ["self.wait(1)"],
                 ["""self.setVar('self.game.starlow.facing = "down"')"""],
                 ["""self.textBox(self.game.starlow,
-                    ["Well, what are we waiting for?",
-                    "Let's go find the next one!"], sound='starlow')"""],
+                    ["But, we won't be here/nfor long!",
+                    "Let's find the last McMuffin!"], sound='starlow')"""],
                 ["self.setVar('self.game.luigi.walking = True')",
                  """self.setVar('self.game.luigi.facing = "left"')""",
                  "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 0)",
@@ -9850,7 +9858,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -10000,7 +10008,7 @@ class Game:
                     item.color = darkGray
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -10130,7 +10138,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -10364,7 +10372,7 @@ class Game:
         self.npcs = pg.sprite.Group()
         self.enemies = []
         self.playsong = True
-        
+
 
         # Top Half Collision
         Wall(self, -50, 1117, 1889, 27)
@@ -10471,10 +10479,10 @@ class Game:
         self.npcs = pg.sprite.Group()
         self.enemies = []
         self.playsong = True
-            
+
         dir = random.randrange(0, 4)
         quadrant = random.randrange(0, 4)
-        
+
         if dir == 0:
             if quadrant == 0:
                 Goomba(self, 560, 960, 4, 4, "up")
@@ -11478,7 +11486,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -11596,7 +11604,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -11717,7 +11725,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -11807,7 +11815,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -12001,7 +12009,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -12103,7 +12111,7 @@ class Game:
             s.set_alpha(125)
 
             keys = pg.key.get_pressed()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -12213,7 +12221,7 @@ class Game:
             self.cameraRect.update(self.enemies[number].imgRect, 60)
             self.camera.update(self.cameraRect.rect)
             self.ui.update()
-            self.event = pg.event.get().copy()
+            self.events()
             for event in self.event:
                 if event == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
@@ -12321,7 +12329,7 @@ class Game:
                     self.room = "bros attack"
                     eval(command)
                     break
-                self.event = pg.event.get().copy()
+                self.events()
                 for event in self.event:
                     if event == pg.QUIT or keys[pg.K_ESCAPE]:
                         pg.quit()
@@ -12386,7 +12394,7 @@ class Game:
                 if alpha <= 5:
                     up = not up
 
-            self.event = pg.event.get().copy()
+            self.events()
 
             enemy.textbox.update()
 
@@ -12436,18 +12444,12 @@ class Game:
                 target = enemies[0]
             if song is not None:
                 eval(song)
-            self.event = pg.event.get().copy()
+            self.events()
             keys = pg.key.get_pressed()
             for event in self.event:
                 if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
                 if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_F4:
-                        self.fullscreen = not self.fullscreen
-                        if not self.fullscreen:
-                            self.screen = pg.display.set_mode((width, height))
-                        else:
-                            self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
                     if event.key == pg.K_m and started:
                         if not mario.kicking and not mario.onShell and not mario.lookAtLuigi and not mario.winPose:
                             mario.currentFrame = 0
@@ -12662,18 +12664,12 @@ class Game:
                 target = enemies[0]
             if song is not None:
                 eval(song)
-            self.event = pg.event.get().copy()
+            self.events()
             keys = pg.key.get_pressed()
             for event in self.event:
                 if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
                 if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_F4:
-                        self.fullscreen = not self.fullscreen
-                        if not self.fullscreen:
-                            self.screen = pg.display.set_mode((width, height))
-                        else:
-                            self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
                     if event.key == pg.K_m and started:
                         if not mario.kicking and not mario.onShell and not mario.lookAtLuigi and not mario.winPose:
                             mario.currentFrame = 0
@@ -13427,8 +13423,16 @@ class Game:
                 if event.key == pg.K_F4:
                     self.fullscreen = not self.fullscreen
                     if not self.fullscreen:
+                        pg.display.quit()
+                        pg.display.init()
+                        pg.display.set_icon(icon)
+                        pg.display.set_caption(title)
                         self.screen = pg.display.set_mode((width, height))
                     else:
+                        pg.display.quit()
+                        pg.display.init()
+                        pg.display.set_icon(icon)
+                        pg.display.set_caption(title)
                         self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
                 if event.key == pg.K_RETURN and not self.player.dead and not self.follower.dead:
                     if self.leader == "mario":

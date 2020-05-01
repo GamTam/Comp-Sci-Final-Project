@@ -1917,7 +1917,7 @@ class TutorialBowser(StateMachine):
                             self.game.player.airTimer = 0
                         else:
                             if not self.game.player.hit and self.stats[
-                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
+                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit and self.game.player.stats["hp"] > self.stats["pow"] - self.game.player.stats["def"]:
                                 HitNumbers(self.game, self.game.room,
                                            (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
                                            (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")

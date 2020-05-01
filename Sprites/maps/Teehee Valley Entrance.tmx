@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="-1" width="19" height="16" tilewidth="80" tileheight="80" infinite="0" nextlayerid="4" nextobjectid="13">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="19" height="16" tilewidth="80" tileheight="80" infinite="0" nextlayerid="4" nextobjectid="13">
  <tileset firstgid="1" source="Teehee Valley Tileset.tsx"/>
  <layer id="1" name="Tile Layer 1" width="19" height="16">
   <data encoding="csv">
@@ -21,7 +21,7 @@
 0,0,0,0,0,0,0,0,11,12,12,12,12,12,13,0,0,0,0
 </data>
  </layer>
- <layer id="2" name="Foreground" width="19" height="16" visible="0">
+ <layer id="2" name="Foreground" width="19" height="16">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,
