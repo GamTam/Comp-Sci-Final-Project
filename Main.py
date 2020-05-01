@@ -1247,7 +1247,7 @@ class Game:
         mario = sheet.getImageName("mario_standing_right.png")
         text = ["It's sh-/9/6sh-/9/6sh-/9/6sh-/9/6shocking.../P\nM-/9/6M-/9/6Mushroom Castle.../p RAIDED!/P\nP-/9/6P-/9/6Princess Peach.../p STOLEN!",
                 "It c-/9/6c-/9/6can only be the work of/p \nth-/9/6th-/9/6that <<RGuy>>!/P That B-/9/6B-/9/6<<RBad guy>>!",
-                "Y-/9/6y-/9/6you know what to do!/P\nYou'll have to sneak into his castle\nand rescue the princes!"]
+                "Y-/9/6y-/9/6you know what to do!/P\nYou'll have to sneak into his castle\nand rescue the princess!"]
 
         for i in range(fps // 2):
             now = pg.time.get_ticks()
@@ -1573,7 +1573,7 @@ class Game:
 
         self.imgRect = bowserRect
         text = ["Listen well, my elite minion\ntask force!",
-                "Today is the day we succesfully\nraid Peach's Castle!/P\nPrincess Peach will be ours!",
+                "Today is the day we successfully\nraid Peach's Castle!/P\nPrincess Peach will be ours!",
                 "AND,/p today is the day we'll finally\nget rid of Mario for good!"]
         textbox = TextBox(self, self, text)
 
@@ -2571,10 +2571,10 @@ class Game:
                    sheet.getImageName("starlow_upright_6.png")]
 
         text = ["Woah, woah, woah./p\nThat's a lot of questions to ask\nat once.",
-                "Starting off with you first question,/p\nI'm Starlow!",
+                "Starting off with your first question,/p\nI'm Starlow!",
                 "Representative of the star sprites,\nand the official companion of\nMario & Luigi.",
                 "And to answer your second question,/p\nyou left the front gate unlocked.",
-                "Anyways,/p what did bowser do this\ntime?"]
+                "Anyways,/p what did Bowser do this\ntime?"]
         self.imgRect = sRect
         textbox = TextBox(self, self, text, sound="starlow")
 
@@ -3452,7 +3452,7 @@ class Game:
         bowserRect.bottom = bowserShadowRect.bottom - 10
         bowserRect.centerx = bowserShadowRect.centerx
 
-        text = ["Wait, did someone ELSE beak in?"]
+        text = ["Wait, did someone ELSE break in?"]
         self.imgRect = bowserRect
         textbox = TextBox(self, self, text)
 
@@ -3799,7 +3799,7 @@ class Game:
             pg.display.flip()
 
         text = ["Wait, so if YOU didn't take Peach,\nand I didn't take peach, then who\ndid?",
-                "Because someone would have to\ntake her for Mario to show up-/9/6/S"]
+                "Because someone would have to\ntake her for Mario to show up-/p/S"]
         self.imgRect = bowserRect
         textbox = TextBox(self, self, text)
 
@@ -4953,7 +4953,7 @@ class Game:
 
         text = ["By me... <<RCount Bleck>>!",
                 "The chosen executor of the\n<<RDark Prognosticus>>... /pis\nCount Bleck!",
-                "The fine fellow prophesied\nto come to this dimmension.../p\nis also Count Bleck!"]
+                "The fine fellow prophesied\nto come to this dimension.../p\nis also Count Bleck!"]
         textbox = TextBox(self, self, text)
 
         while not textbox.complete:
@@ -8582,14 +8582,14 @@ class Game:
                                       "It is the book of prophesies/nwhich was written against the/ndark one, and says the following:",
                                       '''"The Void will swallow all.../nNaught can stop it..."''',
                                       '''"Unless the one protected by the/ndark power is destroyed."''',
-                                      '''"The heroes with the power of the/nfive Egg McMuffins will rise to the/ntask."''',
+                                      '''"The heroes with the power of the/nthree Egg McMuffins will rise to the/ntask."''',
                                       "...So it is written."])"""],
                           [
                               "self.setVar('self.game.mcMuffin = EggMcMuffin((self.game.toadley.rect.centerx, self.game.toadley.rect.bottom + 35), black, self.game)')",
                               "self.command('self.game.cutsceneSprites.append(self.game.mcMuffin)')"],
                           ["self.wait(1)"],
                           ["""self.textBox(self.game.toadley,
-                                      ["This is one of the five Egg McMuffins.",
+                                      ["This is one of the three Egg McMuffins.",
                                       "You are surely the heroes spoken of/nin the pages of the Light/nPrognosticus.",
                                       "You are the only one who can defeat/nCount Bleck and save all worlds!",
                                       "<<RMario>>!/p <<GLuigi>>!/p Take/9/6./9/6./9/6./p THIS!"])"""],
@@ -8633,7 +8633,7 @@ class Game:
                            """self.setVar('self.game.luigi.facing = "left"')""",
                            """self.setVar('self.game.starlow.facing = "right"')"""],
                           ["""self.textBox(self.game.starlow,
-                                   ["Well, I guess we have to collect/nall five <<REgg McMuffins>> in order/nto beat Count Bleck.",
+                                   ["Well, I guess we have to collect/nall three <<REgg McMuffins>> in order/nto beat Count Bleck.",
                                    "Let's get to it then!"], sound='starlow')"""],
                           [
                               "self.move(self.game.cameraRect, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60)",
@@ -8755,7 +8755,7 @@ class Game:
                            """self.setVar('self.game.luigi.facing = "left"')""",
                            """self.setVar('self.game.starlow.facing = "right"')"""],
                           ["""self.textBox(self.game.starlow,
-                                               ["Well, I guess we have to collect/nall five <<REgg McMuffins>> in order/nto beat Count Bleck.",
+                                               ["Well, I guess we have to collect/nall three <<REgg McMuffins>> in order/nto beat Count Bleck.",
                                                "Let's get to it then!",
                                                "Luigi, you press <<GL>> to jump like mario.",
                                                "And, you can use the menu while/nyou're not in battle!",
@@ -9652,6 +9652,7 @@ class Game:
         self.sprites.append(self.player)
         self.follower.stepSound = self.sandSound
         self.player.stepSound = self.sandSound
+        print(self.player.abilities[self.player.ability])
 
         McMuffinWarp(self, (960, 960), red,  "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
 
@@ -9733,7 +9734,7 @@ class Game:
                 ["self.wait(1)"],
                 ["""self.setVar('self.game.starlow.facing = "down"')"""],
                 ["""self.textBox(self.game.starlow,
-                   ["This place feels like it/nshould belong in a western.",
+                   ["This place feels like it/nshould belong in a western movie.",
                    "I feel like it's not big/nenough for all of us."], sound='starlow')"""],
                 ["""self.setVar('self.game.starlow.facing = "left"')"""],
                 ["self.wait(1)"],
@@ -9752,6 +9753,57 @@ class Game:
                  """self.setVar('self.game.follower.facing = "up"')"""]
             ], id="teehee valley entrance")
             self.cutsceneSprites = []
+
+        self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
+
+    def loadTeeheeValleyRoom1(self):
+        self.room = "self.loadTeeheeValleyRoom1()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Teehee Valley Room 1", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+
+        McMuffinWarp(self, (960, 960), red,  "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
+
+        try:
+            self.player.rect.center = self.storeData["mario pos"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+
         self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
 
     def overworld(self, area, songData):
@@ -9764,11 +9816,12 @@ class Game:
         self.save = False
         try:
             self.player.ability = self.storeData["mario current ability"]
-            self.player.abilities = self.storeData["mario abilities"]
             self.follower.ability = self.storeData["luigi current ability"]
-            self.follower.abilities = self.storeData["luigi abilities"]
         except:
             pass
+
+        print(self.player.abilities[self.player.ability])
+
         if self.area != area:
             self.currentPos = 0
             self.playSong(songData[0], songData[1], songData[2])

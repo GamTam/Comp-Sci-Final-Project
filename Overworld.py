@@ -5213,6 +5213,8 @@ class RoomTransition:
                 self.game.storeData["luigi stats"] = self.game.follower.stats
                 self.game.storeData["mario abilities"] = self.game.player.abilities
                 self.game.storeData["luigi abilities"] = self.game.follower.abilities
+                self.game.storeData["mario current ability"] = self.game.player.ability
+                self.game.storeData["luigi current ability"] = self.game.follower.ability
                 self.game.storeData["move"] = Q.deque()
                 self.game.player.canMove = True
                 self.game.follower.canMove = True
