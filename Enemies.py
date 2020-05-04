@@ -626,6 +626,761 @@ class KoopaOverworld(StateMachine):
         self.imgRect.centerx = self.rect.centerx
 
 
+class SandoonOverworld(StateMachine):
+    idle = State("Idle", initial=True)
+    moving = State("Moving")
+    toEyes = State("To Eyes")
+    fromEyes = State("From Eyes")
+    eyes = State("Eyes")
+
+    startWalking = idle.to(moving)
+    giveUp = moving.to(idle)
+    goToEyes = idle.to(toEyes)
+    reachEyes = toEyes.to(eyes)
+    leaveEyes = eyes.to(fromEyes)
+    finishEyes = fromEyes.to(idle)
+
+    def init(self, game, x, y, battle, facing="down"):
+        self.game = game
+        self.game.sprites.append(self)
+        self.game.enemies.append(self)
+        self.loadImages()
+        self.vx = 0
+        self.vy = 0
+        self.image = self.walkingFramesDown[0]
+        self.currentFrame = random.randrange(len(self.walkingFramesDown))
+        self.lastUpdate = 0
+        self.facing = facing
+        self.shadow = self.shadowFrames["Normal"]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = (x, y)
+        self.alpha = 255
+        self.speed = 2
+        self.battle = battle
+        self.newID = False
+        self.id = -12
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/sandoon overworld.png", "sprites/sandoon overworld.xml")
+
+        self.walkingFramesUp = [sheet.getImageName("idle_up_1.png"),
+                                sheet.getImageName("idle_up_2.png"),
+                                sheet.getImageName("idle_up_3.png"),
+                                sheet.getImageName("idle_up_4.png")]
+
+        self.walkingFramesDown = [sheet.getImageName("idle_down_1.png"),
+                                  sheet.getImageName("idle_down_2.png"),
+                                  sheet.getImageName("idle_down_3.png"),
+                                  sheet.getImageName("idle_down_4.png")]
+
+        self.walkingFramesLeft = [sheet.getImageName("idle_left_1.png"),
+                                  sheet.getImageName("idle_left_2.png"),
+                                  sheet.getImageName("idle_left_3.png"),
+                                  sheet.getImageName("idle_left_4.png")]
+
+        self.walkingFramesRight = [sheet.getImageName("idle_right_1.png"),
+                                   sheet.getImageName("idle_right_2.png"),
+                                   sheet.getImageName("idle_right_3.png"),
+                                   sheet.getImageName("idle_right_4.png")]
+
+        self.toEyesFrames = [sheet.getImageName("to_eyes_1.png"),
+                             sheet.getImageName("to_eyes_2.png"),
+                             sheet.getImageName("to_eyes_3.png"),
+                             sheet.getImageName("to_eyes_4.png"),
+                             sheet.getImageName("to_eyes_5.png"),
+                             sheet.getImageName("to_eyes_6.png"),
+                             sheet.getImageName("to_eyes_7.png"),
+                             sheet.getImageName("to_eyes_8.png"),
+                             sheet.getImageName("to_eyes_9.png"),
+                             sheet.getImageName("to_eyes_10.png"),
+                             sheet.getImageName("to_eyes_11.png"),
+                             sheet.getImageName("to_eyes_12.png"),
+                             sheet.getImageName("to_eyes_13.png")]
+
+        self.fromEyesFrames = [sheet.getImageName("from_eyes_1.png"),
+                             sheet.getImageName("from_eyes_2.png"),
+                             sheet.getImageName("from_eyes_3.png"),
+                             sheet.getImageName("from_eyes_4.png"),
+                             sheet.getImageName("from_eyes_5.png"),
+                             sheet.getImageName("from_eyes_6.png"),
+                             sheet.getImageName("from_eyes_7.png"),
+                             sheet.getImageName("from_eyes_8.png"),
+                             sheet.getImageName("from_eyes_9.png"),
+                             sheet.getImageName("from_eyes_10.png"),
+                             sheet.getImageName("from_eyes_11.png"),
+                             sheet.getImageName("from_eyes_12.png")]
+
+        self.eyeFrames = [sheet.getImageName("eyes_1.png"),
+                           sheet.getImageName("eyes_2.png"),
+                           sheet.getImageName("eyes_3.png"),
+                           sheet.getImageName("eyes_4.png"),
+                           sheet.getImageName("eyes_5.png"),
+                           sheet.getImageName("eyes_6.png"),
+                           sheet.getImageName("eyes_7.png"),
+                           sheet.getImageName("eyes_8.png"),
+                           sheet.getImageName("eyes_9.png"),
+                           sheet.getImageName("eyes_10.png"),
+                           sheet.getImageName("eyes_11.png"),
+                           sheet.getImageName("eyes_12.png"),
+                           sheet.getImageName("eyes_13.png"),
+                           sheet.getImageName("eyes_14.png"),
+                           sheet.getImageName("eyes_15.png"),
+                           sheet.getImageName("eyes_16.png"),
+                           sheet.getImageName("eyes_17.png")]
+
+        self.shadowFrames = {"Normal": sheet.getImageName("shadow.png"), "Eyes": sheet.getImageName("eyeShadow.png")}
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.is_toEyes:
+            if now - self.lastUpdate > 60:
+                if self.shadow != self.shadowFrames["Eyes"]:
+                    self.shadow = self.shadowFrames["Eyes"]
+                    bottom = self.rect.bottom
+                    centerx = self.rect.centerx
+                    self.rect = self.shadow.get_rect()
+                    self.rect.centerx = centerx
+                    self.rect.bottom = bottom
+                self.lastUpdate = now
+                if self.currentFrame < len(self.toEyesFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.toEyesFrames))
+                else:
+                    self.reachEyes()
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.toEyesFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        elif self.is_eyes:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.eyeFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.eyeFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.eyeFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_fromEyes:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.fromEyesFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.fromEyesFrames))
+                else:
+                    self.finishEyes()
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.fromEyesFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        else:
+            if self.shadow != self.shadowFrames["Normal"]:
+                self.shadow = self.shadowFrames["Normal"]
+                bottom = self.rect.bottom
+                centerx = self.rect.centerx
+                self.rect = self.shadow.get_rect()
+                self.rect.centerx = centerx
+                self.rect.bottom = bottom
+            if self.facing == "down":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "right":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+
+    def update(self):
+        self.animate()
+
+        if not self.newID:
+            if self.ID in self.game.despawnList:
+                self.game.sprites.remove(self)
+            self.newID = True
+
+        if self in self.game.sprites:
+            hits = pg.sprite.collide_rect(self, self.game.player)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.playerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    self.game.loadBattle(self.battle)
+
+            hits = pg.sprite.collide_rect(self, self.game.follower)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.followerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    self.game.loadBattle(self.battle)
+
+            if self.game.player.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+
+            if self.game.follower.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+
+            for entity in self.game.entities:
+                if self.rect.colliderect(entity.rect):
+                    if type(entity).__name__ == "Lightning":
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+                    if self.imgRect.colliderect(entity.imgRect):
+                        if type(entity).__name__ == "Fireball":
+                            self.game.despawnList.append(self.ID)
+                            if len(self.game.despawnList) > 13:
+                                self.game.despawnList.remove(self.game.despawnList[0])
+                            self.game.loadBattle(self.battle)
+
+        if self.is_idle:
+            chance = random.randrange(0, 200)
+            if chance == 0:
+                dir = random.randrange(0, 4)
+                if dir == 0:
+                    self.facing = "up"
+                    self.vy = -self.speed
+                elif dir == 1:
+                    self.facing = "down"
+                    self.vy = self.speed
+                elif dir == 2:
+                    self.facing = "left"
+                    self.vx = -self.speed
+                else:
+                    self.facing = "right"
+                    self.vx = self.speed
+                self.startWalking()
+            else:
+                self.vx, self.vy = 0, 0
+                if chance == 1:
+                    self.currentFrame = 0
+                    self.goToEyes()
+        elif self.is_eyes:
+            chance = random.randrange(0, 300)
+            if chance == 0:
+                self.currentFrame = 0
+                self.facing = "down"
+                self.leaveEyes()
+        elif self.is_moving:
+            self.rect.x += self.vx
+            self.rect.y += self.vy
+
+            for wall in self.game.walls:
+                if pg.sprite.collide_rect(self, wall):
+                    self.vx *= -1
+                    self.vy *= -1
+                    if self.facing == "up":
+                        self.rect.top = wall.rect.bottom
+                        self.rect.y += self.vy
+                        self.facing = "down"
+                    elif self.facing == "down":
+                        self.rect.bottom = wall.rect.top
+                        self.rect.y += self.vy
+                        self.facing = "up"
+                    elif self.facing == "left":
+                        self.rect.left = wall.rect.right
+                        self.rect.x += self.vx
+                        self.facing = "right"
+                    elif self.facing == "right":
+                        self.rect.right = wall.rect.left
+                        self.rect.x += self.vx
+                        self.facing = "left"
+
+            chance = random.randrange(0, 100)
+            if chance == 0:
+                self.giveUp()
+
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+
+
+class AnubooOverworld(StateMachine):
+    idle = State("Idle", initial=True)
+    moving = State("Moving")
+    charge = State("Charge")
+    fire = State("Fire")
+
+    startWalking = idle.to(moving)
+    giveUp = moving.to(idle)
+    toFireIdle = idle.to(charge)
+    toFireMove = moving.to(charge)
+    toFire = charge.to(fire)
+    stopFire = fire.to(idle)
+
+    def init(self, game, x, y, battle, facing="down"):
+        self.game = game
+        self.game.sprites.append(self)
+        self.game.enemies.append(self)
+        self.loadImages()
+        self.vx = 0
+        self.vy = 0
+        self.image = self.walkingFramesDown[0]
+        self.currentFrame = random.randrange(len(self.walkingFramesDown))
+        self.lastUpdate = 0
+        self.facing = facing
+        self.shadow = self.shadowFrame
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = (x, y)
+        self.alpha = 255
+        self.speed = 2
+        self.battle = battle
+        self.newID = False
+        self.id = -12
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/anuboo.png", "sprites/anuboo.xml")
+
+        self.walkingFramesUp = [sheet.getImageName("up.png")]
+
+        self.walkingFramesDown = [sheet.getImageName("down.png")]
+
+        self.walkingFramesLeft = [sheet.getImageName("left.png")]
+
+        self.walkingFramesRight = [sheet.getImageName("right.png")]
+
+        self.chargingFramesUp = [sheet.getImageName("charge_up_1.png"),
+                                 sheet.getImageName("charge_up_2.png"),
+                                 sheet.getImageName("charge_up_3.png"),
+                                 sheet.getImageName("charge_up_4.png"),
+                                 sheet.getImageName("charge_up_5.png"),
+                                 sheet.getImageName("charge_up_6.png"),
+                                 sheet.getImageName("charge_up_7.png"),
+                                 sheet.getImageName("charge_up_8.png")]
+
+        self.chargingFramesDown = [sheet.getImageName("charge_down_1.png"),
+                                   sheet.getImageName("charge_down_2.png"),
+                                   sheet.getImageName("charge_down_3.png"),
+                                   sheet.getImageName("charge_down_4.png"),
+                                   sheet.getImageName("charge_down_5.png"),
+                                   sheet.getImageName("charge_down_6.png"),
+                                   sheet.getImageName("charge_down_7.png"),
+                                   sheet.getImageName("charge_down_8.png")]
+
+        self.chargingFramesLeft = [sheet.getImageName("charge_left_1.png"),
+                                   sheet.getImageName("charge_left_2.png"),
+                                   sheet.getImageName("charge_left_3.png"),
+                                   sheet.getImageName("charge_left_4.png"),
+                                   sheet.getImageName("charge_left_5.png"),
+                                   sheet.getImageName("charge_left_6.png"),
+                                   sheet.getImageName("charge_left_7.png"),
+                                   sheet.getImageName("charge_left_8.png")]
+
+        self.chargingFramesRight = [sheet.getImageName("charge_right_1.png"),
+                                    sheet.getImageName("charge_right_2.png"),
+                                    sheet.getImageName("charge_right_3.png"),
+                                    sheet.getImageName("charge_right_4.png"),
+                                    sheet.getImageName("charge_right_5.png"),
+                                    sheet.getImageName("charge_right_6.png"),
+                                    sheet.getImageName("charge_right_7.png"),
+                                    sheet.getImageName("charge_right_8.png")]
+
+        self.shadowFrame = sheet.getImageName("shadow.png")
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.is_moving:
+            if self.facing == "down":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "right":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+        elif self.is_charge or self.is_fire:
+            if self.facing == "down":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "right":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+        else:
+            if self.facing == "down":
+                center = self.imgRect.center
+                self.image = self.walkingFramesDown[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            elif self.facing == "up":
+                center = self.imgRect.center
+                self.image = self.walkingFramesUp[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            elif self.facing == "left":
+                center = self.imgRect.center
+                self.image = self.walkingFramesLeft[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            elif self.facing == "right":
+                center = self.imgRect.center
+                self.image = self.walkingFramesRight[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+
+    def update(self):
+        self.animate()
+
+        if not self.newID:
+            if self.ID in self.game.despawnList:
+                self.game.sprites.remove(self)
+            self.newID = True
+        if self in self.game.sprites:
+            hits = pg.sprite.collide_rect(self, self.game.player)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.playerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    self.game.loadBattle(self.battle)
+
+            hits = pg.sprite.collide_rect(self, self.game.follower)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.followerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    self.game.loadBattle(self.battle)
+
+            if self.game.player.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+
+            if self.game.follower.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+
+            for entity in self.game.entities:
+                if self.rect.colliderect(entity.rect):
+                    if type(entity).__name__ == "Lightning":
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle)
+                    if self.imgRect.colliderect(entity.imgRect):
+                        if type(entity).__name__ == "Fireball":
+                            self.game.despawnList.append(self.ID)
+                            if len(self.game.despawnList) > 13:
+                                self.game.despawnList.remove(self.game.despawnList[0])
+                            self.game.loadBattle(self.battle)
+
+        if self.is_idle:
+            chance = random.randrange(0, 100)
+            if chance == 0:
+                dir = random.randrange(0, 4)
+                if dir == 0:
+                    self.facing = "up"
+                    self.vy = -self.speed
+                elif dir == 1:
+                    self.facing = "down"
+                    self.vy = self.speed
+                elif dir == 2:
+                    self.facing = "left"
+                    self.vx = -self.speed
+                else:
+                    self.facing = "right"
+                    self.vx = self.speed
+                self.startWalking()
+            else:
+                self.vx, self.vy = 0, 0
+        elif self.is_moving:
+            self.rect.x += self.vx
+            self.rect.y += self.vy
+
+            for wall in self.game.walls:
+                if pg.sprite.collide_rect(self, wall):
+                    self.vx *= -1
+                    self.vy *= -1
+                    if self.facing == "up":
+                        self.rect.top = wall.rect.bottom
+                        self.rect.y += self.vy
+                        self.facing = "down"
+                    elif self.facing == "down":
+                        self.rect.bottom = wall.rect.top
+                        self.rect.y += self.vy
+                        self.facing = "up"
+                    elif self.facing == "left":
+                        self.rect.left = wall.rect.right
+                        self.rect.x += self.vx
+                        self.facing = "right"
+                    elif self.facing == "right":
+                        self.rect.right = wall.rect.left
+                        self.rect.x += self.vx
+                        self.facing = "left"
+
+            chance = random.randrange(0, 100)
+            if chance == 0:
+                self.giveUp()
+        elif self.is_charge:
+            chance = random.randrange(0, 100)
+            if chance == 0:
+                self.toFire()
+        elif self.is_fire:
+            AnubooLazerOverworld(self.game, self.rect.center, self.battle, self.id)
+            self.stopFire()
+
+
+        if self.game.leader == "mario":
+            if self.facing == "left":
+                if self.game.player.rect.right < self.rect.left:
+                    if self.rect.bottom > self.game.player.rect.top and self.game.player.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "right":
+                if self.game.player.rect.left > self.rect.right:
+                    if self.rect.bottom > self.game.player.rect.top and self.game.player.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "top":
+                if self.game.player.rect.bottom < self.rect.top:
+                    if self.rect.left > self.game.player.rect.left and self.game.player.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "bottom":
+                if self.game.player.rect.top > self.rect.bottom:
+                    if self.rect.left > self.game.player.rect.left and self.game.player.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+        elif self.game.leader == "luigi":
+            if self.facing == "left":
+                if self.game.follower.rect.right < self.rect.left:
+                    if self.rect.bottom > self.game.follower.rect.top and self.game.follower.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "right":
+                if self.game.follower.rect.left > self.rect.right:
+                    if self.rect.bottom > self.game.follower.rect.top and self.game.follower.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "top":
+                if self.game.follower.rect.bottom < self.rect.top:
+                    if self.rect.left > self.game.follower.rect.left and self.game.follower.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "bottom":
+                if self.game.follower.rect.top > self.rect.bottom:
+                    if self.rect.left > self.game.follower.rect.left and self.game.follower.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+
+
+class AnubooLazerOverworld(pg.sprite.Sprite):
+    def __init__(self, game, pos, battle, id):
+        self.game = game
+        self.game.sprites.append(self)
+        sheet = spritesheet("sprites/anuboo.png", "sprites/anuboo.xml")
+        self.rect = pg.rect.Rect(pos, (0, 0))
+        if self.game.leader == "mario":
+            self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(math.atan2(self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)))
+        elif self.game.leader == "luigi":
+            self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(
+                math.atan2(self.game.follower.rect.centerx - self.rect.centerx,
+                           self.game.follower.rect.centery - self.rect.centery)))
+        self.lastUpdate = 0
+        self.imgRect = self.image.get_rect()
+        self.shadow = self.image.copy()
+        self.shadow.fill((0, 0, 0, 255), special_flags=pg.BLEND_RGBA_MIN)
+        self.shadow.set_alpha(150)
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.id = id
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.top - 25
+        self.alpha = 255
+        self.speed = 4
+        self.battle = battle
+
+    def update(self):
+        self.rect.center = project(self.rect.center, self.angle, self.speed)
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.top - 25
+        for wall in self.game.walls:
+            if wall.rect.colliderect(self.rect):
+                self.game.sprites.remove(self)
+
+        hits = pg.sprite.collide_rect(self, self.game.player)
+        if hits:
+            hitsRound2 = pg.sprite.collide_rect(self, self.game.playerCol)
+            if hitsRound2:
+                self.game.despawnList.append(self.id)
+                if len(self.game.despawnList) > 13:
+                    self.game.despawnList.remove(self.game.despawnList[0])
+                self.game.loadBattle(self.battle)
+
+        hits = pg.sprite.collide_rect(self, self.game.follower)
+        if hits:
+            hitsRound2 = pg.sprite.collide_rect(self, self.game.followerCol)
+            if hitsRound2:
+                self.game.despawnList.append(self.id)
+                if len(self.game.despawnList) > 13:
+                    self.game.despawnList.remove(self.game.despawnList[0])
+                self.game.loadBattle(self.battle)
+
+
 class Goomba(pg.sprite.Sprite):
     def __init__(self, game, x, y, vx, vy, facing="down"):
         pg.sprite.Sprite.__init__(self)
@@ -658,11 +1413,11 @@ class Goomba(pg.sprite.Sprite):
 
         self.description = []
         self.description.append("That's a Goomba!")
-        self.description.append("These little guys will run \nback and forth across the screen\nand hope they hit you.")
+        self.description.append("These little guys will run\nback and forth across the screen\nand hope they hit you.")
         self.description.append("Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
             self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".")
         self.description.append('''The main motto of the Goomba is\n"March straight ahead into\nthe enemy's feet".''')
-        self.description.append("Or,/5 at least that's what Bowser \nsays.")
+        self.description.append("Or,/5 at least that's what Bowser\nsays.")
 
     def loadImages(self):
         sheet = spritesheet("sprites/enemies.png", "sprites/enemies.xml")
@@ -1010,7 +1765,9 @@ class Koopa(StateMachine):
         self.rectHP = self.stats["hp"]
 
         self.description = ["That's a Koopa Troopa!",
-                            "Koopas wander around until you get\nclose to them, then they\ngo into their shells.",
+                            "Koopas just stand there./p\nMenacingly.",
+                            "After a while, they go into their\nshells and go after you.",
+                            "While their in their shells, you\ncan't hit them.",
                             "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
                                 self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
                             "The Koopa Troop is Bowser's favorite\ncorps of the Bowser Baddies."]
@@ -1480,6 +2237,1070 @@ class Koopa(StateMachine):
                 self.image = self.walkingFramesRight[0]
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
+
+
+class Sandoon(StateMachine):
+    idle = State("Idle", initial=True)
+    moving = State("Moving")
+    toEyes = State("To Eyes")
+    fromEyes = State("From Eyes")
+    eyes = State("Eyes")
+
+    startWalking = idle.to(moving)
+    giveUp = moving.to(idle)
+    goToEyes = idle.to(toEyes)
+    reachEyes = toEyes.to(eyes)
+    leaveEyes = eyes.to(fromEyes)
+    finishEyes = fromEyes.to(idle)
+
+    def init(self, game, x, y, facing="down"):
+        self.game = game
+        self.game.sprites.append(self)
+        self.game.enemies.append(self)
+        self.loadImages()
+        self.vx = 0
+        self.vy = 0
+        self.image = self.walkingFramesDown[0]
+        self.currentFrame = random.randrange(len(self.walkingFramesDown))
+        self.lastUpdate = 0
+        self.facing = facing
+        self.shadow = self.shadowFrames["Normal"]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = (x, y)
+        self.hit = False
+        self.hitTimer = 0
+        self.dead = False
+        self.alpha = 255
+        self.speed = 4
+        self.hpSpeed = 0
+
+        # Stats
+        self.stats = {"maxHP": 30, "hp": 30, "pow": 30, "def": 25, "exp": 5, "coins": 7, "name": "Sandoon"}
+        self.rectHP = self.stats["hp"]
+
+        self.description = ["That's a Sandoon!",
+                            "Sandoons just wander around, and\nlike to hide in the sand,/p where\nthey're invincible.",
+                            "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+                                self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+                            "Sandoons are native to Pi'illo Island.",
+                            "How they made it here is beyond me."]
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/sandoon overworld.png", "sprites/sandoon overworld.xml")
+
+        self.walkingFramesUp = [sheet.getImageName("idle_up_1.png"),
+                                sheet.getImageName("idle_up_2.png"),
+                                sheet.getImageName("idle_up_3.png"),
+                                sheet.getImageName("idle_up_4.png")]
+
+        self.walkingFramesDown = [sheet.getImageName("idle_down_1.png"),
+                                  sheet.getImageName("idle_down_2.png"),
+                                  sheet.getImageName("idle_down_3.png"),
+                                  sheet.getImageName("idle_down_4.png")]
+
+        self.walkingFramesLeft = [sheet.getImageName("idle_left_1.png"),
+                                  sheet.getImageName("idle_left_2.png"),
+                                  sheet.getImageName("idle_left_3.png"),
+                                  sheet.getImageName("idle_left_4.png")]
+
+        self.walkingFramesRight = [sheet.getImageName("idle_right_1.png"),
+                                   sheet.getImageName("idle_right_2.png"),
+                                   sheet.getImageName("idle_right_3.png"),
+                                   sheet.getImageName("idle_right_4.png")]
+
+        self.toEyesFrames = [sheet.getImageName("to_eyes_1.png"),
+                             sheet.getImageName("to_eyes_2.png"),
+                             sheet.getImageName("to_eyes_3.png"),
+                             sheet.getImageName("to_eyes_4.png"),
+                             sheet.getImageName("to_eyes_5.png"),
+                             sheet.getImageName("to_eyes_6.png"),
+                             sheet.getImageName("to_eyes_7.png"),
+                             sheet.getImageName("to_eyes_8.png"),
+                             sheet.getImageName("to_eyes_9.png"),
+                             sheet.getImageName("to_eyes_10.png"),
+                             sheet.getImageName("to_eyes_11.png"),
+                             sheet.getImageName("to_eyes_12.png"),
+                             sheet.getImageName("to_eyes_13.png")]
+
+        self.fromEyesFrames = [sheet.getImageName("from_eyes_1.png"),
+                             sheet.getImageName("from_eyes_2.png"),
+                             sheet.getImageName("from_eyes_3.png"),
+                             sheet.getImageName("from_eyes_4.png"),
+                             sheet.getImageName("from_eyes_5.png"),
+                             sheet.getImageName("from_eyes_6.png"),
+                             sheet.getImageName("from_eyes_7.png"),
+                             sheet.getImageName("from_eyes_8.png"),
+                             sheet.getImageName("from_eyes_9.png"),
+                             sheet.getImageName("from_eyes_10.png"),
+                             sheet.getImageName("from_eyes_11.png"),
+                             sheet.getImageName("from_eyes_12.png")]
+
+        self.eyeFrames = [sheet.getImageName("eyes_1.png"),
+                           sheet.getImageName("eyes_2.png"),
+                           sheet.getImageName("eyes_3.png"),
+                           sheet.getImageName("eyes_4.png"),
+                           sheet.getImageName("eyes_5.png"),
+                           sheet.getImageName("eyes_6.png"),
+                           sheet.getImageName("eyes_7.png"),
+                           sheet.getImageName("eyes_8.png"),
+                           sheet.getImageName("eyes_9.png"),
+                           sheet.getImageName("eyes_10.png"),
+                           sheet.getImageName("eyes_11.png"),
+                           sheet.getImageName("eyes_12.png"),
+                           sheet.getImageName("eyes_13.png"),
+                           sheet.getImageName("eyes_14.png"),
+                           sheet.getImageName("eyes_15.png"),
+                           sheet.getImageName("eyes_16.png"),
+                           sheet.getImageName("eyes_17.png")]
+
+        self.shadowFrames = {"Normal": sheet.getImageName("shadow.png"), "Eyes": sheet.getImageName("eyeShadow.png")}
+
+    def hpMath(self):
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+
+        if self.hpSpeed != 0:
+            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+                self.rectHP += self.hpSpeed
+            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+                self.rectHP += self.hpSpeed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.hpSpeed = 0
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.is_toEyes:
+            if now - self.lastUpdate > 60:
+                if self.shadow != self.shadowFrames["Eyes"]:
+                    self.shadow = self.shadowFrames["Eyes"]
+                    bottom = self.rect.bottom
+                    centerx = self.rect.centerx
+                    self.rect = self.shadow.get_rect()
+                    self.rect.centerx = centerx
+                    self.rect.bottom = bottom
+                self.lastUpdate = now
+                if self.currentFrame < len(self.toEyesFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.toEyesFrames))
+                else:
+                    self.reachEyes()
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.toEyesFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        elif self.is_eyes:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.eyeFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.eyeFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.eyeFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_fromEyes:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.fromEyesFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.fromEyesFrames))
+                else:
+                    self.finishEyes()
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.fromEyesFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        else:
+            if self.shadow != self.shadowFrames["Normal"]:
+                self.shadow = self.shadowFrames["Normal"]
+                bottom = self.rect.bottom
+                centerx = self.rect.centerx
+                self.rect = self.shadow.get_rect()
+                self.rect.centerx = centerx
+                self.rect.bottom = bottom
+            if self.facing == "down":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "right":
+                if now - self.lastUpdate > 60:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+
+    def update(self):
+        self.hpMath()
+        self.animate()
+        keys = pg.key.get_pressed()
+
+        if not self.is_eyes:
+            if self.game.player.stats["hp"] != 0:
+                doubleDamageM = False
+                hits = pg.sprite.collide_rect(self.game.player, self)
+                if hits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                    if keys[
+                        pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                        doubleDamageM = True
+                    if hitsRound2:
+                        if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                            if doubleDamageM:
+                                HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                           (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1)))
+                                self.stats["hp"] -= (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1))
+                                if self.stats["hp"] <= 0:
+                                    self.game.enemyDieSound.play()
+                                self.game.enemyHitSound.play()
+                                self.hit = True
+                            else:
+                                HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                           (max(self.game.player.stats["pow"] - self.stats["def"], 1)))
+                                self.stats["hp"] -= (max(self.game.player.stats["pow"] - self.stats["def"], 1))
+                                if self.stats["hp"] <= 0:
+                                    self.game.enemyDieSound.play()
+                                self.game.enemyHitSound.play()
+                                self.hit = True
+                            self.game.player.airTimer = 0
+                        else:
+                            if not self.game.player.hit and self.stats[
+                                "hp"] > 0 and not self.hit and self.game.player.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                                self.game.player.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                                if self.game.player.stats["hp"] <= 0:
+                                    self.game.player.stats["hp"] = 0
+                                    self.game.player.currentFrame = 0
+                                self.game.player.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.player.canBeHit = False
+                                self.game.player.hit = True
+
+            if self.game.follower.stats["hp"] != 0:
+                luigiHits = pg.sprite.collide_rect(self.game.follower, self)
+                if luigiHits:
+                    doubleDamageL = False
+                    hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
+                    if keys[
+                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                        doubleDamageL = True
+                    if hitsRound2:
+                        if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
+                            if doubleDamageL:
+                                HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                           (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1)))
+                                self.stats["hp"] -= (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1))
+                                if self.stats["hp"] <= 0:
+                                    self.game.enemyDieSound.play()
+                                self.game.enemyHitSound.play()
+                                self.hit = True
+                            else:
+                                HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                           (max(self.game.follower.stats["pow"] - self.stats["def"], 1)))
+                                self.stats["hp"] -= (max(self.game.follower.stats["pow"] - self.stats["def"], 1))
+                                if self.stats["hp"] <= 0:
+                                    self.game.enemyDieSound.play()
+                                self.game.enemyHitSound.play()
+                                self.hit = True
+                            self.game.follower.airTimer = 0
+                        else:
+                            if not self.game.follower.hit and self.stats[
+                                "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                                self.game.follower.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                                if self.game.follower.stats["hp"] <= 0:
+                                    self.game.follower.stats["hp"] = 0
+                                    self.game.follower.currentFrame = 0
+                                self.game.follower.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.follower.canBeHit = False
+                                self.game.follower.hit = True
+
+            if self.stats["hp"] != 0 and self.game.player.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                    if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                        self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        self.hit = True
+
+            if self.stats["hp"] != 0 and self.game.follower.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                    if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        self.hit = True
+
+            for entity in self.game.entities:
+                if self.rect.colliderect(entity.rect) and not self.hit and self.stats["hp"] > 0:
+                    if type(entity).__name__ == "Lightning":
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        self.hit = True
+                    if self.imgRect.colliderect(entity.imgRect):
+                        if type(entity).__name__ == "Fireball":
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                            self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            self.hit = True
+                            entity.dead = True
+        else:
+            if self.game.player.stats["hp"] != 0:
+                hits = pg.sprite.collide_rect(self.game.player, self)
+                if hits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                    if hitsRound2:
+                        if not self.game.player.hit and self.stats[
+                            "hp"] > 0 and not self.hit and self.game.player.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                            self.game.player.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                            if self.game.player.stats["hp"] <= 0:
+                                self.game.player.stats["hp"] = 0
+                                self.game.player.currentFrame = 0
+                            self.game.player.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.player.canBeHit = False
+                            self.game.player.hit = True
+
+            if self.game.follower.stats["hp"] > 0:
+                luigiHits = pg.sprite.collide_rect(self.game.follower, self)
+                if luigiHits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
+                    if keys[
+                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                        doubleDamageL = True
+                    if hitsRound2:
+                        if self.game.follower.stats["hp"] != 0:
+                            if not self.game.follower.hit and self.stats[
+                                "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                                self.game.follower.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                                if self.game.follower.stats["hp"] <= 0:
+                                    self.game.follower.stats["hp"] = 0
+                                    self.game.follower.currentFrame = 0
+                                self.game.follower.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.follower.canBeHit = False
+                                self.game.follower.hit = True
+
+        if self.stats["hp"] > 0:
+            if self.is_idle:
+                chance = random.randrange(0, 200)
+                if chance == 0 or chance == 1:
+                    dir = random.randrange(0, 4)
+                    if dir == 0:
+                        self.facing = "up"
+                        self.vy = -self.speed
+                    elif dir == 1:
+                        self.facing = "down"
+                        self.vy = self.speed
+                    elif dir == 2:
+                        self.facing = "left"
+                        self.vx = -self.speed
+                    else:
+                        self.facing = "right"
+                        self.vx = self.speed
+                    self.startWalking()
+                else:
+                    self.vx, self.vy = 0, 0
+                    if chance == 2:
+                        self.currentFrame = 0
+                        self.goToEyes()
+            elif self.is_eyes:
+                chance = random.randrange(0, 200)
+                if chance == 0:
+                    self.currentFrame = 0
+                    self.facing = "down"
+                    self.leaveEyes()
+            elif self.is_moving:
+                self.rect.x += self.vx
+                self.rect.y += self.vy
+
+                for wall in self.game.walls:
+                    if pg.sprite.collide_rect(self, wall):
+                        self.vx *= -1
+                        self.vy *= -1
+                        if self.facing == "up":
+                            self.rect.top = wall.rect.bottom
+                            self.rect.y += self.vy
+                            self.facing = "down"
+                        elif self.facing == "down":
+                            self.rect.bottom = wall.rect.top
+                            self.rect.y += self.vy
+                            self.facing = "up"
+                        elif self.facing == "left":
+                            self.rect.left = wall.rect.right
+                            self.rect.x += self.vx
+                            self.facing = "right"
+                        elif self.facing == "right":
+                            self.rect.right = wall.rect.left
+                            self.rect.x += self.vx
+                            self.facing = "left"
+
+                chance = random.randrange(0, 300)
+                if chance == 0:
+                    self.giveUp()
+
+        if self.hit:
+            self.hitTimer += 1
+            if self.hitTimer >= fps:
+                self.hitTimer = 0
+                self.hit = False
+
+        if self.stats["hp"] <= 0:
+            self.alpha -= 10
+
+        if self.alpha <= 0:
+            self.game.battleXp += self.stats["exp"]
+            self.game.battleCoins += self.stats["coins"]
+            self.game.sprites.remove(self)
+            self.game.enemies.remove(self)
+
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+
+
+class Anuboo(StateMachine):
+    idle = State("Idle", initial=True)
+    moving = State("Moving")
+    charge = State("Charge")
+    fire = State("Fire")
+
+    startWalking = idle.to(moving)
+    giveUp = moving.to(idle)
+    toFireIdle = idle.to(charge)
+    toFireMove = moving.to(charge)
+    toFire = charge.to(fire)
+    stopFire = fire.to(idle)
+
+    def init(self, game, x, y, facing="down"):
+        self.game = game
+        self.game.sprites.append(self)
+        self.game.enemies.append(self)
+        self.loadImages()
+        self.vx = 0
+        self.vy = 0
+        self.image = self.walkingFramesDown[0]
+        self.currentFrame = random.randrange(len(self.walkingFramesDown))
+        self.lastUpdate = 0
+        self.facing = facing
+        self.shadow = self.shadowFrame
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.rect.center = (x, y)
+        self.alpha = 255
+        self.speed = 2
+        self.hpSpeed = 0
+        self.hitTimer = 0
+        self.dead = False
+        self.hit = False
+
+        # Stats
+        self.stats = {"maxHP": 50, "hp": 50, "pow": 35, "def": 30, "exp": 7, "coins": 6, "name": "Anuboo"}
+        self.rectHP = self.stats["hp"]
+
+        self.description = ["That's an Anuboo!",
+                            "Anuboos don't like it when you\nlook at them.",
+                            "If you do, they'll shoot lasers\nat you!",
+                            "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+                                self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+                            "They way they just slide on the\nground is really unsettling..."]
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/anuboo.png", "sprites/anuboo.xml")
+
+        self.walkingFramesUp = [sheet.getImageName("up.png")]
+
+        self.walkingFramesDown = [sheet.getImageName("down.png")]
+
+        self.walkingFramesLeft = [sheet.getImageName("left.png")]
+
+        self.walkingFramesRight = [sheet.getImageName("right.png")]
+
+        self.chargingFramesUp = [sheet.getImageName("charge_up_1.png"),
+                                 sheet.getImageName("charge_up_2.png"),
+                                 sheet.getImageName("charge_up_3.png"),
+                                 sheet.getImageName("charge_up_4.png"),
+                                 sheet.getImageName("charge_up_5.png"),
+                                 sheet.getImageName("charge_up_6.png"),
+                                 sheet.getImageName("charge_up_7.png"),
+                                 sheet.getImageName("charge_up_8.png")]
+
+        self.chargingFramesDown = [sheet.getImageName("charge_down_1.png"),
+                                   sheet.getImageName("charge_down_2.png"),
+                                   sheet.getImageName("charge_down_3.png"),
+                                   sheet.getImageName("charge_down_4.png"),
+                                   sheet.getImageName("charge_down_5.png"),
+                                   sheet.getImageName("charge_down_6.png"),
+                                   sheet.getImageName("charge_down_7.png"),
+                                   sheet.getImageName("charge_down_8.png")]
+
+        self.chargingFramesLeft = [sheet.getImageName("charge_left_1.png"),
+                                   sheet.getImageName("charge_left_2.png"),
+                                   sheet.getImageName("charge_left_3.png"),
+                                   sheet.getImageName("charge_left_4.png"),
+                                   sheet.getImageName("charge_left_5.png"),
+                                   sheet.getImageName("charge_left_6.png"),
+                                   sheet.getImageName("charge_left_7.png"),
+                                   sheet.getImageName("charge_left_8.png")]
+
+        self.chargingFramesRight = [sheet.getImageName("charge_right_1.png"),
+                                    sheet.getImageName("charge_right_2.png"),
+                                    sheet.getImageName("charge_right_3.png"),
+                                    sheet.getImageName("charge_right_4.png"),
+                                    sheet.getImageName("charge_right_5.png"),
+                                    sheet.getImageName("charge_right_6.png"),
+                                    sheet.getImageName("charge_right_7.png"),
+                                    sheet.getImageName("charge_right_8.png")]
+
+        self.shadowFrame = sheet.getImageName("shadow.png")
+
+    def hpMath(self):
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+
+        if self.hpSpeed != 0:
+            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+                self.rectHP += self.hpSpeed
+            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+                self.rectHP += self.hpSpeed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.hpSpeed = 0
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.is_moving:
+            if self.facing == "down":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "right":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.walkingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.walkingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.walkingFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+        elif self.is_charge or self.is_fire:
+            if self.facing == "down":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesDown):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesDown))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesDown[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "up":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesUp):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesUp))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesUp[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "left":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesLeft):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesLeft))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesLeft[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+            elif self.facing == "right":
+                if now - self.lastUpdate > 30:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.chargingFramesRight):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.chargingFramesRight))
+                    else:
+                        self.currentFrame = 0
+                    center = self.imgRect.center
+                    self.image = self.chargingFramesRight[self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.center = center
+        else:
+            if self.facing == "down":
+                center = self.imgRect.center
+                self.image = self.walkingFramesDown[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            elif self.facing == "up":
+                center = self.imgRect.center
+                self.image = self.walkingFramesUp[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            elif self.facing == "left":
+                center = self.imgRect.center
+                self.image = self.walkingFramesLeft[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+            elif self.facing == "right":
+                center = self.imgRect.center
+                self.image = self.walkingFramesRight[0]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+
+    def update(self):
+        self.animate()
+        self.hpMath()
+        keys = pg.key.get_pressed()
+
+        if self.stats["hp"] > 0:
+            if self.is_idle:
+                chance = random.randrange(0, 100)
+                if chance == 0:
+                    dir = random.randrange(0, 4)
+                    if dir == 0:
+                        self.facing = "up"
+                        self.vy = -self.speed
+                    elif dir == 1:
+                        self.facing = "down"
+                        self.vy = self.speed
+                    elif dir == 2:
+                        self.facing = "left"
+                        self.vx = -self.speed
+                    else:
+                        self.facing = "right"
+                        self.vx = self.speed
+                    self.startWalking()
+                else:
+                    self.vx, self.vy = 0, 0
+            elif self.is_moving:
+                self.rect.x += self.vx
+                self.rect.y += self.vy
+
+                for wall in self.game.walls:
+                    if pg.sprite.collide_rect(self, wall):
+                        self.vx *= -1
+                        self.vy *= -1
+                        if self.facing == "up":
+                            self.rect.top = wall.rect.bottom
+                            self.rect.y += self.vy
+                            self.facing = "down"
+                        elif self.facing == "down":
+                            self.rect.bottom = wall.rect.top
+                            self.rect.y += self.vy
+                            self.facing = "up"
+                        elif self.facing == "left":
+                            self.rect.left = wall.rect.right
+                            self.rect.x += self.vx
+                            self.facing = "right"
+                        elif self.facing == "right":
+                            self.rect.right = wall.rect.left
+                            self.rect.x += self.vx
+                            self.facing = "left"
+
+                chance = random.randrange(0, 100)
+                if chance == 0:
+                    self.giveUp()
+            elif self.is_charge:
+                chance = random.randrange(0, 100)
+                if chance == 0:
+                    self.toFire()
+            elif self.is_fire:
+                AnubooLazer(self.game, self.rect.center, self.stats)
+                self.stopFire()
+
+        if self.game.leader == "mario":
+            if self.facing == "left":
+                if self.game.player.rect.right < self.rect.left:
+                    if self.rect.bottom > self.game.player.rect.top and self.game.player.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "right":
+                if self.game.player.rect.left > self.rect.right:
+                    if self.rect.bottom > self.game.player.rect.top and self.game.player.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "top":
+                if self.game.player.rect.bottom < self.rect.top:
+                    if self.rect.left > self.game.player.rect.left and self.game.player.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "bottom":
+                if self.game.player.rect.top > self.rect.bottom:
+                    if self.rect.left > self.game.player.rect.left and self.game.player.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+        elif self.game.leader == "luigi":
+            if self.facing == "left":
+                if self.game.follower.rect.right < self.rect.left:
+                    if self.rect.bottom > self.game.follower.rect.top and self.game.follower.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "right":
+                if self.game.follower.rect.left > self.rect.right:
+                    if self.rect.bottom > self.game.follower.rect.top and self.game.follower.rect.bottom < self.rect.top:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "top":
+                if self.game.follower.rect.bottom < self.rect.top:
+                    if self.rect.left > self.game.follower.rect.left and self.game.follower.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+            elif self.facing == "bottom":
+                if self.game.follower.rect.top > self.rect.bottom:
+                    if self.rect.left > self.game.follower.rect.left and self.game.follower.rect.right < self.rect.right:
+                        if self.is_idle:
+                            self.toFireIdle()
+                        elif self.is_moving:
+                            self.toFireMove()
+
+        if self.game.player.stats["hp"] != 0:
+            doubleDamageM = False
+            hits = pg.sprite.collide_rect(self.game.player, self)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                if keys[
+                    pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                    doubleDamageM = True
+                if hitsRound2:
+                    if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                        if doubleDamageM:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1)))
+                            self.stats["hp"] -= (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1))
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            self.hit = True
+                        else:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       (max(self.game.player.stats["pow"] - self.stats["def"], 1)))
+                            self.stats["hp"] -= (max(self.game.player.stats["pow"] - self.stats["def"], 1))
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            self.hit = True
+                        self.game.player.airTimer = 0
+                    else:
+                        if not self.game.player.hit and self.stats[
+                            "hp"] > 0 and not self.hit and self.game.player.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                            self.game.player.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                            if self.game.player.stats["hp"] <= 0:
+                                self.game.player.stats["hp"] = 0
+                                self.game.player.currentFrame = 0
+                            self.game.player.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.player.canBeHit = False
+                            self.game.player.hit = True
+
+        if self.game.follower.stats["hp"] != 0:
+            luigiHits = pg.sprite.collide_rect(self.game.follower, self)
+            if luigiHits:
+                doubleDamageL = False
+                hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
+                if keys[
+                    pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                    doubleDamageL = True
+                if hitsRound2:
+                    if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
+                        if doubleDamageL:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1)))
+                            self.stats["hp"] -= (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1))
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            self.hit = True
+                        else:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       (max(self.game.follower.stats["pow"] - self.stats["def"], 1)))
+                            self.stats["hp"] -= (max(self.game.follower.stats["pow"] - self.stats["def"], 1))
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            self.hit = True
+                        self.game.follower.airTimer = 0
+                    else:
+                        if not self.game.follower.hit and self.stats[
+                            "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                            self.game.follower.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                            if self.game.follower.stats["hp"] <= 0:
+                                self.game.follower.stats["hp"] = 0
+                                self.game.follower.currentFrame = 0
+                            self.game.follower.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.follower.canBeHit = False
+                            self.game.follower.hit = True
+
+        if self.stats["hp"] != 0 and self.game.player.isHammer is not None:
+            hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+            if hammerHits:
+                hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
+                    HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                               max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                    self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                    if self.stats["hp"] <= 0:
+                        self.game.enemyDieSound.play()
+                    self.game.enemyHitSound.play()
+                    self.hit = True
+
+        if self.stats["hp"] != 0 and self.game.follower.isHammer is not None:
+            hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+            if hammerHits:
+                hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                if hammerHitsRound2 and not self.hit and self.stats["hp"] > 0:
+                    HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                               max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                    self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                    if self.stats["hp"] <= 0:
+                        self.game.enemyDieSound.play()
+                    self.game.enemyHitSound.play()
+                    self.hit = True
+
+        for entity in self.game.entities:
+            if self.rect.colliderect(entity.rect) and not self.hit and self.stats["hp"] > 0:
+                if type(entity).__name__ == "Lightning":
+                    HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                               max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                    self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
+                    if self.stats["hp"] <= 0:
+                        self.game.enemyDieSound.play()
+                    self.game.enemyHitSound.play()
+                    self.hit = True
+                if self.imgRect.colliderect(entity.imgRect):
+                    if type(entity).__name__ == "Fireball":
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                        self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        self.hit = True
+                        entity.dead = True
+
+        if self.hit:
+            self.hitTimer += 1
+            if self.hitTimer >= fps:
+                self.hitTimer = 0
+                self.hit = False
+
+        if self.stats["hp"] <= 0:
+            self.alpha -= 10
+
+        if self.alpha <= 0:
+            self.game.battleXp += self.stats["exp"]
+            self.game.battleCoins += self.stats["coins"]
+            self.game.sprites.remove(self)
+            self.game.enemies.remove(self)
+
+        self.imgRect.bottom = self.rect.bottom - 5
+        self.imgRect.centerx = self.rect.centerx
+
+
+class AnubooLazer(pg.sprite.Sprite):
+    def __init__(self, game, pos, stats):
+        self.game = game
+        self.game.sprites.append(self)
+        sheet = spritesheet("sprites/anuboo.png", "sprites/anuboo.xml")
+        self.rect = pg.rect.Rect(pos, (0, 0))
+        if self.game.leader == "mario":
+            self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(math.atan2(self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)))
+        elif self.game.leader == "luigi":
+            self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(
+                math.atan2(self.game.follower.rect.centerx - self.rect.centerx,
+                           self.game.follower.rect.centery - self.rect.centery)))
+        self.lastUpdate = 0
+        self.imgRect = self.image.get_rect()
+        self.shadow = self.image.copy()
+        self.shadow.fill((0, 0, 0, 255), special_flags=pg.BLEND_RGBA_MIN)
+        self.shadow.set_alpha(150)
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.top - 25
+        self.alpha = 255
+        self.speed = 4
+        self.dead = False
+        self.stats = stats
+
+    def update(self):
+        self.rect.center = project(self.rect.center, self.angle, self.speed)
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.top - 25
+        for wall in self.game.walls:
+            if wall.rect.colliderect(self.rect):
+                if self in self.game.sprites:
+                    self.game.sprites.remove(self)
+
+        if self.game.player.stats["hp"] != 0:
+            hits = pg.sprite.collide_rect(self.game.player, self)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                if hitsRound2:
+                    if not self.game.player.hit and self.stats[
+                        "hp"] > 0 and self.game.player.canBeHit:
+                        HitNumbers(self.game, self.game.room,
+                                   (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                   (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                        self.game.player.stats["hp"] -= (
+                            max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                        if self.game.player.stats["hp"] <= 0:
+                            self.game.player.stats["hp"] = 0
+                            self.game.player.currentFrame = 0
+                        self.game.player.hitTime = pg.time.get_ticks()
+                        self.game.playerHitSound.play()
+                        self.game.player.canBeHit = False
+                        self.game.player.hit = True
+
+        if self.game.follower.stats["hp"] != 0:
+            luigiHits = pg.sprite.collide_rect(self.game.follower, self)
+            if luigiHits:
+                hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
+                if hitsRound2:
+                    if self.game.follower.stats["hp"] != 0:
+                        if not self.game.follower.hit and self.stats[
+                            "hp"] > 0 and self.game.follower.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                            self.game.follower.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                            if self.game.follower.stats["hp"] <= 0:
+                                self.game.follower.stats["hp"] = 0
+                                self.game.follower.currentFrame = 0
+                            self.game.follower.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.follower.canBeHit = False
+                            self.game.follower.hit = True
 
 
 class LinebeckDebug(pg.sprite.Sprite):

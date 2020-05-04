@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:6fbf0bbe983f30a156f1316bfd24f5dc:ee544b53d1895959b81d782c74fda58a:e99d16294a7e4bc4d10f0b2ff07571c2$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="sandoonBrosAttack.png" width="108" height="1528">
+    <sprite n="hit.png" x="0" y="0" w="98" h="146" pX="0.5" pY="0.5"/>
+    <sprite n="idle_1.png" x="0" y="146" w="96" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_2.png" x="0" y="288" w="100" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_3.png" x="0" y="430" w="104" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_4.png" x="0" y="572" w="108" h="140" pX="0.5" pY="0.5"/>
+    <sprite n="idle_5.png" x="0" y="712" w="108" h="138" pX="0.5" pY="0.5"/>
+    <sprite n="idle_6.png" x="0" y="850" w="108" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="idle_7.png" x="0" y="986" w="104" h="134" pX="0.5" pY="0.5"/>
+    <sprite n="idle_8.png" x="0" y="1120" w="100" h="134" pX="0.5" pY="0.5"/>
+    <sprite n="idle_9.png" x="0" y="1254" w="96" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="idle_10.png" x="0" y="1390" w="96" h="138" pX="0.5" pY="0.5"/>
+</TextureAtlas>

@@ -158,7 +158,7 @@ class Cutscene:
                 self.currentSubscene = 0
                 self.currentScene += 1
 
-        if self.currentScene > len(self.scenes) - 1:
+        if self.currentScene >= len(self.scenes):
             self.over = True
 
     def wait(self, seconds):
@@ -196,9 +196,12 @@ class Cutscene:
             self.flip[id] = None
             self.sceneEnd()
 
-    def flipOut(self, image, pos, turns=3, color=black, sound="default", id=0):
+    def flipOut(self, image, pos=(0, 0), turns=3, color=black, sound="default", id=0, rectCenter=False):
         if self.flip[id] is None:
-            self.flip[id] = LineFlipDisappear(self.game, image, pos, turns, color, sound)
+            if rectCenter:
+                self.flip[id] = LineFlipDisappear(self.game, image, pos, turns, color, sound)
+            else:
+                self.flip[id] = LineFlipDisappear(self.game, image, pos, turns, color, sound)
         elif self.flip[id].complete:
             self.flip[id] = None
             self.sceneEnd()
@@ -2156,7 +2159,11 @@ class toadleyCutscene(pg.sprite.Sprite):
         self.idleFrames = {"up": sheet.getImageName("standing_up.png"),
                            "down": sheet.getImageName("standing_down.png"),
                            "left": sheet.getImageName("standing_left.png"),
-                           "right": sheet.getImageName("standing_right.png")
+                           "right": sheet.getImageName("standing_right.png"),
+                           "upleft": sheet.getImageName("standing_upleft.png"),
+                           "upright": sheet.getImageName("standing_upright.png"),
+                           "downleft": sheet.getImageName("standing_downleft.png"),
+                           "downright": sheet.getImageName("standing_downright.png")
                            }
 
         self.talkingFrames = {"up": [sheet.getImageName("talking_up_1.png"),
@@ -2182,7 +2189,31 @@ class toadleyCutscene(pg.sprite.Sprite):
                                         sheet.getImageName("talking_right_3.png"),
                                         sheet.getImageName("talking_right_4.png"),
                                         sheet.getImageName("talking_right_5.png"),
-                                        sheet.getImageName("talking_right_6.png")]
+                                        sheet.getImageName("talking_right_6.png")],
+                              "upleft": [sheet.getImageName("talking_upleft_1.png"),
+                                     sheet.getImageName("talking_upleft_2.png"),
+                                     sheet.getImageName("talking_upleft_3.png"),
+                                     sheet.getImageName("talking_upleft_4.png"),
+                                     sheet.getImageName("talking_upleft_5.png"),
+                                     sheet.getImageName("talking_upleft_6.png")],
+                              "downleft": [sheet.getImageName("talking_downleft_1.png"),
+                                       sheet.getImageName("talking_downleft_2.png"),
+                                       sheet.getImageName("talking_downleft_3.png"),
+                                       sheet.getImageName("talking_downleft_4.png"),
+                                       sheet.getImageName("talking_downleft_5.png"),
+                                       sheet.getImageName("talking_downleft_6.png")],
+                              "upright": [sheet.getImageName("talking_upright_1.png"),
+                                     sheet.getImageName("talking_upright_2.png"),
+                                     sheet.getImageName("talking_upright_3.png"),
+                                     sheet.getImageName("talking_upright_4.png"),
+                                     sheet.getImageName("talking_upright_5.png"),
+                                     sheet.getImageName("talking_upright_6.png")],
+                              "downright": [sheet.getImageName("talking_downright_1.png"),
+                                       sheet.getImageName("talking_downright_2.png"),
+                                       sheet.getImageName("talking_downright_3.png"),
+                                       sheet.getImageName("talking_downright_4.png"),
+                                       sheet.getImageName("talking_downright_5.png"),
+                                       sheet.getImageName("talking_downright_6.png")],
                               }
 
     def update(self):
@@ -2213,6 +2244,34 @@ class toadleyCutscene(pg.sprite.Sprite):
                 centerx = self.imgRect.centerx
                 bottom = self.imgRect.bottom
                 self.image = self.idleFrames["right"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+            elif self.facing == "upleft":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["upleft"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+            elif self.facing == "upright":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["upright"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+            elif self.facing == "downleft":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["downleft"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+            elif self.facing == "downright":
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                self.image = self.idleFrames["downright"]
                 self.imgRect = self.image.get_rect()
                 self.imgRect.centerx = centerx
                 self.imgRect.bottom = bottom
@@ -2269,9 +2328,207 @@ class toadleyCutscene(pg.sprite.Sprite):
                     self.imgRect = self.image.get_rect()
                     self.imgRect.bottom = bottom
                     self.imgRect.centerx = centerx
+            elif self.facing == "upleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["upleft"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["upleft"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["upleft"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
+            elif self.facing == "upright":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["upright"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["upright"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["upright"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
+            elif self.facing == "downleft":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["downleft"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["downleft"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["downleft"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
+            elif self.facing == "downright":
+                if now - self.lastUpdate > 100:
+                    self.lastUpdate = now
+                    if self.currentFrame < len(self.talkingFrames["downright"]):
+                        self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames["downright"]))
+                    else:
+                        self.currentFrame = 0
+                    bottom = self.imgRect.bottom
+                    centerx = self.imgRect.centerx
+                    self.image = self.talkingFrames["downright"][self.currentFrame]
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.bottom = bottom
+                    self.imgRect.centerx = centerx
 
         self.imgRect.bottom = self.rect.bottom - 5
         self.imgRect.centerx = self.rect.centerx
+
+
+class BleckCutscene(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.cutsceneSprites.append(self)
+        self.loadImages()
+        self.image = self.idleFrames[0]
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect = self.image.get_rect()
+        self.imgRect.bottom = self.rect.top - 50
+        self.imgRect.centerx = self.rect.centerx
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.alpha = 255
+        self.laughing = False
+        self.talking = False
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
+
+        self.idleFrames = [sheet.getImageName("idle_1.png"),
+                        sheet.getImageName("idle_2.png"),
+                        sheet.getImageName("idle_3.png"),
+                        sheet.getImageName("idle_4.png"),
+                        sheet.getImageName("idle_5.png"),
+                        sheet.getImageName("idle_6.png"),
+                        sheet.getImageName("idle_7.png"),
+                        sheet.getImageName("idle_8.png"),
+                        sheet.getImageName("idle_9.png"),
+                        sheet.getImageName("idle_10.png"),
+                        sheet.getImageName("idle_11.png"),
+                        sheet.getImageName("idle_12.png"),
+                        sheet.getImageName("idle_13.png"),
+                        sheet.getImageName("idle_14.png"),
+                        sheet.getImageName("idle_15.png"),
+                        sheet.getImageName("idle_16.png"),
+                        sheet.getImageName("idle_17.png"),
+                        sheet.getImageName("idle_18.png"),
+                        sheet.getImageName("idle_19.png"),
+                        sheet.getImageName("idle_20.png"),
+                        sheet.getImageName("idle_21.png"),
+                        sheet.getImageName("idle_22.png"),
+                        sheet.getImageName("idle_23.png"),
+                        sheet.getImageName("idle_24.png"),
+                        sheet.getImageName("idle_25.png"),
+                        sheet.getImageName("idle_26.png"),
+                        sheet.getImageName("idle_27.png"),
+                        sheet.getImageName("idle_28.png"),
+                        sheet.getImageName("idle_29.png"),
+                        sheet.getImageName("idle_30.png"),
+                        sheet.getImageName("idle_31.png"),
+                        sheet.getImageName("idle_32.png"),
+                        sheet.getImageName("idle_33.png"),
+                        sheet.getImageName("idle_34.png"),
+                        sheet.getImageName("idle_35.png"),
+                        sheet.getImageName("idle_36.png"),
+                        sheet.getImageName("idle_37.png"),
+                        sheet.getImageName("idle_38.png"),
+                        sheet.getImageName("idle_39.png"),
+                        sheet.getImageName("idle_40.png"),
+                        sheet.getImageName("idle_41.png"),
+                        sheet.getImageName("idle_42.png"),
+                        sheet.getImageName("idle_43.png"),
+                        sheet.getImageName("idle_44.png"),
+                        sheet.getImageName("idle_45.png"),
+                        sheet.getImageName("idle_46.png"),
+                        sheet.getImageName("idle_47.png"),
+                        sheet.getImageName("idle_48.png"),
+                        sheet.getImageName("idle_49.png"),
+                        sheet.getImageName("idle_50.png"),
+                        sheet.getImageName("idle_51.png")]
+
+        self.talkingFrames = [sheet.getImageName("talking_1.png"),
+                        sheet.getImageName("talking_2.png"),
+                        sheet.getImageName("talking_3.png"),
+                        sheet.getImageName("talking_4.png"),
+                        sheet.getImageName("talking_5.png"),
+                        sheet.getImageName("talking_6.png")]
+
+        self.laughingFrames = [sheet.getImageName("to_laugh_1.png"),
+                        sheet.getImageName("to_laugh_2.png"),
+                        sheet.getImageName("to_laugh_3.png"),
+                        sheet.getImageName("to_laugh_4.png"),
+                        sheet.getImageName("to_laugh_5.png"),
+                        sheet.getImageName("to_laugh_6.png"),
+                            sheet.getImageName("laugh_1.png"),
+                     sheet.getImageName("laugh_2.png"),
+                     sheet.getImageName("laugh_3.png"),
+                     sheet.getImageName("laugh_4.png"),
+                     sheet.getImageName("laugh_5.png"),
+                     sheet.getImageName("laugh_6.png"),
+                     sheet.getImageName("laugh_7.png")]
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if self.laughing:
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.laughingFrames) - 1:
+                    self.currentFrame += 1
+                else:
+                    self.currentFrame = 6
+                bottom = self.imgRect.bottom
+                left = self.imgRect.left
+                self.image = self.laughingFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.bottom = bottom
+                self.imgRect.left = left
+        elif self.talking:
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.talkingFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames))
+                else:
+                    self.currentFrame = 0
+                bottom = self.imgRect.bottom
+                left = self.imgRect.left
+                self.image = self.talkingFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.bottom = bottom
+                self.imgRect.left = left
+        else:
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.idleFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleFrames))
+                else:
+                    self.currentFrame = 0
+                bottom = self.imgRect.bottom
+                left = self.imgRect.left
+                self.image = self.idleFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.bottom = bottom
+                self.imgRect.left = left
+
+        if not self.laughing:
+            self.imgRect.bottom = self.rect.top - 50
+            self.imgRect.left = self.rect.left - 16
+        else:
+            self.imgRect.bottom = self.rect.top - 50
+            self.imgRect.centerx = self.rect.centerx - 20
 
 
 class FawfulOnCopter(pg.sprite.Sprite):

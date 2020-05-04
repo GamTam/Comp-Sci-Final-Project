@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:75fb8829270b6bac01e2b58d068c3d88:37ac9f87a30910d5b40813c4736e8242:ac85ad3d400890451f3d64936bf4de7f$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="sandoon overworld.png" width="478" height="788">
+    <sprite n="eyes_1.png" x="322" y="0" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_2.png" x="240" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_3.png" x="280" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_4.png" x="320" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_5.png" x="360" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_6.png" x="400" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_7.png" x="0" y="72" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_8.png" x="40" y="72" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_9.png" x="80" y="72" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_10.png" x="362" y="0" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_11.png" x="402" y="0" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_12.png" x="0" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_13.png" x="40" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_14.png" x="80" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_15.png" x="120" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_16.png" x="160" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyes_17.png" x="200" y="36" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="eyeShadow.png" x="112" y="0" w="46" h="16" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_1.png" x="280" y="72" w="40" h="40" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_2.png" x="412" y="72" w="40" h="42" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_3.png" x="120" y="72" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_4.png" x="242" y="0" w="40" h="28" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_5.png" x="158" y="0" w="42" h="18" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_6.png" x="48" y="0" w="32" h="8" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_7.png" x="0" y="0" w="24" h="6" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_8.png" x="320" y="72" w="52" h="40" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_9.png" x="125" y="114" w="60" h="64" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_10.png" x="245" y="114" w="64" h="94" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_11.png" x="373" y="114" w="64" h="110" pX="0.5" pY="0.5"/>
+    <sprite n="from_eyes_12.png" x="64" y="224" w="76" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="idle_down_1.png" x="96" y="358" w="92" h="140" pX="0.5" pY="0.5"/>
+    <sprite n="idle_down_2.png" x="0" y="358" w="96" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="idle_down_3.png" x="140" y="224" w="96" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_down_4.png" x="312" y="224" w="94" h="134" pX="0.5" pY="0.5"/>
+    <sprite n="idle_left_1.png" x="0" y="498" w="94" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_left_2.png" x="0" y="640" w="98" h="144" pX="0.5" pY="0.5"/>
+    <sprite n="idle_left_3.png" x="188" y="358" w="100" h="140" pX="0.5" pY="0.5"/>
+    <sprite n="idle_left_4.png" x="94" y="498" w="96" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_right_1.png" x="190" y="498" w="94" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_right_2.png" x="284" y="498" w="98" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_right_3.png" x="288" y="358" w="100" h="140" pX="0.5" pY="0.5"/>
+    <sprite n="idle_right_4.png" x="98" y="640" w="98" h="144" pX="0.5" pY="0.5"/>
+    <sprite n="idle_up_1.png" x="196" y="640" w="92" h="144" pX="0.5" pY="0.5"/>
+    <sprite n="idle_up_2.png" x="382" y="640" w="96" h="148" pX="0.5" pY="0.5"/>
+    <sprite n="idle_up_3.png" x="382" y="498" w="96" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="idle_up_4.png" x="288" y="640" w="94" h="146" pX="0.5" pY="0.5"/>
+    <sprite n="shadow.png" x="0" y="114" w="89" h="42" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_1.png" x="236" y="224" w="76" h="132" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_2.png" x="0" y="224" w="64" h="118" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_3.png" x="309" y="114" w="64" h="102" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_4.png" x="185" y="114" w="60" h="72" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_5.png" x="89" y="114" w="36" h="48" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_6.png" x="24" y="0" w="24" h="6" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_7.png" x="80" y="0" w="32" h="8" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_8.png" x="200" y="0" w="42" h="18" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_9.png" x="282" y="0" w="40" h="28" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_10.png" x="160" y="72" w="40" h="36" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_11.png" x="200" y="72" w="40" h="38" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_12.png" x="372" y="72" w="40" h="40" pX="0.5" pY="0.5"/>
+    <sprite n="to_eyes_13.png" x="240" y="72" w="40" h="38" pX="0.5" pY="0.5"/>
+</TextureAtlas>
