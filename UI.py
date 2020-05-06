@@ -548,7 +548,6 @@ class ExpNumbers(pg.sprite.Sprite):
         self.counter = 0
         self.rect.center = (500, 150)
         self.speed = self.exp / 45
-        print(self.speed)
 
     def update(self):
         if not self.game.player.dead:

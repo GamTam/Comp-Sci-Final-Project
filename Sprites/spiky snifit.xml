@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:6146a04d6183afa624bf8399b7cca570:5f3749f28995f8d5bb87aad49239595b:ab7f90785372f53af3d021142c89006f$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="spiky snifit.png" width="968" height="386">
+    <sprite n="ball.png" x="126" y="0" w="36" h="38" pX="0.5" pY="0.5"/>
+    <sprite n="ballShadow.png" x="0" y="0" w="44" h="17" pX="0.5" pY="0.5"/>
+    <sprite n="hit.png" x="206" y="126" w="92" h="128" pX="0.5" pY="0.5"/>
+    <sprite n="idle_1.png" x="784" y="126" w="92" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_2.png" x="0" y="256" w="92" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_3.png" x="92" y="256" w="90" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_4.png" x="876" y="126" w="92" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_5.png" x="692" y="126" w="92" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_6.png" x="642" y="256" w="90" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_7.png" x="824" y="256" w="88" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_8.png" x="182" y="256" w="90" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="idle_9.png" x="732" y="256" w="92" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="shadow.png" x="44" y="0" w="82" h="25" pX="0.5" pY="0.5"/>
+    <sprite n="shoot_1.png" x="100" y="126" w="106" h="127" pX="0.5" pY="0.5"/>
+    <sprite n="shoot_2.png" x="486" y="126" w="110" h="128" pX="0.5" pY="0.5"/>
+    <sprite n="shoot_3.png" x="298" y="126" w="96" h="128" pX="0.5" pY="0.5"/>
+    <sprite n="shoot_4.png" x="272" y="256" w="92" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="shoot_5.png" x="364" y="256" w="94" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_1.png" x="550" y="256" w="92" h="130" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_2.png" x="394" y="126" w="92" h="128" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_3.png" x="462" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_4.png" x="562" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_5.png" x="762" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_6.png" x="862" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_7.png" x="662" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_8.png" x="362" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_9.png" x="0" y="126" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_10.png" x="162" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_11.png" x="262" y="0" w="100" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_12.png" x="596" y="126" w="96" h="128" pX="0.5" pY="0.5"/>
+    <sprite n="to_shoot_13.png" x="458" y="256" w="92" h="130" pX="0.5" pY="0.5"/>
+</TextureAtlas>

@@ -258,7 +258,7 @@ class Cutscene:
             self.move(self.game.mario, 460, 250, False, round(fps * 6.1), 0)
             self.move(self.game.luigi, 780, 250, False, round(fps * 6.1), 1)
             Fadeout(self.game, 1)
-        if self.game.song_playing != "mcMuffin Get":
+        if self.game.songPlaying != "mcMuffin Get":
             try:
                 self.prevSong = self.song.copy()
             except:
@@ -2139,7 +2139,7 @@ class toadleyCutscene(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game.cutsceneSprites.append(self)
         self.loadImages()
-        self.image = self.game.player.image
+        self.image = self.idleFrames["down"]
         self.rect = self.shadow.get_rect()
         self.rect.center = pos
         self.imgRect = self.image.get_rect()
@@ -3283,7 +3283,6 @@ class McMuffinWarp(pg.sprite.Sprite):
                               ["self.command('Fadeout(self.game, 5)')"],
                               ["self.wait(5)"]
                               ], parent=self)
-                print("ryan")
                 self.fade = 5
 
         if self.textbox is not None:

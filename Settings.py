@@ -511,8 +511,8 @@ lightningSprites = [pg.image.load("sprites/lightning/1.png").convert_alpha(),
 pg.event.clear()
 
 
-def randomNumber(max):
-    return random.randint(1, max)
+def randomNumber(max, min=1):
+    return random.randint(min, max)
 
 
 def nor(a, b):

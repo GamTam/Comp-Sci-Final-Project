@@ -183,7 +183,7 @@ class Game:
         LuigiUI(self)
         self.file = 1
         if blankSong:
-            self.song_playing = ""
+            self.songPlaying = ""
         self.storeData = {}
         self.despawnList = []
         self.hitBlockList = []
@@ -216,9 +216,10 @@ class Game:
                       ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.", "maxHP"]]
 
         self.screen.set_clip(0, 0, width, height)
+        self.titleScreen()
 
     def playSong(self, introLength, loopLength, song, cont=False, fadein=False, fadeinSpeed=0.05):
-        if self.song_playing != song:
+        if self.songPlaying != song:
             pg.mixer.music.load("music/" + song + ".ogg")
             self.loops = 0
 
@@ -230,7 +231,7 @@ class Game:
                 pg.mixer.music.set_pos(self.currentPoint / 1000)
             else:
                 pg.mixer.music.play()
-            self.song_playing = song
+            self.songPlaying = song
             if fadein:
                 self.volume = 0
 
@@ -244,7 +245,7 @@ class Game:
 
         pg.mixer.music.set_volume(self.volume)
 
-        if soundPos > loopLength and pg.mixer.music.get_pos() > 500:
+        if soundPos > loopLength:
             self.loops += 1
             if cont:
                 pg.mixer.music.set_pos(
@@ -289,8 +290,6 @@ class Game:
         self.displayTime = self.playHours + self.playMinutes + self.playSeconds
 
     def titleScreen(self, fadein=True):
-        full = self.fullscreen
-        self.__init__(full, False)
         pg.event.clear()
         if self.player.dead:
             self.player.dead = False
@@ -8202,7 +8201,7 @@ class Game:
 
             pg.display.flip()
 
-        self.titleScreen()
+        self.__init__(self.fullscreen)
 
     def saveGame(self, song=None):
         self.menuOpenSound.play()
@@ -8326,7 +8325,6 @@ class Game:
             self.voidSize = pickle.load(file)
             self.tutorials = pickle.load(file)
             self.mcMuffins = pickle.load(file)
-        print(self.storeData)
         self.storeData["mario current ability"] = 0
         self.storeData["luigi current ability"] = 0
         self.void = Void(self, self.voidSize)
@@ -8334,7 +8332,6 @@ class Game:
         self.area = "title screen"
         eval(self.room)
         # except:
-        #     print("File not found.\nStarting a new game...")
         #     self.items = [["Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 30 HP to one Bro.", 30],
         #                   ["Super Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 60 HP to one Bro.", 60],
         #                   ["Ultra Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 120 HP to one Bro.", 120],
@@ -9717,7 +9714,6 @@ class Game:
         self.sprites.append(self.player)
         self.follower.stepSound = self.sandSound
         self.player.stepSound = self.sandSound
-        print(self.player.abilities[self.player.ability])
 
         McMuffinWarp(self, (960, 960), red, "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
 
@@ -10131,14 +10127,14 @@ class Game:
             ["self.command('pg.mixer.music.stop()')",
              "self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
              "self.command('self.game.fawfulcopterSound.fadeout(5000)')",
-             "self.move(self.fawful, -100, -100, True, 300)"],
+             "self.move(self.fawful, -200, -100, True, 300)"],
             ["self.setVar('self.bleck = BleckCutscene(self.game, (self.game.map.width / 2, self.game.map.height / 2))')",
              "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
              """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
             ["self.command('self.game.cutsceneSprites.append(self.bleck)')"],
             ["self.wait(0.3)"],
             [
-             """self.textBox(self.bleck, ["/BBLECK",
+             """self.textBox(self.bleck, ["/BBLECK!",
              "You foolish heroes are being/naprehended.../p by Count Bleck!"])"""],
             ["""self.textBox(self.starlow, [
             "You!",
@@ -10152,7 +10148,7 @@ class Game:
             "I have come bearing a warning.",
             "The time that this world has/nis running out.",
             "If you continue to look for/nthe Egg McMuffin that lies here...",
-            "You will feel nothing but pain!/P/n...from Count Bleck."])"""],
+            "You will feel nothing but pain!/p/n...from Count Bleck."])"""],
             ["""self.textBox(self.fawful, [
             "And Fawful will be bringing/nthe pain!"], sound="fawful")"""],
             ["""self.textBox(self.bleck, [
@@ -10169,12 +10165,67 @@ class Game:
             [
                 """self.flipOut([[self.fawful.shadow, self.fawful.image], [self.fawful.rect, self.fawful.imgRect]], (self.fawful.imgRect.centerx, self.fawful.imgRect.centery + 2))""",
                 "self.setVar('self.flip[0].maxRect.bottom = self.fawful.rect.bottom')",
+                "self.command('self.flip[0].update()')",
                 "self.command('self.game.cutsceneSprites.remove(self.fawful)')"],
             ["self.wait(0.3)"],
             [
                 "self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
                 "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
-                "self.command('self.game.cutsceneSprites.remove(self.bleck)')"]
+                "self.command('self.flip[0].update()')",
+                "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
+            ["self.command('pg.mixer.music.fadeout(3000)')",
+             "self.wait(3)"],
+            ["self.setVar('self.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.height / 2))')",
+             "self.command('self.game.cutsceneSprites.remove(self.toadley)')",
+             """self.flipIn([[self.toadley.shadow, self.toadley.image], [self.toadley.rect, self.toadley.imgRect]], (self.toadley.imgRect.centerx, self.toadley.rect.bottom - 154))""",
+             "self.setVar('self.flip[0].maxRect.bottom = self.toadley.rect.bottom')",
+             "self.command('self.flip[0].update()')",
+             ],
+            ["self.command('self.game.cutsceneSprites.append(self.toadley)')"],
+            ["""self.textBox(self.toadley, [
+            "Where is Count Bleck?",
+            "Intel says that he's here!"])"""],
+            ["""self.textBox(self.starlow, [
+            "You just missed him!",
+            "He just showed up and told us/nour quest was meaningless.",
+            "Then he left."], sound="starlow")"""],
+            ["""self.textBox(self.toadley, [
+               "Hmm...",
+               "How strange...",
+               "Perhaps he has something planend/nfor you...",
+               "Well,/p I guess I have no choice.",
+               "I was saving this for later,/nbut it seems like you need it more/nthan me."])"""],
+            [
+                """self.textBox(self.game.cameraRect, ["You've unlocked <<RFire>> and <<GThunder>>!"], type="board", dir="None")"""],
+            ["""self.textBox(self.toadley, [
+               "I have given you the power of/nThunder and fire.",
+               "You can switch to the action/nicon with <<RLeft Shift>> and <<GRight Shift>>.",
+               "However, you need to be in front/nin order to use it.",
+               "You now have the full extent/nof my power.",
+               "I can give you no more.",
+               "Good luck!",
+               "I will continue my search/nfor Count Bleck."])"""],
+            [
+                "self.flipOut([[self.toadley.shadow, self.toadley.image], [self.toadley.rect, self.toadley.imgRect]], (self.toadley.imgRect.centerx, self.toadley.imgRect.centery + 2))",
+                "self.setVar('self.flip[0].maxRect.bottom = self.toadley.rect.bottom')",
+                "self.command('self.flip[0].update()')",
+                "self.command('self.game.cutsceneSprites.remove(self.toadley)')"],
+            ["self.wait(1)"],
+            ["""self.setVar('self.starlow.facing = "left"')""",
+             """self.textBox(self.starlow, [
+            "Cool!",
+            "Now you can shoot Fire!",
+            "Let's move ahead and look for/nCount Bleck."], sound="starlow")"""],
+            ["self.setVar('self.luigi.walking = True')",
+             """self.setVar('self.luigi.facing = "left"')""",
+             """self.setVar('self.game.follower.abilities = self.abilities = ["jump", "hammer", "thunder", "interact", "talk"]')""",
+             """self.setVar('self.game.player.abilities = self.abilities = ["jump", "hammer", "fire", "interact", "talk"]')"""],
+            ["self.move(self.luigi, self.mario.rect.centerx, self.mario.rect.centery, False, 60, 0)",
+             "self.move(self.starlow, self.mario.rect.centerx, self.mario.rect.centery, False, 60, 1)"],
+            ["self.setVar('self.game.follower.rect.center = self.luigi.rect.center')",
+            "self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+             "self.setVar('self.game.currentPoint = 0')",
+             "self.setVar('self.game.voidSize = 1')"]
         ])
 
         try:
@@ -10211,6 +10262,64 @@ class Game:
 
         self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
 
+    def loadTeeheeValleyRoom6(self):
+        self.room = "self.loadTeeheeValleyRoom6()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Teehee Valley Room 6", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+
+        try:
+            self.player.rect.center = self.storeData["mario pos"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 2.6
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 2.6
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
+
     def overworld(self, area, songData):
         menud = False
         self.blockContents = pg.sprite.Group()
@@ -10224,8 +10333,6 @@ class Game:
             self.follower.ability = self.storeData["luigi current ability"]
         except:
             pass
-
-        print(self.player.abilities[self.player.ability])
 
         if self.area != area:
             self.currentPos = 0
@@ -12420,6 +12527,64 @@ class Game:
             pass
         self.battle()
 
+    def loadTeeheeValleyBattle1S1SS(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        self.map = Map(self, "Teehee Valley Battle", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
     def battle(self, song=None, boss=False):
         menud = False
         self.countdown = 0
@@ -12430,6 +12595,7 @@ class Game:
         self.follower.abilities = self.storeData["luigi abilities"]
         self.cameraRect = CameraRect()
         if song is None:
+            self.songPlaying = "battle"
             pg.mixer.music.set_volume(1)
             pg.mixer.music.load("music/battle.ogg")
             pg.mixer.music.play(-1)
@@ -12880,7 +13046,7 @@ class Game:
                                 else:
                                     dont = True
                             else:
-                                if not self.follower.dead:
+                                if not self.follower.dead and self.follower.stats[info[3]] != self.follower.stats[info[4]]:
                                     self.follower.stats[info[3]] += info[-1]
                                 else:
                                     dont = True
@@ -12941,7 +13107,7 @@ class Game:
                                 else:
                                     dont = True
                             else:
-                                if not self.player.dead:
+                                if not self.player.dead and self.player.stats[info[3]] != self.player.stats[info[4]]:
                                     self.player.stats[info[3]] += info[-1]
                                 else:
                                     dont = True
@@ -13464,7 +13630,8 @@ class Game:
         sprites = [mario, luigi]
         enemies = []
         for enemy in enems:
-            command = enemy.stats["name"] + "BrosAttack(self, enemy)"
+            name = enemy.stats["name"].replace(" ", "")
+            command = name + "BrosAttack(self, enemy)"
             en = eval(command)
             sprites.append(en)
             enemies.append(en)
@@ -14014,6 +14181,8 @@ class Game:
             self.follower.rect = self.follower.shadow.get_rect()
         self.storeData["mario stats"] = self.player.stats
         self.storeData["luigi stats"] = self.follower.stats
+        self.player.stats["exp"] = round(self.player.stats["exp"])
+        self.follower.stats["exp"] = round(self.follower.stats["exp"])
         try:
             eval(self.prevRoom)
         except:
@@ -14022,7 +14191,7 @@ class Game:
     def marioLevelUp(self, allReadyLeveled=False, currentFrame=0):
         levelUpChannel = pg.mixer.Channel(0)
         playedLevelUpSound = False
-        self.player.statGrowth = {"maxHP": randomNumber(10), "maxBP": randomNumber(4), "pow": randomNumber(4),
+        self.player.statGrowth = {"maxHP": randomNumber(10), "maxBP": randomNumber(4), "pow": randomNumber(4, 3),
                                   "def": randomNumber(3)}
         going = True
         mario = MarioLevelUp()
@@ -14231,8 +14400,8 @@ class Game:
     def luigiLevelUp(self, allReadyLeveled=False, marioBefore=False, currentFrame=0):
         levelUpChannel = pg.mixer.Channel(0)
         playedLevelUpSound = False
-        self.follower.statGrowth = {"maxHP": randomNumber(13), "maxBP": randomNumber(5), "pow": randomNumber(4),
-                                    "def": randomNumber(4)}
+        self.follower.statGrowth = {"maxHP": randomNumber(13), "maxBP": randomNumber(5), "pow": randomNumber(4, 3),
+                                    "def": randomNumber(5)}
         going = True
         luigi = LuigiLevelUp()
         text = LuigiLevelUpUI(self)
@@ -14453,11 +14622,6 @@ class Game:
             if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                 pg.quit()
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_p:
-                    if self.leader == "mario":
-                        print(self.player.rect.center)
-                    else:
-                        print(self.follower.rect.center)
                 if event.key == pg.K_F4:
                     self.fullscreen = not self.fullscreen
                     if not self.fullscreen:
