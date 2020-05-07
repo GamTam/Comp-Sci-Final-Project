@@ -1704,8 +1704,8 @@ class Goomba(pg.sprite.Sprite):
             if self.rect.colliderect(entity.rect) and not self.hit and self.stats["hp"] > 0:
                 if type(entity).__name__ == "Lightning":
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                               max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 0))
-                    self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 0)
+                               max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 0))
+                    self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 0)
                     if self.stats["hp"] <= 0:
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
@@ -2040,8 +2040,8 @@ class Koopa(StateMachine):
                 if self.rect.colliderect(entity.rect) and not self.hit and self.stats["hp"] > 0:
                     if type(entity).__name__ == "Lightning":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1))
-                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1)
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
                         if self.stats["hp"] <= 0:
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
@@ -2276,7 +2276,7 @@ class Sandoon(StateMachine):
         self.hpSpeed = 0
 
         # Stats
-        self.stats = {"maxHP": 30, "hp": 30, "pow": 30, "def": 25, "exp": 5, "coins": 7, "name": "Sandoon"}
+        self.stats = {"maxHP": 30, "hp": 30, "pow": 30, "def": 23, "exp": 5, "coins": 7, "name": "Sandoon"}
         self.rectHP = self.stats["hp"]
 
         self.description = ["That's a Sandoon!",
@@ -2592,8 +2592,8 @@ class Sandoon(StateMachine):
                 if self.rect.colliderect(entity.rect) and not self.hit and self.stats["hp"] > 0:
                     if type(entity).__name__ == "Lightning":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1))
-                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1)
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
                         if self.stats["hp"] <= 0:
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
@@ -3190,8 +3190,8 @@ class Anuboo(StateMachine):
             if self.rect.colliderect(entity.rect) and not self.hit and self.stats["hp"] > 0:
                 if type(entity).__name__ == "Lightning":
                     HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                               max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1))
-                    self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1)
+                               max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                    self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
                     if self.stats["hp"] <= 0:
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
@@ -3339,7 +3339,7 @@ class SpikySnifit(StateMachine):
         self.imgRect.bottom = self.rect.bottom + 1
 
         # Stats
-        self.stats = {"maxHP": 130, "hp": 130, "pow": 40, "def": 35, "exp": 13, "coins": 11, "name": "Spiky Snifit"}
+        self.stats = {"maxHP": 100, "hp": 100, "pow": 40, "def": 40, "exp": 13, "coins": 11, "name": "Spiky Snifit"}
         self.rectHP = self.stats["hp"]
 
         self.description = ["That's a Spiky Snifit!",
@@ -3411,10 +3411,11 @@ class SpikySnifit(StateMachine):
                 chance = random.randrange(0, 200)
                 if chance == 0:
                     self.currentFrame = 0
-                    SnifitBall(self.game, self.rect.center, self.stats)
+
                     self.charge()
             if self.hit:
                 if self.is_idle:
+                    self.imgRect.centerx = self.rect.centerx
                     self.cooldown = 60
                     self.getHurt()
 
@@ -3537,8 +3538,8 @@ class SpikySnifit(StateMachine):
                 if self.rect.colliderect(entity.rect) and not self.hit and self.stats["hp"] > 0:
                     if type(entity).__name__ == "Lightning":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1))
-                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 5), 1)
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
                         if self.stats["hp"] <= 0:
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
@@ -3654,6 +3655,7 @@ class SpikySnifit(StateMachine):
                 if self.currentFrame < len(self.toShootFrames) - 1:
                     self.currentFrame = (self.currentFrame + 1)
                 else:
+                    SnifitBall(self.game, self.rect.center, self.stats)
                     self.currentFrame = 0
                     self.startFire()
                 centerx = self.imgRect.centerx
@@ -4812,3 +4814,903 @@ class Mammoshka(StateMachine):
                     self.startCharge()
             else:
                 self.cooldown -= 1
+
+
+class DarkFawful(StateMachine):
+    idle = State("Idle", initial=True)
+    walking = State("Walking")
+    hit = State("hit")
+    goUp = State("Go Up")
+    endGoUp = State("End Go Up")
+    startGoDown = State("Start Go Down")
+    goDown = State("Go Down")
+    fly = State("Fly")
+    goToPortal = State("Go to portal")
+    makePortalA = State("Make portal A")
+    makePortalB = State("Make portal B")
+    startFire = State("Start Fire")
+    fire = State("fire")
+    endFire = State("End Fire")
+    toFlyAround = State("To Fly Around")
+    flyAround = State("Fly Around")
+    fromFlyAround = State("from fly around")
+
+    startWalking = idle.to(walking)
+    giveUp = walking.to(idle)
+    startGoUp = idle.to(goUp)
+    startEndGoUp = goUp.to(endGoUp)
+    startFly = endGoUp.to(fly)
+    endGoDown = goDown.to(idle)
+    endFly = fly.to(startGoDown)
+    beginGoDown = startGoDown.to(goDown)
+    getHit = idle.to(hit)
+    getUp = hit.to(idle)
+    startGoToPortal = fly.to(goToPortal)
+    beginPortalA = goToPortal.to(makePortalA)
+    endPortalA = makePortalA.to(goToPortal)
+    beginPortalB = goToPortal.to(makePortalB)
+    endPortalB = makePortalB.to(startGoDown)
+    enterGun = idle.to(startFire)
+    beginFire = startFire.to(fire)
+    exitGun = fire.to(endFire)
+    asYouWere = endFire.to(idle)
+    beginArialStrike = fly.to(toFlyAround)
+    midArialStrike = toFlyAround.to(flyAround)
+    endAreialStrike = flyAround.to(fromFlyAround)
+    beginLanding = fromFlyAround.to(startGoDown)
+
+    def init(self, game, pos):
+        self.game = game
+        self.game.enemies.append(self)
+        self.game.sprites.append(self)
+
+        self.loadImages()
+        self.cooldown = 0
+        self.alpha = 255
+        self.hitRange = 1.3
+        self.speed = 4
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.hitTimer = 0
+        self.dead = False
+        self.facing = "right"
+        self.image = self.idleImages[0]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.hpSpeed = 0
+        self.offset = 0
+        self.rect.center = pos
+        self.imgRect.centerx = self.rect.centerx
+        self.imgRect.bottom = self.rect.centery + 7 - self.offset
+        self.portalA = None
+        self.portalB = None
+
+        # Stats
+        self.stats = {"maxHP": 400, "hp": 400, "pow": 75, "def": 75, "exp": 200, "coins": 200, "name": "Dark Fawful"}
+        self.rectHP = self.stats["hp"]
+
+        self.description = ["Fawful is there!",
+                            "After Count Bleck gave him a power boost,\nhe wants to take revenge on\nyou guys!",
+                            "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+                            self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+                            "The Beanbean kingdom is home to many\nbean-themed creatures.",
+                            "Fawful just happens to be one of the\nmore./9/6./9/6./p evil ones."]
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+        self.hitFrame = sheet.getImageName("hit.png")
+
+        self.idleImages = [sheet.getImageName("idle_1.png"),
+                           sheet.getImageName("idle_2.png"),
+                           sheet.getImageName("idle_3.png"),
+                           sheet.getImageName("idle_4.png"),
+                           sheet.getImageName("idle_5.png"),
+                           sheet.getImageName("idle_6.png"),
+                           sheet.getImageName("idle_7.png"),
+                           sheet.getImageName("idle_8.png"),
+                           sheet.getImageName("idle_9.png"),
+                           sheet.getImageName("idle_10.png"),
+                           sheet.getImageName("idle_11.png"),
+                           sheet.getImageName("idle_12.png"),
+                           sheet.getImageName("idle_13.png"),
+                           sheet.getImageName("idle_14.png"),
+                           sheet.getImageName("idle_15.png")]
+
+        self.floatFrames = [sheet.getImageName("float_1.png"),
+                              sheet.getImageName("float_2.png"),
+                              sheet.getImageName("float_3.png"),
+                              sheet.getImageName("float_4.png")]
+
+        self.openCapeFrames = [sheet.getImageName("open_cape_1.png"),
+                           sheet.getImageName("open_cape_2.png"),
+                           sheet.getImageName("open_cape_3.png"),
+                           sheet.getImageName("open_cape_4.png"),
+                           sheet.getImageName("open_cape_5.png"),
+                           sheet.getImageName("open_cape_6.png"),
+                           sheet.getImageName("open_cape_7.png"),
+                           sheet.getImageName("open_cape_8.png"),
+                           sheet.getImageName("open_cape_9.png"),
+                           sheet.getImageName("open_cape_10.png")]
+
+        self.closeCapeFrames = [sheet.getImageName("close_cape_1.png"),
+                               sheet.getImageName("close_cape_2.png"),
+                               sheet.getImageName("close_cape_3.png"),
+                               sheet.getImageName("close_cape_4.png"),
+                               sheet.getImageName("close_cape_5.png"),
+                               sheet.getImageName("close_cape_6.png")]
+
+        self.flyFrames = [sheet.getImageName("fly_1.png"),
+                           sheet.getImageName("fly_2.png"),
+                           sheet.getImageName("fly_3.png"),
+                           sheet.getImageName("fly_4.png"),
+                           sheet.getImageName("fly_5.png")]
+
+        self.spinFrames = [sheet.getImageName("spinning_1.png"),
+                           sheet.getImageName("spinning_2.png"),
+                           sheet.getImageName("spinning_3.png"),
+                           sheet.getImageName("spinning_4.png"),
+                           sheet.getImageName("spinning_5.png"),
+                           sheet.getImageName("spinning_6.png"),
+                           sheet.getImageName("spinning_7.png"),
+                           sheet.getImageName("spinning_8.png")]
+
+        self.leftPortalFrames = [sheet.getImageName("portal_left_1.png"),
+                           sheet.getImageName("portal_left_2.png"),
+                           sheet.getImageName("portal_left_3.png"),
+                           sheet.getImageName("portal_left_4.png"),
+                           sheet.getImageName("portal_left_5.png"),
+                           sheet.getImageName("portal_left_6.png"),
+                           sheet.getImageName("portal_left_7.png"),
+                           sheet.getImageName("portal_left_8.png"),
+                           sheet.getImageName("portal_left_9.png"),
+                           sheet.getImageName("portal_left_10.png"),
+                           sheet.getImageName("portal_left_11.png"),
+                           sheet.getImageName("portal_left_12.png"),
+                           sheet.getImageName("portal_left_13.png"),
+                           sheet.getImageName("portal_left_14.png")]
+
+        self.rightPortalFrames = [sheet.getImageName("portal_right_1.png"),
+                                 sheet.getImageName("portal_right_2.png"),
+                                 sheet.getImageName("portal_right_3.png"),
+                                 sheet.getImageName("portal_right_4.png"),
+                                 sheet.getImageName("portal_right_5.png"),
+                                 sheet.getImageName("portal_right_6.png"),
+                                 sheet.getImageName("portal_right_7.png"),
+                                 sheet.getImageName("portal_right_8.png"),
+                                 sheet.getImageName("portal_right_9.png"),
+                                 sheet.getImageName("portal_right_10.png"),
+                                 sheet.getImageName("portal_right_11.png"),
+                                 sheet.getImageName("portal_right_12.png"),
+                                 sheet.getImageName("portal_right_13.png"),
+                                 sheet.getImageName("portal_right_14.png")]
+
+        self.enterGunFrames = [sheet.getImageName("enter_gun_1.png"),
+                                 sheet.getImageName("enter_gun_2.png"),
+                                 sheet.getImageName("enter_gun_3.png"),
+                                 sheet.getImageName("enter_gun_4.png"),
+                                 sheet.getImageName("enter_gun_5.png"),
+                                 sheet.getImageName("enter_gun_6.png"),
+                                 sheet.getImageName("enter_gun_7.png"),
+                                 sheet.getImageName("enter_gun_8.png"),
+                                 sheet.getImageName("enter_gun_9.png"),
+                                 sheet.getImageName("enter_gun_10.png"),
+                                 sheet.getImageName("enter_gun_11.png"),
+                                 sheet.getImageName("enter_gun_12.png")]
+
+        self.fireGunFrames = [sheet.getImageName("fire_gun_1.png"),
+                               sheet.getImageName("fire_gun_2.png"),
+                               sheet.getImageName("fire_gun_3.png")]
+
+        self.exitGunFrames = [sheet.getImageName("exit_gun_1.png"),
+                               sheet.getImageName("exit_gun_2.png"),
+                               sheet.getImageName("exit_gun_3.png"),
+                               sheet.getImageName("exit_gun_4.png"),
+                               sheet.getImageName("exit_gun_5.png"),
+                               sheet.getImageName("exit_gun_6.png"),
+                               sheet.getImageName("exit_gun_7.png"),
+                               sheet.getImageName("exit_gun_8.png"),
+                               sheet.getImageName("exit_gun_9.png"),
+                               sheet.getImageName("exit_gun_10.png"),
+                               sheet.getImageName("exit_gun_11.png"),
+                               sheet.getImageName("exit_gun_12.png"),
+                               sheet.getImageName("exit_gun_13.png"),
+                               sheet.getImageName("exit_gun_14.png"),
+                               sheet.getImageName("exit_gun_15.png"),
+                               sheet.getImageName("exit_gun_16.png"),
+                               sheet.getImageName("exit_gun_17.png"),
+                               sheet.getImageName("exit_gun_18.png"),
+                               sheet.getImageName("exit_gun_19.png"),
+                               sheet.getImageName("exit_gun_20.png"),
+                               sheet.getImageName("exit_gun_21.png"),
+                               sheet.getImageName("exit_gun_22.png"),
+                               sheet.getImageName("exit_gun_23.png"),
+                               sheet.getImageName("exit_gun_24.png"),
+                               sheet.getImageName("exit_gun_25.png")]
+
+    def hpMath(self):
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+
+        if self.hpSpeed != 0:
+            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+                self.rectHP += self.hpSpeed
+            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+                self.rectHP += self.hpSpeed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.hpSpeed = 0
+
+    def update(self):
+        self.animate()
+        self.hpMath()
+
+        if self.is_idle:
+            self.offset = 0
+            chance = random.randrange(0, 100)
+            if chance == 0 and not self.game.player.dead and not self.game.follower.dead:
+                choice = random.randrange(0, 3)
+                if choice == 0:
+                    self.startWalking()
+                elif choice == 1:
+                    self.startGoUp()
+                elif choice == 2:
+                    self.currentFrame = 0
+                    self.enterGun()
+        elif self.is_walking:
+            self.offset = 10
+            if self.game.leader == "mario":
+                self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+            else:
+                self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+            self.rect.center = project(self.rect.center, self.angle, self.speed)
+            chance = random.randrange(0, 250)
+            if chance == 0 or (self.game.player.dead or self.game.follower.dead):
+                self.giveUp()
+        elif self.is_goUp:
+            if self.offset < 120:
+                self.offset += 1
+            else:
+                self.currentFrame = 0
+                self.startEndGoUp()
+        elif self.is_goDown:
+            if self.offset > 0:
+                self.offset -= 1
+            else:
+                self.currentFrame = 0
+                self.endGoDown()
+        elif self.is_fire:
+            self.offset = 0
+            chance = random.randrange(0, 200)
+            if chance == 0:
+                self.exitGun()
+        elif self.is_fly:
+            chance = random.randrange(0, 100)
+            if chance == 0 and not self.game.player.dead and not self.game.follower.dead:
+                choose = random.randrange(0, 3)
+                if choose == 0:
+                    self.currentFrame = 0
+                    self.endFly()
+                elif choose == 1:
+                    if self.portalB is not None:
+                        self.game.sprites.remove(self.portalA)
+                        self.game.sprites.remove(self.portalB)
+                    self.portalA = None
+                    self.portalB = None
+                    self.angle = random.randrange(0, 360)
+                    self.vx = project(self.rect.center, self.angle, self.speed)[0] - self.rect.centerx
+                    self.vy = project(self.rect.center, self.angle, self.speed)[1] - self.rect.centery
+                    self.cooldown = fps * 3
+                    self.startGoToPortal()
+                elif choose == 2:
+                    self.currentFrame = 0
+                    self.beginArialStrike()
+        elif self.is_goToPortal:
+            self.rect.centerx += self.vx
+            self.rect.centery += self.vy
+            self.cooldown -= 1
+            for wall in self.game.walls:
+                if self.rect.colliderect(wall.rect):
+                    if self.rect.bottom > wall.rect.top or self.rect.top < wall.rect.bottom:
+                        self.vy *= -1
+                    if self.rect.left < wall.rect.right or self.rect.right > wall.rect.left:
+                        self.vx *= -1
+                    self.rect.centerx += self.vx
+                    self.rect.centery += self.vy
+            if self.cooldown <= 0:
+                if self.portalA is None:
+                    self.currentFrame = 0
+                    self.beginPortalA()
+                    self.cooldown = fps * 10
+                elif self.portalB is None:
+                    self.currentFrame = 0
+                    self.beginPortalB()
+        elif self.is_toFlyAround:
+            if self.offset > 20:
+                self.offset -= 1
+
+            if self.rect.centery > 0:
+                self.rect.centery -= 5
+            else:
+                self.rect.centerx = random.randrange(0, self.game.map.width + 40)
+                self.rect.centerx -= 40
+                self.rect.centery = random.randrange(0, self.game.map.height + 100)
+                self.rect.centery -= 100
+                if self.game.leader == "mario":
+                    self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                else:
+                    self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+                self.midArialStrike()
+        elif self.is_flyAround:
+            self.rect.center = project(self.rect.center, self.angle, self.speed * 10)
+
+            edge = False
+            if self.rect.x > self.game.map.width + 60:
+                edge = True
+            if self.rect.x < -60:
+                edge = True
+            if self.rect.y > self.game.map.height + 100:
+                edge = True
+            if self.rect.y < -100:
+                edge = True
+
+            if edge:
+                if self.game.leader == "mario":
+                    self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                else:
+                    self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+                chance = random.randrange(0, 5)
+                if chance == 0:
+                    self.endAreialStrike()
+        elif self.is_fromFlyAround:
+            self.angle = get_angle(self.rect.center, (1444, 1682))
+            self.rect.center = project(self.rect.center, self.angle, self.speed)
+
+            if 1444 - self.rect.centerx < 20:
+                self.beginLanding()
+
+        if self.cooldown > 0:
+            self.cooldown -= 1
+
+        if self.is_idle or self.is_walking:
+            if self.game.player.stats["hp"] != 0:
+                hits = pg.sprite.collide_rect(self.game.player, self)
+                if hits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                    if hitsRound2:
+                        if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       (self.game.player.stats["pow"] - self.stats["def"]))
+                            self.stats["hp"] -= (self.game.player.stats["pow"] - self.stats["def"])
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            if self.is_walking:
+                                self.giveUp()
+                            self.getHit()
+                            self.cooldown = fps
+                            self.game.player.airTimer = 0
+                        else:
+                            if not self.game.player.hit and self.stats[
+                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                                self.game.player.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                                if self.game.player.stats["hp"] <= 0:
+                                    self.game.player.stats["hp"] = 0
+                                    self.game.player.currentFrame = 0
+                                self.game.player.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.player.canBeHit = False
+                                self.game.player.hit = True
+
+            if self.game.follower.stats["hp"] != 0:
+                hits = pg.sprite.collide_rect(self.game.follower, self)
+                if hits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
+                    if hitsRound2:
+                        if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       (self.game.follower.stats["pow"] - self.stats["def"]))
+                            self.stats["hp"] -= (self.game.follower.stats["pow"] - self.stats["def"])
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            if self.is_walking:
+                                self.giveUp()
+                            self.getHit()
+                            self.cooldown = fps
+                            self.game.follower.airTimer = 0
+                        else:
+                            if not self.game.follower.hit and self.stats[
+                                "hp"] > 0 and not self.is_hit and self.game.follower.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                                self.game.follower.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                                if self.game.follower.stats["hp"] <= 0:
+                                    self.game.follower.stats["hp"] = 0
+                                    self.game.follower.currentFrame = 0
+                                self.game.follower.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.follower.canBeHit = False
+                                self.game.follower.hit = True
+
+            if self.stats["hp"] != 0 and self.game.player.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                    if hammerHitsRound2 and not self.is_hit and self.stats["hp"] > 0:
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0))
+                        self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        if self.is_walking:
+                            self.giveUp()
+                        self.getHit()
+                        self.cooldown = fps
+
+            if self.stats["hp"] != 0 and self.game.follower.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                    if hammerHitsRound2 and not self.is_hit and self.stats["hp"] > 0:
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        if self.is_walking:
+                            self.giveUp()
+                        self.getHit()
+                        self.cooldown = fps
+
+            for entity in self.game.entities:
+                if self.rect.colliderect(entity.rect) and not self.is_hit and self.stats["hp"] > 0:
+                    if type(entity).__name__ == "Lightning":
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        if self.is_walking:
+                            self.giveUp()
+                        self.getHit()
+                        self.cooldown = fps
+                    if self.imgRect.colliderect(entity.imgRect):
+                        if type(entity).__name__ == "Fireball":
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                            self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            if self.is_walking:
+                                self.giveUp()
+                            self.getHit()
+                            self.cooldown = fps
+                            entity.dead = True
+        elif not self.is_hit:
+            if self.game.player.stats["hp"] != 0:
+                hits = self.imgRect.colliderect(self.game.playerCol.rect)
+                if hits:
+                    if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
+                        if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                            self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                            if self.game.player.stats["hp"] <= 0:
+                                self.game.player.stats["hp"] = 0
+                                self.game.player.currentFrame = 0
+                            self.game.player.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.player.canBeHit = False
+                            self.game.player.hit = True
+
+            if self.game.follower.stats["hp"] != 0:
+                hits = self.imgRect.colliderect(self.game.followerCol.rect)
+                if hits:
+                    if self.rect.bottom > self.game.follower.rect.centery > self.rect.top:
+                        if not self.game.follower.hit and self.stats["hp"] > 0 and self.game.follower.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                            self.game.follower.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                            if self.game.follower.stats["hp"] <= 0:
+                                self.game.follower.stats["hp"] = 0
+                                self.game.follower.currentFrame = 0
+                            self.game.follower.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.follower.canBeHit = False
+                            self.game.follower.hit = True
+
+        if self.stats["hp"] <= 0:
+            self.cooldown = 10000
+            self.alpha -= 10
+
+        if self.alpha <= 0:
+            self.game.battleXp += self.stats["exp"]
+            self.game.battleCoins += self.stats["coins"]
+            self.game.sprites.remove(self)
+            self.game.enemies.remove(self)
+
+        self.imgRect.centerx = self.rect.centerx
+        self.imgRect.bottom = self.rect.centery + 7 - self.offset
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.is_idle:
+            if now - self.lastUpdate > 45:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.idleImages):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleImages))
+                else:
+                    self.currentFrame = 0
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                if self.game.leader == "mario":
+                    if self.game.player.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.idleImages[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.idleImages[self.currentFrame]
+                        self.facing = "right"
+                else:
+                    if self.game.follower.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.idleImages[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.idleImages[self.currentFrame]
+                        self.facing = "right"
+                self.imgRect = self.image.get_rect()
+                self.imgRect.centerx = centerx
+                self.imgRect.bottom = bottom
+        elif self.is_walking:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.floatFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.floatFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                if self.game.leader == "mario":
+                    if self.game.player.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.floatFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.floatFrames[self.currentFrame]
+                        self.facing = "right"
+                else:
+                    if self.game.follower.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.floatFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.floatFrames[self.currentFrame]
+                        self.facing = "right"
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_goUp or self.is_goDown:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.spinFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.spinFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.spinFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_endGoUp:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.openCapeFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.startFly()
+                center = self.imgRect.center
+                self.image = self.openCapeFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_startGoDown:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.closeCapeFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.beginGoDown()
+                center = self.imgRect.center
+                self.image = self.closeCapeFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_startFire:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.enterGunFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.beginFire()
+                center = self.imgRect.center
+                if self.game.leader == "mario":
+                    if self.game.player.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.enterGunFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.enterGunFrames[self.currentFrame]
+                        self.facing = "right"
+                else:
+                    if self.game.follower.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.enterGunFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.enterGunFrames[self.currentFrame]
+                        self.facing = "right"
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_endFire:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.exitGunFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.asYouWere()
+                center = self.imgRect.center
+                if self.game.leader == "mario":
+                    if self.game.player.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.exitGunFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.exitGunFrames[self.currentFrame]
+                        self.facing = "right"
+                else:
+                    if self.game.follower.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.exitGunFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.exitGunFrames[self.currentFrame]
+                        self.facing = "right"
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_fire:
+            if now - self.lastUpdate > 150:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.fireGunFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.fireGunFrames))
+                else:
+                    self.currentFrame = 0
+                centerx = self.imgRect.centerx
+                bottom = self.imgRect.bottom
+                if self.game.leader == "mario":
+                    if self.game.player.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.fireGunFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.fireGunFrames[self.currentFrame]
+                        self.facing = "right"
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.centerx = centerx
+                    self.imgRect.bottom = bottom
+                else:
+                    if self.game.follower.rect.centerx > self.rect.centerx:
+                        self.image = pg.transform.flip(self.fireGunFrames[self.currentFrame], True, False)
+                        self.facing = "left"
+                    else:
+                        self.image = self.fireGunFrames[self.currentFrame]
+                        self.facing = "right"
+                    self.imgRect = self.image.get_rect()
+                    self.imgRect.centerx = centerx
+                    self.imgRect.bottom = bottom
+                if self.currentFrame == 1:
+                    FawfulBullet(self.game, self.rect.center, self.stats)
+        elif self.is_makePortalA:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.leftPortalFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.portalA = FawfulPortal(self.game, (self.rect.centerx - 100, self.rect.centery), self.portalB)
+                    self.angle = random.randrange(0, 360)
+                    self.vx = project(self.rect.center, self.angle, self.speed)[0] - self.rect.centerx
+                    self.vy = project(self.rect.center, self.angle, self.speed)[1] - self.rect.centery
+                    self.endPortalA()
+                center = self.imgRect.center
+                self.image = self.leftPortalFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_makePortalB:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.rightPortalFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
+                else:
+                    self.endPortalB()
+                    self.portalB = FawfulPortal(self.game, (self.rect.centerx + 100, self.rect.centery), self.portalA)
+                    self.portalA.partner = self.portalB
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.rightPortalFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_fly or self.is_goToPortal or self.is_toFlyAround or self.is_flyAround or self.is_fromFlyAround:
+            if now - self.lastUpdate > 60:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.flyFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.flyFrames))
+                else:
+                    self.currentFrame = 0
+                center = self.imgRect.center
+                self.image = self.flyFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_hit:
+            self.currentFrame = 0
+            centerx = self.imgRect.centerx
+            bottom = self.imgRect.bottom
+            if self.facing == "left":
+                self.image = pg.transform.flip(self.hitFrame, True, False)
+            else:
+                self.image = self.hitFrame
+            self.imgRect = self.image.get_rect()
+            self.imgRect.centerx = centerx
+            self.imgRect.bottom = bottom
+            if self.cooldown == 0:
+                self.getUp()
+                chance = random.randrange(0, 3)
+                if chance == 0:
+                    self.startWalking()
+                elif chance == 1:
+                    self.startGoUp()
+                elif chance == 2:
+                    self.enterGun()
+            else:
+                self.cooldown -= 1
+
+
+class FawfulPortal(pg.sprite.Sprite):
+    def __init__(self, game, pos, partner):
+        self.game = game
+        self.game.sprites.append(self)
+        sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
+        self.images = [sheet.getImageName("portal_1.png"),
+                       sheet.getImageName("portal_2.png"),
+                       sheet.getImageName("portal_3.png"),
+                       sheet.getImageName("portal_4.png")]
+        self.lastUpdate = 0
+        self.image = self.images[0]
+        self.imgRect = self.image.get_rect()
+        self.shadow = sheet.getImageName("portalShadow.png")
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.hasTeleported = 0
+        self.currentFrame = 0
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.bottom - 5
+        self.alpha = 255
+        wallRect = self.rect.copy()
+        wallRect.width += 50
+        wallRect.height += 50
+        for wall in self.game.walls:
+            if wallRect.colliderect(wall.rect):
+                if wallRect.bottom > wall.rect.top:
+                    self.game.sprites.remove(self)
+                if wallRect.top < wall.rect.bottom:
+                    self.game.sprites.remove(self)
+                if wallRect.left < wall.rect.right:
+                    self.game.sprites.remove(self)
+                if wallRect.right > wall.rect.left:
+                    self.game.sprites.remove(self)
+        self.dead = False
+        self.partner = partner
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 60:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.images):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.images))
+            else:
+                self.currentFrame = 0
+            center = self.imgRect.center
+            self.image = self.images[self.currentFrame]
+            self.imgRect = self.image.get_rect()
+            self.imgRect.center = center
+
+        for sprite in self.game.sprites:
+            if self.rect.colliderect(sprite.rect) and self.partner is not None and sprite is not self:
+                if self.partner.hasTeleported == 0 and self.partner in self.game.sprites:
+                    self.game.portalSound.play()
+                    sprite.rect.center = self.partner.rect.center
+                    self.hasTeleported = fps
+
+        if self.hasTeleported > 0:
+            self.hasTeleported -= 1
+
+
+class FawfulBullet(pg.sprite.Sprite):
+    def __init__(self, game, pos, stats):
+        self.game = game
+        self.game.sprites.append(self)
+        sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
+        self.image = sheet.getImageName("ball.png")
+        self.imgRect = self.image.get_rect()
+        self.shadow = sheet.getImageName("ballShadow.png")
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.bottom - 10
+        self.alpha = 255
+        self.speed = 5
+        self.counter = fps * 3
+        self.dead = False
+        self.stats = stats
+        if self.game.leader == "mario":
+            self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+        else:
+            self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+
+    def update(self):
+        self.counter -= 1
+
+        if self.counter > 0:
+            if self.game.leader == "mario":
+                self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+            else:
+                self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+
+        self.rect.center = project(self.rect.center, self.angle, self.speed)
+        self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.bottom - 10
+
+        if self.game.player.stats["hp"] != 0:
+            hits = self.imgRect.colliderect(self.game.playerCol.rect)
+            if hits:
+                if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
+                    if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
+                        HitNumbers(self.game, self.game.room,
+                                   (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                   (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                        self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                        if self.game.player.stats["hp"] <= 0:
+                            self.game.player.stats["hp"] = 0
+                            self.game.player.currentFrame = 0
+                        self.game.player.hitTime = pg.time.get_ticks()
+                        self.game.playerHitSound.play()
+                        self.game.player.canBeHit = False
+                        self.game.player.hit = True
+
+        if self.game.follower.stats["hp"] != 0:
+            hits = self.imgRect.colliderect(self.game.followerCol.rect)
+            if hits:
+                if self.rect.bottom > self.game.follower.rect.centery > self.rect.top:
+                    if not self.game.follower.hit and self.stats["hp"] > 0 and self.game.follower.canBeHit:
+                        HitNumbers(self.game, self.game.room,
+                                   (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                   (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                        self.game.follower.stats["hp"] -= (
+                            max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                        if self.game.follower.stats["hp"] <= 0:
+                            self.game.follower.stats["hp"] = 0
+                            self.game.follower.currentFrame = 0
+                        self.game.follower.hitTime = pg.time.get_ticks()
+                        self.game.playerHitSound.play()
+                        self.game.follower.canBeHit = False
+                        self.game.follower.hit = True
+
+
+        if self.rect.x > self.game.map.width + 60:
+            self.game.sprites.remove(self)
+        if self.rect.x < -60:
+            self.game.sprites.remove(self)
+        if self.rect.y > self.game.map.height + 100:
+            self.game.sprites.remove(self)
+        if self.rect.y < -100:
+            self.game.sprites.remove(self)

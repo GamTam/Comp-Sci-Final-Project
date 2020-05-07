@@ -520,7 +520,7 @@ def nor(a, b):
 
 
 def luigiLevelFormula(game):
-    exponent = 1.45
+    exponent = 1.5
     baseXp = 8
     return round(baseXp * (game.follower.stats["level"] ** exponent))
 

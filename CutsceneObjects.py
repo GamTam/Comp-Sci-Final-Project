@@ -394,6 +394,7 @@ class LoadCutscene:
         self.auto = auto
         self.scenes = scenes.copy()
         self.game.cutscenes.append(self)
+        self.room = self.game.room
         self.id = id
 
     def update(self):
@@ -408,6 +409,8 @@ class LoadCutscene:
                     if self.delete:
                         self.game.usedCutscenes.append(self.id)
                     Cutscene(self.game, self.scenes)
+        if self.room != self.game.room:
+            self.game.cutscenes.remove(self)
 
 
 class GoombaC(pg.sprite.Sprite):
@@ -2895,6 +2898,79 @@ class FawfulOnCopter(pg.sprite.Sprite):
         combine = CombineSprites([self.copter, self.fawful], [self.cRect, self.fRect])
         self.image = combine.image
         self.imgRect = combine.rect
+
+
+class DarkFawfulCutscene(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.cutsceneSprites.append(self)
+        self.loadImages()
+        self.image = self.idleFrames[0]
+        self.rect = self.shadow.get_rect()
+        self.rect.center = pos
+        self.imgRect = self.image.get_rect()
+        self.imgRect.bottom = self.rect.top - 50
+        self.imgRect.centerx = self.rect.centerx
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.alpha = 255
+        self.talking = False
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/fawful.png", "sprites/fawful.xml")
+
+        self.idleFrames = [sheet.getImageName("dark_idle_1.png"),
+                        sheet.getImageName("dark_idle_2.png"),
+                        sheet.getImageName("dark_idle_3.png"),
+                        sheet.getImageName("dark_idle_4.png"),
+                        sheet.getImageName("dark_idle_5.png"),
+                        sheet.getImageName("dark_idle_6.png"),
+                        sheet.getImageName("dark_idle_7.png"),
+                        sheet.getImageName("dark_idle_8.png")]
+
+        self.talkingFrames = [sheet.getImageName("dark_talking_1.png"),
+                        sheet.getImageName("dark_talking_2.png"),
+                        sheet.getImageName("dark_talking_3.png"),
+                        sheet.getImageName("dark_talking_4.png"),
+                        sheet.getImageName("dark_talking_5.png"),
+                        sheet.getImageName("dark_talking_6.png"),
+                        sheet.getImageName("dark_talking_7.png"),
+                        sheet.getImageName("dark_talking_8.png")]
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if self.talking:
+            if now - self.lastUpdate > 75:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.talkingFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames))
+                else:
+                    self.currentFrame = 0
+                bottom = self.imgRect.bottom
+                left = self.imgRect.left
+                self.image = self.talkingFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.bottom = bottom
+                self.imgRect.left = left
+        else:
+            if now - self.lastUpdate > 75:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.idleFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleFrames))
+                else:
+                    self.currentFrame = 0
+                bottom = self.imgRect.bottom
+                left = self.imgRect.left
+                self.image = self.idleFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.bottom = bottom
+                self.imgRect.left = left
+
+        self.imgRect.bottom = self.rect.top - 50
+        self.imgRect.centerx = self.rect.centerx
 
 
 class LineFlipAppear(pg.sprite.Sprite):

@@ -52,6 +52,10 @@ Champion of Destruction:
     Intro Length: 9.038
     Loop Length: 62.003
 
+Dark Fawful Battle:
+    Intro Length: 13.634
+    Loop Length: 76.406
+
 Count Bleck's Plan
     Intro Length: 5.793
     Loop Length: 51.7
@@ -79,3 +83,20 @@ Vs Linebeck
 Dededelovania II
     Intro Length: 27.585
     Loop Length: 138.849
+
+                        if self.game.follower.stats["hp"] != 0:
+                hits = self.imgRect.colliderect(self.game.followerCol.rect)
+                if hits:
+                    if self.rect.bottom > self.game.follower.rect.centery > self.rect.top:
+                        if not self.game.follower.hit and self.stats["hp"] > 0 and self.game.follower.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "mario")
+                            self.game.follower.stats["hp"] -= (max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                            if self.game.follower.stats["hp"] <= 0:
+                                self.game.follower.stats["hp"] = 0
+                                self.game.follower.currentFrame = 0
+                            self.game.follower.hitTime = pg.time.get_ticks()
+                            self.game.followerHitSound.play()
+                            self.game.follower.canBeHit = False
+                            self.game.follower.hit = True

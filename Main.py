@@ -8354,6 +8354,7 @@ class Game:
         #     self.newGame()
 
     def loadData(self):
+        self.portalSound = pg.mixer.Sound("sounds/portal.ogg")
         self.mammoshkaBounce = pg.mixer.Sound("sounds/mammoshkaBounce.ogg")
         self.mammoshkaRoar = pg.mixer.Sound("sounds/mammoshkaRoar.ogg")
         self.fireballSound = pg.mixer.Sound("sounds/fireBall.ogg")
@@ -8379,6 +8380,7 @@ class Game:
         self.fawfulTalkSoundHigh = pg.mixer.Sound("sounds/fawfulTalkSound_high.ogg")
         self.fawfulTalkSoundMed = pg.mixer.Sound("sounds/fawfulTalkSound_med.ogg")
         self.fawfulTalkSoundLow = pg.mixer.Sound("sounds/fawfulTalkSound_low.ogg")
+        self.fawfulLaugh = pg.mixer.Sound("sounds/fawfulLaugh.ogg")
         self.textBoxOpenSound = pg.mixer.Sound("sounds/textboxopen.ogg")
         self.textBoxCloseSound = pg.mixer.Sound("sounds/textboxclose.ogg")
         self.talkAdvanceSound = pg.mixer.Sound("sounds/talkadvance.ogg")
@@ -10320,6 +10322,207 @@ class Game:
 
         self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
 
+    def loadTeeheeValleyRoom7(self):
+        self.room = "self.loadTeeheeValleyRoom7()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Teehee Valley Room 7", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+
+        try:
+            self.player.rect.center = self.storeData["mario pos"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 2.7
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 2.7
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
+
+    def loadTeeheeValleyBossRoom(self):
+        self.room = "self.loadTeeheeValleyBossRoom()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Teehee Valley Boss Room", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (760, 640)
+        self.player.facing = "right"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (860, 640)
+        self.follower.facing = "right"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+
+        LoadCutscene(self, pg.rect.Rect(1200, 1600, 160, 80), True, False, [
+            # ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+            #  "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+            #  "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')"],
+            # ["self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
+            # ["self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
+            # ["self.move(self.game.cameraRect, 1280, 880, False, 60)"],
+            # ["""self.setVar('self.mario.facing = "up"')""",
+            #  """self.setVar('self.luigi.facing = "up"')""",
+            #  """self.setVar('self.mario.walking = True')""",
+            #  """self.setVar('self.luigi.walking = True')""",
+            #  "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+            #  """self.setVar('self.starlow.facing = "up"')""",
+            #  "self.command('self.game.starlowTwinkle.play()')"
+            #  ],
+            # ["self.move(self.mario, 1200, 1050, False, 180, 1)",
+            #  "self.move(self.luigi, 1360, 1050, False, 180, 2)",
+            #  "self.move(self.starlow, 1280, 1050, False, 180, 3)"],
+            # [
+            #     """self.setVar('self.mario.walking = False')""",
+            #     """self.setVar('self.luigi.walking = False')""",
+            #     """self.setVar('self.mario.facing = "upright"')""",
+            #     """self.setVar('self.luigi.facing = "upleft"')""",
+            # ],
+            # ["""self.textBox(self.starlow, [
+            #             "Look!/p It's the Egg McMuffin!"], sound="starlow")"""],
+            # ["""self.setVar('self.starlow.facing = "down"')"""],
+            # ["self.wait(1)"],
+            # ["""self.setVar('self.starlow.facing = "left"')"""],
+            # ["self.wait(1)"],
+            # ["""self.setVar('self.starlow.facing = "right"')"""],
+            # ["self.wait(1)"],
+            # ["""self.setVar('self.starlow.facing = "up"')"""],
+            # ["""self.textBox(self.starlow, [
+            #     "I can't see Fawful anywhere...",
+            #     "But he's probably gonna pop up/nas soon as we try to take it.",], sound="starlow")"""],
+            # ["self.wait(5)"],
+            # ["""self.textBox(self.starlow, [
+            #     "Okay, I have a feeling he's going/nto interrupt us now-/9/6/S"], sound="starlow")"""],
+            # ["self.setVar('self.bleck = BleckCutscene(self.game, (1280, 925))')",
+            #  "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
+            #  """self.textBox(self.bleck, ["You think you're so smart,/p/nbecause you're able to predict me?"], dir="up")"""
+            #  ],
+            # ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
+            #  """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
+            # ["self.command('self.game.cutsceneSprites.append(self.bleck)')"],
+            # ["self.wait(0.5)"],
+            # ["""self.textBox(self.bleck, [
+            # "Just because you know about what/nCount Bleck is doing doesn't make/nmake you any more prepared!",
+            # "In a brief moment, you will face/nthe wrath of Count Bleck!"])"""],
+            # ["""self.textBox(self.starlow, [
+            # "Wait, why isn't Fawful here?",
+            # "He was the one who brought the/nmonster last time!"], sound="starlow")"""],
+            # ["""self.textBox(self.bleck, [
+            # "Fawful has been a loyal minion,/nalways giving his full effort.",
+            # "Yes, Fawful has been very loyal to/nme,/p Count Bleck.",
+            # "But, he lacked the strength to face/nyou meddlesome heroes.",
+            # "So, I have helped him in that area/nof his skillset!",
+            # "/BFAWFUL!",
+            # "/BCOME HERE!"])"""],
+            # ["self.wait(0.5)"],
+            # ["self.setVar('self.fawful = DarkFawfulCutscene(self.game, (0, 700))')",
+            #  """self.textBox(self.fawful, ["/BI HAVE FURY!!!"], complete=True)""",
+            #  "self.command('self.game.fawfulLaugh.play()')"],
+            # ["self.move(self.fawful, 1280, 925, False, 700, 0)",
+            #  "self.move(self.bleck, 200, -50, True, 180, 1)"],
+            # ["""self.textBox(self.fawful, ["As you fink-rats can see,/p/nI have been having the/nimprovements!",
+            # "With the power of Count Bleck,/nFawful will be your ending!"], sound="fawful")"""],
+            # ["""self.textBox(self.bleck, [
+            # "With this additional power, Fawful/nwill be able to crush you three/neasily.",
+            # "Then, with no one to stop the void,/nit will consume all worlds!",
+            # "THE VOID WILL LEAVE NOTHING IN ITS/nPATH!",
+            # "\a/nBLEH HEH HEH HEH HEH! BLECK!"])""",
+            #  "if self.textbox[0].page == 2: self.setVar('self.bleck.laughing = True')",
+            #  "if self.textbox[0].page == 2: self.setVar('self.bleck.currentFrame = 0')"],
+            # ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
+            # "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
+            # "self.command('self.flip[0].update()')",
+            # "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
+            # ["self.wait(0.5)"],
+            # ["""self.textBox(self.fawful, [
+            # "You have gotten in Count Bleck's/nway at each of the turns...",
+            # "But now...",
+            # "FAWFUL SAYS FAREWELL TO YOUR/nFINK-RAT FACES FOREVER!!!",
+            # "ONE FELL SWOOP IS THE WAY I WILL/nDEAL WITH YOU FINK-RATS!!!"], sound="fawful")"""],
+            # ["self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+            #  "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')"],
+            # ["self.command('self.game.sprites.append(self.mario)')",
+            #  "self.command('self.game.sprites.append(self.luigi)')",
+            #  "self.command('self.game.sprites.append(self.starlow)')",
+            #  "self.command('self.game.sprites.append(self.fawful)')",
+             ["""self.command('self.game.loadBattle("self.loadTeeheeValleyBoss()", currentPoint=False)')"""]
+        ], id="Teehee Valley Boss")
+
+        LoadCutscene(self, pg.rect.Rect(320, 800, 4000, 600), True, False, [["self.command('print(game.player)')"]], id="After Teehee Valley Boss")
+
+        try:
+            self.player.rect.center = self.storeData["mario pos"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+        self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
+
     def overworld(self, area, songData):
         menud = False
         self.blockContents = pg.sprite.Group()
@@ -11975,6 +12178,37 @@ class Game:
             pass
         self.battle("""self.playSong(7.047, 48.306, "mammoshka battle")""", boss=True)
 
+    def loadTeeheeValleyBoss(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        fawf = DarkFawful()
+        fawf.init(self, (1440, 1120))
+
+        self.map = Map(self, "Teehee Valley Boss", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, 1280)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, 1280)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle("""self.playSong(13.634, 76.406, "dark fawful battle")""", boss=True)
+
     def loadTeeheeValleyBattle1S(self):
         self.room = "battle"
         self.sprites = []
@@ -12507,6 +12741,568 @@ class Game:
         elif quadrant == 3:
             koop = Anuboo()
             koop.init(self, 2240, 1120)
+
+        self.map = Map(self, "Teehee Valley Battle", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadTeeheeValleyBattle1S1A1SS(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        self.map = Map(self, "Teehee Valley Battle", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadTeeheeValleyBattle2S2A2SS(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        self.map = Map(self, "Teehee Valley Battle", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadTeeheeValleyBattle3S3A3SS(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        self.map = Map(self, "Teehee Valley Battle", background="Teehee Valley")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle()
+
+    def loadTeeheeValleyBattle4S4A4SS(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Anuboo()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Anuboo()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Anuboo()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Anuboo()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = Sandoon()
+            koop.init(self, 1275, 550)
+        elif quadrant == 1:
+            koop = Sandoon()
+            koop.init(self, 1275, 1600)
+        elif quadrant == 2:
+            koop = Sandoon()
+            koop.init(self, 400, 1120)
+        elif quadrant == 3:
+            koop = Sandoon()
+            koop.init(self, 2240, 1120)
+
+        quadrant = random.randrange(0, 4)
+
+        if quadrant == 0:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 550))
+        elif quadrant == 1:
+            koop = SpikySnifit()
+            koop.init(self, (1275, 1600))
+        elif quadrant == 2:
+            koop = SpikySnifit()
+            koop.init(self, (400, 1120))
+        elif quadrant == 3:
+            koop = SpikySnifit()
+            koop.init(self, (2240, 1120))
 
         self.map = Map(self, "Teehee Valley Battle", background="Teehee Valley")
         self.camera = Camera(self, self.map.width, self.map.height)
@@ -13852,7 +14648,8 @@ class Game:
         sprites = [mario, luigi]
         enemies = []
         for enemy in enems:
-            command = enemy.stats["name"] + "BrosAttack(self, enemy)"
+            name = enemy.stats["name"].replace(" ", "")
+            command = name + "BrosAttack(self, enemy)"
             en = eval(command)
             sprites.append(en)
             enemies.append(en)
@@ -14192,7 +14989,7 @@ class Game:
         levelUpChannel = pg.mixer.Channel(0)
         playedLevelUpSound = False
         self.player.statGrowth = {"maxHP": randomNumber(10), "maxBP": randomNumber(4), "pow": randomNumber(4, 3),
-                                  "def": randomNumber(3)}
+                                  "def": randomNumber(4)}
         going = True
         mario = MarioLevelUp()
         luigi = LuigiLevelUpLeave()
@@ -14401,7 +15198,7 @@ class Game:
         levelUpChannel = pg.mixer.Channel(0)
         playedLevelUpSound = False
         self.follower.statGrowth = {"maxHP": randomNumber(13), "maxBP": randomNumber(5), "pow": randomNumber(4, 3),
-                                    "def": randomNumber(5)}
+                                    "def": randomNumber(4)}
         going = True
         luigi = LuigiLevelUp()
         text = LuigiLevelUpUI(self)
