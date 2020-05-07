@@ -110,7 +110,7 @@ class GoombaODebug(pg.sprite.Sprite):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -309,7 +309,7 @@ class GoombaOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -567,7 +567,7 @@ class KoopaOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -884,7 +884,7 @@ class SandoonOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -1202,7 +1202,7 @@ class AnubooOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -1710,7 +1710,7 @@ class Goomba(pg.sprite.Sprite):
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
                     self.hit = True
-                if self.imgRect.colliderect(entity.rect):
+                if self.imgRect.colliderect(entity.imgRect):
                     if type(entity).__name__ == "Fireball":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                    max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0))
@@ -2046,7 +2046,7 @@ class Koopa(StateMachine):
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
                         self.hit = True
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -2598,7 +2598,7 @@ class Sandoon(StateMachine):
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
                         self.hit = True
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -3196,7 +3196,7 @@ class Anuboo(StateMachine):
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
                     self.hit = True
-                if self.imgRect.colliderect(entity.rect):
+                if self.imgRect.colliderect(entity.imgRect):
                     if type(entity).__name__ == "Fireball":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                    max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -3544,7 +3544,7 @@ class SpikySnifit(StateMachine):
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
                         self.hit = True
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -5305,7 +5305,7 @@ class DarkFawful(StateMachine):
                             self.asYouWere()
                         self.getHit()
                         self.cooldown = fps
-                    if self.imgRect.colliderect(entity.rect):
+                    if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))

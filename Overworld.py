@@ -61,8 +61,8 @@ class Hammer(pg.sprite.Sprite):
         self.loadImages()
         self.image = self.leftFrames[0]
         self.imgRect = self.image.get_rect()
-        self.imgRect.bottom = self.parent.rect.top
-        self.imgRect.centerx = self.parent.rect.centerx
+        self.imgRect.bottom = self.parent.imgRect.top
+        self.imgRect.centerx = self.parent.imgRect.centerx
         self.rect = pg.rect.Rect(0, 0, 50, 25)
         if self.parent.facing == "up":
             self.rect.centerx = self.parent.rect.centerx
@@ -500,12 +500,12 @@ class MarioCollision(pg.sprite.Sprite):
         self.game = game
         pg.sprite.Sprite.__init__(self)
         self.game.collision.append(self)
-        self.rect = self.game.player.rect
-        self.rect.center = self.game.player.rect.center
+        self.rect = self.game.player.imgRect
+        self.rect.center = self.game.player.imgRect.center
 
     def update(self):
-        self.rect = self.game.player.rect
-        self.rect.center = self.game.player.rect.center
+        self.rect = self.game.player.imgRect
+        self.rect.center = self.game.player.imgRect.center
 
 
 class LuigiCollision(pg.sprite.Sprite):
@@ -513,12 +513,12 @@ class LuigiCollision(pg.sprite.Sprite):
         self.game = game
         pg.sprite.Sprite.__init__(self)
         self.game.collision.append(self)
-        self.rect = self.game.follower.rect
-        self.rect.center = self.game.follower.rect.center
+        self.rect = self.game.follower.imgRect
+        self.rect.center = self.game.follower.imgRect.center
 
     def update(self):
-        self.rect = self.game.follower.rect
-        self.rect.center = self.game.follower.rect.center
+        self.rect = self.game.follower.imgRect
+        self.rect.center = self.game.follower.imgRect.center
 
 
 class Mario(pg.sprite.Sprite):
@@ -4227,8 +4227,8 @@ class MarioBattleComplete(pg.sprite.Sprite):
         self.loadImages()
         self.image = self.spinningFrames[0]
         self.rect = self.image.get_rect()
-        self.rect.bottom = self.game.player.rect.bottom
-        self.rect.centerx = self.game.player.rect.centerx
+        self.rect.bottom = self.game.player.imgRect.bottom
+        self.rect.centerx = self.game.player.imgRect.centerx
         self.game.sprites.remove(self.game.player)
         for i in range(self.speed + 1):
             self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, 200,
@@ -4315,8 +4315,8 @@ class LuigiBattleComplete(pg.sprite.Sprite):
         self.loadImages()
         self.image = self.spinningFrames[0]
         self.rect = self.image.get_rect()
-        self.rect.bottom = self.game.follower.rect.bottom
-        self.rect.centerx = self.game.follower.rect.centerx
+        self.rect.bottom = self.game.follower.imgRect.bottom
+        self.rect.centerx = self.game.follower.imgRect.centerx
         self.game.sprites.remove(self.game.follower)
         for i in range(self.speed + 1):
             self.points.append(pt.getPointOnLine(self.rect.centerx, self.rect.centery, 200,
@@ -4847,7 +4847,7 @@ class TextBox(pg.sprite.Sprite):
         self.image = textboxSprites[type]
         self.rect = self.image.get_rect()
         self.maxRect = self.image.get_rect()
-        self.rect.center = self.game.camera.offset(parent.rect).center
+        self.rect.center = self.game.camera.offset(parent.imgRect).center
         self.advanceRect.center = (
             self.rect.right - self.advanceRect.width - 20, self.rect.bottom - self.advanceRect.width - 20)
         self.image = pg.transform.scale(textboxSprites[self.type],
@@ -5050,8 +5050,8 @@ class TextBox(pg.sprite.Sprite):
                                 for i in range(self.speed + 1):
                                     self.points.append(
                                         pt.getPointOnLine(self.rect.centerx, self.rect.centery,
-                                                          self.game.camera.offset(self.parent.rect).centerx,
-                                                          self.game.camera.offset(self.parent.rect).centery,
+                                                          self.game.camera.offset(self.parent.imgRect).centerx,
+                                                          self.game.camera.offset(self.parent.imgRect).centery,
                                                           (i / self.speed)))
                                 self.counter = 0
                                 self.game.textBoxCloseSound.stop()

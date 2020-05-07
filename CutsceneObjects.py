@@ -121,7 +121,7 @@ class Cutscene:
                         sprite.draw()
                     except:
                         if sprite not in self.mcMuffinSprites:
-                            self.game.blit_alpha(self.game.screen, sprite.image, self.game.camera.offset(sprite.rect),
+                            self.game.blit_alpha(self.game.screen, sprite.image, self.game.camera.offset(sprite.imgRect),
                                                  sprite.alpha)
 
                 try:
@@ -135,7 +135,7 @@ class Cutscene:
                     self.game.screen.blit(sprite.shadow, sprite.rect)
                 except:
                     pass
-            [self.game.blit_alpha(self.game.screen, sprite.image, sprite.rect, sprite.alpha) for sprite in
+            [self.game.blit_alpha(self.game.screen, sprite.image, sprite.imgRect, sprite.alpha) for sprite in
              self.mcMuffinSprites]
             [text.draw() for text in self.game.textboxes]
 
@@ -3137,7 +3137,7 @@ class LineFlipAppear(pg.sprite.Sprite):
             pg.draw.rect(self.game.screen, black, self.game.camera.offset(self.rect), 3)
 
 
-class LineFlipdisappear(pg.sprite.Sprite):
+class LineFlipDisappear(pg.sprite.Sprite):
     def __init__(self, game, image, pos, turns=3, color=black, sound="default"):
         pg.sprite.Sprite.__init__(self)
         self.game = game

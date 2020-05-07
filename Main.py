@@ -10504,9 +10504,9 @@ class Game:
               "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')",
              "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
                   """self.setVar('self.starlow.facing = "up"')""",
-             "self.move(self.mario, 1200, 1050, False, 0, 1)",
-               "self.move(self.luigi, 1360, 1050, False, 0, 2)",
-               "self.move(self.starlow, 1280, 1050, False, 0, 3)",
+             "self.move(self.mario, 1200, 950, False, 0, 1)",
+               "self.move(self.luigi, 1360, 950, False, 0, 2)",
+               "self.move(self.starlow, 1280, 950, False, 0, 3)",
              """self.setVar('self.mario.facing = "upright"')""",
              """self.setVar('self.luigi.facing = "upleft"')""",
              "self.setVar('self.fawful = DarkFawfulDisappear(self.game, (1280, 925))')",
@@ -14205,7 +14205,7 @@ class Game:
                 self.sprites.remove(enemy)
         self.enemies.sort(key=self.sortByXPos)
         if len(self.enemies) != 0:
-            cursor = Cursor(self, self.enemies[0].rect)
+            cursor = Cursor(self, self.enemies[0].imgRect)
             enemyNames = EnemyNames(self, self.enemies[0].stats["name"])
         else:
             going = False
@@ -14230,9 +14230,9 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             keys = pg.key.get_pressed()
-            cursor.update(self.enemies[number].rect, 60)
+            cursor.update(self.enemies[number].imgRect, 60)
             enemyNames.update(self.enemies[number].stats["name"])
-            self.cameraRect.update(self.enemies[number].rect, 60)
+            self.cameraRect.update(self.enemies[number].imgRec, 60)
             self.camera.update(self.cameraRect.rect)
             self.ui.update()
             self.events()
@@ -14261,7 +14261,7 @@ class Game:
                             going = False
                             enemies = [self.enemies[number]]
                             for enemy in self.enemies:
-                                if colRect.colliderect(enemy.rect) and colRect.center != enemy.rect.center:
+                                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
                                     enemies.append(enemy)
                             eval(command)
                     if event.key == pg.K_TAB:
@@ -14275,7 +14275,7 @@ class Game:
                         self.pause = False
             self.drawBattleMenu()
             self.blit_alpha(self.screen, self.enemies[number].image,
-                            self.camera.offset(self.enemies[number].rect),
+                            self.camera.offset(self.enemies[number].imgRect),
                             255)
             self.screen.blit(s, sRect)
             colRect.center = self.enemies[number].rect.center
@@ -14285,20 +14285,20 @@ class Game:
                                     self.camera.offset(enemy.rect),
                                     enemy.alpha)
             self.blit_alpha(self.screen, self.enemies[number].image,
-                            self.camera.offset(self.enemies[number].rect),
+                            self.camera.offset(self.enemies[number].imgRect),
                             alpha)
             pg.draw.rect(self.screen, darkGray,
                          self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
                                      self.enemies[number].rect.width, 10)))
             if self.enemies[number].rectHP >= 0:
                 pg.draw.rect(self.screen, red, self.camera.offset(
-                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
+                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
                             (self.enemies[number].rect.width * (
                                     self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
             pg.draw.rect(self.screen, black,
                          self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
                                      self.enemies[number].rect.width, 10)),
                          1)
 
@@ -14321,7 +14321,7 @@ class Game:
             fad = Fadeout(self)
             enemies = [self.enemies[number]]
             for enemy in self.enemies:
-                if colRect.colliderect(enemy.rect) and colRect.center != enemy.rect.center:
+                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
                     enemies.append(enemy)
             while True:
                 self.calculatePlayTime()
@@ -14331,9 +14331,9 @@ class Game:
                 s.fill(black)
                 s.set_alpha(125)
                 keys = pg.key.get_pressed()
-                cursor.update(self.enemies[number].rect, 60)
+                cursor.update(self.enemies[number].imgRect, 60)
                 enemyNames.update(self.enemies[number].stats["name"])
-                self.cameraRect.update(self.enemies[number].rect, 60)
+                self.cameraRect.update(self.enemies[number].imgRect, 60)
                 self.camera.update(self.cameraRect.rect)
                 self.ui.update()
                 self.fadeout.update()
@@ -14349,7 +14349,7 @@ class Game:
                         pg.quit()
                 self.drawBattleMenu()
                 self.blit_alpha(self.screen, self.enemies[number].image,
-                                self.camera.offset(self.enemies[number].rect),
+                                self.camera.offset(self.enemies[number].imgRect),
                                 255)
                 self.screen.blit(s, sRect)
                 for enemy in self.enemies:
@@ -14358,20 +14358,20 @@ class Game:
                                         self.camera.offset(enemy.rect),
                                         enemy.alpha)
                 self.blit_alpha(self.screen, self.enemies[number].image,
-                                self.camera.offset(self.enemies[number].rect),
+                                self.camera.offset(self.enemies[number].imgRect),
                                 alpha)
                 pg.draw.rect(self.screen, darkGray,
                              self.camera.offset(
-                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
                                          self.enemies[number].rect.width, 10)))
                 if self.enemies[number].rectHP >= 0:
                     pg.draw.rect(self.screen, red, self.camera.offset(
-                        pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
+                        pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
                                 (self.enemies[number].rect.width * (
                                         self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
                 pg.draw.rect(self.screen, black,
                              self.camera.offset(
-                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
                                          self.enemies[number].rect.width, 10)),
                              1)
 
@@ -14414,9 +14414,9 @@ class Game:
 
             self.screen.fill(black)
             self.drawBattleMenu()
-            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.rect), 255)
+            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.imgRect), 255)
             self.screen.blit(s, sRect)
-            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.rect), alpha)
+            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.imgRect), alpha)
             enemy.textbox.draw()
 
             pg.display.flip()
@@ -15595,27 +15595,27 @@ class Game:
                     if enemy.stats["hp"] != enemy.stats["maxHP"]:
                         pg.draw.rect(self.screen, darkGray,
                                      self.camera.offset(
-                                         pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)))
+                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.imgRect.width, 10)))
                         if enemy.rectHP >= 0:
                             pg.draw.rect(self.screen, red, self.camera.offset(
-                                pg.Rect(enemy.rect.left, enemy.rect.bottom + 12,
+                                pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
                                         (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
                         pg.draw.rect(self.screen, black,
                                      self.camera.offset(
-                                         pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)),
+                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
                                      1)
             else:
                 if enemy.stats["hp"] != enemy.stats["maxHP"]:
                     pg.draw.rect(self.screen, darkGray,
                                  self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)))
+                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.imgRect.width, 10)))
                     if enemy.rectHP >= 0:
                         pg.draw.rect(self.screen, red, self.camera.offset(
-                            pg.Rect(enemy.rect.left, enemy.rect.bottom + 12,
+                            pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
                                     (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
                     pg.draw.rect(self.screen, black,
                                  self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)),
+                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
                                  1)
 
         [ui.draw() for ui in self.ui]
