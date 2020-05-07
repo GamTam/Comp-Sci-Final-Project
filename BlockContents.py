@@ -44,7 +44,7 @@ class Coin(pg.sprite.Sprite):
         self.rect = self.block.rect
         self.image = self.images[random.randrange(0, 8)]
         self.imgRect = self.image.get_rect()
-        self.imgRect.center = self.block.imgRect.center
+        self.imgRect.center = self.block.rect.center
         self.lastUpdate = 0
         self.currentFrame = 0
         self.alpha = 255
@@ -104,7 +104,7 @@ class Other(pg.sprite.Sprite):
             self.image = self.images["Attack Piece"]
         self.rect = self.block.rect
         self.imgRect = self.image.get_rect()
-        self.imgRect.center = self.block.imgRect.center
+        self.imgRect.center = self.block.rect.center
         self.alpha = 255
         self.counter = 0
         self.game.itemFromBlockSound.play()

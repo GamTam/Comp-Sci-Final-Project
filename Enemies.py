@@ -110,7 +110,7 @@ class GoombaODebug(pg.sprite.Sprite):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -309,7 +309,7 @@ class GoombaOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -567,7 +567,7 @@ class KoopaOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -884,7 +884,7 @@ class SandoonOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -1202,7 +1202,7 @@ class AnubooOverworld(StateMachine):
                         if len(self.game.despawnList) > 13:
                             self.game.despawnList.remove(self.game.despawnList[0])
                         self.game.loadBattle(self.battle)
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             self.game.despawnList.append(self.ID)
                             if len(self.game.despawnList) > 13:
@@ -1596,7 +1596,7 @@ class Goomba(pg.sprite.Sprite):
             if hits:
                 hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
                 if keys[
-                    pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                    pg.K_m] and self.game.player.going == "down" and self.game.player.rect.bottom <= self.imgRect.top + 50:
                     doubleDamageM = True
                 if hitsRound2:
                     if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
@@ -1621,7 +1621,7 @@ class Goomba(pg.sprite.Sprite):
                         if not self.game.player.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
                             if self.game.player.stats["hp"] <= 0:
@@ -1637,7 +1637,7 @@ class Goomba(pg.sprite.Sprite):
             if luigiHits:
                 hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                 if keys[
-                    pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                    pg.K_l] and self.game.follower.going == "down" and self.game.follower.rect.bottom <= self.imgRect.top + 50:
                     doubleDamageL = True
                 if hitsRound2:
                     if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
@@ -1662,7 +1662,7 @@ class Goomba(pg.sprite.Sprite):
                         if not self.game.follower.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                             self.game.follower.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -1710,7 +1710,7 @@ class Goomba(pg.sprite.Sprite):
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
                     self.hit = True
-                if self.imgRect.colliderect(entity.imgRect):
+                if self.imgRect.colliderect(entity.rect):
                     if type(entity).__name__ == "Fireball":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                    max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0))
@@ -1931,7 +1931,7 @@ class Koopa(StateMachine):
                 if hits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
                     if keys[
-                        pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_m] and self.game.player.going == "down" and self.game.player.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageM = True
                     if hitsRound2:
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
@@ -1956,7 +1956,7 @@ class Koopa(StateMachine):
                             if not self.game.player.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (self.game.player.rect.left, self.game.player.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                                 self.game.player.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -1973,7 +1973,7 @@ class Koopa(StateMachine):
                 if luigiHits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                     if keys[
-                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageL = True
                     if hitsRound2:
                         if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
@@ -1998,7 +1998,7 @@ class Koopa(StateMachine):
                             if not self.game.follower.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                                 self.game.follower.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -2046,7 +2046,7 @@ class Koopa(StateMachine):
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
                         self.hit = True
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -2065,7 +2065,7 @@ class Koopa(StateMachine):
                         if not self.game.player.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -2082,14 +2082,14 @@ class Koopa(StateMachine):
                 if luigiHits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                     if keys[
-                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageL = True
                     if hitsRound2:
                         if self.game.follower.stats["hp"] != 0:
                             if not self.game.follower.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                                 self.game.follower.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -2482,7 +2482,7 @@ class Sandoon(StateMachine):
                 if hits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
                     if keys[
-                        pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_m] and self.game.player.going == "down" and self.game.player.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageM = True
                     if hitsRound2:
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
@@ -2507,7 +2507,7 @@ class Sandoon(StateMachine):
                             if not self.game.player.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (self.game.player.rect.left, self.game.player.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                                 self.game.player.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -2525,7 +2525,7 @@ class Sandoon(StateMachine):
                     doubleDamageL = False
                     hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                     if keys[
-                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageL = True
                     if hitsRound2:
                         if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
@@ -2550,7 +2550,7 @@ class Sandoon(StateMachine):
                             if not self.game.follower.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                                 self.game.follower.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -2598,7 +2598,7 @@ class Sandoon(StateMachine):
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
                         self.hit = True
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -2617,7 +2617,7 @@ class Sandoon(StateMachine):
                         if not self.game.player.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -2634,14 +2634,14 @@ class Sandoon(StateMachine):
                 if luigiHits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                     if keys[
-                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageL = True
                     if hitsRound2:
                         if self.game.follower.stats["hp"] != 0:
                             if not self.game.follower.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                                 self.game.follower.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -3080,7 +3080,7 @@ class Anuboo(StateMachine):
             if hits:
                 hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
                 if keys[
-                    pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                    pg.K_m] and self.game.player.going == "down" and self.game.player.rect.bottom <= self.imgRect.top + 50:
                     doubleDamageM = True
                 if hitsRound2:
                     if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
@@ -3105,7 +3105,7 @@ class Anuboo(StateMachine):
                         if not self.game.player.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -3123,7 +3123,7 @@ class Anuboo(StateMachine):
                 doubleDamageL = False
                 hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                 if keys[
-                    pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                    pg.K_l] and self.game.follower.going == "down" and self.game.follower.rect.bottom <= self.imgRect.top + 50:
                     doubleDamageL = True
                 if hitsRound2:
                     if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
@@ -3148,7 +3148,7 @@ class Anuboo(StateMachine):
                         if not self.game.follower.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                             self.game.follower.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -3196,7 +3196,7 @@ class Anuboo(StateMachine):
                         self.game.enemyDieSound.play()
                     self.game.enemyHitSound.play()
                     self.hit = True
-                if self.imgRect.colliderect(entity.imgRect):
+                if self.imgRect.colliderect(entity.rect):
                     if type(entity).__name__ == "Fireball":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                    max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -3269,7 +3269,7 @@ class AnubooLazer(pg.sprite.Sprite):
                     if not self.game.player.hit and self.stats[
                         "hp"] > 0 and self.game.player.canBeHit:
                         HitNumbers(self.game, self.game.room,
-                                   (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                   (self.game.player.rect.left, self.game.player.rect.top - 2),
                                    (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                         self.game.player.stats["hp"] -= (
                             max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -3290,7 +3290,7 @@ class AnubooLazer(pg.sprite.Sprite):
                         if not self.game.follower.hit and self.stats[
                             "hp"] > 0 and self.game.follower.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                             self.game.follower.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -3429,7 +3429,7 @@ class SpikySnifit(StateMachine):
                 if hits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
                     if keys[
-                        pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_m] and self.game.player.going == "down" and self.game.player.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageM = True
                     if hitsRound2:
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
@@ -3454,7 +3454,7 @@ class SpikySnifit(StateMachine):
                             if not self.game.player.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (self.game.player.rect.left, self.game.player.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                                 self.game.player.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -3471,7 +3471,7 @@ class SpikySnifit(StateMachine):
                 if luigiHits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                     if keys[
-                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_l] and self.game.follower.going == "down" and self.game.follower.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageL = True
                     if hitsRound2:
                         if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
@@ -3496,7 +3496,7 @@ class SpikySnifit(StateMachine):
                             if not self.game.follower.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                                 self.game.follower.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -3544,7 +3544,7 @@ class SpikySnifit(StateMachine):
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
                         self.hit = True
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -3563,7 +3563,7 @@ class SpikySnifit(StateMachine):
                         if not self.game.player.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -3584,7 +3584,7 @@ class SpikySnifit(StateMachine):
                             if not self.game.follower.hit and self.stats[
                                 "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                                 self.game.follower.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -3757,7 +3757,7 @@ class SnifitBall(pg.sprite.Sprite):
                     if not self.game.player.hit and self.stats[
                         "hp"] > 0 and self.game.player.canBeHit:
                         HitNumbers(self.game, self.game.room,
-                                   (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                   (self.game.player.rect.left, self.game.player.rect.top - 2),
                                    (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                         self.game.player.stats["hp"] -= (
                             max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -3778,7 +3778,7 @@ class SnifitBall(pg.sprite.Sprite):
                         if not self.game.follower.hit and self.stats[
                             "hp"] > 0 and self.game.follower.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                             self.game.follower.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -4201,7 +4201,7 @@ class TutorialBowser(StateMachine):
                 if hits:
                     hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
                     if keys[
-                        pg.K_m] and self.game.player.going == "down" and self.game.player.imgRect.bottom <= self.imgRect.top + 50:
+                        pg.K_m] and self.game.player.going == "down" and self.game.player.rect.bottom <= self.imgRect.top + 50:
                         doubleDamageM = True
                     if hitsRound2:
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats[
@@ -4235,7 +4235,7 @@ class TutorialBowser(StateMachine):
                             if not self.game.player.hit and self.stats[
                                 "hp"] > 0 and not self.is_hit and self.game.player.canBeHit and self.game.player.stats["hp"] > self.stats["pow"] - self.game.player.stats["def"]:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (self.game.player.rect.left, self.game.player.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                                 self.game.player.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -4253,7 +4253,7 @@ class TutorialBowser(StateMachine):
                     if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
                         if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
                             if self.game.player.stats["hp"] <= 0:
@@ -4571,12 +4571,12 @@ class Mammoshka(StateMachine):
         if self.game.player.stats["hp"] != 0:
             hits = pg.sprite.collide_rect(self.game.player, self)
             if hits:
-                hitsRound2 = self.imgRect.colliderect(self.game.player.imgRect)
+                hitsRound2 = self.imgRect.colliderect(self.game.player.rect)
                 if hitsRound2:
                     if not self.game.player.hit and self.stats[
                         "hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
                         HitNumbers(self.game, self.game.room,
-                                   (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                   (self.game.player.rect.left, self.game.player.rect.top - 2),
                                    (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                         self.game.player.stats["hp"] -= (
                             max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -4591,12 +4591,12 @@ class Mammoshka(StateMachine):
         if self.game.follower.stats["hp"] != 0:
             hits = pg.sprite.collide_rect(self.game.follower, self)
             if hits:
-                hitsRound2 = self.imgRect.colliderect(self.game.follower.imgRect)
+                hitsRound2 = self.imgRect.colliderect(self.game.follower.rect)
                 if hitsRound2:
                     if not self.game.follower.hit and self.stats[
                         "hp"] > 0 and not self.is_hit and self.game.follower.canBeHit:
                         HitNumbers(self.game, self.game.room,
-                                   (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                   (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                    (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                         self.game.follower.stats["hp"] -= (
                             max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -4890,11 +4890,11 @@ class DarkFawful(StateMachine):
         self.rectHP = self.stats["hp"]
 
         self.description = ["Fawful is there!",
-                            "After Count Bleck gave him a power boost,\nhe wants to take revenge on\nyou guys!",
+                            "After Count Bleck gave him a power\nboost, he wants to take revenge on\nyou guys!",
                             "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
                             self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
-                            "The Beanbean kingdom is home to many\nbean-themed creatures.",
-                            "Fawful just happens to be one of the\nmore./9/6./9/6./p evil ones."]
+                            "The Beanbean kingdom is home to\nmany bean-themed creatures.",
+                            "Fawful just happens to be one of\nthe more./9/6./9/6./p evil ones."]
 
     def loadImages(self):
         sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
@@ -5115,10 +5115,12 @@ class DarkFawful(StateMachine):
             self.cooldown -= 1
             for wall in self.game.walls:
                 if self.rect.colliderect(wall.rect):
-                    if self.rect.bottom > wall.rect.top or self.rect.top < wall.rect.bottom:
-                        self.vy *= -1
-                    if self.rect.left < wall.rect.right or self.rect.right > wall.rect.left:
-                        self.vx *= -1
+                    if self.game.leader == "mario":
+                        self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                    else:
+                        self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+                    self.vx = project(self.rect.center, self.angle, self.speed)[0] - self.rect.centerx
+                    self.vy = project(self.rect.center, self.angle, self.speed)[1] - self.rect.centery
                     self.rect.centerx += self.vx
                     self.rect.centery += self.vy
             if self.cooldown <= 0:
@@ -5170,13 +5172,13 @@ class DarkFawful(StateMachine):
             self.angle = get_angle(self.rect.center, (1444, 1682))
             self.rect.center = project(self.rect.center, self.angle, self.speed)
 
-            if 1444 - self.rect.centerx < 20:
+            if abs(1444 - self.rect.centerx) < 50 and abs(1682 - self.rect.centery) < 50:
                 self.beginLanding()
 
         if self.cooldown > 0:
             self.cooldown -= 1
 
-        if self.is_idle or self.is_walking:
+        if self.is_idle or self.is_walking or self.is_fire:
             if self.game.player.stats["hp"] != 0:
                 hits = pg.sprite.collide_rect(self.game.player, self)
                 if hits:
@@ -5191,6 +5193,9 @@ class DarkFawful(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
+                            if self.is_fire:
+                                self.exitGun()
+                                self.asYouWere()
                             self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
@@ -5198,7 +5203,7 @@ class DarkFawful(StateMachine):
                             if not self.game.player.hit and self.stats[
                                 "hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                           (self.game.player.rect.left, self.game.player.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                                 self.game.player.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.player.stats["def"], 1))
@@ -5224,6 +5229,9 @@ class DarkFawful(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
+                            if self.is_fire:
+                                self.exitGun()
+                                self.asYouWere()
                             self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
@@ -5231,7 +5239,7 @@ class DarkFawful(StateMachine):
                             if not self.game.follower.hit and self.stats[
                                 "hp"] > 0 and not self.is_hit and self.game.follower.canBeHit:
                                 HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                                 self.game.follower.stats["hp"] -= (
                                     max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -5256,6 +5264,9 @@ class DarkFawful(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
+                        if self.is_fire:
+                            self.exitGun()
+                            self.asYouWere()
                         self.getHit()
                         self.cooldown = fps
 
@@ -5272,6 +5283,9 @@ class DarkFawful(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
+                        if self.is_fire:
+                            self.exitGun()
+                            self.asYouWere()
                         self.getHit()
                         self.cooldown = fps
 
@@ -5286,9 +5300,12 @@ class DarkFawful(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
+                        if self.is_fire:
+                            self.exitGun()
+                            self.asYouWere()
                         self.getHit()
                         self.cooldown = fps
-                    if self.imgRect.colliderect(entity.imgRect):
+                    if self.imgRect.colliderect(entity.rect):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
@@ -5298,6 +5315,9 @@ class DarkFawful(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
+                            if self.is_fire:
+                                self.exitGun()
+                                self.asYouWere()
                             self.getHit()
                             self.cooldown = fps
                             entity.dead = True
@@ -5308,7 +5328,7 @@ class DarkFawful(StateMachine):
                     if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
                         if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                             self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
                             if self.game.player.stats["hp"] <= 0:
@@ -5325,7 +5345,7 @@ class DarkFawful(StateMachine):
                     if self.rect.bottom > self.game.follower.rect.centery > self.rect.top:
                         if not self.game.follower.hit and self.stats["hp"] > 0 and self.game.follower.canBeHit:
                             HitNumbers(self.game, self.game.room,
-                                       (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                        (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                             self.game.follower.stats["hp"] -= (
                                 max(self.stats["pow"] - self.game.follower.stats["def"], 1))
@@ -5601,15 +5621,8 @@ class FawfulPortal(pg.sprite.Sprite):
         wallRect.width += 50
         wallRect.height += 50
         for wall in self.game.walls:
-            if wallRect.colliderect(wall.rect):
-                if wallRect.bottom > wall.rect.top:
-                    self.game.sprites.remove(self)
-                if wallRect.top < wall.rect.bottom:
-                    self.game.sprites.remove(self)
-                if wallRect.left < wall.rect.right:
-                    self.game.sprites.remove(self)
-                if wallRect.right > wall.rect.left:
-                    self.game.sprites.remove(self)
+            if wallRect.colliderect(wall.rect) and self in self.game.sprites:
+                self.game.sprites.remove(self)
         self.dead = False
         self.partner = partner
 
@@ -5676,7 +5689,7 @@ class FawfulBullet(pg.sprite.Sprite):
                 if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
                     if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
                         HitNumbers(self.game, self.game.room,
-                                   (self.game.player.imgRect.left, self.game.player.imgRect.top - 2),
+                                   (self.game.player.rect.left, self.game.player.rect.top - 2),
                                    (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
                         self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
                         if self.game.player.stats["hp"] <= 0:
@@ -5693,7 +5706,7 @@ class FawfulBullet(pg.sprite.Sprite):
                 if self.rect.bottom > self.game.follower.rect.centery > self.rect.top:
                     if not self.game.follower.hit and self.stats["hp"] > 0 and self.game.follower.canBeHit:
                         HitNumbers(self.game, self.game.room,
-                                   (self.game.follower.imgRect.left, self.game.follower.imgRect.top - 2),
+                                   (self.game.follower.rect.left, self.game.follower.rect.top - 2),
                                    (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
                         self.game.follower.stats["hp"] -= (
                             max(self.stats["pow"] - self.game.follower.stats["def"], 1))

@@ -121,7 +121,7 @@ class Cutscene:
                         sprite.draw()
                     except:
                         if sprite not in self.mcMuffinSprites:
-                            self.game.blit_alpha(self.game.screen, sprite.image, self.game.camera.offset(sprite.imgRect),
+                            self.game.blit_alpha(self.game.screen, sprite.image, self.game.camera.offset(sprite.rect),
                                                  sprite.alpha)
 
                 try:
@@ -135,7 +135,7 @@ class Cutscene:
                     self.game.screen.blit(sprite.shadow, sprite.rect)
                 except:
                     pass
-            [self.game.blit_alpha(self.game.screen, sprite.image, sprite.imgRect, sprite.alpha) for sprite in
+            [self.game.blit_alpha(self.game.screen, sprite.image, sprite.rect, sprite.alpha) for sprite in
              self.mcMuffinSprites]
             [text.draw() for text in self.game.textboxes]
 
@@ -2973,6 +2973,96 @@ class DarkFawfulCutscene(pg.sprite.Sprite):
         self.imgRect.centerx = self.rect.centerx
 
 
+class DarkFawfulDisappear(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self.game = game
+        pg.sprite.Sprite.__init__(self)
+        self.game.cutsceneSprites.append(self)
+        self.loadImages()
+        self.image = self.idleFrames[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.alpha = 255
+        self.dead = False
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/fawful.png", "sprites/fawful.xml")
+
+        self.idleFrames = [sheet.getImageName("defeat_1.png"),
+                        sheet.getImageName("defeat_2.png"),
+                        sheet.getImageName("defeat_3.png"),
+                        sheet.getImageName("defeat_4.png"),
+                        sheet.getImageName("defeat_5.png"),
+                        sheet.getImageName("defeat_6.png"),
+                        sheet.getImageName("defeat_7.png"),
+                        sheet.getImageName("defeat_8.png"),
+                        sheet.getImageName("defeat_9.png"),
+                        sheet.getImageName("defeat_10.png"),
+                        sheet.getImageName("defeat_11.png"),
+                        sheet.getImageName("defeat_12.png"),]
+
+        self.disappearFrames = [sheet.getImageName("disappear_1.png"),
+                                sheet.getImageName("disappear_2.png"),
+                                sheet.getImageName("disappear_3.png"),
+                                sheet.getImageName("disappear_4.png"),
+                                sheet.getImageName("disappear_5.png"),
+                                sheet.getImageName("disappear_6.png"),
+                                sheet.getImageName("disappear_7.png"),
+                                sheet.getImageName("disappear_8.png"),
+                                sheet.getImageName("disappear_9.png"),
+                                sheet.getImageName("disappear_10.png"),
+                                sheet.getImageName("disappear_11.png"),
+                                sheet.getImageName("disappear_12.png"),
+                                sheet.getImageName("disappear_13.png"),
+                                sheet.getImageName("disappear_14.png"),
+                                sheet.getImageName("disappear_15.png"),
+                                sheet.getImageName("disappear_16.png"),
+                                sheet.getImageName("disappear_17.png"),
+                                sheet.getImageName("disappear_18.png"),
+                                sheet.getImageName("disappear_19.png"),
+                                sheet.getImageName("disappear_20.png"),
+                                sheet.getImageName("disappear_21.png"),
+                                sheet.getImageName("disappear_22.png"),
+                                sheet.getImageName("disappear_23.png"),
+                                sheet.getImageName("disappear_24.png"),
+                                sheet.getImageName("disappear_25.png"),
+                                sheet.getImageName("disappear_26.png")]
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if self.dead:
+            if now - self.lastUpdate > 75:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.disappearFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.disappearFrames))
+                else:
+                    self.game.cutsceneSprites.remove(self)
+                bottom = self.rect.bottom
+                centerx = self.rect.centerx
+                self.image = self.disappearFrames[self.currentFrame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+                self.rect.centerx = centerx
+        else:
+            if now - self.lastUpdate > 75:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.idleFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleFrames))
+                else:
+                    self.currentFrame = 0
+                bottom = self.rect.bottom
+                centerx = self.rect.centerx
+                self.image = self.idleFrames[self.currentFrame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+                self.rect.centerx = centerx
+
+    def draw(self):
+        self.game.screen.blit(self.image, self.game.camera.offset(self.rect))
+
+
 class LineFlipAppear(pg.sprite.Sprite):
     def __init__(self, game, image, pos, turns=2, color=black, sound="default"):
         pg.sprite.Sprite.__init__(self)
@@ -3047,7 +3137,7 @@ class LineFlipAppear(pg.sprite.Sprite):
             pg.draw.rect(self.game.screen, black, self.game.camera.offset(self.rect), 3)
 
 
-class LineFlipDisappear(pg.sprite.Sprite):
+class LineFlipdisappear(pg.sprite.Sprite):
     def __init__(self, game, image, pos, turns=3, color=black, sound="default"):
         pg.sprite.Sprite.__init__(self)
         self.game = game

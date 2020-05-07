@@ -10404,101 +10404,117 @@ class Game:
         self.follower.stepSound = self.sandSound
         self.player.stepSound = self.sandSound
 
-        LoadCutscene(self, pg.rect.Rect(1200, 1600, 160, 80), True, False, [
-            # ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-            #  "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
-            #  "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')"],
-            # ["self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
-            # ["self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
-            # ["self.move(self.game.cameraRect, 1280, 880, False, 60)"],
-            # ["""self.setVar('self.mario.facing = "up"')""",
-            #  """self.setVar('self.luigi.facing = "up"')""",
-            #  """self.setVar('self.mario.walking = True')""",
-            #  """self.setVar('self.luigi.walking = True')""",
-            #  "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
-            #  """self.setVar('self.starlow.facing = "up"')""",
-            #  "self.command('self.game.starlowTwinkle.play()')"
-            #  ],
-            # ["self.move(self.mario, 1200, 1050, False, 180, 1)",
-            #  "self.move(self.luigi, 1360, 1050, False, 180, 2)",
-            #  "self.move(self.starlow, 1280, 1050, False, 180, 3)"],
-            # [
-            #     """self.setVar('self.mario.walking = False')""",
-            #     """self.setVar('self.luigi.walking = False')""",
-            #     """self.setVar('self.mario.facing = "upright"')""",
-            #     """self.setVar('self.luigi.facing = "upleft"')""",
-            # ],
-            # ["""self.textBox(self.starlow, [
-            #             "Look!/p It's the Egg McMuffin!"], sound="starlow")"""],
-            # ["""self.setVar('self.starlow.facing = "down"')"""],
-            # ["self.wait(1)"],
-            # ["""self.setVar('self.starlow.facing = "left"')"""],
-            # ["self.wait(1)"],
-            # ["""self.setVar('self.starlow.facing = "right"')"""],
-            # ["self.wait(1)"],
-            # ["""self.setVar('self.starlow.facing = "up"')"""],
-            # ["""self.textBox(self.starlow, [
-            #     "I can't see Fawful anywhere...",
-            #     "But he's probably gonna pop up/nas soon as we try to take it.",], sound="starlow")"""],
-            # ["self.wait(5)"],
-            # ["""self.textBox(self.starlow, [
-            #     "Okay, I have a feeling he's going/nto interrupt us now-/9/6/S"], sound="starlow")"""],
-            # ["self.setVar('self.bleck = BleckCutscene(self.game, (1280, 925))')",
-            #  "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
-            #  """self.textBox(self.bleck, ["You think you're so smart,/p/nbecause you're able to predict me?"], dir="up")"""
-            #  ],
-            # ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
-            #  """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
-            # ["self.command('self.game.cutsceneSprites.append(self.bleck)')"],
-            # ["self.wait(0.5)"],
-            # ["""self.textBox(self.bleck, [
-            # "Just because you know about what/nCount Bleck is doing doesn't make/nmake you any more prepared!",
-            # "In a brief moment, you will face/nthe wrath of Count Bleck!"])"""],
-            # ["""self.textBox(self.starlow, [
-            # "Wait, why isn't Fawful here?",
-            # "He was the one who brought the/nmonster last time!"], sound="starlow")"""],
-            # ["""self.textBox(self.bleck, [
-            # "Fawful has been a loyal minion,/nalways giving his full effort.",
-            # "Yes, Fawful has been very loyal to/nme,/p Count Bleck.",
-            # "But, he lacked the strength to face/nyou meddlesome heroes.",
-            # "So, I have helped him in that area/nof his skillset!",
-            # "/BFAWFUL!",
-            # "/BCOME HERE!"])"""],
-            # ["self.wait(0.5)"],
-            # ["self.setVar('self.fawful = DarkFawfulCutscene(self.game, (0, 700))')",
-            #  """self.textBox(self.fawful, ["/BI HAVE FURY!!!"], complete=True)""",
-            #  "self.command('self.game.fawfulLaugh.play()')"],
-            # ["self.move(self.fawful, 1280, 925, False, 700, 0)",
-            #  "self.move(self.bleck, 200, -50, True, 180, 1)"],
-            # ["""self.textBox(self.fawful, ["As you fink-rats can see,/p/nI have been having the/nimprovements!",
-            # "With the power of Count Bleck,/nFawful will be your ending!"], sound="fawful")"""],
-            # ["""self.textBox(self.bleck, [
-            # "With this additional power, Fawful/nwill be able to crush you three/neasily.",
-            # "Then, with no one to stop the void,/nit will consume all worlds!",
-            # "THE VOID WILL LEAVE NOTHING IN ITS/nPATH!",
-            # "\a/nBLEH HEH HEH HEH HEH! BLECK!"])""",
-            #  "if self.textbox[0].page == 2: self.setVar('self.bleck.laughing = True')",
-            #  "if self.textbox[0].page == 2: self.setVar('self.bleck.currentFrame = 0')"],
-            # ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
-            # "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
-            # "self.command('self.flip[0].update()')",
-            # "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
-            # ["self.wait(0.5)"],
-            # ["""self.textBox(self.fawful, [
-            # "You have gotten in Count Bleck's/nway at each of the turns...",
-            # "But now...",
-            # "FAWFUL SAYS FAREWELL TO YOUR/nFINK-RAT FACES FOREVER!!!",
-            # "ONE FELL SWOOP IS THE WAY I WILL/nDEAL WITH YOU FINK-RATS!!!"], sound="fawful")"""],
-            # ["self.setVar('self.game.player.rect.center = self.mario.rect.center')",
-            #  "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')"],
-            # ["self.command('self.game.sprites.append(self.mario)')",
-            #  "self.command('self.game.sprites.append(self.luigi)')",
-            #  "self.command('self.game.sprites.append(self.starlow)')",
-            #  "self.command('self.game.sprites.append(self.fawful)')",
-             ["""self.command('self.game.loadBattle("self.loadTeeheeValleyBoss()", currentPoint=False)')"""]
-        ], id="Teehee Valley Boss")
+        # LoadCutscene(self, pg.rect.Rect(1200, 1600, 160, 80), True, False, [
+        #     ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+        #      "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+        #      "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')"],
+        #     ["self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
+        #     ["self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
+        #     ["self.move(self.game.cameraRect, 1280, 880, False, 60)"],
+        #     ["""self.setVar('self.mario.facing = "up"')""",
+        #      """self.setVar('self.luigi.facing = "up"')""",
+        #      """self.setVar('self.mario.walking = True')""",
+        #      """self.setVar('self.luigi.walking = True')""",
+        #      "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+        #      """self.setVar('self.starlow.facing = "up"')""",
+        #      "self.command('self.game.starlowTwinkle.play()')"
+        #      ],
+        #     ["self.move(self.mario, 1200, 1050, False, 180, 1)",
+        #      "self.move(self.luigi, 1360, 1050, False, 180, 2)",
+        #      "self.move(self.starlow, 1280, 1050, False, 180, 3)"],
+        #     [
+        #         """self.setVar('self.mario.walking = False')""",
+        #         """self.setVar('self.luigi.walking = False')""",
+        #         """self.setVar('self.mario.facing = "upright"')""",
+        #         """self.setVar('self.luigi.facing = "upleft"')""",
+        #     ],
+        #     ["""self.textBox(self.starlow, [
+        #                 "Look!/p It's the Egg McMuffin!"], sound="starlow")"""],
+        #     ["""self.setVar('self.starlow.facing = "down"')"""],
+        #     ["self.wait(1)"],
+        #     ["""self.setVar('self.starlow.facing = "left"')"""],
+        #     ["self.wait(1)"],
+        #     ["""self.setVar('self.starlow.facing = "right"')"""],
+        #     ["self.wait(1)"],
+        #     ["""self.setVar('self.starlow.facing = "up"')"""],
+        #     ["""self.textBox(self.starlow, [
+        #         "I can't see Fawful anywhere...",
+        #         "But he's probably gonna pop up/nas soon as we try to take it.",], sound="starlow")"""],
+        #     ["self.wait(5)"],
+        #     ["""self.textBox(self.starlow, [
+        #         "Okay, I have a feeling he's going/nto interrupt us now-/9/6/S"], sound="starlow")"""],
+        #     ["self.setVar('self.bleck = BleckCutscene(self.game, (1280, 925))')",
+        #      "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
+        #      """self.textBox(self.bleck, ["You think you're so smart,/p/nbecause you're able to predict me?"], dir="up")"""
+        #      ],
+        #     ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
+        #      """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
+        #     ["self.command('self.game.cutsceneSprites.append(self.bleck)')"],
+        #     ["self.wait(0.5)"],
+        #     ["""self.textBox(self.bleck, [
+        #     "Just because you know about what/nCount Bleck is doing doesn't make/nmake you any more prepared!",
+        #     "In a brief moment, you will face/nthe wrath of Count Bleck!"])"""],
+        #     ["""self.textBox(self.starlow, [
+        #     "Wait, why isn't Fawful here?",
+        #     "He was the one who brought the/nmonster last time!"], sound="starlow")"""],
+        #     ["""self.textBox(self.bleck, [
+        #     "Fawful has been a loyal minion,/nalways giving his full effort.",
+        #     "Yes, Fawful has been very loyal to/nme,/p Count Bleck.",
+        #     "But, he lacked the strength to face/nyou meddlesome heroes.",
+        #     "So, I have helped him in that area/nof his skillset!",
+        #     "/BFAWFUL!",
+        #     "/BCOME HERE!"])"""],
+        #     ["self.wait(0.5)"],
+        #     ["self.setVar('self.fawful = DarkFawfulCutscene(self.game, (0, 700))')",
+        #      """self.textBox(self.fawful, ["/BI HAVE FURY!!!"], complete=True)""",
+        #      "self.command('self.game.fawfulLaugh.play()')"],
+        #     ["self.move(self.fawful, 1280, 925, False, 700, 0)",
+        #      "self.move(self.bleck, 200, -50, True, 180, 1)"],
+        #     ["""self.textBox(self.fawful, ["As you fink-rats can see,/p/nI have been having the/nimprovements!",
+        #     "With the power of Count Bleck,/nFawful will be your ending!"], sound="fawful")"""],
+        #     ["""self.textBox(self.bleck, [
+        #     "With this additional power, Fawful/nwill be able to crush you three/neasily.",
+        #     "Then, with no one to stop the void,/nit will consume all worlds!",
+        #     "THE VOID WILL LEAVE NOTHING IN ITS/nPATH!",
+        #     "\a/nBLEH HEH HEH HEH HEH! BLECK!"])""",
+        #      "if self.textbox[0].page == 2: self.setVar('self.bleck.laughing = True')",
+        #      "if self.textbox[0].page == 2: self.setVar('self.bleck.currentFrame = 0')"],
+        #     ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
+        #     "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
+        #     "self.command('self.flip[0].update()')",
+        #     "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
+        #     ["self.wait(0.5)"],
+        #     ["""self.textBox(self.fawful, [
+        #     "You have gotten in Count Bleck's/nway at each of the turns...",
+        #     "But now...",
+        #     "FAWFUL SAYS FAREWELL TO YOUR/nFINK-RAT FACES FOREVER!!!",
+        #     "ONE FELL SWOOP IS THE WAY I WILL/nDEAL WITH YOU FINK-RATS!!!"], sound="fawful")"""],
+        #     ["self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+        #      "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')"],
+        #     ["self.command('self.game.sprites.append(self.mario)')",
+        #      "self.command('self.game.sprites.append(self.luigi)')",
+        #      "self.command('self.game.sprites.append(self.starlow)')",
+        #      "self.command('self.game.sprites.append(self.fawful)')",
+        #      """self.command('self.game.loadBattle("self.loadTeeheeValleyBoss()", currentPoint=False)')"""]
+        # ], id="Teehee Valley Boss")
 
-        LoadCutscene(self, pg.rect.Rect(320, 800, 4000, 600), True, False, [["self.command('print(game.player)')"]], id="After Teehee Valley Boss")
+        LoadCutscene(self, pg.rect.Rect(320, 800, 4000, 600), True, False, [
+            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+              "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+              "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')",
+             "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+                  """self.setVar('self.starlow.facing = "up"')""",
+             "self.move(self.mario, 1200, 1050, False, 0, 1)",
+               "self.move(self.luigi, 1360, 1050, False, 0, 2)",
+               "self.move(self.starlow, 1280, 1050, False, 0, 3)",
+             """self.setVar('self.mario.facing = "upright"')""",
+             """self.setVar('self.luigi.facing = "upleft"')""",
+             "self.setVar('self.fawful = DarkFawfulDisappear(self.game, (1280, 925))')",
+             "self.move(self.game.cameraRect, 1280, 880, False, 0)",
+             "self.command('self.game.cutsceneSprites.append(self.mcMuffin)')",
+             "self.changeSong(None)", "self.command('pg.mixer.music.stop()')"],
+            [""]
+        ], id="After Teehee Valley Boss")
 
         try:
             self.player.rect.center = self.storeData["mario pos"]
@@ -14189,7 +14205,7 @@ class Game:
                 self.sprites.remove(enemy)
         self.enemies.sort(key=self.sortByXPos)
         if len(self.enemies) != 0:
-            cursor = Cursor(self, self.enemies[0].imgRect)
+            cursor = Cursor(self, self.enemies[0].rect)
             enemyNames = EnemyNames(self, self.enemies[0].stats["name"])
         else:
             going = False
@@ -14214,9 +14230,9 @@ class Game:
             s.fill(black)
             s.set_alpha(125)
             keys = pg.key.get_pressed()
-            cursor.update(self.enemies[number].imgRect, 60)
+            cursor.update(self.enemies[number].rect, 60)
             enemyNames.update(self.enemies[number].stats["name"])
-            self.cameraRect.update(self.enemies[number].imgRect, 60)
+            self.cameraRect.update(self.enemies[number].rect, 60)
             self.camera.update(self.cameraRect.rect)
             self.ui.update()
             self.events()
@@ -14245,7 +14261,7 @@ class Game:
                             going = False
                             enemies = [self.enemies[number]]
                             for enemy in self.enemies:
-                                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
+                                if colRect.colliderect(enemy.rect) and colRect.center != enemy.rect.center:
                                     enemies.append(enemy)
                             eval(command)
                     if event.key == pg.K_TAB:
@@ -14259,30 +14275,30 @@ class Game:
                         self.pause = False
             self.drawBattleMenu()
             self.blit_alpha(self.screen, self.enemies[number].image,
-                            self.camera.offset(self.enemies[number].imgRect),
+                            self.camera.offset(self.enemies[number].rect),
                             255)
             self.screen.blit(s, sRect)
             colRect.center = self.enemies[number].rect.center
             for enemy in self.enemies:
                 if colRect.colliderect(enemy.rect) and enemy.rect.center != colRect.center:
                     self.blit_alpha(self.screen, enemy.image,
-                                    self.camera.offset(enemy.imgRect),
+                                    self.camera.offset(enemy.rect),
                                     enemy.alpha)
             self.blit_alpha(self.screen, self.enemies[number].image,
-                            self.camera.offset(self.enemies[number].imgRect),
+                            self.camera.offset(self.enemies[number].rect),
                             alpha)
             pg.draw.rect(self.screen, darkGray,
                          self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
                                      self.enemies[number].rect.width, 10)))
             if self.enemies[number].rectHP >= 0:
                 pg.draw.rect(self.screen, red, self.camera.offset(
-                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                    pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
                             (self.enemies[number].rect.width * (
                                     self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
             pg.draw.rect(self.screen, black,
                          self.camera.offset(
-                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                             pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
                                      self.enemies[number].rect.width, 10)),
                          1)
 
@@ -14305,7 +14321,7 @@ class Game:
             fad = Fadeout(self)
             enemies = [self.enemies[number]]
             for enemy in self.enemies:
-                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
+                if colRect.colliderect(enemy.rect) and colRect.center != enemy.rect.center:
                     enemies.append(enemy)
             while True:
                 self.calculatePlayTime()
@@ -14315,7 +14331,7 @@ class Game:
                 s.fill(black)
                 s.set_alpha(125)
                 keys = pg.key.get_pressed()
-                cursor.update(self.enemies[number].imgRect, 60)
+                cursor.update(self.enemies[number].rect, 60)
                 enemyNames.update(self.enemies[number].stats["name"])
                 self.cameraRect.update(self.enemies[number].rect, 60)
                 self.camera.update(self.cameraRect.rect)
@@ -14333,29 +14349,29 @@ class Game:
                         pg.quit()
                 self.drawBattleMenu()
                 self.blit_alpha(self.screen, self.enemies[number].image,
-                                self.camera.offset(self.enemies[number].imgRect),
+                                self.camera.offset(self.enemies[number].rect),
                                 255)
                 self.screen.blit(s, sRect)
                 for enemy in self.enemies:
-                    if colRect.colliderect(enemy.imgRect):
+                    if colRect.colliderect(enemy.rect):
                         self.blit_alpha(self.screen, enemy.image,
-                                        self.camera.offset(enemy.imgRect),
+                                        self.camera.offset(enemy.rect),
                                         enemy.alpha)
                 self.blit_alpha(self.screen, self.enemies[number].image,
-                                self.camera.offset(self.enemies[number].imgRect),
+                                self.camera.offset(self.enemies[number].rect),
                                 alpha)
                 pg.draw.rect(self.screen, darkGray,
                              self.camera.offset(
-                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
                                          self.enemies[number].rect.width, 10)))
                 if self.enemies[number].rectHP >= 0:
                     pg.draw.rect(self.screen, red, self.camera.offset(
-                        pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                        pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
                                 (self.enemies[number].rect.width * (
                                         self.enemies[number].rectHP / self.enemies[number].stats["maxHP"])), 10)))
                 pg.draw.rect(self.screen, black,
                              self.camera.offset(
-                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].imgRect.bottom + 12,
+                                 pg.Rect(self.enemies[number].rect.left, self.enemies[number].rect.bottom + 12,
                                          self.enemies[number].rect.width, 10)),
                              1)
 
@@ -14398,9 +14414,9 @@ class Game:
 
             self.screen.fill(black)
             self.drawBattleMenu()
-            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.imgRect), 255)
+            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.rect), 255)
             self.screen.blit(s, sRect)
-            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.imgRect), alpha)
+            self.blit_alpha(self.screen, enemy.image, self.camera.offset(enemy.rect), alpha)
             enemy.textbox.draw()
 
             pg.display.flip()
@@ -15579,27 +15595,27 @@ class Game:
                     if enemy.stats["hp"] != enemy.stats["maxHP"]:
                         pg.draw.rect(self.screen, darkGray,
                                      self.camera.offset(
-                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)))
+                                         pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)))
                         if enemy.rectHP >= 0:
                             pg.draw.rect(self.screen, red, self.camera.offset(
-                                pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                pg.Rect(enemy.rect.left, enemy.rect.bottom + 12,
                                         (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
                         pg.draw.rect(self.screen, black,
                                      self.camera.offset(
-                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
+                                         pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)),
                                      1)
             else:
                 if enemy.stats["hp"] != enemy.stats["maxHP"]:
                     pg.draw.rect(self.screen, darkGray,
                                  self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)))
+                                     pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)))
                     if enemy.rectHP >= 0:
                         pg.draw.rect(self.screen, red, self.camera.offset(
-                            pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                            pg.Rect(enemy.rect.left, enemy.rect.bottom + 12,
                                     (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
                     pg.draw.rect(self.screen, black,
                                  self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
+                                     pg.Rect(enemy.rect.left, enemy.rect.bottom + 12, enemy.rect.width, 10)),
                                  1)
 
         [ui.draw() for ui in self.ui]
