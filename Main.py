@@ -8354,7 +8354,9 @@ class Game:
         #     self.newGame()
 
     def loadData(self):
+        self.castleBleckIntroduction = pg.mixer.Sound("sounds/castleBleckIntroduction.ogg")
         self.portalSound = pg.mixer.Sound("sounds/portal.ogg")
+        self.fawfulDieSound = pg.mixer.Sound("sounds/fawfulDie.ogg")
         self.mammoshkaBounce = pg.mixer.Sound("sounds/mammoshkaBounce.ogg")
         self.mammoshkaRoar = pg.mixer.Sound("sounds/mammoshkaRoar.ogg")
         self.fireballSound = pg.mixer.Sound("sounds/fireBall.ogg")
@@ -8520,9 +8522,11 @@ class Game:
         self.follower.stepSound = self.stoneSound
         self.player.stepSound = self.stoneSound
 
-        McMuffinWarp(self, (1665, 1405), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
+        McMuffinWarp(self, (1665, 1410), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
         if self.mcMuffins >= 2:
-            McMuffinWarp(self, (2430, 1405), red, "self.game.loadTeeheeValleyEntrance()", 2, "Teehee Valley")
+            McMuffinWarp(self, (2430, 1410), red, "self.game.loadTeeheeValleyEntrance()", 2, "Teehee Valley")
+        if self.mcMuffins >= 3:
+            McMuffinWarp(self, (3200, 1410), green, "self.game.loadCastleBleckEntrance()", 3, "Castle Bleck")
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width,
                        (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
@@ -8876,7 +8880,7 @@ class Game:
                     "I must return to my corner to/nsee if there's anything/nelse I can do to help.",
                     "Good luck with the saving/nof the worlds and all/nthat!"])"""],
                 [
-                    "self.move(self.game.toadley, self.game.toadley.rect.centerx, self.game.map.rect.bottom + 75, False, 300)",
+                    "self.move(self.game.toadley, self.game.toadley.rect.centerx, self.game.map.rect.bottom + 75, False, 150)",
                     """self.setVar('self.game.toadley.talking = True')""",
                     """self.setVar('self.game.toadley.facing = "down"')"""],
                 ["self.setVar('self.game.luigi.walking = True')",
@@ -8886,6 +8890,80 @@ class Game:
                  "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
                 ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
             ], id="Bros Attack Intro")
+
+        if self.mcMuffins == 3:
+            LoadCutscene(self, self.player.rect, True, True, [
+                ["self.changeSong([0, 95.997, 'flipside'])"],
+                ["self.setVar('self.game.otherMuff = EggMcMuffin((2430, 1410), red, self.game)')",
+                "self.command('self.game.cutsceneSprites.append(self.game.otherMuff)')",
+                "self.setVar('self.game.player.rect.center = (self.game.map.width / 2 - 50, self.game.map.rect.bottom - 220)')",
+                "self.setVar('self.game.follower.rect.center = (self.game.map.width / 2 + 50, self.game.map.rect.bottom - 220)')"],
+                ["self.wait(5)"],
+                ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                 "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                 "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                 "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                 "self.setVar('self.game.muff = EggMcMuffin((2430, self.game.map.rect.bottom - 230), green, self.game)')",
+
+                 ],
+                [
+                    "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                ], [
+                    "self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                [
+                    "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                ], [
+                    "self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                [
+                    "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.imgRect.centerx, self.game.muff.rect.top - 39))",
+                ], [
+                    "self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                ["self.wait(1)"],
+                ["self.move(self.game.muff, 3200, 1410, False, 180)",
+                 """self.setVar('self.game.mario.facing = "upright"')""",
+                 """self.setVar('self.game.luigi.facing = "upright"')""",
+                 ],
+                [
+                    "self.setVar('self.game.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom + 100))')",
+                    """self.setVar('self.game.toadley.facing = "up"')"""],
+                ["""self.textBox(self.game.toadley, [
+                    "Oh ho!/p/nYou've returned!/p/nAgain!"])"""],
+                ["self.command('self.game.castleBleckIntroduction.play()')",
+                 "self.command('pg.mixer.music.stop()')",
+                 "self.playMovie('castleBleckReveal')"],
+                ["""self.setVar('self.game.mario.facing = "down"')""",
+                 """self.setVar('self.game.luigi.facing = "down"')""",
+                 """self.setVar('self.game.toadley.talking = True')""",
+                 "self.move(self.game.toadley, self.game.map.width / 2, self.game.map.rect.bottom - 120, False, 180)"],
+                ["""self.textBox(self.game.toadley, [
+                "I can see that you've/nretrieved all Egg McMuffins!",
+                "Now you have all you/nneed in order to defeat/nCount Bleck!"])"""],
+                ["self.command('self.game.earthquakeSound.play()')",
+                 """self.setVar('self.game.mario.facing = "up"')""",
+                 """self.setVar('self.game.luigi.facing = "up"')""",
+                 "self.move(self.game.cameraRect, 0, -800, True, 300)",
+                 "self.move(self.game.void, width / 2, height / 2, False, 300, 1)"],
+                ["self.setVar('self.game.voidSize = 2')", "self.wait(5)"],
+                ["""self.textBox(self.game.toadley, [
+                    "And not a moment too soon!",
+                    "The void is about to swallow/nus all!"])"""],
+                ["self.move(self.game.cameraRect, 0, 800, True, 300)"],
+                ["""self.setVar('self.game.mario.facing = "down"')""",
+                 """self.setVar('self.game.luigi.facing = "down"')"""],
+                ["""self.textBox(self.game.toadley, [
+                    "Now, as there is nothing I can do,/nI will go back and cheer/nfrom the side!",
+                    "Oh yes!/p That reminds me.",
+                    "Broque Monsieur has updated his/nshop!",
+                    "Now, good luck!"])"""],
+                [
+                    "self.move(self.game.toadley, self.game.toadley.rect.centerx, self.game.map.rect.bottom + 75, False, 150)",
+                    """self.setVar('self.game.toadley.talking = True')""",
+                    """self.setVar('self.game.toadley.facing = "down"')"""],
+                ["self.setVar('self.game.luigi.walking = True')",
+                 """self.setVar('self.game.luigi.facing = "left"')""",
+                 "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+            ], id="All McMuffins")
 
         if self.area != "Flipside" and self.area != "title screen":
             if self.mcMuffins >= 2:
@@ -10504,16 +10582,49 @@ class Game:
               "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')",
              "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
                   """self.setVar('self.starlow.facing = "up"')""",
-             "self.move(self.mario, 1200, 950, False, 0, 1)",
-               "self.move(self.luigi, 1360, 950, False, 0, 2)",
-               "self.move(self.starlow, 1280, 950, False, 0, 3)",
+             "self.move(self.mario, 1200, 1150, False, 0, 1)",
+               "self.move(self.luigi, 1360, 1150, False, 0, 2)",
+               "self.move(self.starlow, 1280, 1150, False, 0, 3)",
              """self.setVar('self.mario.facing = "upright"')""",
              """self.setVar('self.luigi.facing = "upleft"')""",
              "self.setVar('self.fawful = DarkFawfulDisappear(self.game, (1280, 925))')",
              "self.move(self.game.cameraRect, 1280, 880, False, 0)",
              "self.command('self.game.cutsceneSprites.append(self.mcMuffin)')",
              "self.changeSong(None)", "self.command('pg.mixer.music.stop()')"],
-            [""]
+            ["""self.textBox(self.fawful, [
+             "Why./9/6./9/6./p?",
+             "Why.../p The failing...",
+             "You.../p mustaches.../p with.../p/nwhy.../p fury.../p whenever...",
+             "Fawful.../p just wanted.../psome/nkingdom conquering...",
+             "But every time.../p Always.../p/nThe mustaches.../p arrive...",
+             "Always in Fawful's way..."
+             ], sound="fawful")"""],
+            ["self.command('self.game.fawfulDieSound.play()')",
+             "self.setVar('self.fawful.currentFrame = 0')",
+             "self.setVar('self.fawful.dead = True')",
+             "self.wait(3)"],
+            ["""self.textBox(self.starlow, [
+             "Well.../p I guess we won't be/nseeing him again.",
+             "Let's grab the Egg McMuffin/nand get to Count Bleck!"], sound="starlow")"""],
+            ["self.setVar('self.game.mario = self.mario')",
+             "self.setVar('self.game.luigi = self.luigi')",
+             "self.setVar('self.game.mcMuffin = self.mcMuffin')",
+             "self.mcMuffinGet()"],
+            ["self.command('self.fade.kill')", "self.setVar('self.mcMuffinSprites = []')", "self.wait(2)",
+             """self.changeSong([14.221, 16.601, "mcMuffin Get"], False)"""],
+            ["""self.textBox(self.game.cameraRect, [
+            "With all three Egg McMuffins safely/nin the hads of Mario and Luigi,/p/nthey set out to find Castle Bleck.",
+            "With the void ever expanding, time is/nrunning out...",
+            "Will Mario and Luigi be able to stop the/ninevitable?",
+            "Will Starlow stop pointing out the obvious?",
+            "Will Dr. Toadley stop thinking that rhetorical/nquestions are cool?",
+            "These thought plagued the mind of Mario/nand Luigi as the curtains rose on the/nfinal act."], type="board", dir="None")"""],
+            ["self.setVar('self.game.mcMuffins = 3')", "self.changeSong(None)",
+             "self.command('pg.mixer.music.fadeout(5000)')"],
+            ["self.wait(5)", "self.setVar('self.game.fadeout = pg.sprite.Group()')",
+             "self.setVar('self.fade = Fadeout(self.game, 10)')", "self.setVar('self.fade.alpha = 255')"],
+            ["""self.setVar('self.game.area = "title screen"')"""],
+            ["self.command('self.game.loadFlipsideTower()')"]
         ], id="After Teehee Valley Boss")
 
         try:

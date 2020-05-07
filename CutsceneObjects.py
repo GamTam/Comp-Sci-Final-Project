@@ -161,6 +161,15 @@ class Cutscene:
         if self.currentScene >= len(self.scenes):
             self.over = True
 
+    def playMovie(self, movie):
+        pg.event.clear()
+        mp4 = VideoFileClip("movies/" + movie + ".mp4")
+        if self.game.fullscreen:
+            mp4.preview(fps=30, fullscreen=True)
+        else:
+            mp4.preview(fps=30)
+        self.sceneEnd()
+
     def wait(self, seconds):
         self.timer += 1
 
@@ -3035,16 +3044,14 @@ class DarkFawfulDisappear(pg.sprite.Sprite):
         if self.dead:
             if now - self.lastUpdate > 75:
                 self.lastUpdate = now
-                if self.currentFrame < len(self.disappearFrames):
-                    self.currentFrame = (self.currentFrame + 1) % (len(self.disappearFrames))
+                if self.currentFrame < len(self.disappearFrames) - 1:
+                    self.currentFrame = (self.currentFrame + 1)
                 else:
                     self.game.cutsceneSprites.remove(self)
-                bottom = self.rect.bottom
-                centerx = self.rect.centerx
+                center = self.rect.center
                 self.image = self.disappearFrames[self.currentFrame]
                 self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
-                self.rect.centerx = centerx
+                self.rect.center = center
         else:
             if now - self.lastUpdate > 75:
                 self.lastUpdate = now
@@ -3058,6 +3065,8 @@ class DarkFawfulDisappear(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
                 self.rect.centerx = centerx
+
+        self.imgRect = self.rect
 
     def draw(self):
         self.game.screen.blit(self.image, self.game.camera.offset(self.rect))
