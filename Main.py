@@ -177,6 +177,8 @@ class Game:
         self.loadData()
         self.playtime = 0
         self.goombaHasTexted = False
+        self.room = "title screen"
+        self.area = "title screen"
         self.player = Mario(self, 0, 0)
         self.follower = Luigi(self, 0, 0)
         MarioUI(self)
@@ -189,8 +191,6 @@ class Game:
         self.hitBlockList = []
         self.currentPoint = 0
         self.volume = 1
-        self.room = "title screen"
-        self.area = "title screen"
         fad = Fadeout(self)
         fad.alpha = 255
         self.loops = 0
@@ -8311,8 +8311,8 @@ class Game:
             area = pickle.load(file)
             self.storeData = pickle.load(file)
             self.displayTime = pickle.load(file)
-            self.player.attackPieces = pickle.load(file)
-            self.follower.attackPieces = pickle.load(file)
+            self.storeData["mario attack pieces"] = pickle.load(file)
+            self.storeData["luigi attack pieces"] = pickle.load(file)
             self.playtime = pickle.load(file)
             self.despawnList = pickle.load(file)
             self.hitBlockList = pickle.load(file)
@@ -8500,6 +8500,8 @@ class Game:
 
     def loadFlipsideTower(self):
         self.room = "self.loadFlipsideTower()"
+        e = self.area
+        self.area = "Flipside"
         self.sprites = []
         self.collision = []
         self.walls = pg.sprite.Group()
@@ -8509,6 +8511,8 @@ class Game:
         self.map = PngMap("flipside center", background="Flipside")
         self.camera = Camera(self, self.map.width, self.map.height)
         self.cameraRect = CameraRect()
+        self.player = Mario(self, 0, 0)
+        self.follower = Luigi(self, 0, 0)
         self.player.rect.center = (self.map.width / 2, self.map.rect.bottom - 220)
         self.playerCol = MarioCollision(self)
         self.follower.rect.center = (self.map.width / 2, self.map.rect.bottom - 120)
@@ -8521,6 +8525,8 @@ class Game:
         self.sprites.append(self.player)
         self.follower.stepSound = self.stoneSound
         self.player.stepSound = self.stoneSound
+        self.player.loadImages()
+        self.follower.loadImages()
 
         McMuffinWarp(self, (1665, 1410), black, "self.game.loadCaviCapeEnterance()", 1, "Cavi Cape")
         if self.mcMuffins >= 2:
@@ -8530,6 +8536,8 @@ class Game:
 
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width,
                        (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
+
+        self.area = e
 
         Wall(self, 256, 1248, 4224, 32)
         Wall(self, 224, 1344, 32, 550)
@@ -8542,18 +8550,21 @@ class Game:
         Wall(self, 4608, 1344, 32, 550)
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -8928,9 +8939,6 @@ class Game:
                     """self.setVar('self.game.toadley.facing = "up"')"""],
                 ["""self.textBox(self.game.toadley, [
                     "Oh ho!/p/nYou've returned!/p/nAgain!"])"""],
-                ["self.command('self.game.castleBleckIntroduction.play()')",
-                 "self.command('pg.mixer.music.stop()')",
-                 "self.playMovie('castleBleckReveal')"],
                 ["""self.setVar('self.game.mario.facing = "down"')""",
                  """self.setVar('self.game.luigi.facing = "down"')""",
                  """self.setVar('self.game.toadley.talking = True')""",
@@ -8966,6 +8974,7 @@ class Game:
             ], id="All McMuffins")
 
         if self.area != "Flipside" and self.area != "title screen":
+            self.area = "Flipside"
             if self.mcMuffins >= 2:
                 Cutscene(self,
                          [["self.changeSong([0, 95.997, 'flipside'])",
@@ -9053,14 +9062,23 @@ class Game:
                          "It will have zee pizaz!/p\nIt will have zee wow!",
                          "But it iz not open yet./p\nPlease retournez later."]
         elif self.mcMuffins == 2:
-            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["1-UP Mushroom", 50],
-                                 ["Syrup", 7], ["Super Syrup", 25], ["Star Cand", 100]]
-            broq.text = ["Bonjour monsieur Red and Green!",
+            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["1-UP Mushroom", 100],
+                                 ["Syrup", 7], ["Super Syrup", 25]]
+            broq.text = ["Bonjour, monsieur Red and Green!",
                          "I have opened zee Shop!",
                          "Take a look, s'il vous plaît!"]
 
             todd.text = ["There's only one McMuffin/nleft!",
                          "Go get it!"]
+        elif self.mcMuffins == 3:
+            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["Ultra Mushroom", 50],["1-UP Mushroom", 100],
+                                 ["Syrup", 7], ["Super Syrup", 25], ["Ultra Syrup", 67], ["1-UP Deluxe", 200]]
+            broq.text = ["Bonjour, monsieur Red and Green!",
+                         "I have expanded zee Shop!",
+                         "Take a look, s'il vous plaît!"]
+
+            todd.text = ["Hurry!",
+                         "On to Castle Bleck!"]
 
         Wall(self, 3585, 512, 64, 1086)
         Wall(self, 2752, 512, 64, 1086)
@@ -9079,18 +9097,21 @@ class Game:
         Wall(self, 450, 1537, 1152, 64)
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
         except:
             self.player.moveQueue = Q.deque()
             self.follower.moveQueue = Q.deque()
@@ -9135,18 +9156,21 @@ class Game:
         Wall(self, 1120, 720, 880, 80)
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9303,18 +9327,21 @@ class Game:
             counter += 0.00001
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9360,18 +9387,21 @@ class Game:
             counter += 0.00001
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9417,18 +9447,21 @@ class Game:
             counter += 0.00001
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9512,18 +9545,21 @@ class Game:
             counter += 0.00001
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9569,18 +9605,21 @@ class Game:
             counter += 0.00001
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9749,18 +9788,21 @@ class Game:
             counter += 0.00001
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9798,18 +9840,21 @@ class Game:
         McMuffinWarp(self, (960, 960), red, "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9931,18 +9976,21 @@ class Game:
         self.player.stepSound = self.sandSound
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -9989,18 +10037,21 @@ class Game:
         self.player.stepSound = self.sandSound
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -10047,18 +10098,21 @@ class Game:
         self.player.stepSound = self.sandSound
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -10105,18 +10159,21 @@ class Game:
         self.player.stepSound = self.sandSound
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -10309,18 +10366,21 @@ class Game:
         ])
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -10367,18 +10427,21 @@ class Game:
         self.player.stepSound = self.sandSound
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -10425,18 +10488,21 @@ class Game:
         self.player.stepSound = self.sandSound
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
                 self.player.moveQueue = self.storeData["move"]
+
 
         except:
 
@@ -10482,102 +10548,106 @@ class Game:
         self.follower.stepSound = self.sandSound
         self.player.stepSound = self.sandSound
 
-        # LoadCutscene(self, pg.rect.Rect(1200, 1600, 160, 80), True, False, [
-        #     ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-        #      "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
-        #      "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')"],
-        #     ["self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
-        #     ["self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
-        #     ["self.move(self.game.cameraRect, 1280, 880, False, 60)"],
-        #     ["""self.setVar('self.mario.facing = "up"')""",
-        #      """self.setVar('self.luigi.facing = "up"')""",
-        #      """self.setVar('self.mario.walking = True')""",
-        #      """self.setVar('self.luigi.walking = True')""",
-        #      "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
-        #      """self.setVar('self.starlow.facing = "up"')""",
-        #      "self.command('self.game.starlowTwinkle.play()')"
-        #      ],
-        #     ["self.move(self.mario, 1200, 1050, False, 180, 1)",
-        #      "self.move(self.luigi, 1360, 1050, False, 180, 2)",
-        #      "self.move(self.starlow, 1280, 1050, False, 180, 3)"],
-        #     [
-        #         """self.setVar('self.mario.walking = False')""",
-        #         """self.setVar('self.luigi.walking = False')""",
-        #         """self.setVar('self.mario.facing = "upright"')""",
-        #         """self.setVar('self.luigi.facing = "upleft"')""",
-        #     ],
-        #     ["""self.textBox(self.starlow, [
-        #                 "Look!/p It's the Egg McMuffin!"], sound="starlow")"""],
-        #     ["""self.setVar('self.starlow.facing = "down"')"""],
-        #     ["self.wait(1)"],
-        #     ["""self.setVar('self.starlow.facing = "left"')"""],
-        #     ["self.wait(1)"],
-        #     ["""self.setVar('self.starlow.facing = "right"')"""],
-        #     ["self.wait(1)"],
-        #     ["""self.setVar('self.starlow.facing = "up"')"""],
-        #     ["""self.textBox(self.starlow, [
-        #         "I can't see Fawful anywhere...",
-        #         "But he's probably gonna pop up/nas soon as we try to take it.",], sound="starlow")"""],
-        #     ["self.wait(5)"],
-        #     ["""self.textBox(self.starlow, [
-        #         "Okay, I have a feeling he's going/nto interrupt us now-/9/6/S"], sound="starlow")"""],
-        #     ["self.setVar('self.bleck = BleckCutscene(self.game, (1280, 925))')",
-        #      "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
-        #      """self.textBox(self.bleck, ["You think you're so smart,/p/nbecause you're able to predict me?"], dir="up")"""
-        #      ],
-        #     ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
-        #      """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
-        #     ["self.command('self.game.cutsceneSprites.append(self.bleck)')"],
-        #     ["self.wait(0.5)"],
-        #     ["""self.textBox(self.bleck, [
-        #     "Just because you know about what/nCount Bleck is doing doesn't make/nmake you any more prepared!",
-        #     "In a brief moment, you will face/nthe wrath of Count Bleck!"])"""],
-        #     ["""self.textBox(self.starlow, [
-        #     "Wait, why isn't Fawful here?",
-        #     "He was the one who brought the/nmonster last time!"], sound="starlow")"""],
-        #     ["""self.textBox(self.bleck, [
-        #     "Fawful has been a loyal minion,/nalways giving his full effort.",
-        #     "Yes, Fawful has been very loyal to/nme,/p Count Bleck.",
-        #     "But, he lacked the strength to face/nyou meddlesome heroes.",
-        #     "So, I have helped him in that area/nof his skillset!",
-        #     "/BFAWFUL!",
-        #     "/BCOME HERE!"])"""],
-        #     ["self.wait(0.5)"],
-        #     ["self.setVar('self.fawful = DarkFawfulCutscene(self.game, (0, 700))')",
-        #      """self.textBox(self.fawful, ["/BI HAVE FURY!!!"], complete=True)""",
-        #      "self.command('self.game.fawfulLaugh.play()')"],
-        #     ["self.move(self.fawful, 1280, 925, False, 700, 0)",
-        #      "self.move(self.bleck, 200, -50, True, 180, 1)"],
-        #     ["""self.textBox(self.fawful, ["As you fink-rats can see,/p/nI have been having the/nimprovements!",
-        #     "With the power of Count Bleck,/nFawful will be your ending!"], sound="fawful")"""],
-        #     ["""self.textBox(self.bleck, [
-        #     "With this additional power, Fawful/nwill be able to crush you three/neasily.",
-        #     "Then, with no one to stop the void,/nit will consume all worlds!",
-        #     "THE VOID WILL LEAVE NOTHING IN ITS/nPATH!",
-        #     "\a/nBLEH HEH HEH HEH HEH! BLECK!"])""",
-        #      "if self.textbox[0].page == 2: self.setVar('self.bleck.laughing = True')",
-        #      "if self.textbox[0].page == 2: self.setVar('self.bleck.currentFrame = 0')"],
-        #     ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
-        #     "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
-        #     "self.command('self.flip[0].update()')",
-        #     "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
-        #     ["self.wait(0.5)"],
-        #     ["""self.textBox(self.fawful, [
-        #     "You have gotten in Count Bleck's/nway at each of the turns...",
-        #     "But now...",
-        #     "FAWFUL SAYS FAREWELL TO YOUR/nFINK-RAT FACES FOREVER!!!",
-        #     "ONE FELL SWOOP IS THE WAY I WILL/nDEAL WITH YOU FINK-RATS!!!"], sound="fawful")"""],
-        #     ["self.setVar('self.game.player.rect.center = self.mario.rect.center')",
-        #      "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')"],
-        #     ["self.command('self.game.sprites.append(self.mario)')",
-        #      "self.command('self.game.sprites.append(self.luigi)')",
-        #      "self.command('self.game.sprites.append(self.starlow)')",
-        #      "self.command('self.game.sprites.append(self.fawful)')",
-        #      """self.command('self.game.loadBattle("self.loadTeeheeValleyBoss()", currentPoint=False)')"""]
-        # ], id="Teehee Valley Boss")
+        LoadCutscene(self, pg.rect.Rect(1200, 1600, 160, 80), True, False, [
+            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+             "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')"],
+            ["self.command('self.game.cutsceneSprites.append(self.mcMuffin)')"],
+            ["self.changeSong(None)", "self.command('pg.mixer.music.fadeout(5000)')"],
+            ["self.move(self.game.cameraRect, 1280, 880, False, 60)"],
+            ["""self.setVar('self.mario.facing = "up"')""",
+             """self.setVar('self.luigi.facing = "up"')""",
+             """self.setVar('self.mario.walking = True')""",
+             """self.setVar('self.luigi.walking = True')""",
+             "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+             """self.setVar('self.starlow.facing = "up"')""",
+             "self.command('self.game.starlowTwinkle.play()')"
+             ],
+            ["self.move(self.mario, 1200, 1050, False, 180, 1)",
+             "self.move(self.luigi, 1360, 1050, False, 180, 2)",
+             "self.move(self.starlow, 1280, 1050, False, 180, 3)"],
+            [
+                """self.setVar('self.mario.walking = False')""",
+                """self.setVar('self.luigi.walking = False')""",
+                """self.setVar('self.mario.facing = "upright"')""",
+                """self.setVar('self.luigi.facing = "upleft"')""",
+            ],
+            ["""self.textBox(self.starlow, [
+                        "Look!/p It's the Egg McMuffin!"], sound="starlow")"""],
+            ["""self.setVar('self.starlow.facing = "down"')"""],
+            ["self.wait(1)"],
+            ["""self.setVar('self.starlow.facing = "left"')"""],
+            ["self.wait(1)"],
+            ["""self.setVar('self.starlow.facing = "right"')"""],
+            ["self.wait(1)"],
+            ["""self.setVar('self.starlow.facing = "up"')"""],
+            ["""self.textBox(self.starlow, [
+                "I can't see Fawful anywhere...",
+                "But he's probably gonna pop up/nas soon as we try to take it.",], sound="starlow")"""],
+            ["self.wait(5)"],
+            ["""self.textBox(self.starlow, [
+                "Okay, I have a feeling he's going/nto interrupt us now-/9/6/S"], sound="starlow")"""],
+            ["self.setVar('self.bleck = BleckCutscene(self.game, (1280, 925))')",
+             "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
+             """self.textBox(self.bleck, ["You think you're so smart,/p/nbecause you're able to predict me?"], dir="up")"""
+             ],
+            ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
+             """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
+            ["self.command('self.game.cutsceneSprites.append(self.bleck)')"],
+            ["self.wait(0.5)"],
+            ["""self.textBox(self.bleck, [
+            "Just because you know about what/nCount Bleck is doing doesn't make/nmake you any more prepared!",
+            "In a brief moment, you will face/nthe wrath of Count Bleck!"])"""],
+            ["""self.textBox(self.starlow, [
+            "Wait, why isn't Fawful here?",
+            "He was the one who brought the/nmonster last time!"], sound="starlow")"""],
+            ["""self.textBox(self.bleck, [
+            "Fawful has been a loyal minion,/nalways giving his full effort.",
+            "Yes, Fawful has been very loyal to/nme,/p Count Bleck.",
+            "But, he lacked the strength to face/nyou meddlesome heroes.",
+            "So, I have helped him in that area/nof his skillset!",
+            "/BFAWFUL!",
+            "/BCOME HERE!"])"""],
+            ["self.wait(0.5)"],
+            ["self.setVar('self.fawful = DarkFawfulCutscene(self.game, (0, 700))')",
+             """self.textBox(self.fawful, ["/BI HAVE FURY!!!"], complete=True)""",
+             "self.command('self.game.fawfulLaugh.play()')"],
+            ["self.move(self.fawful, 1280, 925, False, 700, 0)",
+             "self.move(self.bleck, 200, -50, True, 180, 1)"],
+            ["""self.textBox(self.fawful, ["As you fink-rats can see,/p/nI have been having the/nimprovements!",
+            "With the power of Count Bleck,/nFawful will be your ending!"], sound="fawful")"""],
+            ["""self.textBox(self.bleck, [
+            "With this additional power, Fawful/nwill be able to crush you three/neasily.",
+            "Then, with no one to stop the void,/nit will consume all worlds!",
+            "THE VOID WILL LEAVE NOTHING IN ITS/nPATH!",
+            "\a/nBLEH HEH HEH HEH HEH! BLECK!"])""",
+             "if self.textbox[0].page == 2: self.setVar('self.bleck.laughing = True')",
+             "if self.textbox[0].page == 2: self.setVar('self.bleck.currentFrame = 0')"],
+            ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
+            "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
+            "self.command('self.flip[0].update()')",
+            "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
+            ["self.wait(0.5)"],
+            ["""self.textBox(self.fawful, [
+            "You have gotten in Count Bleck's/nway at each of the turns...",
+            "But now...",
+            "FAWFUL SAYS FAREWELL TO YOUR/nFINK-RAT FACES FOREVER!!!",
+            "ONE FELL SWOOP IS THE WAY I WILL/nDEAL WITH YOU FINK-RATS!!!"], sound="fawful")"""],
+            ["self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+             "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')"],
+            ["self.command('self.game.sprites.append(self.mario)')",
+             "self.command('self.game.sprites.append(self.luigi)')",
+             "self.command('self.game.sprites.append(self.starlow)')",
+             "self.command('self.game.sprites.append(self.fawful)')",
+             """self.command('self.game.loadBattle("self.loadTeeheeValleyBoss()", currentPoint=False)')"""]
+        ], id="Teehee Valley Boss")
 
         LoadCutscene(self, pg.rect.Rect(320, 800, 4000, 600), True, False, [
-            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+            ["""self.setVar('self.game.player.stats["hp"] = self.game.player.stats["maxHP"]')""",
+             """self.setVar('self.game.follower.stats["hp"] = self.game.follower.stats["maxHP"]')""",
+             """self.setVar('self.game.player.stats["bp"] = self.game.player.stats["maxBP"]')""",
+             """self.setVar('self.game.follower.stats["bp"] = self.game.follower.stats["maxBP"]')""",
+             "self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
               "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
               "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')",
              "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
@@ -10617,8 +10687,8 @@ class Game:
             "With the void ever expanding, time is/nrunning out...",
             "Will Mario and Luigi be able to stop the/ninevitable?",
             "Will Starlow stop pointing out the obvious?",
-            "Will Dr. Toadley stop thinking that rhetorical/nquestions are cool?",
-            "These thought plagued the mind of Mario/nand Luigi as the curtains rose on the/nfinal act."], type="board", dir="None")"""],
+            "Will Dr. Toadley stop standing in a corner/ndoing absolutely nothing?",
+            "These thought plagued the minds of Mario/nand Luigi as the curtains rose on the/nfinal act."], type="board", dir="None")"""],
             ["self.setVar('self.game.mcMuffins = 3')", "self.changeSong(None)",
              "self.command('pg.mixer.music.fadeout(5000)')"],
             ["self.wait(5)", "self.setVar('self.game.fadeout = pg.sprite.Group()')",
@@ -10628,14 +10698,75 @@ class Game:
         ], id="After Teehee Valley Boss")
 
         try:
-            self.player.rect.center = self.storeData["mario pos"]
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
             self.player.stats = self.storeData["mario stats"]
-            self.follower.rect.center = self.storeData["luigi pos"]
             self.follower.stats = self.storeData["luigi stats"]
-            self.player.facing = self.storeData["mario facing"]
-            self.follower.facing = self.storeData["luigi facing"]
             self.player.abilities = self.storeData["mario abilities"]
             self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+        self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
+
+    def loadCastleBleckEntrance(self):
+        self.room = "self.loadCastleBleckEntrance()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        e = self.area
+        self.area = "Castle Bleck"
+        self.map = Map(self, "Castle Bleck Entrance", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player = Mario(self, 0, 0)
+        self.follower = Luigi(self, 0, 0)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (940, 1300)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1040, 1300)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+
+        McMuffinWarp(self, (840, 1300), green, "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
+
+        self.area = e
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
             if self.leader == "mario":
                 self.follower.moveQueue = self.storeData["move"]
             elif self.leader == "luigi":
@@ -10648,7 +10779,921 @@ class Game:
             self.follower.moveQueue = Q.deque()
 
         self.cameraRect.update(self.player.rect, 0)
-        self.overworld("Teehee Valley", [14.764, 42.501, "Teehee Valley"])
+
+        if self.area != "Castle Bleck" and self.area != "title screen":
+            self.area = "Castle Bleck"
+            if "castle bleck entrance" in self.usedCutscenes:
+                Cutscene(self,
+                         [["self.changeSong([6.749, 102.727, 'Castle Bleck'])"],
+                          ["self.wait(1)"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                           "self.setVar('self.game.muff = EggMcMuffin((840, 1300), green, self.game)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          [
+                              "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.rect.centerx, self.game.muff.rect.top - 39))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                          ["self.wait(0.5)"],
+                          ["self.setVar('self.game.luigi.walking = True')",
+                           "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60)"],
+                          ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]
+                          ])
+            else:
+                Cutscene(self,
+                         [["self.wait(1)",
+                           "self.command('pg.mixer.music.fadeout(1000)')"],
+                          ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
+                           "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                           "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
+                           "self.setVar('self.game.muff = EggMcMuffin((840, 1300), green, self.game)')"],
+                          ["self.command('self.game.mario.update()')",
+                           "self.command('self.game.luigi.update()')"],
+                          ["self.wait(0.2)"],
+                          [
+                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.mario)')"],
+                          [
+                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], (self.game.luigi.imgRect.centerx, self.game.luigi.imgRect.centery + 2))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.luigi)')"],
+                          [
+                              "self.flipIn([[self.game.muff.shadow, self.game.muff.image], [self.game.muff.rect, self.game.muff.imgRect]], (self.game.muff.rect.centerx, self.game.muff.rect.top - 39))",
+                          ], ["self.command('self.game.cutsceneSprites.append(self.game.muff)')"],
+                          ["self.wait(0.5)"]
+                          ])
+            LoadCutscene(self, self.player.rect, True, True, [
+                ["self.command('pg.mixer.music.stop()')",
+                 "self.setVar('self.game.songPlaying = None')",
+                 "self.command('self.game.cutsceneSprites.append(self.game.mario)')",
+                 "self.command('self.game.cutsceneSprites.append(self.game.luigi)')",
+                 "self.command('self.game.cutsceneSprites.append(self.game.muff)')",
+                 "self.setVar('self.game.starlow = starlowCutscene(self.game, self.game.player.rect.center)')",
+                 "self.command('self.game.starlowTwinkle.play()')",
+                 """self.setVar('self.game.starlow.facing = "up"')"""],
+                ["""self.setVar('self.game.mario.facing = "up"')""",
+                 """self.setVar('self.game.luigi.facing = "upleft"')"""],
+                [
+                    "self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery - 100, False, 30)"],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "down"')"""],
+                ["""self.textBox(self.game.starlow,
+                   ["So, we're here.",
+                   "I wonder where the castle is."], sound='starlow')"""],
+                ["""self.setVar('self.game.starlow.facing = "left"')"""],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "up"')"""],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.command('self.game.castleBleckIntroduction.play()')",
+                 "self.command('pg.mixer.music.stop()')",
+                 "self.playMovie('castleBleckReveal')"],
+                ["self.wait(1)"],
+                ["""self.setVar('self.game.starlow.facing = "down"')"""],
+                ["""self.textBox(self.game.starlow,
+                    ["There is is!",
+                    "Let's go!"], sound='starlow')"""],
+                ["self.setVar('self.game.luigi.walking = True')",
+                 """self.setVar('self.game.luigi.facing = "left"')""",
+                 "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 0)",
+                 "self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)"],
+                ["self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')",
+                 """self.setVar('self.game.player.facing = "up"')""",
+                 """self.setVar('self.game.follower.facing = "up"')"""],
+                ["self.changeSong([6.749, 102.727, 'Castle Bleck'])"]
+            ], id="castle bleck entrance")
+            self.cutsceneSprites = []
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom1(self):
+        self.room = "self.loadCastleBleckRoom1()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 1", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player = Mario(self, 0, 0)
+        self.follower = Luigi(self, 0, 0)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.1
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.1
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom2(self):
+        self.room = "self.loadCastleBleckRoom2()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 2", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.2
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.2
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom3(self):
+        self.room = "self.loadCastleBleckRoom3()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 3", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.3
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.3
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom4(self):
+        self.room = "self.loadCastleBleckRoom4()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 4", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.4
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.4
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom5(self):
+        self.room = "self.loadCastleBleckRoom5()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 5", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.5
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.5
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom6(self):
+        self.room = "self.loadCastleBleckRoom6()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 6", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.6
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.6
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom7(self):
+        self.room = "self.loadCastleBleckRoom7()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 7", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.7
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.7
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom8(self):
+        self.room = "self.loadCastleBleckRoo82()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 8", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.8
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.8
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom9(self):
+        self.room = "self.loadCastleBleckRoom9()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 9", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.9
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.00001
+
+        counter = 3.9
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.00001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom10(self):
+        self.room = "self.loadCastleBleckRoom10()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Room 10", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.01
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.000001
+
+        counter = 3.01
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.000001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckRoom11(self):
+        self.room = "self.loadCastleBleckRoom11()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        e = self.area
+        self.area = "Castle Bleck"
+        self.map = Map(self, "Castle Bleck Room 11", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player = Mario(self, 0, 0)
+        self.follower = Luigi(self, 0, 0)
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+        self.area = e
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        counter = 3.11
+        for enemy in self.enemies:
+            enemy.ID = counter
+            counter += 0.000001
+
+        counter = 3.11
+        for block in self.blocks:
+            block.ID = counter
+            counter += 0.000001
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", [6.749, 102.727, "Castle Bleck"])
+
+    def loadCastleBleckBossRoom(self):
+        self.room = "self.loadCastleBleckBossRoom()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Castle Bleck Boss Room")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (1060, 960)
+        self.player.facing = "left"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (1160, 960)
+        self.follower.facing = "left"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+        pg.mixer.music.fadeout(1000)
+        self.songPlaying = "Banana Music"
+
+        LoadCutscene(self, pg.rect.Rect(720, 1520, 80, 320), True, False, [
+            # ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+            #  "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')"],
+            # ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
+            #  """self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""
+            #  ],
+            # ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
+            #  "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 120)"],
+            #
+            # [ """self.textBox(self.bleck, ["I see you've come at last!",
+            # "So you really are the heroes of/nthe Light Prognosticus!"])"""],
+            # ["""self.setVar('self.mario.facing = "upright"')""",
+            #  """self.setVar('self.luigi.facing = "upright"')""",
+            #  """self.setVar('self.mario.walking = True')""",
+            #  """self.setVar('self.luigi.walking = True')""",
+            #  "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+            #  """self.setVar('self.starlow.facing = "upright"')""",
+            #  "self.command('self.game.starlowTwinkle.play()')"
+            #  ],
+            # ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 600, 1)",
+            #  "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 600, 2)",
+            #  "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 600, 3)"],
+            # ["""self.setVar('self.mario.facing = "up"')""",
+            #  """self.setVar('self.luigi.facing = "up"')""",
+            #  """self.setVar('self.mario.walking = False')""",
+            #  """self.setVar('self.luigi.walking = False')""",
+            #  """self.setVar('self.starlow.facing = "up"')"""
+            #  ],
+            # ["""self.textBox(self.starlow, [
+            #     "Count Bleck!",
+            #     "We have you cornered!",
+            #     "Give up now!"], sound="starlow")"""],
+            # ["""self.textBox(self.bleck, [
+            # "Bleh heh heh heh heh...",
+            # "You REALLY think I care whether or/nnot I survive?",
+            # "If I die, the Void will continue/nas it is for a little longer.",
+            # "And, right now, that time/nis long enough for the Void/nto consume all worlds!",
+            # "I will duel you only because/nyou have the Egg McMuffins, which/ncan put a stop to this.",
+            # "But... Now is not the time/nto talk!",
+            # "COUNT BLECK IS THE DELETER/nOF WORLDS!/p MY FATE IS WRITTEN/nIN THE DARK PROGNOSTICUS!",
+            # "DO NOT THINK FOR A MOMENT/nTHAT I WILL NOT HESITATE/nTO STRIKE YOU DOWN!",
+            # "SO,/p ARE YOU PREPARED, HEROES?",
+            # "OUR DUEL WILL BE WORTHY OF/nTHE LAST CLASH THE WORLDS WILL/nEVER SEE!",
+            # "/BALL NOW ENDS!"])""",
+            #  "if self.textbox[0].page == 6: self.setVar('self.bleck.currentFrame = 0')",
+            #  "if self.textbox[0].page == 6: self.setVar('self.bleck.laughing = True')"],
+            # ["self.command('pg.mixer.music.fadeout(1000)')",
+            #  "self.command('self.game.sprites.append(self.mario)')",
+            #  "self.command('self.game.sprites.append(self.luigi)')",
+            #  "self.command('self.game.sprites.append(self.starlow)')",
+            #  "self.command('self.game.sprites.append(self.bleck)')",
+             ["""self.command('self.game.loadBattle("self.loadFinalBoss()", currentPoint=False)')"""],
+        ], id="Final Boss Cutscene")
+
+        LoadCutscene(self, pg.rect.Rect(0, 0, 0, 0), True, False, [
+            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, (1360, 1050))')",
+             "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), red, self.game)')",
+             "self.command('self.game.cutsceneSprites.append(self.mcMuffin)')",
+             "self.setVar('self.starlow = starlowCutscene(self.game, (1280, 1050))')",
+             """self.setVar('self.game.player.stats["hp"] = self.game.player.stats["maxHP"]')""",
+             """self.setVar('self.game.follower.stats["hp"] = self.game.follower.stats["maxHP"]')""",
+             """self.setVar('self.game.player.stats["bp"] = self.game.player.stats["maxBP"]')""",
+             """self.setVar('self.game.follower.stats["bp"] = self.game.follower.stats["maxBP"]')""",
+             """self.setVar('self.starlow.facing = "up"')""",
+             """self.setVar('self.mario.facing = "up"')""",
+             """self.setVar('self.luigi.facing = "up"')""",
+             "self.changeSong(None)", "self.command('pg.mixer.music.fadeout(1)')",
+             "self.move(self.game.cameraRect, 1280, 880, False, 0)"
+             ],
+            ["""self.textBox(self.starlow, [
+                                        "Perhaps I spoke too soon.",
+                                        "Anyways,/p NOW we can grab it!",
+                                        "and do it quickly, before something/nelse shows up."], sound="starlow")"""],
+            ["self.setVar('self.game.mario = self.mario')",
+             "self.setVar('self.game.luigi = self.luigi')",
+             "self.setVar('self.game.mcMuffin = self.mcMuffin')",
+             "self.mcMuffinGet()"],
+            ["self.command('self.fade.kill')", "self.setVar('self.mcMuffinSprites = []')", "self.wait(2)",
+             """self.changeSong([14.221, 16.601, "mcMuffin Get"], False)"""],
+            ["""self.textBox(self.game.cameraRect, ["And so, Mario and Luigi had located/nthe second Egg McMuffin.",
+                    "With only one left to go,/nthey hurried back to Flipside/nin order to hear from Dr. Toadley.",
+                    "Will they be able to collect/nthe last one before it's/ntoo late?"], type="board", dir="None")"""],
+            ["self.setVar('self.game.mcMuffins = 2')", "self.changeSong(None)",
+             "self.command('pg.mixer.music.fadeout(5000)')"],
+            ["self.wait(5)", "self.setVar('self.game.fadeout = pg.sprite.Group()')",
+             "self.setVar('self.fade = Fadeout(self.game, 10)')", "self.setVar('self.fade.alpha = 255')"],
+            ["""self.setVar('self.game.area = "title screen"')"""],
+            ["self.command('self.game.loadFlipsideTower()')"]], id="Final Cutscene")
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+
+
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+
+        self.overworld("Castle Bleck", None)
 
     def overworld(self, area, songData):
         menud = False
@@ -10667,13 +11712,13 @@ class Game:
         if self.area != area:
             self.currentPos = 0
             self.playSong(songData[0], songData[1], songData[2])
-            self.area = area
+        self.area = area
         while self.playing:
             if self.save:
                 self.saveGame(songData)
                 self.save = False
             self.calculatePlayTime()
-            if self.playsong:
+            if self.playsong and songData is not None:
                 self.playSong(songData[0], songData[1], songData[2], cont=True, fadein=True)
             self.clock.tick(fps)
             self.events()
@@ -12334,7 +13379,38 @@ class Game:
             self.follower.stats = self.storeData["luigi stats"]
         except:
             pass
-        self.battle("""self.playSong(13.634, 76.406, "dark fawful battle")""", boss=True)
+        self.battle("""self.playSong(29.432, 71.033, "dark fawful battle")""", boss=True)
+
+    def loadFinalBoss(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+
+        self.bleck = CountBleckFight1()
+        self.bleck.init(self, (1000, 1000))
+
+        self.map = Map(self, "Castle Bleck Boss", background="Castle Bleck")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, 1280)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, 1280)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.sandSound
+        self.player.stepSound = self.sandSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle("""self.playSong(6.443, 53.348, "Count Bleck Battle Phase 1")""", boss=True)
 
     def loadTeeheeValleyBattle1S(self):
         self.room = "battle"
@@ -13509,6 +14585,7 @@ class Game:
         self.battle()
 
     def battle(self, song=None, boss=False):
+        self.cutscenes = []
         menud = False
         self.countdown = 0
         self.playing = True
@@ -13517,15 +14594,16 @@ class Game:
         self.follower.ability = self.storeData["luigi current ability"]
         self.follower.abilities = self.storeData["luigi abilities"]
         self.cameraRect = CameraRect()
-        if song is None:
+        self.battleSong = song
+        if self.battleSong is None:
             self.songPlaying = "battle"
             pg.mixer.music.set_volume(1)
             pg.mixer.music.load("music/battle.ogg")
             pg.mixer.music.play(-1)
         while self.playing:
             self.calculatePlayTime()
-            if song is not None:
-                eval(song)
+            if self.battleSong is not None:
+                eval(self.battleSong)
             self.clock.tick(fps)
             self.events()
             for event in self.event:
@@ -13535,7 +14613,7 @@ class Game:
                             self.player.canMove = False
                             self.follower.canMove = False
                             menud = True
-                            self.battleMenu(song)
+                            self.battleMenu(self.battleSong)
                         else:
                             self.wrongSound.play()
             self.updateBattle()
@@ -14343,7 +15421,7 @@ class Game:
             keys = pg.key.get_pressed()
             cursor.update(self.enemies[number].imgRect, 60)
             enemyNames.update(self.enemies[number].stats["name"])
-            self.cameraRect.update(self.enemies[number].imgRec, 60)
+            self.cameraRect.update(self.enemies[number].imgRect, 60)
             self.camera.update(self.cameraRect.rect)
             self.ui.update()
             self.events()
@@ -14466,7 +15544,7 @@ class Game:
                 for enemy in self.enemies:
                     if colRect.colliderect(enemy.rect):
                         self.blit_alpha(self.screen, enemy.image,
-                                        self.camera.offset(enemy.rect),
+                                        self.camera.offset(enemy.imgRect),
                                         enemy.alpha)
                 self.blit_alpha(self.screen, self.enemies[number].image,
                                 self.camera.offset(self.enemies[number].imgRect),
@@ -15178,7 +16256,8 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            self.screen.blit(self.void.image, self.void.rect)
+            if self.area != "Castle Bleck":
+                self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.set_clip(0, expClipAmount, width, height)
             for ui in self.battleEndUI:
@@ -15242,7 +16321,8 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            self.screen.blit(self.void.image, self.void.rect)
+            if self.area != "Castle Bleck":
+                self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -15283,7 +16363,8 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            self.screen.blit(self.void.image, self.void.rect)
+            if self.area != "Castle Bleck":
+                self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -15392,7 +16473,8 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            self.screen.blit(self.void.image, self.void.rect)
+            if self.area != "Castle Bleck":
+                self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             if not marioBefore:
                 self.screen.set_clip(0, expClipAmount, width, height)
@@ -15462,7 +16544,8 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            self.screen.blit(self.void.image, self.void.rect)
+            if self.area != "Castle Bleck":
+                self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -15501,7 +16584,8 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            self.screen.blit(self.void.image, self.void.rect)
+            if self.area != "Castle Bleck":
+                self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
 
@@ -15586,7 +16670,8 @@ class Game:
 
     def updateBattle(self):
         self.fadeout.update()
-        self.void.update(self.voidSize)
+        if self.area != "Castle Bleck":
+            self.void.update(self.voidSize)
         self.effects.update()
         [sprite.update() for sprite in self.sprites]
         self.ui.update()
@@ -15596,9 +16681,11 @@ class Game:
         else:
             self.cameraRect.update(self.follower.rect, 600)
         self.camera.update(self.cameraRect.rect)
+        [cutscene.update() for cutscene in self.cutscenes]
 
     def updateOverworld(self):
-        self.void.update(self.voidSize)
+        if self.area != "Castle Bleck":
+            self.void.update(self.voidSize)
         [ui.update() for ui in self.battleEndUI]
         self.fadeout.update()
         self.effects.update()
@@ -15631,7 +16718,8 @@ class Game:
             self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
         except:
             pass
-        self.screen.blit(self.void.image, self.void.rect)
+        if self.area != "Castle Bleck":
+            self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         for sprite in self.sprites:
             if sprite.dead:
@@ -15667,7 +16755,8 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        self.screen.blit(self.void.image, self.void.rect)
+        if self.area != "Castle Bleck":
+            self.screen.blit(self.void.image, self.void.rect)
 
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
@@ -15719,7 +16808,7 @@ class Game:
                 if enemy.stats["hp"] != enemy.stats["maxHP"]:
                     pg.draw.rect(self.screen, darkGray,
                                  self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.imgRect.width, 10)))
+                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)))
                     if enemy.rectHP >= 0:
                         pg.draw.rect(self.screen, red, self.camera.offset(
                             pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
@@ -15746,7 +16835,8 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        self.screen.blit(self.void.image, self.void.rect)
+        if self.area != "Castle Bleck":
+            self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
@@ -15780,7 +16870,8 @@ class Game:
         except:
             pass
 
-        self.screen.blit(self.void.image, self.void.rect)
+        if self.area != "Castle Bleck":
+            self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
@@ -15820,7 +16911,8 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        self.screen.blit(self.void.image, self.void.rect)
+        if self.area != "Castle Bleck":
+            self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:

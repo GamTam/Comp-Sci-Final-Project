@@ -1204,3 +1204,121 @@ class DarkFawfulBrosAttack(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.centerx = centerx
                 self.rect.bottom = bottom
+
+
+class CountBleckBrosAttack(pg.sprite.Sprite):
+    def __init__(self, game, enemy):
+        pg.sprite.Sprite.__init__(self)
+        self.game = game
+        self.hit = False
+        self.alpha = 255
+        self.lastUpdate = 0
+        self.counter = 0
+        self.enemy = enemy
+        self.loadImages()
+        self.currentFrame = random.randrange(0, len(self.standingFrames))
+        self.image = self.standingFrames[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = (random.randrange(width / 2, width - 100), random.randrange(420, height - 50))
+        self.barRect = self.rect
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
+
+        self.standingFrames = [sheet.getImageName("idle_1.png"),
+                           sheet.getImageName("idle_2.png"),
+                           sheet.getImageName("idle_3.png"),
+                           sheet.getImageName("idle_4.png"),
+                           sheet.getImageName("idle_5.png"),
+                           sheet.getImageName("idle_6.png"),
+                           sheet.getImageName("idle_7.png"),
+                           sheet.getImageName("idle_8.png"),
+                           sheet.getImageName("idle_9.png"),
+                           sheet.getImageName("idle_10.png"),
+                           sheet.getImageName("idle_11.png"),
+                           sheet.getImageName("idle_12.png"),
+                           sheet.getImageName("idle_13.png"),
+                           sheet.getImageName("idle_14.png"),
+                           sheet.getImageName("idle_15.png"),
+                           sheet.getImageName("idle_16.png"),
+                           sheet.getImageName("idle_17.png"),
+                           sheet.getImageName("idle_18.png"),
+                           sheet.getImageName("idle_19.png"),
+                           sheet.getImageName("idle_20.png"),
+                           sheet.getImageName("idle_21.png"),
+                           sheet.getImageName("idle_22.png"),
+                           sheet.getImageName("idle_23.png"),
+                           sheet.getImageName("idle_24.png"),
+                           sheet.getImageName("idle_25.png"),
+                           sheet.getImageName("idle_26.png"),
+                           sheet.getImageName("idle_27.png"),
+                           sheet.getImageName("idle_28.png"),
+                           sheet.getImageName("idle_29.png"),
+                           sheet.getImageName("idle_30.png"),
+                           sheet.getImageName("idle_31.png"),
+                           sheet.getImageName("idle_32.png"),
+                           sheet.getImageName("idle_33.png"),
+                           sheet.getImageName("idle_34.png"),
+                           sheet.getImageName("idle_35.png"),
+                           sheet.getImageName("idle_36.png"),
+                           sheet.getImageName("idle_37.png"),
+                           sheet.getImageName("idle_38.png"),
+                           sheet.getImageName("idle_39.png"),
+                           sheet.getImageName("idle_40.png"),
+                           sheet.getImageName("idle_41.png"),
+                           sheet.getImageName("idle_42.png"),
+                           sheet.getImageName("idle_43.png"),
+                           sheet.getImageName("idle_44.png"),
+                           sheet.getImageName("idle_45.png"),
+                           sheet.getImageName("idle_46.png"),
+                           sheet.getImageName("idle_47.png"),
+                           sheet.getImageName("idle_48.png"),
+                           sheet.getImageName("idle_49.png"),
+                           sheet.getImageName("idle_50.png"),
+                           sheet.getImageName("idle_51.png")]
+
+        self.hitFrame = sheet.getImageName("hit.png")
+
+    def update(self):
+        self.animate()
+
+        self.enemy.hpMath()
+
+        if self.hit and self.counter <= 30:
+            self.counter += 1
+        elif self.hit:
+            self.counter = 0
+            self.hit = False
+
+        if self.enemy.stats["hp"] <= 0:
+            if self.enemy in self.game.enemies:
+                self.game.battleCoins += self.enemy.stats["coins"]
+                self.game.battleXp += self.enemy.stats["exp"]
+                self.game.sprites.remove(self.enemy)
+                self.game.enemies.remove(self.enemy)
+
+        if self.enemy not in self.game.enemies:
+            self.alpha -= 10
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 45:
+            if not self.hit:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.standingFrames):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.standingFrames))
+                else:
+                    self.currentFrame = 0
+                centerx = self.rect.centerx
+                bottom = self.rect.bottom
+                self.image = self.standingFrames[self.currentFrame]
+                self.rect = self.image.get_rect()
+                self.rect.centerx = centerx
+                self.rect.bottom = bottom
+            else:
+                centerx = self.rect.centerx
+                bottom = self.rect.bottom
+                self.image = self.hitFrame
+                self.rect = self.image.get_rect()
+                self.rect.centerx = centerx
+                self.rect.bottom = bottom

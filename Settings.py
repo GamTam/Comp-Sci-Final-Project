@@ -33,6 +33,7 @@ airTime = 3
 white = (255, 255, 255)
 black = (0, 0, 0)
 darkGray = (50, 50, 50)
+gray = (125, 125, 125)
 red = (255, 0, 0)
 green = (0, 225, 0)
 purple = (255, 0, 255)

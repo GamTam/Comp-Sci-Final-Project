@@ -104,7 +104,7 @@ class Other(pg.sprite.Sprite):
             self.image = self.images["Attack Piece"]
         self.rect = self.block.rect
         self.imgRect = self.image.get_rect()
-        self.rect.center = self.block.rect.center
+        self.imgRect.center = self.block.imgRect.center
         self.alpha = 255
         self.counter = 0
         self.game.itemFromBlockSound.play()

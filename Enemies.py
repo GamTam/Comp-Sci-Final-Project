@@ -699,35 +699,35 @@ class SandoonOverworld(StateMachine):
                              sheet.getImageName("to_eyes_13.png")]
 
         self.fromEyesFrames = [sheet.getImageName("from_eyes_1.png"),
-                             sheet.getImageName("from_eyes_2.png"),
-                             sheet.getImageName("from_eyes_3.png"),
-                             sheet.getImageName("from_eyes_4.png"),
-                             sheet.getImageName("from_eyes_5.png"),
-                             sheet.getImageName("from_eyes_6.png"),
-                             sheet.getImageName("from_eyes_7.png"),
-                             sheet.getImageName("from_eyes_8.png"),
-                             sheet.getImageName("from_eyes_9.png"),
-                             sheet.getImageName("from_eyes_10.png"),
-                             sheet.getImageName("from_eyes_11.png"),
-                             sheet.getImageName("from_eyes_12.png")]
+                               sheet.getImageName("from_eyes_2.png"),
+                               sheet.getImageName("from_eyes_3.png"),
+                               sheet.getImageName("from_eyes_4.png"),
+                               sheet.getImageName("from_eyes_5.png"),
+                               sheet.getImageName("from_eyes_6.png"),
+                               sheet.getImageName("from_eyes_7.png"),
+                               sheet.getImageName("from_eyes_8.png"),
+                               sheet.getImageName("from_eyes_9.png"),
+                               sheet.getImageName("from_eyes_10.png"),
+                               sheet.getImageName("from_eyes_11.png"),
+                               sheet.getImageName("from_eyes_12.png")]
 
         self.eyeFrames = [sheet.getImageName("eyes_1.png"),
-                           sheet.getImageName("eyes_2.png"),
-                           sheet.getImageName("eyes_3.png"),
-                           sheet.getImageName("eyes_4.png"),
-                           sheet.getImageName("eyes_5.png"),
-                           sheet.getImageName("eyes_6.png"),
-                           sheet.getImageName("eyes_7.png"),
-                           sheet.getImageName("eyes_8.png"),
-                           sheet.getImageName("eyes_9.png"),
-                           sheet.getImageName("eyes_10.png"),
-                           sheet.getImageName("eyes_11.png"),
-                           sheet.getImageName("eyes_12.png"),
-                           sheet.getImageName("eyes_13.png"),
-                           sheet.getImageName("eyes_14.png"),
-                           sheet.getImageName("eyes_15.png"),
-                           sheet.getImageName("eyes_16.png"),
-                           sheet.getImageName("eyes_17.png")]
+                          sheet.getImageName("eyes_2.png"),
+                          sheet.getImageName("eyes_3.png"),
+                          sheet.getImageName("eyes_4.png"),
+                          sheet.getImageName("eyes_5.png"),
+                          sheet.getImageName("eyes_6.png"),
+                          sheet.getImageName("eyes_7.png"),
+                          sheet.getImageName("eyes_8.png"),
+                          sheet.getImageName("eyes_9.png"),
+                          sheet.getImageName("eyes_10.png"),
+                          sheet.getImageName("eyes_11.png"),
+                          sheet.getImageName("eyes_12.png"),
+                          sheet.getImageName("eyes_13.png"),
+                          sheet.getImageName("eyes_14.png"),
+                          sheet.getImageName("eyes_15.png"),
+                          sheet.getImageName("eyes_16.png"),
+                          sheet.getImageName("eyes_17.png")]
 
         self.shadowFrames = {"Normal": sheet.getImageName("shadow.png"), "Eyes": sheet.getImageName("eyeShadow.png")}
 
@@ -1264,7 +1264,6 @@ class AnubooOverworld(StateMachine):
             AnubooLazerOverworld(self.game, self.rect.center, self.battle, self.id)
             self.stopFire()
 
-
         if self.game.leader == "mario":
             if self.facing == "left":
                 if self.game.player.rect.right < self.rect.left:
@@ -1336,7 +1335,9 @@ class AnubooLazerOverworld(pg.sprite.Sprite):
         self.rect = pg.rect.Rect(pos, (0, 0))
         if self.game.leader == "mario":
             self.angle = get_angle(self.rect.center, self.game.player.rect.center)
-            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(math.atan2(self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)))
+            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(
+                math.atan2(self.game.player.rect.centerx - self.rect.centerx,
+                           self.game.player.rect.centery - self.rect.centery)))
         elif self.game.leader == "luigi":
             self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
             self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(
@@ -2324,35 +2325,35 @@ class Sandoon(StateMachine):
                              sheet.getImageName("to_eyes_13.png")]
 
         self.fromEyesFrames = [sheet.getImageName("from_eyes_1.png"),
-                             sheet.getImageName("from_eyes_2.png"),
-                             sheet.getImageName("from_eyes_3.png"),
-                             sheet.getImageName("from_eyes_4.png"),
-                             sheet.getImageName("from_eyes_5.png"),
-                             sheet.getImageName("from_eyes_6.png"),
-                             sheet.getImageName("from_eyes_7.png"),
-                             sheet.getImageName("from_eyes_8.png"),
-                             sheet.getImageName("from_eyes_9.png"),
-                             sheet.getImageName("from_eyes_10.png"),
-                             sheet.getImageName("from_eyes_11.png"),
-                             sheet.getImageName("from_eyes_12.png")]
+                               sheet.getImageName("from_eyes_2.png"),
+                               sheet.getImageName("from_eyes_3.png"),
+                               sheet.getImageName("from_eyes_4.png"),
+                               sheet.getImageName("from_eyes_5.png"),
+                               sheet.getImageName("from_eyes_6.png"),
+                               sheet.getImageName("from_eyes_7.png"),
+                               sheet.getImageName("from_eyes_8.png"),
+                               sheet.getImageName("from_eyes_9.png"),
+                               sheet.getImageName("from_eyes_10.png"),
+                               sheet.getImageName("from_eyes_11.png"),
+                               sheet.getImageName("from_eyes_12.png")]
 
         self.eyeFrames = [sheet.getImageName("eyes_1.png"),
-                           sheet.getImageName("eyes_2.png"),
-                           sheet.getImageName("eyes_3.png"),
-                           sheet.getImageName("eyes_4.png"),
-                           sheet.getImageName("eyes_5.png"),
-                           sheet.getImageName("eyes_6.png"),
-                           sheet.getImageName("eyes_7.png"),
-                           sheet.getImageName("eyes_8.png"),
-                           sheet.getImageName("eyes_9.png"),
-                           sheet.getImageName("eyes_10.png"),
-                           sheet.getImageName("eyes_11.png"),
-                           sheet.getImageName("eyes_12.png"),
-                           sheet.getImageName("eyes_13.png"),
-                           sheet.getImageName("eyes_14.png"),
-                           sheet.getImageName("eyes_15.png"),
-                           sheet.getImageName("eyes_16.png"),
-                           sheet.getImageName("eyes_17.png")]
+                          sheet.getImageName("eyes_2.png"),
+                          sheet.getImageName("eyes_3.png"),
+                          sheet.getImageName("eyes_4.png"),
+                          sheet.getImageName("eyes_5.png"),
+                          sheet.getImageName("eyes_6.png"),
+                          sheet.getImageName("eyes_7.png"),
+                          sheet.getImageName("eyes_8.png"),
+                          sheet.getImageName("eyes_9.png"),
+                          sheet.getImageName("eyes_10.png"),
+                          sheet.getImageName("eyes_11.png"),
+                          sheet.getImageName("eyes_12.png"),
+                          sheet.getImageName("eyes_13.png"),
+                          sheet.getImageName("eyes_14.png"),
+                          sheet.getImageName("eyes_15.png"),
+                          sheet.getImageName("eyes_16.png"),
+                          sheet.getImageName("eyes_17.png")]
 
         self.shadowFrames = {"Normal": sheet.getImageName("shadow.png"), "Eyes": sheet.getImageName("eyeShadow.png")}
 
@@ -3234,7 +3235,9 @@ class AnubooLazer(pg.sprite.Sprite):
         self.rect = pg.rect.Rect(pos, (0, 0))
         if self.game.leader == "mario":
             self.angle = get_angle(self.rect.center, self.game.player.rect.center)
-            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(math.atan2(self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)))
+            self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(
+                math.atan2(self.game.player.rect.centerx - self.rect.centerx,
+                           self.game.player.rect.centery - self.rect.centery)))
         elif self.game.leader == "luigi":
             self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
             self.image = pg.transform.rotate(sheet.getImageName("lazer_vertical.png"), math.degrees(
@@ -3722,7 +3725,9 @@ class SnifitBall(pg.sprite.Sprite):
         self.rect = pg.rect.Rect(pos, (0, 0))
         if self.game.leader == "mario":
             self.angle = get_angle(self.rect.center, self.game.player.rect.center)
-            self.image = pg.transform.rotate(sheet.getImageName("ball.png"), math.degrees(math.atan2(self.game.player.rect.centerx - self.rect.centerx, self.game.player.rect.centery - self.rect.centery)))
+            self.image = pg.transform.rotate(sheet.getImageName("ball.png"), math.degrees(
+                math.atan2(self.game.player.rect.centerx - self.rect.centerx,
+                           self.game.player.rect.centery - self.rect.centery)))
         elif self.game.leader == "luigi":
             self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
             self.image = pg.transform.rotate(sheet.getImageName("ball.png"), math.degrees(
@@ -4233,7 +4238,8 @@ class TutorialBowser(StateMachine):
                             self.game.player.airTimer = 0
                         else:
                             if not self.game.player.hit and self.stats[
-                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit and self.game.player.stats["hp"] > self.stats["pow"] - self.game.player.stats["def"]:
+                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit and self.game.player.stats[
+                                "hp"] > self.stats["pow"] - self.game.player.stats["def"]:
                                 HitNumbers(self.game, self.game.room,
                                            (self.game.player.rect.left, self.game.player.rect.top - 2),
                                            (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
@@ -4407,7 +4413,7 @@ class Mammoshka(StateMachine):
         self.description = ["That's Mammoshka!",
                             "Mammoshka was sent here by\nFawful in order to beat us.",
                             "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
-                            self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+                                self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
                             "I don't know where he got his\nhelmet from.",
                             "I wouldn't want to jump on it,\nthough.",
                             "Try using your hammers!"]
@@ -4438,41 +4444,41 @@ class Mammoshka(StateMachine):
                            ]
 
         self.walkingImages = [sheet.getImageName("walking_1.png"),
-                           sheet.getImageName("walking_2.png"),
-                           sheet.getImageName("walking_3.png"),
-                           sheet.getImageName("walking_4.png"),
-                           sheet.getImageName("walking_5.png"),
-                           sheet.getImageName("walking_6.png"),
-                           sheet.getImageName("walking_7.png"),
-                           sheet.getImageName("walking_8.png"),
-                           sheet.getImageName("walking_9.png"),
-                           sheet.getImageName("walking_10.png"),
-                           sheet.getImageName("walking_11.png"),
-                           sheet.getImageName("walking_12.png"),
-                           sheet.getImageName("walking_13.png"),
-                           sheet.getImageName("walking_14.png")]
+                              sheet.getImageName("walking_2.png"),
+                              sheet.getImageName("walking_3.png"),
+                              sheet.getImageName("walking_4.png"),
+                              sheet.getImageName("walking_5.png"),
+                              sheet.getImageName("walking_6.png"),
+                              sheet.getImageName("walking_7.png"),
+                              sheet.getImageName("walking_8.png"),
+                              sheet.getImageName("walking_9.png"),
+                              sheet.getImageName("walking_10.png"),
+                              sheet.getImageName("walking_11.png"),
+                              sheet.getImageName("walking_12.png"),
+                              sheet.getImageName("walking_13.png"),
+                              sheet.getImageName("walking_14.png")]
 
         self.runImages = [sheet.getImageName("running_1.png"),
-                              sheet.getImageName("running_2.png"),
-                              sheet.getImageName("running_3.png"),
-                              sheet.getImageName("running_4.png"),
-                              sheet.getImageName("running_5.png"),
-                              sheet.getImageName("running_6.png"),
-                              sheet.getImageName("running_7.png"),
-                              sheet.getImageName("running_8.png"),
-                              sheet.getImageName("running_9.png"),
-                              sheet.getImageName("running_10.png")]
+                          sheet.getImageName("running_2.png"),
+                          sheet.getImageName("running_3.png"),
+                          sheet.getImageName("running_4.png"),
+                          sheet.getImageName("running_5.png"),
+                          sheet.getImageName("running_6.png"),
+                          sheet.getImageName("running_7.png"),
+                          sheet.getImageName("running_8.png"),
+                          sheet.getImageName("running_9.png"),
+                          sheet.getImageName("running_10.png")]
 
         self.chargeImages = [sheet.getImageName("charging_1.png"),
-                          sheet.getImageName("charging_2.png"),
-                          sheet.getImageName("charging_3.png"),
-                          sheet.getImageName("charging_4.png"),
-                          sheet.getImageName("charging_5.png"),
-                          sheet.getImageName("charging_6.png"),
-                          sheet.getImageName("charging_7.png"),
-                          sheet.getImageName("charging_8.png"),
-                          sheet.getImageName("charging_9.png"),
-                          sheet.getImageName("charging_10.png")]
+                             sheet.getImageName("charging_2.png"),
+                             sheet.getImageName("charging_3.png"),
+                             sheet.getImageName("charging_4.png"),
+                             sheet.getImageName("charging_5.png"),
+                             sheet.getImageName("charging_6.png"),
+                             sheet.getImageName("charging_7.png"),
+                             sheet.getImageName("charging_8.png"),
+                             sheet.getImageName("charging_9.png"),
+                             sheet.getImageName("charging_10.png")]
 
         self.jumpingImages = [sheet.getImageName("jumping_1.png"),
                               sheet.getImageName("jumping_2.png"),
@@ -4892,9 +4898,10 @@ class DarkFawful(StateMachine):
         self.description = ["Fawful is there!",
                             "After Count Bleck gave him a power\nboost, he wants to take revenge on\nyou guys!",
                             "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
-                            self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+                                self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
                             "The Beanbean kingdom is home to\nmany bean-themed creatures.",
-                            "Fawful just happens to be one of\nthe more./9/6./9/6./p evil ones."]
+                            "Fawful just happens to be one of\nthe more./9/6./9/6./p evil ones.",
+                            "You can't even hit him while\nhe's flying!"]
 
     def loadImages(self):
         sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
@@ -4920,33 +4927,33 @@ class DarkFawful(StateMachine):
                            sheet.getImageName("idle_15.png")]
 
         self.floatFrames = [sheet.getImageName("float_1.png"),
-                              sheet.getImageName("float_2.png"),
-                              sheet.getImageName("float_3.png"),
-                              sheet.getImageName("float_4.png")]
+                            sheet.getImageName("float_2.png"),
+                            sheet.getImageName("float_3.png"),
+                            sheet.getImageName("float_4.png")]
 
         self.openCapeFrames = [sheet.getImageName("open_cape_1.png"),
-                           sheet.getImageName("open_cape_2.png"),
-                           sheet.getImageName("open_cape_3.png"),
-                           sheet.getImageName("open_cape_4.png"),
-                           sheet.getImageName("open_cape_5.png"),
-                           sheet.getImageName("open_cape_6.png"),
-                           sheet.getImageName("open_cape_7.png"),
-                           sheet.getImageName("open_cape_8.png"),
-                           sheet.getImageName("open_cape_9.png"),
-                           sheet.getImageName("open_cape_10.png")]
+                               sheet.getImageName("open_cape_2.png"),
+                               sheet.getImageName("open_cape_3.png"),
+                               sheet.getImageName("open_cape_4.png"),
+                               sheet.getImageName("open_cape_5.png"),
+                               sheet.getImageName("open_cape_6.png"),
+                               sheet.getImageName("open_cape_7.png"),
+                               sheet.getImageName("open_cape_8.png"),
+                               sheet.getImageName("open_cape_9.png"),
+                               sheet.getImageName("open_cape_10.png")]
 
         self.closeCapeFrames = [sheet.getImageName("close_cape_1.png"),
-                               sheet.getImageName("close_cape_2.png"),
-                               sheet.getImageName("close_cape_3.png"),
-                               sheet.getImageName("close_cape_4.png"),
-                               sheet.getImageName("close_cape_5.png"),
-                               sheet.getImageName("close_cape_6.png")]
+                                sheet.getImageName("close_cape_2.png"),
+                                sheet.getImageName("close_cape_3.png"),
+                                sheet.getImageName("close_cape_4.png"),
+                                sheet.getImageName("close_cape_5.png"),
+                                sheet.getImageName("close_cape_6.png")]
 
         self.flyFrames = [sheet.getImageName("fly_1.png"),
-                           sheet.getImageName("fly_2.png"),
-                           sheet.getImageName("fly_3.png"),
-                           sheet.getImageName("fly_4.png"),
-                           sheet.getImageName("fly_5.png")]
+                          sheet.getImageName("fly_2.png"),
+                          sheet.getImageName("fly_3.png"),
+                          sheet.getImageName("fly_4.png"),
+                          sheet.getImageName("fly_5.png")]
 
         self.spinFrames = [sheet.getImageName("spinning_1.png"),
                            sheet.getImageName("spinning_2.png"),
@@ -4958,77 +4965,77 @@ class DarkFawful(StateMachine):
                            sheet.getImageName("spinning_8.png")]
 
         self.leftPortalFrames = [sheet.getImageName("portal_left_1.png"),
-                           sheet.getImageName("portal_left_2.png"),
-                           sheet.getImageName("portal_left_3.png"),
-                           sheet.getImageName("portal_left_4.png"),
-                           sheet.getImageName("portal_left_5.png"),
-                           sheet.getImageName("portal_left_6.png"),
-                           sheet.getImageName("portal_left_7.png"),
-                           sheet.getImageName("portal_left_8.png"),
-                           sheet.getImageName("portal_left_9.png"),
-                           sheet.getImageName("portal_left_10.png"),
-                           sheet.getImageName("portal_left_11.png"),
-                           sheet.getImageName("portal_left_12.png"),
-                           sheet.getImageName("portal_left_13.png"),
-                           sheet.getImageName("portal_left_14.png")]
+                                 sheet.getImageName("portal_left_2.png"),
+                                 sheet.getImageName("portal_left_3.png"),
+                                 sheet.getImageName("portal_left_4.png"),
+                                 sheet.getImageName("portal_left_5.png"),
+                                 sheet.getImageName("portal_left_6.png"),
+                                 sheet.getImageName("portal_left_7.png"),
+                                 sheet.getImageName("portal_left_8.png"),
+                                 sheet.getImageName("portal_left_9.png"),
+                                 sheet.getImageName("portal_left_10.png"),
+                                 sheet.getImageName("portal_left_11.png"),
+                                 sheet.getImageName("portal_left_12.png"),
+                                 sheet.getImageName("portal_left_13.png"),
+                                 sheet.getImageName("portal_left_14.png")]
 
         self.rightPortalFrames = [sheet.getImageName("portal_right_1.png"),
-                                 sheet.getImageName("portal_right_2.png"),
-                                 sheet.getImageName("portal_right_3.png"),
-                                 sheet.getImageName("portal_right_4.png"),
-                                 sheet.getImageName("portal_right_5.png"),
-                                 sheet.getImageName("portal_right_6.png"),
-                                 sheet.getImageName("portal_right_7.png"),
-                                 sheet.getImageName("portal_right_8.png"),
-                                 sheet.getImageName("portal_right_9.png"),
-                                 sheet.getImageName("portal_right_10.png"),
-                                 sheet.getImageName("portal_right_11.png"),
-                                 sheet.getImageName("portal_right_12.png"),
-                                 sheet.getImageName("portal_right_13.png"),
-                                 sheet.getImageName("portal_right_14.png")]
+                                  sheet.getImageName("portal_right_2.png"),
+                                  sheet.getImageName("portal_right_3.png"),
+                                  sheet.getImageName("portal_right_4.png"),
+                                  sheet.getImageName("portal_right_5.png"),
+                                  sheet.getImageName("portal_right_6.png"),
+                                  sheet.getImageName("portal_right_7.png"),
+                                  sheet.getImageName("portal_right_8.png"),
+                                  sheet.getImageName("portal_right_9.png"),
+                                  sheet.getImageName("portal_right_10.png"),
+                                  sheet.getImageName("portal_right_11.png"),
+                                  sheet.getImageName("portal_right_12.png"),
+                                  sheet.getImageName("portal_right_13.png"),
+                                  sheet.getImageName("portal_right_14.png")]
 
         self.enterGunFrames = [sheet.getImageName("enter_gun_1.png"),
-                                 sheet.getImageName("enter_gun_2.png"),
-                                 sheet.getImageName("enter_gun_3.png"),
-                                 sheet.getImageName("enter_gun_4.png"),
-                                 sheet.getImageName("enter_gun_5.png"),
-                                 sheet.getImageName("enter_gun_6.png"),
-                                 sheet.getImageName("enter_gun_7.png"),
-                                 sheet.getImageName("enter_gun_8.png"),
-                                 sheet.getImageName("enter_gun_9.png"),
-                                 sheet.getImageName("enter_gun_10.png"),
-                                 sheet.getImageName("enter_gun_11.png"),
-                                 sheet.getImageName("enter_gun_12.png")]
+                               sheet.getImageName("enter_gun_2.png"),
+                               sheet.getImageName("enter_gun_3.png"),
+                               sheet.getImageName("enter_gun_4.png"),
+                               sheet.getImageName("enter_gun_5.png"),
+                               sheet.getImageName("enter_gun_6.png"),
+                               sheet.getImageName("enter_gun_7.png"),
+                               sheet.getImageName("enter_gun_8.png"),
+                               sheet.getImageName("enter_gun_9.png"),
+                               sheet.getImageName("enter_gun_10.png"),
+                               sheet.getImageName("enter_gun_11.png"),
+                               sheet.getImageName("enter_gun_12.png")]
 
         self.fireGunFrames = [sheet.getImageName("fire_gun_1.png"),
-                               sheet.getImageName("fire_gun_2.png"),
-                               sheet.getImageName("fire_gun_3.png")]
+                              sheet.getImageName("fire_gun_2.png"),
+                              sheet.getImageName("fire_gun_3.png")]
 
         self.exitGunFrames = [sheet.getImageName("exit_gun_1.png"),
-                               sheet.getImageName("exit_gun_2.png"),
-                               sheet.getImageName("exit_gun_3.png"),
-                               sheet.getImageName("exit_gun_4.png"),
-                               sheet.getImageName("exit_gun_5.png"),
-                               sheet.getImageName("exit_gun_6.png"),
-                               sheet.getImageName("exit_gun_7.png"),
-                               sheet.getImageName("exit_gun_8.png"),
-                               sheet.getImageName("exit_gun_9.png"),
-                               sheet.getImageName("exit_gun_10.png"),
-                               sheet.getImageName("exit_gun_11.png"),
-                               sheet.getImageName("exit_gun_12.png"),
-                               sheet.getImageName("exit_gun_13.png"),
-                               sheet.getImageName("exit_gun_14.png"),
-                               sheet.getImageName("exit_gun_15.png"),
-                               sheet.getImageName("exit_gun_16.png"),
-                               sheet.getImageName("exit_gun_17.png"),
-                               sheet.getImageName("exit_gun_18.png"),
-                               sheet.getImageName("exit_gun_19.png"),
-                               sheet.getImageName("exit_gun_20.png"),
-                               sheet.getImageName("exit_gun_21.png"),
-                               sheet.getImageName("exit_gun_22.png"),
-                               sheet.getImageName("exit_gun_23.png"),
-                               sheet.getImageName("exit_gun_24.png"),
-                               sheet.getImageName("exit_gun_25.png")]
+                              sheet.getImageName("exit_gun_2.png"),
+                              sheet.getImageName("exit_gun_3.png"),
+                              sheet.getImageName("exit_gun_4.png"),
+                              sheet.getImageName("exit_gun_5.png"),
+                              sheet.getImageName("exit_gun_6.png"),
+                              sheet.getImageName("exit_gun_7.png"),
+                              sheet.getImageName("exit_gun_8.png"),
+                              sheet.getImageName("exit_gun_9.png"),
+                              sheet.getImageName("exit_gun_10.png"),
+                              sheet.getImageName("exit_gun_11.png"),
+                              sheet.getImageName("exit_gun_12.png"),
+                              sheet.getImageName("exit_gun_13.png"),
+                              sheet.getImageName("exit_gun_14.png"),
+                              sheet.getImageName("exit_gun_15.png"),
+                              sheet.getImageName("exit_gun_16.png"),
+                              sheet.getImageName("exit_gun_17.png"),
+                              sheet.getImageName("exit_gun_18.png"),
+                              sheet.getImageName("exit_gun_19.png"),
+                              sheet.getImageName("exit_gun_20.png"),
+                              sheet.getImageName("exit_gun_21.png"),
+                              sheet.getImageName("exit_gun_22.png"),
+                              sheet.getImageName("exit_gun_23.png"),
+                              sheet.getImageName("exit_gun_24.png"),
+                              sheet.getImageName("exit_gun_25.png")]
 
     def hpMath(self):
         if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
@@ -5092,12 +5099,15 @@ class DarkFawful(StateMachine):
             chance = random.randrange(0, 100)
             if chance == 0 and not self.game.player.dead and not self.game.follower.dead:
                 choose = random.randrange(0, 3)
+                if self.portalA is None and self.portalB is None:
+                    choose = 1
                 if choose == 0:
                     self.currentFrame = 0
                     self.endFly()
                 elif choose == 1:
-                    if self.portalB is not None:
+                    if self.portalA in self.game.sprites:
                         self.game.sprites.remove(self.portalA)
+                    if self.portalB in self.game.sprites:
                         self.game.sprites.remove(self.portalB)
                     self.portalA = None
                     self.portalB = None
@@ -5186,8 +5196,8 @@ class DarkFawful(StateMachine):
                     if hitsRound2:
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                       (self.game.player.stats["pow"] - self.stats["def"]))
-                            self.stats["hp"] -= (self.game.player.stats["pow"] - self.stats["def"])
+                                       (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1)))
+                            self.stats["hp"] -= (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1))
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
@@ -5221,9 +5231,9 @@ class DarkFawful(StateMachine):
                     hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                     if hitsRound2:
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
-                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
-                                       (self.game.follower.stats["pow"] - self.stats["def"]))
-                            self.stats["hp"] -= (self.game.follower.stats["pow"] - self.stats["def"])
+                            itNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                      (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1)))
+                            self.stats["hp"] -= (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1))
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
@@ -5662,7 +5672,7 @@ class FawfulBullet(pg.sprite.Sprite):
         self.rect.center = pos
         self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.bottom - 10
         self.alpha = 255
-        self.speed = 5
+        self.speed = 4.9
         self.counter = fps * 3
         self.dead = False
         self.stats = stats
@@ -5718,12 +5728,459 @@ class FawfulBullet(pg.sprite.Sprite):
                         self.game.follower.canBeHit = False
                         self.game.follower.hit = True
 
-
         if self.rect.x > self.game.map.width + 60:
             self.game.sprites.remove(self)
-        if self.rect.x < -60:
+        elif self.rect.x < -60:
             self.game.sprites.remove(self)
-        if self.rect.y > self.game.map.height + 100:
+        elif self.rect.y > self.game.map.height + 100:
             self.game.sprites.remove(self)
-        if self.rect.y < -100:
+        elif self.rect.y < -100:
             self.game.sprites.remove(self)
+
+
+class CountBleckFight1(StateMachine):
+    idle = State("Idle", initial=True)
+    walking = State("Towards Player")
+    hit = State("hit")
+    fire = State("fire")
+    speed = State("Speed")
+
+    startWalking = idle.to(walking)
+    giveUp = walking.to(idle)
+    getHit = idle.to(hit)
+    getUp = hit.to(idle)
+    toFire = idle.to(fire)
+    fromFire = fire.to(idle)
+    toSpeed = idle.to(speed)
+    fromSpeed = speed.to(idle)
+
+    def init(self, game, pos):
+        self.game = game
+        self.game.enemies.append(self)
+        self.game.sprites.append(self)
+
+        self.loadImages()
+        self.cooldown = 0
+        self.alpha = 255
+        self.hitRange = 1.3
+        self.speed = 4
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.hitTimer = 0
+        self.dead = False
+        self.image = self.idleImages[0]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.hpSpeed = 0
+        self.rect.center = pos
+        self.offset = 0
+        self.imgRect.centerx = self.rect.centerx
+        self.imgRect.bottom = self.rect.centery + 5 - self.offset
+        self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
+        self.hasCutscene = False
+
+        # Stats
+        self.stats = {"maxHP": 750, "hp": 750, "pow": 95, "def": 90, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.rectHP = self.stats["hp"]
+
+        self.description = [
+            "That's Count Bleck.",
+            "As you know, his main goal\nis to destroy all worlds\nwith the Void.",
+            "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+                self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+            "He's going to throw everything\nhe can at you.",
+            "But you can beat him if you\ngive it your all!",
+            "And you have to, or else we\nall will be snatched by the Void..."]
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+        self.hitFrame = sheet.getImageName("hit.png")
+
+        self.idleImages = [sheet.getImageName("idle_1.png"),
+                           sheet.getImageName("idle_2.png"),
+                           sheet.getImageName("idle_3.png"),
+                           sheet.getImageName("idle_4.png"),
+                           sheet.getImageName("idle_5.png"),
+                           sheet.getImageName("idle_6.png"),
+                           sheet.getImageName("idle_7.png"),
+                           sheet.getImageName("idle_8.png"),
+                           sheet.getImageName("idle_9.png"),
+                           sheet.getImageName("idle_10.png"),
+                           sheet.getImageName("idle_11.png"),
+                           sheet.getImageName("idle_12.png"),
+                           sheet.getImageName("idle_13.png"),
+                           sheet.getImageName("idle_14.png"),
+                           sheet.getImageName("idle_15.png"),
+                           sheet.getImageName("idle_16.png"),
+                           sheet.getImageName("idle_17.png"),
+                           sheet.getImageName("idle_18.png"),
+                           sheet.getImageName("idle_19.png"),
+                           sheet.getImageName("idle_20.png"),
+                           sheet.getImageName("idle_21.png"),
+                           sheet.getImageName("idle_22.png"),
+                           sheet.getImageName("idle_23.png"),
+                           sheet.getImageName("idle_24.png"),
+                           sheet.getImageName("idle_25.png"),
+                           sheet.getImageName("idle_26.png"),
+                           sheet.getImageName("idle_27.png"),
+                           sheet.getImageName("idle_28.png"),
+                           sheet.getImageName("idle_29.png"),
+                           sheet.getImageName("idle_30.png"),
+                           sheet.getImageName("idle_31.png"),
+                           sheet.getImageName("idle_32.png"),
+                           sheet.getImageName("idle_33.png"),
+                           sheet.getImageName("idle_34.png"),
+                           sheet.getImageName("idle_35.png"),
+                           sheet.getImageName("idle_36.png"),
+                           sheet.getImageName("idle_37.png"),
+                           sheet.getImageName("idle_38.png"),
+                           sheet.getImageName("idle_39.png"),
+                           sheet.getImageName("idle_40.png"),
+                           sheet.getImageName("idle_41.png"),
+                           sheet.getImageName("idle_42.png"),
+                           sheet.getImageName("idle_43.png"),
+                           sheet.getImageName("idle_44.png"),
+                           sheet.getImageName("idle_45.png"),
+                           sheet.getImageName("idle_46.png"),
+                           sheet.getImageName("idle_47.png"),
+                           sheet.getImageName("idle_48.png"),
+                           sheet.getImageName("idle_49.png"),
+                           sheet.getImageName("idle_50.png"),
+                           sheet.getImageName("idle_51.png")]
+
+        self.laughingFrames = [sheet.getImageName("to_laugh_1.png"),
+                               sheet.getImageName("to_laugh_2.png"),
+                               sheet.getImageName("to_laugh_3.png"),
+                               sheet.getImageName("to_laugh_4.png"),
+                               sheet.getImageName("to_laugh_5.png"),
+                               sheet.getImageName("to_laugh_6.png"),
+                               sheet.getImageName("laugh_1.png"),
+                               sheet.getImageName("laugh_2.png"),
+                               sheet.getImageName("laugh_3.png"),
+                               sheet.getImageName("laugh_4.png"),
+                               sheet.getImageName("laugh_5.png"),
+                               sheet.getImageName("laugh_6.png"),
+                               sheet.getImageName("laugh_7.png")]
+
+        self.fireFrames = [sheet.getImageName("fire_1.png"),
+                           sheet.getImageName("fire_2.png"),
+                           sheet.getImageName("fire_3.png"),
+                           sheet.getImageName("fire_4.png"),
+                           sheet.getImageName("fire_5.png"),
+                           sheet.getImageName("fire_6.png"),
+                           sheet.getImageName("fire_7.png"),
+                           sheet.getImageName("fire_8.png"),
+                           sheet.getImageName("fire_9.png"),
+                           sheet.getImageName("fire_10.png"),
+                           sheet.getImageName("fire_11.png"),
+                           sheet.getImageName("fire_12.png"),
+                           sheet.getImageName("fire_13.png"),
+                           sheet.getImageName("fire_14.png"),
+                           sheet.getImageName("fire_15.png")]
+
+    def hpMath(self):
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+
+        if self.hpSpeed != 0:
+            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+                self.rectHP += self.hpSpeed
+            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+                self.rectHP += self.hpSpeed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.hpSpeed = 0
+
+    def update(self):
+        self.animate()
+        self.hpMath()
+
+        if self.stats["hp"] != self.stats["maxHP"] and not self.hasCutscene:
+            LoadCutscene(self.game, self.game.player.rect, True, True, [
+                ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+                  "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+                 "self.setVar('self.bleck = BleckCutscene(self.game, self.game.bleck.rect.center)')",
+                 "self.command('pg.mixer.music.fadeout(5000)')"],
+                 ["""self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""],
+                ["self.move(self.bleck, self.game.map.width / 2, self.game.map.height / 2, False, 120)",
+                 "self.move(self.game.cameraRect, self.game.map.width / 2, self.game.map.height / 2, False, 120, 1)"
+                 ],
+                ["""self.textBox(self.bleck, [
+                "Foolish heroes!",
+                "You think that YOU are able to/nstop ME?",
+                "WATCH AS I SUMMON MY ULTIMATE/nPOWER!"])""",
+                 "self.command('self.game.cameraRect.update(self.bleck.rect, 5)')",
+                 "self.setVar('self.game.bleck.rect.center = self.bleck.rect.center')"],
+                ['''self.setVar("""self.game.battleSong = 'self.playSong(45.787, 57.6, "Count Bleck Battle Phase 2")'""")''',
+                 'self.changeSong([45.787, 57.6, "Count Bleck Battle Phase 2"])',
+                 "self.setVar('self.bleck.laughing = True')",
+                 "self.setVar('self.bleck.currentFrame = 0')"],
+                ["self.bleckCloneCreate()"],
+                ["self.wait(1)"]
+            ], id="Begin Phase 2")
+            self.hasCutscene = True
+
+
+        if self.is_idle:
+            chance = random.randrange(0, 100)
+            if chance == 0 and not self.game.player.dead:
+                choice = random.randrange(0, 3)
+                if choice == 0:
+                    self.startWalking()
+                elif choice == 1:
+                    self.currentFrame = 0
+                    self.toFire()
+                elif choice == 2:
+                    if self.game.leader == "mario":
+                        self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                    else:
+                        self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+                    self.toSpeed()
+        elif self.is_walking:
+            if self.game.leader == "mario":
+                self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+            else:
+                self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+            self.rect.center = project(self.rect.center, self.angle, self.speed)
+            chance = random.randrange(0, 250)
+            if chance == 0 or self.game.player.dead:
+                self.giveUp()
+        elif self.is_speed:
+            for wall in self.game.walls:
+                if self.rect.colliderect(wall.rect):
+                    if self.game.leader == "mario":
+                        self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                    else:
+                        self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+            self.rect.center = project(self.rect.center, self.angle, self.speed * 3)
+            chance = random.randrange(0, 300)
+            if 10 < chance < 15:
+                for i in range(random.randrange(3, 8)):
+                    ball = FawfulBullet(self.game, (random.randrange(self.rect.left - 100, self.rect.right + 100),
+                                             random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats)
+                    ball.speed = 3
+            if chance == 0 or self.game.player.dead:
+                self.fromSpeed()
+
+        if self.cooldown > 0:
+            self.cooldown -= 1
+
+        if self.is_idle or self.is_walking:
+            if self.game.player.stats["hp"] != 0:
+                hits = pg.sprite.collide_rect(self.game.player, self)
+                if hits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                    if hitsRound2:
+                        if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1)))
+                            self.stats["hp"] -= (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1))
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            if self.is_walking:
+                                self.giveUp()
+                            self.getHit()
+                            self.cooldown = fps
+                            self.game.player.airTimer = 0
+                        else:
+                            if not self.game.player.hit and self.stats[
+                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.player.rect.left, self.game.player.rect.top - 2),
+                                           (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                                self.game.player.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                                if self.game.player.stats["hp"] <= 0:
+                                    self.game.player.stats["hp"] = 0
+                                    self.game.player.currentFrame = 0
+                                self.game.player.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.player.canBeHit = False
+                                self.game.player.hit = True
+
+            if self.game.follower.stats["hp"] != 0 and (self.is_idle or self.is_walking):
+                hits = pg.sprite.collide_rect(self.game.follower, self)
+                if hits:
+                    hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
+                    if hitsRound2:
+                        if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                      (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1)))
+                            self.stats["hp"] -= (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1))
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            if self.is_walking:
+                                self.giveUp()
+                            self.getHit()
+                            self.cooldown = fps
+                            self.game.follower.airTimer = 0
+                        else:
+                            if not self.game.follower.hit and self.stats[
+                                "hp"] > 0 and not self.is_hit and self.game.follower.canBeHit:
+                                HitNumbers(self.game, self.game.room,
+                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
+                                           (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                                self.game.follower.stats["hp"] -= (
+                                    max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                                if self.game.follower.stats["hp"] <= 0:
+                                    self.game.follower.stats["hp"] = 0
+                                    self.game.follower.currentFrame = 0
+                                self.game.follower.hitTime = pg.time.get_ticks()
+                                self.game.playerHitSound.play()
+                                self.game.follower.canBeHit = False
+                                self.game.follower.hit = True
+
+            if self.stats["hp"] != 0 and self.game.player.isHammer is not None and (self.is_idle or self.is_walking):
+                hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                    if hammerHitsRound2 and not self.is_hit and self.stats["hp"] > 0:
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0))
+                        self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        if self.is_walking:
+                            self.giveUp()
+                        self.getHit()
+                        self.cooldown = fps
+
+            if self.stats["hp"] != 0 and self.game.follower.isHammer is not None and (self.is_idle or self.is_walking):
+                hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                    if hammerHitsRound2 and not self.is_hit and self.stats["hp"] > 0:
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        if self.is_walking:
+                            self.giveUp()
+                        self.getHit()
+                        self.cooldown = fps
+
+            for entity in self.game.entities:
+                if self.rect.colliderect(entity.rect) and not self.is_hit and self.stats["hp"] > 0 and (self.is_idle or self.is_walking):
+                    if type(entity).__name__ == "Lightning":
+                        HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                   max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
+                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
+                        if self.stats["hp"] <= 0:
+                            self.game.enemyDieSound.play()
+                        self.game.enemyHitSound.play()
+                        if self.is_walking:
+                            self.giveUp()
+                        self.getHit()
+                        self.cooldown = fps
+                    if self.imgRect.colliderect(entity.imgRect) and (self.is_idle or self.is_walking):
+                        if type(entity).__name__ == "Fireball":
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                                       max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
+                            self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                            if self.stats["hp"] <= 0:
+                                self.game.enemyDieSound.play()
+                            self.game.enemyHitSound.play()
+                            if self.is_walking:
+                                self.giveUp()
+                            self.getHit()
+                            self.cooldown = fps
+                            entity.dead = True
+        elif not self.is_hit:
+            if self.game.player.stats["hp"] != 0:
+                hits = self.imgRect.colliderect(self.game.playerCol.rect)
+                if hits:
+                    if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
+                        if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
+                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                            self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                            if self.game.player.stats["hp"] <= 0:
+                                self.game.player.stats["hp"] = 0
+                                self.game.player.currentFrame = 0
+                            self.game.player.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.player.canBeHit = False
+                            self.game.player.hit = True
+
+            if self.game.follower.stats["hp"] != 0:
+                hits = self.imgRect.colliderect(self.game.followerCol.rect)
+                if hits:
+                    if self.rect.bottom > self.game.follower.rect.centery > self.rect.top:
+                        if not self.game.follower.hit and self.stats["hp"] > 0 and self.game.follower.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
+                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                            self.game.follower.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                            if self.game.follower.stats["hp"] <= 0:
+                                self.game.follower.stats["hp"] = 0
+                                self.game.follower.currentFrame = 0
+                            self.game.follower.hitTime = pg.time.get_ticks()
+                            self.game.playerHitSound.play()
+                            self.game.follower.canBeHit = False
+                            self.game.follower.hit = True
+
+        if self.stats["hp"] <= 0:
+            self.cooldown = 10000
+            self.alpha -= 10
+
+        if self.alpha <= 0:
+            self.game.battleXp += self.stats["exp"]
+            self.game.sprites.remove(self)
+            self.game.enemies.remove(self)
+
+        self.imgRect.centerx = self.rect.centerx
+        self.imgRect.bottom = self.rect.centery + 5 - self.offset
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.is_idle or self.is_walking or self.is_speed:
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.idleImages):
+                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleImages))
+                else:
+                    self.currentFrame = 0
+                bottom = self.imgRect.bottom
+                left = self.imgRect.left
+                self.image = self.idleImages[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.bottom = bottom
+                self.imgRect.left = left
+        elif self.is_fire:
+            if now - self.lastUpdate > 30:
+                self.lastUpdate = now
+                if self.currentFrame < len(self.fireFrames) - 1:
+                    self.currentFrame += 1
+                else:
+                    self.fromFire()
+                if self.currentFrame == 9:
+                    for i in range(random.randrange(5, 10)):
+                        FawfulBullet(self.game, (random.randrange(self.rect.left - 100, self.rect.right + 100), random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats)
+                center = self.imgRect.center
+                self.image = self.fireFrames[self.currentFrame]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+        elif self.is_hit:
+            self.currentFrame = 0
+            centerx = self.imgRect.centerx
+            bottom = self.imgRect.bottom
+            self.image = self.hitFrame
+            self.imgRect = self.image.get_rect()
+            self.imgRect.centerx = centerx
+            self.imgRect.bottom = bottom
+            if self.cooldown == 0:
+                self.getUp()
+            else:
+                self.cooldown -= 1

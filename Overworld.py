@@ -548,6 +548,8 @@ class Mario(pg.sprite.Sprite):
         self.loadImages()
         self.image = self.standingFrames[0]
         self.shadow = self.shadowFrames["normal"]
+        if self.game.area == "Castle Bleck":
+            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.lastUpdate = 0
         self.currentFrame = 0
         self.fireCounter = 0
@@ -559,11 +561,12 @@ class Mario(pg.sprite.Sprite):
         self.imgRect.left = x
         self.vx, self.vy = 0, 0
         self.moveQueue = Q.deque()
+        self.area = self.game.area
 
         self.stats = {"level": 1, "maxHP": 20, "maxBP": 10, "pow": 7, "def": 6, "hp": 20, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
                            "def": randomNumber(3)}
-        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Somnom Woods", 0],
+        self.attackPieces = [["Cavi Cape", 10], ["Teehee Valley", 0], ["Somnom Woods", 0],
                              ["Toad Town", 0]]
         self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)",
                              pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
@@ -1043,8 +1046,11 @@ class Mario(pg.sprite.Sprite):
                         self.prevAbility = self.ability
                     self.ability = len(self.abilities) - 2
         else:
-            if self.prevAbility != 12:
-                self.ability = self.prevAbility
+            if self.prevAbility != 12 or self.ability == len(self.abilities) - 2 or self.ability == len(self.abilities) - 1:
+                if self.prevAbility != 12:
+                    self.ability = self.prevAbility
+                else:
+                    self.ability = 0
                 self.prevAbility = 12
 
         if self.hit:
@@ -2406,12 +2412,15 @@ class Luigi(pg.sprite.Sprite):
         self.rect = self.shadow.get_rect()
         self.rect.center = (x, y)
         self.going = "irrelevent"
+        self.area = self.game.area
         self.vx, self.vy = 0, 0
+        if self.game.area == "Castle Bleck":
+            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
 
         self.stats = {"level": 1, "maxHP": 23, "maxBP": 10, "pow": 6, "def": 8, "hp": 23, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
                            "def": randomNumber(5)}
-        self.attackPieces = [["Cavi Cave", 0],
+        self.attackPieces = [["Cavi Cave", 10],
                              ["Guffawha Ruins", 0],
                              ["Somnom Ruins", 0],
                              ["Fawful's Castle", 0]]
@@ -2604,8 +2613,11 @@ class Luigi(pg.sprite.Sprite):
                         self.prevAbility = self.ability
                     self.ability = len(self.abilities) - 2
         else:
-            if self.prevAbility != 12:
-                self.ability = self.prevAbility
+            if self.prevAbility != 12 or self.ability == len(self.abilities) - 2 or self.ability == len(self.abilities) - 1:
+                if self.prevAbility != 12:
+                    self.ability = self.prevAbility
+                else:
+                    self.ability = 0
                 self.prevAbility = 12
 
         if not self.jumping:
@@ -4403,6 +4415,8 @@ class Block(pg.sprite.Sprite):
         self.dy = 0.065
         self.loadImages()
         self.rect = self.shadow.get_rect()
+        if self.game.area == "Castle Bleck":
+            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
@@ -4497,6 +4511,8 @@ class SaveBlock(pg.sprite.Sprite):
         self.dy = 0.065
         self.loadImages()
         self.rect = self.shadow.get_rect()
+        if self.game.area == "Castle Bleck":
+            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
@@ -4587,6 +4603,8 @@ class MarioBlock(pg.sprite.Sprite):
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
+        if self.game.area == "Castle Bleck":
+            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.centery = self.rect.centery - 200
         self.contents = [content for content in self.contents if content != ""]
@@ -4678,6 +4696,8 @@ class LuigiBlock(pg.sprite.Sprite):
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
+        if self.game.area == "Castle Bleck":
+            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.centery = self.rect.centery - 200
         self.contents = [content for content in self.contents if content != ""]
@@ -5017,13 +5037,13 @@ class TextBox(pg.sprite.Sprite):
                     self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
                     ptext.draw(character, (self.rect.centerx - 2, self.texty + 20), lineheight=0.8,
                                surf=self.game.screen,
-                               fontname=dialogueFont, fontsize=95, color=black, background=(228, 229, 228),
+                               fontname=dialogueFont, fontsize=90, color=black, background=(228, 229, 228),
                                anchor=(0.5, 0))
                 elif self.type == "board":
                     self.game.screen.set_clip((self.rect.left, self.rect.top + 61, 1000, 220))
                     ptext.draw(character, (self.rect.centerx - 2, self.texty + 20), lineheight=0.8,
                                surf=self.game.screen,
-                               fontname=dialogueFont, fontsize=95, color=black, background=(225, 223, 225),
+                               fontname=dialogueFont, fontsize=90, color=black, background=(225, 223, 225),
                                anchor=(0.5, 0))
             self.game.screen.set_clip(0, 0, width, height)
             if self.currentCharacter < len(self.text[self.page]) and not self.advancing:
@@ -5215,6 +5235,8 @@ class RoomTransition:
                 self.game.storeData["luigi abilities"] = self.game.follower.abilities
                 self.game.storeData["mario current ability"] = self.game.player.ability
                 self.game.storeData["luigi current ability"] = self.game.follower.ability
+                self.game.storeData["mario attack pieces"] = self.game.player.attackPieces
+                self.game.storeData["luigi attack pieces"] = self.game.follower.attackPieces
                 self.game.storeData["move"] = Q.deque()
                 self.game.player.canMove = True
                 self.game.follower.canMove = True

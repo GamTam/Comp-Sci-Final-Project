@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:6fdc72455a41bf991307ad8971c4d104:36df69a78197eb921ad4c87fdc93e6d1:8bbd6e684923a718c951c96e90710c0d$ -->
+<!-- $TexturePacker:SmartUpdate:da594e3e732807a05f3bab7b8a9fb4b0:9a9430a2894f4b87d9110e4cbbfe1cf5:8bbd6e684923a718c951c96e90710c0d$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -19,76 +19,92 @@ vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
 verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
 triangles  => sprite triangulation, 3 vertex indices per triangle
 -->
-<TextureAtlas imagePath="count bleck.png" width="1944" height="1662">
-    <sprite n="idle_1.png" x="1184" y="0" w="170" h="234"/>
-    <sprite n="idle_2.png" x="1354" y="0" w="170" h="234"/>
-    <sprite n="idle_3.png" x="1524" y="0" w="170" h="234"/>
-    <sprite n="idle_4.png" x="0" y="234" w="170" h="234"/>
-    <sprite n="idle_5.png" x="0" y="468" w="171" h="234"/>
-    <sprite n="idle_6.png" x="511" y="468" w="171" h="234"/>
-    <sprite n="idle_7.png" x="682" y="468" w="171" h="234"/>
-    <sprite n="idle_8.png" x="853" y="468" w="172" h="234"/>
-    <sprite n="idle_9.png" x="173" y="938" w="172" h="235"/>
-    <sprite n="idle_10.png" x="1203" y="468" w="172" h="235"/>
-    <sprite n="idle_11.png" x="1375" y="468" w="173" h="235"/>
-    <sprite n="idle_12.png" x="1548" y="468" w="173" h="235"/>
-    <sprite n="idle_13.png" x="1721" y="468" w="174" h="235"/>
-    <sprite n="idle_14.png" x="0" y="703" w="174" h="235"/>
-    <sprite n="idle_15.png" x="174" y="703" w="175" h="235"/>
-    <sprite n="idle_16.png" x="349" y="703" w="175" h="235"/>
-    <sprite n="idle_17.png" x="524" y="703" w="176" h="235"/>
-    <sprite n="idle_18.png" x="700" y="703" w="176" h="235"/>
-    <sprite n="idle_19.png" x="876" y="703" w="176" h="235"/>
-    <sprite n="idle_20.png" x="345" y="938" w="177" h="236"/>
-    <sprite n="idle_21.png" x="522" y="938" w="177" h="236"/>
-    <sprite n="idle_22.png" x="699" y="938" w="178" h="236"/>
-    <sprite n="idle_23.png" x="877" y="938" w="178" h="236"/>
-    <sprite n="idle_24.png" x="1055" y="938" w="178" h="236"/>
-    <sprite n="idle_25.png" x="1233" y="938" w="178" h="236"/>
-    <sprite n="idle_26.png" x="1411" y="938" w="178" h="236"/>
-    <sprite n="idle_27.png" x="1589" y="938" w="178" h="236"/>
-    <sprite n="idle_28.png" x="1767" y="938" w="177" h="236"/>
-    <sprite n="idle_29.png" x="0" y="1174" w="177" h="236"/>
-    <sprite n="idle_30.png" x="177" y="1174" w="177" h="236"/>
-    <sprite n="idle_31.png" x="354" y="1174" w="176" h="236"/>
-    <sprite n="idle_32.png" x="530" y="1174" w="176" h="236"/>
-    <sprite n="idle_33.png" x="1052" y="703" w="176" h="235"/>
-    <sprite n="idle_34.png" x="1228" y="703" w="175" h="235"/>
-    <sprite n="idle_35.png" x="1403" y="703" w="175" h="235"/>
-    <sprite n="idle_36.png" x="1578" y="703" w="174" h="235"/>
-    <sprite n="idle_37.png" x="1752" y="703" w="174" h="235"/>
-    <sprite n="idle_38.png" x="0" y="938" w="173" h="235"/>
-    <sprite n="idle_39.png" x="1694" y="0" w="173" h="234"/>
-    <sprite n="idle_40.png" x="170" y="234" w="172" h="234"/>
-    <sprite n="idle_41.png" x="342" y="234" w="172" h="234"/>
-    <sprite n="idle_42.png" x="514" y="234" w="171" h="234"/>
-    <sprite n="idle_43.png" x="685" y="234" w="171" h="234"/>
-    <sprite n="idle_44.png" x="856" y="234" w="171" h="234"/>
-    <sprite n="idle_45.png" x="1027" y="234" w="170" h="234"/>
-    <sprite n="idle_46.png" x="1197" y="234" w="170" h="234"/>
-    <sprite n="idle_47.png" x="1367" y="234" w="170" h="234"/>
-    <sprite n="idle_48.png" x="1537" y="234" w="170" h="234"/>
-    <sprite n="idle_49.png" x="1707" y="234" w="170" h="234"/>
-    <sprite n="idle_50.png" x="171" y="468" w="170" h="234"/>
-    <sprite n="idle_51.png" x="341" y="468" w="170" h="234"/>
-    <sprite n="laugh_1.png" x="1390" y="1411" w="271" h="251"/>
-    <sprite n="laugh_2.png" x="848" y="1411" w="271" h="244"/>
-    <sprite n="laugh_3.png" x="1062" y="1174" w="271" h="237"/>
-    <sprite n="laugh_4.png" x="912" y="0" w="272" h="230"/>
-    <sprite n="laugh_5.png" x="1333" y="1174" w="271" h="237"/>
-    <sprite n="laugh_6.png" x="1119" y="1411" w="271" h="244"/>
-    <sprite n="laugh_7.png" x="1661" y="1411" w="271" h="251"/>
-    <sprite n="shadow.png" x="0" y="0" w="139" h="24"/>
-    <sprite n="talking_1.png" x="1025" y="468" w="178" h="234"/>
-    <sprite n="talking_2.png" x="706" y="1174" w="178" h="236"/>
-    <sprite n="talking_3.png" x="1604" y="1174" w="178" h="237"/>
-    <sprite n="talking_4.png" x="670" y="1411" w="178" h="239"/>
-    <sprite n="talking_5.png" x="0" y="1411" w="178" h="237"/>
-    <sprite n="talking_6.png" x="884" y="1174" w="178" h="236"/>
-    <sprite n="to_laugh_1.png" x="658" y="0" w="254" h="226"/>
-    <sprite n="to_laugh_2.png" x="298" y="0" w="201" h="218"/>
-    <sprite n="to_laugh_3.png" x="139" y="0" w="159" h="210"/>
-    <sprite n="to_laugh_4.png" x="499" y="0" w="159" h="224"/>
-    <sprite n="to_laugh_5.png" x="178" y="1411" w="221" h="237"/>
-    <sprite n="to_laugh_6.png" x="399" y="1411" w="271" h="237"/>
+<TextureAtlas imagePath="count bleck.png" width="1959" height="2169">
+    <sprite n="fire_1.png" x="1705" y="0" w="254" h="233" pX="0.5" pY="0.5"/>
+    <sprite n="fire_2.png" x="1230" y="0" w="203" h="230" pX="0.5" pY="0.5"/>
+    <sprite n="fire_3.png" x="1071" y="0" w="159" h="227" pX="0.5" pY="0.5"/>
+    <sprite n="fire_4.png" x="499" y="0" w="159" h="223" pX="0.5" pY="0.5"/>
+    <sprite n="fire_5.png" x="1631" y="233" w="237" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="fire_6.png" x="271" y="1886" w="272" h="249" pX="0.5" pY="0.5"/>
+    <sprite n="fire_7.png" x="1085" y="1886" w="269" h="268" pX="0.5" pY="0.5"/>
+    <sprite n="fire_8.png" x="1608" y="1886" w="241" h="283" pX="0.5" pY="0.5"/>
+    <sprite n="fire_9.png" x="1354" y="1886" w="254" h="276" pX="0.5" pY="0.5"/>
+    <sprite n="fire_10.png" x="0" y="233" w="271" h="233" pX="0.5" pY="0.5"/>
+    <sprite n="fire_11.png" x="271" y="233" w="272" h="233" pX="0.5" pY="0.5"/>
+    <sprite n="fire_12.png" x="543" y="233" w="272" h="233" pX="0.5" pY="0.5"/>
+    <sprite n="fire_13.png" x="815" y="233" w="272" h="233" pX="0.5" pY="0.5"/>
+    <sprite n="fire_14.png" x="1087" y="233" w="272" h="233" pX="0.5" pY="0.5"/>
+    <sprite n="fire_15.png" x="1359" y="233" w="272" h="233" pX="0.5" pY="0.5"/>
+    <sprite n="hit.png" x="0" y="935" w="178" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_1.png" x="0" y="467" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_2.png" x="170" y="467" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_3.png" x="340" y="467" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_4.png" x="683" y="467" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_5.png" x="680" y="701" w="171" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_6.png" x="1191" y="701" w="171" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_7.png" x="1362" y="701" w="171" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_8.png" x="1533" y="701" w="172" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_9.png" x="1047" y="1170" w="172" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_10.png" x="178" y="935" w="172" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_11.png" x="350" y="935" w="173" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_12.png" x="523" y="935" w="173" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_13.png" x="696" y="935" w="174" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_14.png" x="870" y="935" w="174" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_15.png" x="1044" y="935" w="175" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_16.png" x="1219" y="935" w="175" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_17.png" x="1394" y="935" w="176" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_18.png" x="1570" y="935" w="176" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_19.png" x="1746" y="935" w="176" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_20.png" x="1219" y="1170" w="177" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_21.png" x="1396" y="1170" w="177" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_22.png" x="1573" y="1170" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_23.png" x="1751" y="1170" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_24.png" x="0" y="1406" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_25.png" x="178" y="1406" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_26.png" x="356" y="1406" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_27.png" x="534" y="1406" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_28.png" x="712" y="1406" w="177" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_29.png" x="889" y="1406" w="177" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_30.png" x="1066" y="1406" w="177" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_31.png" x="1243" y="1406" w="176" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_32.png" x="1419" y="1406" w="176" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="idle_33.png" x="0" y="1170" w="176" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_34.png" x="176" y="1170" w="175" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_35.png" x="351" y="1170" w="175" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_36.png" x="526" y="1170" w="174" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_37.png" x="700" y="1170" w="174" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_38.png" x="874" y="1170" w="173" h="235" pX="0.5" pY="0.5"/>
+    <sprite n="idle_39.png" x="510" y="467" w="173" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_40.png" x="853" y="467" w="172" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_41.png" x="1025" y="467" w="172" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_42.png" x="1197" y="467" w="171" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_43.png" x="1368" y="467" w="171" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_44.png" x="1539" y="467" w="171" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_45.png" x="1710" y="467" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_46.png" x="0" y="701" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_47.png" x="170" y="701" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_48.png" x="340" y="701" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_49.png" x="510" y="701" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_50.png" x="851" y="701" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="idle_51.png" x="1021" y="701" w="170" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="laugh_1.png" x="543" y="1886" w="271" h="251" pX="0.5" pY="0.5"/>
+    <sprite n="laugh_2.png" x="1568" y="1642" w="271" h="244" pX="0.5" pY="0.5"/>
+    <sprite n="laugh_3.png" x="0" y="1642" w="271" h="237" pX="0.5" pY="0.5"/>
+    <sprite n="laugh_4.png" x="1433" y="0" w="272" h="230" pX="0.5" pY="0.5"/>
+    <sprite n="laugh_5.png" x="271" y="1642" w="271" h="237" pX="0.5" pY="0.5"/>
+    <sprite n="laugh_6.png" x="0" y="1886" w="271" h="244" pX="0.5" pY="0.5"/>
+    <sprite n="laugh_7.png" x="814" y="1886" w="271" h="251" pX="0.5" pY="0.5"/>
+    <sprite n="shadow.png" x="0" y="0" w="139" h="24" pX="0.5" pY="0.5"/>
+    <sprite n="talking_1.png" x="1705" y="701" w="178" h="234" pX="0.5" pY="0.5"/>
+    <sprite n="talking_2.png" x="1595" y="1406" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="talking_3.png" x="542" y="1642" w="178" h="237" pX="0.5" pY="0.5"/>
+    <sprite n="talking_4.png" x="1390" y="1642" w="178" h="239" pX="0.5" pY="0.5"/>
+    <sprite n="talking_5.png" x="720" y="1642" w="178" h="237" pX="0.5" pY="0.5"/>
+    <sprite n="talking_6.png" x="1773" y="1406" w="178" h="236" pX="0.5" pY="0.5"/>
+    <sprite n="to_laugh_1.png" x="817" y="0" w="254" h="226" pX="0.5" pY="0.5"/>
+    <sprite n="to_laugh_2.png" x="298" y="0" w="201" h="218" pX="0.5" pY="0.5"/>
+    <sprite n="to_laugh_3.png" x="139" y="0" w="159" h="210" pX="0.5" pY="0.5"/>
+    <sprite n="to_laugh_4.png" x="658" y="0" w="159" h="224" pX="0.5" pY="0.5"/>
+    <sprite n="to_laugh_5.png" x="898" y="1642" w="221" h="237" pX="0.5" pY="0.5"/>
+    <sprite n="to_laugh_6.png" x="1119" y="1642" w="271" h="237" pX="0.5" pY="0.5"/>
 </TextureAtlas>
