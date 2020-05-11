@@ -505,10 +505,13 @@ class HitNumbers(pg.sprite.Sprite):
         self.alpha = 255
         if type == "normal":
             self.base = sheet.getImageName("hit.png")
+            self.game.damageGiven += number
         elif type == "mario":
             self.base = sheet.getImageName("hit_mario.png")
+            self.game.damageTaken += number
         elif type == "luigi":
             self.base = sheet.getImageName("hit_luigi.png")
+            self.game.damageTaken += number
         self.counter = 0
         self.room = room
         self.image = self.base

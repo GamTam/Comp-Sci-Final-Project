@@ -1,8 +1,0 @@
-  2/22/2020 8:19:42 PM: Starting composition “Idle”.
-
-  Output To: C:\Users\DaCambra Family\Desktop\Me\Idle\Idle_[##].png    2/22/2020 8:19:54 PM: Finished composition “Idle”.
-
-
-  Total Time Elapsed: 12 Seconds
-Log closed on 2/22/2020 at 8:19:54 PM
-

@@ -39,8 +39,12 @@ class CameraRect:
         self.points = []
         self.counter = -17
         self.imgRect = self.rect
+        self.cameraShake = False
+        self.actualPos = self.rect.center
 
     def update(self, target, speed):
+        if self.cameraShake:
+            self.shakePart1()
         if speed == 0:
             self.counter = speed
             self.rect.center = target.center
@@ -60,6 +64,17 @@ class CameraRect:
             self.rect.center = target.center
 
         self.imgRect = self.rect
+
+        if self.cameraShake:
+            self.shakePart2()
+
+    def shakePart1(self):
+        self.rect.center = self.actualPos
+
+    def shakePart2(self):
+        self.actualPos = self.rect.center
+        self.rect.centerx += random.randint(0, 8) - 4
+        self.rect.centery += random.randint(0, 8) - 4
 
 
 class PngMap:
@@ -154,6 +169,13 @@ class Game:
         self.tutorials = False
         self.voidSize = 0.1
         self.mcMuffins = 1
+        self.maxHitRecord = []
+        self.minHitRecord = []
+        self.fastTimeRecord = []
+        self.minDamageGivenRecord = []
+        self.maxDamageGivenRecord = []
+        self.damageGiven = 0
+        self.damageTaken = 0
         self.void = Void(self, self.voidSize)
         if not fullscreen:
             self.screen = pg.display.set_mode((width, height))
@@ -318,6 +340,13 @@ class Game:
                     cont = True
                 except:
                     cont = False
+
+        try:
+            with open("saves/Universal.ini"):
+                pass
+            record = True
+        except:
+            record = False
 
         background = pg.image.load("sprites/titleScreen.png").convert_alpha()
         bRect = background.get_rect()
@@ -551,7 +580,11 @@ class Game:
                                 else:
                                     self.wrongSound.play()
                             elif select == 2:
-                                self.wrongSound.play()
+                                if record:
+                                    self.menuChooseSound.play()
+                                    going = False
+                                else:
+                                    self.wrongSound.play()
                             else:
                                 self.menuChooseSound.play()
                                 going = False
@@ -587,8 +620,12 @@ class Game:
             else:
                 ptext.draw("CONTINUE", (width / 2, height / 2), surf=self.screen, color=darkGray, owidth=1,
                            fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
-            ptext.draw("RECORDS", (width / 2, height / 2 + 200), surf=self.screen, color=darkGray, owidth=1,
-                       fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+            if record:
+                ptext.draw("RECORDS", (width / 2, height / 2 + 200), surf=self.screen, color=white, owidth=1,
+                           fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+            else:
+                ptext.draw("RECORDS", (width / 2, height / 2 + 200), surf=self.screen, color=darkGray, owidth=1,
+                           fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
             ptext.draw(
                 "Mario & Luigi is a registered trademark of Nintendo\nPaper Mario is a registered trademark of Nintendo\nThe Legend of Zelda Phantom Hourglass is a registered trademark of Nintendo\nUNDERTALE is a registered trademark of Royal Sciences, LLC",
                 (width / 2, height - 60), lineheight=0.8, surf=self.screen, color=white,
@@ -680,8 +717,12 @@ class Game:
                 else:
                     ptext.draw("CONTINUE", (width / 2, height / 2), surf=self.screen, color=darkGray, owidth=1,
                                fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
-                ptext.draw("RECORDS", (width / 2, height / 2 + 200), surf=self.screen, color=darkGray, owidth=1,
-                           fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+                if record:
+                    ptext.draw("RECORDS", (width / 2, height / 2 + 200), surf=self.screen, color=white, owidth=1,
+                               fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
+                else:
+                    ptext.draw("RECORDS", (width / 2, height / 2 + 200), surf=self.screen, color=darkGray, owidth=1,
+                               fontname=dialogueFont, anchor=(0.5, 0), fontsize=40)
                 ptext.draw(
                     "Mario & Luigi is a registered trademark of Nintendo\nPaper Mario is a registered trademark of Nintendo\nThe Legend of Zelda Phantom Hourglass is a registered trademark of Nintendo\nUNDERTALE is a registered trademark of Royal Sciences, LLC",
                     (width / 2, height - 60), lineheight=0.8, surf=self.screen, color=white,
@@ -689,6 +730,60 @@ class Game:
                 self.screen.blit(cursor.image, cursor.rect)
                 self.screen.set_clip(0, 0, width, height)
                 self.screen.blit(fade.image, fade.rect)
+
+                pg.display.flip()
+        if select == 2:
+            with open("saves/Universal.ini", "rb") as file:
+                self.minHitRecord = pickle.load(file)
+                self.maxHitRecord = pickle.load(file)
+                self.minDamageGivenRecord = pickle.load(file)
+                self.maxDamageGivenRecord = pickle.load(file)
+                self.fastTimeRecord = pickle.load(file)
+
+            cursor.kill()
+            going = True
+            while going:
+                self.playSong(41.868, 33.329, "Title Screen")
+                self.clock.tick(fps)
+
+                self.events()
+                for event in self.event:
+                    if event.type == pg.KEYDOWN:
+                        cursor.kill()
+                        self.menuCloseSound.play()
+                        self.titleScreen(fadein=False)
+
+                self.screen.fill(black)
+                self.screen.blit(background, bRect)
+                ptext.draw("Least\nDamage Taken", (width / 2, 60), lineheight=0.8, surf=self.screen, color=white,
+                    fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=40, owidth=0.5)
+                ptext.draw("Least\nDamage Given", (1075, 60), lineheight=0.8, surf=self.screen, color=white,
+                           fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=40, owidth=0.5)
+                ptext.draw("Fastest Times", (200, 60), lineheight=0.8, surf=self.screen, color=white,
+                           fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=40, owidth=0.5)
+
+                yPos = 150
+                for i in range(min(len(self.fastTimeRecord), 5)):
+                    ptext.draw(str(self.fastTimeRecord[i][1]), (200, yPos), lineheight=0.8, surf=self.screen, color=white,
+                               fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=30, owidth=0.5)
+                    yPos += 100
+
+                yPos = 150
+                for i in range(min(len(self.minHitRecord), 5)):
+                    ptext.draw(str(self.minHitRecord[i]), (width / 2, yPos), lineheight=0.8, surf=self.screen, color=white,
+                               fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=30, owidth=0.5)
+                    yPos += 100
+
+                yPos = 150
+                for i in range(min(len(self.minDamageGivenRecord), 5)):
+                    ptext.draw(str(self.minDamageGivenRecord[i]), (1075, yPos), lineheight=0.8, surf=self.screen, color=white,
+                               fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=30, owidth=0.5)
+                    yPos += 100
+
+                ptext.draw(
+                    "Mario & Luigi is a registered trademark of Nintendo\nPaper Mario is a registered trademark of Nintendo\nThe Legend of Zelda Phantom Hourglass is a registered trademark of Nintendo\nUNDERTALE is a registered trademark of Royal Sciences, LLC",
+                    (width / 2, height - 60), lineheight=0.8, surf=self.screen, color=white,
+                    fontname=dialogueFont, anchor=(0.5, 0), fontsize=10, owidth=0.5)
 
                 pg.display.flip()
         else:
@@ -8271,6 +8366,8 @@ class Game:
                             pickle.dump(self.voidSize, file)
                             pickle.dump(self.tutorials, file)
                             pickle.dump(self.mcMuffins, file)
+                            pickle.dump(self.damageGiven, file)
+                            pickle.dump(self.damageTaken, file)
                         saves = [SaveSelection(self, 1), SaveSelection(self, 2), SaveSelection(self, 3)]
                     if event.key == pg.K_TAB:
                         cursor.kill()
@@ -8306,52 +8403,108 @@ class Game:
         self.pause = False
 
     def loadGame(self, file=1):
-        # try:
-        with open("saves/File " + str(file) + ".ini", "rb") as file:
-            area = pickle.load(file)
-            self.storeData = pickle.load(file)
-            self.displayTime = pickle.load(file)
-            self.storeData["mario attack pieces"] = pickle.load(file)
-            self.storeData["luigi attack pieces"] = pickle.load(file)
-            self.playtime = pickle.load(file)
-            self.despawnList = pickle.load(file)
-            self.hitBlockList = pickle.load(file)
-            self.coins = pickle.load(file)
-            for item in self.items:
-                item[1] = pickle.load(file)
-            self.room = pickle.load(file)
-            self.usedCutscenes = pickle.load(file)
-            self.leader = pickle.load(file)
-            self.voidSize = pickle.load(file)
-            self.tutorials = pickle.load(file)
-            self.mcMuffins = pickle.load(file)
-        self.storeData["mario current ability"] = 0
-        self.storeData["luigi current ability"] = 0
-        self.void = Void(self, self.voidSize)
-        self.currentPoint = 0
-        self.area = "title screen"
-        eval(self.room)
-        # except:
-        #     self.items = [["Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 30 HP to one Bro.", 30],
-        #                   ["Super Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 60 HP to one Bro.", 60],
-        #                   ["Ultra Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 120 HP to one Bro.", 120],
-        #                   ["Max Mushroom", -1, mushroomSprite, "hp", "maxHP", "Fully restores HP to one Bro.", "maxHP"],
-        #                   ["Nut", -1, NutSprite, "hp", "maxHP", "Restores 20 BP for both Bros.", 20],
-        #                   ["Super Nut", -1, NutSprite, "hp", "maxHP", "Restores 40 BP for both Bros.", 40],
-        #                   ["Ultra Nut", -1, NutSprite, "hp", "maxHP", "Restores 80 BP for both Bros.", 80],
-        #                   ["Max Nut", -1, NutSprite, "hp", "maxHP", "Fuly restores  BP for both Bros.", "maxHP"],
-        #                   ["Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 10 BP to one Bro.", 10],
-        #                   ["Super Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 20 BP to one Bro.", 20],
-        #                   ["Ultra Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 30 BP to one Bro.", 30],
-        #                   ["Max Syrup", -1, syrupSprite, "bp", "maxBP", "Fully restores BP to one Bro.", "maxBP"],
-        #                   ["1-UP Mushroom", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with 1/2 HP.", "maxHP"],
-        #                   ["1-UP Super", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with full HP.", "maxHP"],
-        #                   ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.",
-        #                    "maxHP"]]
-        #     self.despawnList = []
-        #     self.hitBlockList = []
-        #     self.coins = 0
-        #     self.newGame()
+        try:
+            with open("saves/File " + str(file) + ".ini", "rb") as file:
+                area = pickle.load(file)
+                self.storeData = pickle.load(file)
+                self.displayTime = pickle.load(file)
+                self.storeData["mario attack pieces"] = pickle.load(file)
+                self.storeData["luigi attack pieces"] = pickle.load(file)
+                self.playtime = pickle.load(file)
+                self.despawnList = pickle.load(file)
+                self.hitBlockList = pickle.load(file)
+                self.coins = pickle.load(file)
+                for item in self.items:
+                    item[1] = pickle.load(file)
+                self.room = pickle.load(file)
+                self.usedCutscenes = pickle.load(file)
+                self.leader = pickle.load(file)
+                self.voidSize = pickle.load(file)
+                self.tutorials = pickle.load(file)
+                self.mcMuffins = pickle.load(file)
+                # self.damageGiven = pickle.load(file)
+                # self.damageTaken = pickle.load(file)
+            self.storeData["mario current ability"] = 0
+            self.storeData["luigi current ability"] = 0
+            self.void = Void(self, self.voidSize)
+            self.currentPoint = 0
+            self.area = "title screen"
+            eval(self.room)
+        except:
+            self.items = [["Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 30 HP to one Bro.", 30],
+                          ["Super Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 60 HP to one Bro.", 60],
+                          ["Ultra Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 120 HP to one Bro.", 120],
+                          ["Max Mushroom", -1, mushroomSprite, "hp", "maxHP", "Fully restores HP to one Bro.", "maxHP"],
+                          ["Nut", -1, NutSprite, "hp", "maxHP", "Restores 20 BP for both Bros.", 20],
+                          ["Super Nut", -1, NutSprite, "hp", "maxHP", "Restores 40 BP for both Bros.", 40],
+                          ["Ultra Nut", -1, NutSprite, "hp", "maxHP", "Restores 80 BP for both Bros.", 80],
+                          ["Max Nut", -1, NutSprite, "hp", "maxHP", "Fuly restores  BP for both Bros.", "maxHP"],
+                          ["Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 10 BP to one Bro.", 10],
+                          ["Super Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 20 BP to one Bro.", 20],
+                          ["Ultra Syrup", -1, syrupSprite, "bp", "maxBP", "Restores 30 BP to one Bro.", 30],
+                          ["Max Syrup", -1, syrupSprite, "bp", "maxBP", "Fully restores BP to one Bro.", "maxBP"],
+                          ["1-UP Mushroom", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with 1/2 HP.", "maxHP"],
+                          ["1-UP Super", -1, oneUpSprite, "hp", 1, "Revives a fallen Bro with full HP.", "maxHP"],
+                          ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.",
+                           "maxHP"]]
+            self.despawnList = []
+            self.hitBlockList = []
+            self.coins = 0
+            self.newGame()
+
+    def updateRecords(self):
+        try:
+            with open("saves/Universal.ini", "rb") as file:
+                self.minHitRecord = pickle.load(file)
+                self.maxHitRecord = pickle.load(file)
+                self.minDamageGivenRecord = pickle.load(file)
+                self.maxDamageGivenRecord = pickle.load(file)
+                self.fastTimeRecord = pickle.load(file)
+        except:
+            with open("saves/Universal.ini", "wb") as file:
+                self.maxHitRecord = [self.damageTaken]
+                self.minHitRecord = [self.damageTaken]
+                self.fastTimeRecord = [[self.playtime, self.displayTime]]
+                self.minDamageGivenRecord = [self.damageGiven]
+                self.maxDamageGivenRecord = [self.damageGiven]
+
+                pickle.dump(self.minHitRecord, file)
+                pickle.dump(self.maxHitRecord, file)
+                pickle.dump(self.minDamageGivenRecord, file)
+                pickle.dump(self.maxDamageGivenRecord, file)
+                pickle.dump(self.fastTimeRecord, file)
+            return
+
+        with open("saves/Universal.ini", "wb") as file:
+            if self.damageTaken > self.maxHitRecord[-1] or len(self.maxHitRecord) < 5:
+                self.maxHitRecord.append(self.damageTaken)
+            if self.damageTaken < self.minHitRecord[-1] or len(self.minHitRecord) < 5:
+                self.minHitRecord.append(self.damageTaken)
+            if self.playtime < self.fastTimeRecord[-1][0] or len(self.fastTimeRecord) < 5:
+                duo = [self.playtime, self.displayTime]
+                self.fastTimeRecord.append(duo)
+            if self.damageGiven < self.minDamageGivenRecord[-1] or len(self.minDamageGivenRecord) < 5:
+                self.minDamageGivenRecord.append(self.damageGiven)
+            if self.damageGiven > self.maxDamageGivenRecord[-1] or len(self.maxDamageGivenRecord) < 5:
+                self.maxDamageGivenRecord.append(self.damageGiven)
+
+            self.maxHitRecord = self.maxHitRecord.sort()
+            self.minHitRecord = sorted(self.minHitRecord)
+            self.fastTimeRecord = sorted(self.fastTimeRecord)
+            self.minDamageGivenRecord = sorted(self.minDamageGivenRecord)
+            self.maxDamageGivenRecord = self.maxDamageGivenRecord.sort()
+
+            self.maxHitRecord = self.maxHitRecord[:5]
+            self.minHitRecord = self.minHitRecord[:5]
+            self.fastTimeRecord = self.fastTimeRecord[:5]
+            self.minDamageGivenRecord = self.minDamageGivenRecord[:5]
+            self.maxDamageGivenRecord = self.maxDamageGivenRecord[:5]
+
+            pickle.dump(self.minHitRecord, file)
+            pickle.dump(self.maxHitRecord, file)
+            pickle.dump(self.minDamageGivenRecord, file)
+            pickle.dump(self.maxDamageGivenRecord, file)
+            pickle.dump(self.fastTimeRecord, file)
 
     def loadData(self):
         self.castleBleckIntroduction = pg.mixer.Sound("sounds/castleBleckIntroduction.ogg")
@@ -8537,7 +8690,124 @@ class Game:
         RoomTransition(self, self.room, "self.game.loadFlipsideShopping()", self.map.width,
                        (self.map.width / 2, self.map.height + (self.map.width / 2)), (3200, 40))
 
-        self.area = e
+        if "Final Cutscene" in self.usedCutscenes:
+            Cutscene(self, [
+                ["self.setVar('self.mario = marioCutscene(self.game, (self.game.map.width / 2 - 50, self.game.map.rect.bottom - 220))')",
+                 "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.map.width / 2 + 50, self.game.map.rect.bottom - 220))')",
+                 "self.setVar('self.starlow = starlowCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom - 220))')",
+                 "self.move(self.game.cameraRect, self.starlow.rect.centerx, self.starlow.rect.centery, False, 0)",
+                 "self.setVar('self.greenMuff = EggMcMuffin((3200, 1410), green, self.game)')",
+                 "self.setVar('self.redMuff = EggMcMuffin((2430, 1410), red, self.game)')",
+                 "self.setVar('self.muff = EggMcMuffin((1665, 1410), black, self.game)')",
+                 "self.setVar('self.game.cameraRect.cameraShake = True')",
+                 "self.command('self.game.cutsceneSprites.remove(self.mario)')",
+                 "self.command('self.game.cutsceneSprites.remove(self.luigi)')",
+                 "self.command('self.game.cutsceneSprites.remove(self.starlow)')",
+                 "self.command('self.game.cutsceneSprites.append(self.muff)')",
+                 "self.command('self.game.cutsceneSprites.append(self.redMuff)')",
+                 "self.command('self.game.cutsceneSprites.append(self.greenMuff)')",
+                 """self.changeSong([15.549, 49.752, "end of the world"], cont=True)"""],
+                ["""self.setVar('self.mario.facing = "up"')""",
+                 """self.setVar('self.luigi.facing = "up"')""",
+                 """self.setVar('self.starlow.facing = "up"')""",
+                 "self.command('self.starlow.update()')",],
+                ["self.wait(3)"],
+                [
+                    "self.flipIn([[self.mario.shadow, self.mario.image], [self.mario.rect, self.mario.imgRect]], (self.mario.imgRect.centerx, self.mario.imgRect.centery + 2))"],
+                    ["self.command('self.game.cutsceneSprites.append(self.mario)')"],
+                [
+                    "self.flipIn([[self.luigi.shadow, self.luigi.image], [self.luigi.rect, self.luigi.imgRect]], (self.luigi.imgRect.centerx, self.luigi.imgRect.centery + 2))"],
+                    ["self.command('self.game.cutsceneSprites.append(self.luigi)')"],
+                [
+                    "self.flipIn([[self.starlow.shadow, self.starlow.image], [self.starlow.rect, self.starlow.imgRect]], (self.starlow.imgRect.centerx, self.starlow.imgRect.centery + 2))",
+                    "self.setVar('self.flip[0].maxRect.bottom = self.starlow.rect.bottom')",
+                    "self.command('self.flip[0].update()')"],
+                    ["self.command('self.game.cutsceneSprites.append(self.starlow)')"],
+                ["self.wait(0.5)"],
+                ["self.setVar('self.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom + 100))')",
+                    """self.setVar('self.toadley.facing = "up"')"""],
+                ["""self.textBox(self.toadley, [
+                 "Finally!",
+                 "Wait for me!"])"""],
+                ["""self.setVar('self.mario.facing = "down"')""",
+                 """self.setVar('self.luigi.facing = "down"')""",
+                 """self.setVar('self.starlow.facing = "down"')""",
+                 """self.setVar('self.toadley.talking = True')""",
+                 "self.move(self.toadley, self.game.map.width / 2, self.game.map.rect.bottom - 120, False, 60)"],
+                ["""self.textBox(self.toadley, [
+                     "The Void is about to consume/nall worlds!",
+                     "We need to activate the Egg/nMcMuffins in order to destroy it!"])"""],
+                ["""self.textBox(self.starlow, [
+                 "How to we do that?"], sound="starlow")"""],
+                ["""self.textBox(self.toadley, [
+                 "You have to say the incantation."])"""],
+                ["""self.textBox(self.starlow, [
+                 "If you can do that, then stop/ntelling us about it and JUST DO IT!"], sound="starlow")"""],
+                ["""self.textBox(self.toadley, [
+                 "But,/p you see.../p its very hard to do-/S"])"""],
+                ["""self.textBox(self.starlow, [
+                 "/BDO IT!"], sound="starlow")"""],
+                ["""self.textBox(self.toadley, [
+                 "Ok.../P/nahem...",
+                 "/BGO!",
+                 "/BEND THE VOID!"])"""],
+                ["self.command('self.game.earthquakeSound.play()')",
+                 """self.setVar('self.mario.facing = "up"')""",
+                 """self.setVar('self.luigi.facing = "up"')""",
+                 """self.setVar('self.starlow.facing = "up"')""",
+                 "self.move(self.game.cameraRect, 0, -800, True, 300)",
+                 "self.move(self.game.void, width / 2, height / 2, False, 300, 1)"],
+                ["self.move(self.muff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery, False, 60, 1)",
+                 "self.move(self.redMuff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery, False, 60, 2)",
+                 "self.move(self.greenMuff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery, False, 60, 3)"],
+                ["self.wait(1)",
+                 "self.command('self.game.cutsceneSprites.remove(self.muff)')",
+                 "self.command('self.game.cutsceneSprites.remove(self.redMuff)')",
+                 "self.command('self.game.cutsceneSprites.remove(self.greenMuff)')"
+                 ],
+                ["self.setVar('self.game.voidSize = 0')", "self.wait(5)", "self.command('pg.mixer.music.fadeout(5000)')", "self.changeSong(None)"],
+                ["self.setVar('self.game.cameraRect.cameraShake = False')", "self.wait(1)"],
+                 ["self.move(self.game.cameraRect, 0, 800, True, 300)"],
+                ["""self.setVar('self.mario.facing = "down"')""",
+                 """self.setVar('self.luigi.facing = "down"')""",
+                 """self.setVar('self.starlow.facing = "down"')"""
+                 ],
+                ["""self.textBox(self.starlow, [
+                 "We did it!",
+                 "We defeated Count Bleck and/ngot rid of the Void!"], sound="starlow")"""],
+                ["""self.textBox(self.toadley, [
+                 "Yes...",
+                 "Yes we did.",
+                 "Well, after that kind of/naction, I'm really hungry!",
+                 "Broque Monsieur said that/nhe ordered Pizza for all of us.",
+                 "I think that it would be/nrude not to take him up on/nthat offer!",
+                 "Let's go!"])"""],
+                ["""self.setVar('self.toadley.facing = "down"')""",
+                 """self.setVar('self.toadley.talking = True')""",
+                 """self.setVar('self.mario.walking = True')""",
+                 """self.setVar('self.luigi.walking = True')""",
+                 "self.move(self.toadley, 0, 500, True, 300, 1)",
+                 "self.move(self.mario, 0, 500, True, 300, 2)",
+                 "self.move(self.luigi, 0, 500, True, 300, 3)",
+                 "self.move(self.starlow, 0, 500, True, 300, 4)",
+                 "self.command('self.game.starlowTwinkle.play()')"],
+                ["""self.textBox(self.starlow, [
+                 "Wait, what happened to Peach/nand Bowser?"], sound="starlow")""",
+                 """self.setVar('self.mario.walking = False')""",
+                 """self.setVar('self.luigi.walking = False')""",
+                 ],
+                ["""self.textBox(self.toadley, [
+                 "That.../p is an excellent question."])"""],
+                ["self.command('Fadeout(self.game, 1)')"],
+                ["self.wait(6)"],
+                ["""self.command('pg.mixer.music.load("music/credits.ogg")')""",
+                 "self.command('pg.mixer.music.play()')",
+                 "self.playMovie('credits')"],
+                ["self.wait(5)",
+                 "self.command('pg.mixer.music.stop()')",
+                 "self.command('self.game.updateRecords()')"],
+                ["self.command('self.game.__init__()')"]
+            ])
 
         Wall(self, 256, 1248, 4224, 32)
         Wall(self, 224, 1344, 32, 550)
@@ -8548,6 +8818,8 @@ class Game:
         Wall(self, 3456, 1280, 256, 128)
         Wall(self, 4480, 1280, 128, 128)
         Wall(self, 4608, 1344, 32, 550)
+
+        self.area = e
 
         try:
             self.player.attackPieces = self.storeData["mario attack pieces"]
@@ -8915,7 +9187,6 @@ class Game:
                  "self.setVar('self.game.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
                  "self.command('self.game.cutsceneSprites.remove(self.game.luigi)')",
                  "self.setVar('self.game.muff = EggMcMuffin((2430, self.game.map.rect.bottom - 230), green, self.game)')",
-
                  ],
                 [
                     "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], (self.game.mario.imgRect.centerx, self.game.mario.imgRect.centery + 2))",
@@ -10756,6 +11027,51 @@ class Game:
 
         self.area = e
 
+        if "Final Cutscene" in self.usedCutscenes:
+            Cutscene(self, [
+             ["self.setVar('self.mario = marioCutscene(self.game, (self.game.map.width + 50, 1300))')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.map.width + 150, 1300))')",
+             "self.setVar('self.starlow = starlowCutscene(self.game, (self.game.map.width + 250, 1300))')",
+             "self.move(self.game.cameraRect, self.mario.rect.centerx, self.mario.rect.centery, False, 0)",
+              "self.setVar('self.muff = EggMcMuffin((840, 1300), green, self.game)')",
+              "self.command('self.game.cutsceneSprites.append(self.muff)')",
+             "self.setVar('self.game.cameraRect.cameraShake = True')",
+             """self.changeSong([15.549, 49.752, "end of the world"], cont=True)"""],
+             ["""self.setVar('self.mario.facing = "left"')""",
+             """self.setVar('self.luigi.facing = "left"')""",
+             """self.setVar('self.mario.walking = True')""",
+             """self.setVar('self.luigi.walking = True')""",
+             """self.setVar('self.starlow.facing = "left"')"""],
+             ["self.wait(3)"],
+             ["self.move(self.mario, 950, 1300, False, 300, 1)",
+             "self.move(self.luigi, 1050, 1300, False, 300, 2)",
+             "self.move(self.starlow, 1150, 1300, False, 300, 3)",
+             "self.move(self.game.cameraRect, 950, 1300, False, 300, 4)"],
+                ["""self.textBox(self.muff, ["Do you want to return to Flipside-/S"], type="board", dir="None")""",
+                 """self.setVar('self.mario.walking = False')""",
+                 """self.setVar('self.luigi.walking = False')""",
+                 ],
+                ["""self.textBox(self.starlow, ["/BJUST GO!"], sound="starlow")"""],
+                ["self.wait(0.2)"],
+                [
+                    "self.flipOut([[self.mario.shadow, self.mario.image], [self.mario.rect, self.mario.imgRect]], (self.mario.imgRect.centerx, self.mario.imgRect.centery + 2))",
+                    "self.command('self.game.cutsceneSprites.remove(self.mario)')"],
+                [
+                    "self.flipOut([[self.luigi.shadow, self.luigi.image], [self.luigi.rect, self.luigi.imgRect]], (self.luigi.imgRect.centerx, self.luigi.imgRect.centery + 2))",
+                    "self.command('self.game.cutsceneSprites.remove(self.luigi)')"],
+                [
+                    "self.flipOut([[self.starlow.shadow, self.starlow.image], [self.starlow.rect, self.starlow.imgRect]], (self.starlow.imgRect.centerx, self.starlow.imgRect.centery + 2))",
+                    "self.setVar('self.flip[0].maxRect.bottom = self.starlow.rect.bottom')",
+                    "self.command('self.flip[0].update()')",
+                    "self.command('self.game.cutsceneSprites.remove(self.starlow)')"],
+                [
+                    "self.flipOut([[self.muff.shadow, self.muff.image], [self.muff.rect, self.muff.imgRect]], (self.muff.rect.centerx, self.muff.rect.top - 39))",
+                    "self.command('self.game.cutsceneSprites.remove(self.muff)')"],
+                ["self.command('Fadeout(self.game, 5)')"],
+                ["self.wait(3)"],
+                ["self.command('self.game.loadFlipsideTower()')"]
+              ])
+
         try:
             self.player.attackPieces = self.storeData["mario attack pieces"]
             self.follower.attackPieces = self.storeData["luigi attack pieces"]
@@ -11579,65 +11895,67 @@ class Game:
         self.songPlaying = "Banana Music"
 
         LoadCutscene(self, pg.rect.Rect(720, 1520, 80, 320), True, False, [
-            # ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-            #  "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')"],
-            # ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
-            #  """self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""
-            #  ],
-            # ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
-            #  "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 120)"],
-            #
-            # [ """self.textBox(self.bleck, ["I see you've come at last!",
-            # "So you really are the heroes of/nthe Light Prognosticus!"])"""],
-            # ["""self.setVar('self.mario.facing = "upright"')""",
-            #  """self.setVar('self.luigi.facing = "upright"')""",
-            #  """self.setVar('self.mario.walking = True')""",
-            #  """self.setVar('self.luigi.walking = True')""",
-            #  "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
-            #  """self.setVar('self.starlow.facing = "upright"')""",
-            #  "self.command('self.game.starlowTwinkle.play()')"
-            #  ],
-            # ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 600, 1)",
-            #  "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 600, 2)",
-            #  "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 600, 3)"],
-            # ["""self.setVar('self.mario.facing = "up"')""",
-            #  """self.setVar('self.luigi.facing = "up"')""",
-            #  """self.setVar('self.mario.walking = False')""",
-            #  """self.setVar('self.luigi.walking = False')""",
-            #  """self.setVar('self.starlow.facing = "up"')"""
-            #  ],
-            # ["""self.textBox(self.starlow, [
-            #     "Count Bleck!",
-            #     "We have you cornered!",
-            #     "Give up now!"], sound="starlow")"""],
-            # ["""self.textBox(self.bleck, [
-            # "Bleh heh heh heh heh...",
-            # "You REALLY think I care whether or/nnot I survive?",
-            # "If I die, the Void will continue/nas it is for a little longer.",
-            # "And, right now, that time/nis long enough for the Void/nto consume all worlds!",
-            # "I will duel you only because/nyou have the Egg McMuffins, which/ncan put a stop to this.",
-            # "But... Now is not the time/nto talk!",
-            # "COUNT BLECK IS THE DELETER/nOF WORLDS!/p MY FATE IS WRITTEN/nIN THE DARK PROGNOSTICUS!",
-            # "DO NOT THINK FOR A MOMENT/nTHAT I WILL NOT HESITATE/nTO STRIKE YOU DOWN!",
-            # "SO,/p ARE YOU PREPARED, HEROES?",
-            # "OUR DUEL WILL BE WORTHY OF/nTHE LAST CLASH THE WORLDS WILL/nEVER SEE!",
-            # "/BALL NOW ENDS!"])""",
-            #  "if self.textbox[0].page == 6: self.setVar('self.bleck.currentFrame = 0')",
-            #  "if self.textbox[0].page == 6: self.setVar('self.bleck.laughing = True')"],
-            # ["self.command('pg.mixer.music.fadeout(1000)')",
-            #  "self.command('self.game.sprites.append(self.mario)')",
-            #  "self.command('self.game.sprites.append(self.luigi)')",
-            #  "self.command('self.game.sprites.append(self.starlow)')",
-            #  "self.command('self.game.sprites.append(self.bleck)')",
-             ["""self.command('self.game.loadBattle("self.loadFinalBoss()", currentPoint=False)')"""],
+            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')"],
+            ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
+             """self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""
+             ],
+            ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
+             "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 120)"],
+
+            [ """self.textBox(self.bleck, ["I see you've come at last!",
+            "So you really are the heroes of/nthe Light Prognosticus!"])"""],
+            ["""self.setVar('self.mario.facing = "upright"')""",
+             """self.setVar('self.luigi.facing = "upright"')""",
+             """self.setVar('self.mario.walking = True')""",
+             """self.setVar('self.luigi.walking = True')""",
+             "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+             """self.setVar('self.starlow.facing = "upright"')""",
+             "self.command('self.game.starlowTwinkle.play()')"
+             ],
+            ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 600, 1)",
+             "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 600, 2)",
+             "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 600, 3)"],
+            ["""self.setVar('self.mario.facing = "up"')""",
+             """self.setVar('self.luigi.facing = "up"')""",
+             """self.setVar('self.mario.walking = False')""",
+             """self.setVar('self.luigi.walking = False')""",
+             """self.setVar('self.starlow.facing = "up"')"""
+             ],
+            ["""self.textBox(self.starlow, [
+                "Count Bleck!",
+                "We have you cornered!",
+                "Give up now!"], sound="starlow")"""],
+            ["""self.textBox(self.bleck, [
+            "Bleh heh heh heh heh...",
+            "You REALLY think I care whether or/nnot I survive?",
+            "If I die, the Void will continue/nas it is for a little longer.",
+            "And, right now, that time/nis long enough for the Void/nto consume all worlds!",
+            "I will duel you only because/nyou have the Egg McMuffins, which/ncan put a stop to this.",
+            "But... Now is not the time/nto talk!",
+            "COUNT BLECK IS THE DELETER/nOF WORLDS!/p MY FATE IS WRITTEN/nIN THE DARK PROGNOSTICUS!",
+            "DO NOT THINK FOR A MOMENT/nTHAT I WILL NOT HESITATE/nTO STRIKE YOU DOWN!",
+            "SO,/p ARE YOU PREPARED, HEROES?",
+            "OUR DUEL WILL BE WORTHY OF/nTHE LAST CLASH THE WORLDS WILL/nEVER SEE!",
+            "/BALL NOW ENDS!"])""",
+             "if self.textbox[0].page == 6: self.setVar('self.bleck.currentFrame = 0')",
+             "if self.textbox[0].page == 6: self.setVar('self.bleck.laughing = True')"],
+            ["self.command('pg.mixer.music.fadeout(1000)')",
+             "self.command('self.game.sprites.append(self.mario)')",
+             "self.command('self.game.sprites.append(self.luigi)')",
+             "self.command('self.game.sprites.append(self.starlow)')",
+             "self.command('self.game.sprites.append(self.bleck)')",
+             "self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+             "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')",
+             """self.command('self.game.loadBattle("self.loadFinalBoss()", currentPoint=False)')"""]
         ], id="Final Boss Cutscene")
 
-        LoadCutscene(self, pg.rect.Rect(0, 0, 0, 0), True, False, [
-            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-             "self.setVar('self.luigi = luigiCutscene(self.game, (1360, 1050))')",
-             "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), red, self.game)')",
-             "self.command('self.game.cutsceneSprites.append(self.mcMuffin)')",
-             "self.setVar('self.starlow = starlowCutscene(self.game, (1280, 1050))')",
+        LoadCutscene(self, pg.rect.Rect(820, 980, 2780, 1420), True, False, [
+            ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
+             "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 1)",
+             "self.setVar('self.mario = marioCutscene(self.game, (self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200))')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, (self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200))')",
+             "self.setVar('self.starlow = starlowCutscene(self.game, (self.bleck.rect.centerx, self.bleck.rect.centery + 200))')",
              """self.setVar('self.game.player.stats["hp"] = self.game.player.stats["maxHP"]')""",
              """self.setVar('self.game.follower.stats["hp"] = self.game.follower.stats["maxHP"]')""",
              """self.setVar('self.game.player.stats["bp"] = self.game.player.stats["maxBP"]')""",
@@ -11645,28 +11963,49 @@ class Game:
              """self.setVar('self.starlow.facing = "up"')""",
              """self.setVar('self.mario.facing = "up"')""",
              """self.setVar('self.luigi.facing = "up"')""",
-             "self.changeSong(None)", "self.command('pg.mixer.music.fadeout(1)')",
-             "self.move(self.game.cameraRect, 1280, 880, False, 0)"
+             "self.command('pg.mixer.music.fadeout(0)')",
+             "self.move(self.game.cameraRect, 1280, 880, False, 0)",
+             """self.changeSong([0, 11.111, "End of the World"])""",
              ],
             ["""self.textBox(self.starlow, [
-                                        "Perhaps I spoke too soon.",
-                                        "Anyways,/p NOW we can grab it!",
-                                        "and do it quickly, before something/nelse shows up."], sound="starlow")"""],
-            ["self.setVar('self.game.mario = self.mario')",
-             "self.setVar('self.game.luigi = self.luigi')",
-             "self.setVar('self.game.mcMuffin = self.mcMuffin')",
-             "self.mcMuffinGet()"],
-            ["self.command('self.fade.kill')", "self.setVar('self.mcMuffinSprites = []')", "self.wait(2)",
-             """self.changeSong([14.221, 16.601, "mcMuffin Get"], False)"""],
-            ["""self.textBox(self.game.cameraRect, ["And so, Mario and Luigi had located/nthe second Egg McMuffin.",
-                    "With only one left to go,/nthey hurried back to Flipside/nin order to hear from Dr. Toadley.",
-                    "Will they be able to collect/nthe last one before it's/ntoo late?"], type="board", dir="None")"""],
-            ["self.setVar('self.game.mcMuffins = 2')", "self.changeSong(None)",
-             "self.command('pg.mixer.music.fadeout(5000)')"],
-            ["self.wait(5)", "self.setVar('self.game.fadeout = pg.sprite.Group()')",
-             "self.setVar('self.fade = Fadeout(self.game, 10)')", "self.setVar('self.fade.alpha = 255')"],
-            ["""self.setVar('self.game.area = "title screen"')"""],
-            ["self.command('self.game.loadFlipsideTower()')"]], id="Final Cutscene")
+            "So!/p You've been defeated!",
+            "What do you have to say for/nyourself?"], sound="starlow")"""],
+            ["""self.textBox(self.bleck, [
+            "Bleh...",
+            "Bleh heh...",
+            "Do you not remember what/nI said?",
+            "The void will live on for/na while...",
+            "You will still witness the/nend of all worlds...",
+            "So,/p I hope you enjoy it...",
+            "Farewell, heroes.../p!"])"""],
+            ["""self.changeSong([15.549, 49.752, "end of the world"], cont=True)"""],
+            ["self.setVar('self.game.currentPoint = 11111')",
+             "self.command('pg.mixer.music.set_pos(11.111)')"],
+            ["self.wait(4)"],
+            ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
+            "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
+            "self.command('self.flip[0].update()')",
+            "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
+            ],
+            ["""self.textBox(self.starlow, [
+                "Where'd he go?"], sound="starlow")"""],
+            ["self.setVar('self.game.cameraRect.cameraShake = True')",
+             "self.wait(1)"],
+            ["""self.textBox(self.starlow, [
+                "That doesn't seem good!",
+                "Let's get out of here!"], sound="starlow")"""],
+            ["""self.setVar('self.mario.facing = "downleft"')""",
+              """self.setVar('self.luigi.facing = "downleft"')""",
+              """self.setVar('self.mario.walking = True')""",
+              """self.setVar('self.luigi.walking = True')""",
+             """self.setVar('self.starlow.facing = "downleft"')"""],
+            ["self.move(self.mario, -500, 400, True, 180, 1)",
+              "self.move(self.luigi, -500, 400, True, 180, 2)",
+              "self.move(self.starlow, -500, 400, True, 180, 3)"],
+            ["self.command('Fadeout(self.game, 5)')",
+             "self.wait(3)"],
+            ["self.command('self.game.loadCastleBleckEntrance()')"]
+        ], id="Final Cutscene")
 
         try:
             self.player.attackPieces = self.storeData["mario attack pieces"]
@@ -13403,8 +13742,8 @@ class Game:
         self.followerCol = LuigiCollision(self)
         self.sprites.append(self.follower)
         self.sprites.append(self.player)
-        self.follower.stepSound = self.sandSound
-        self.player.stepSound = self.sandSound
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
         try:
             self.player.stats = self.storeData["mario stats"]
             self.follower.stats = self.storeData["luigi stats"]
@@ -16406,7 +16745,7 @@ class Game:
         levelUpChannel = pg.mixer.Channel(0)
         playedLevelUpSound = False
         self.follower.statGrowth = {"maxHP": randomNumber(13), "maxBP": randomNumber(5), "pow": randomNumber(4, 3),
-                                    "def": randomNumber(4)}
+                                    "def": randomNumber(5)}
         going = True
         luigi = LuigiLevelUp()
         text = LuigiLevelUpUI(self)

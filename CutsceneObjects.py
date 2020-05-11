@@ -2,14 +2,17 @@ from Overworld import *
 from statemachine import StateMachine, State
 from math import sin, cos, pi, atan2
 
+
 def project(pos, angle, distance):
     return (pos[0] + (cos(angle) * distance),
             pos[1] - (sin(angle) * distance))
+
 
 def get_angle(origin, destination):
     x_dist = destination[0] - origin[0]
     y_dist = destination[1] - origin[1]
     return atan2(-y_dist, x_dist) % (2 * pi)
+
 
 class Cutscene:
     def __init__(self, game, scenes, parent=None, currentScene=0, currentSubscene=0):
@@ -41,6 +44,7 @@ class Cutscene:
                      None]
         self.currentScene = currentScene
         self.currentSubscene = currentSubscene
+        self.contSong = False
         self.action = 0
         self.xDest = [-69,
                       -69,
@@ -88,7 +92,7 @@ class Cutscene:
 
         while not self.over:
             if self.song is not None:
-                self.game.playSong(self.song[0], self.song[1], self.song[2])
+                self.game.playSong(self.song[0], self.song[1], self.song[2], cont=self.contSong)
             self.game.calculatePlayTime()
             self.game.clock.tick(fps)
             self.game.events()
@@ -97,11 +101,17 @@ class Cutscene:
             self.game.void.update(self.game.voidSize)
             [text.update() for text in self.game.textboxes]
             [sprite.update() for sprite in self.game.cutsceneSprites]
+            if self.game.cameraRect.cameraShake:
+                cameraCenter = self.game.cameraRect.rect.center
+                self.game.cameraRect.actualPos = self.game.cameraRect.rect.center
+                self.game.cameraRect.shakePart1()
+                self.game.cameraRect.shakePart2()
             self.game.camera.update(self.game.cameraRect.rect)
+            if self.game.cameraRect.cameraShake:
+                self.game.cameraRect.rect.center = cameraCenter
             self.action = 0
             for self.action in range(len(self.scenes[self.currentScene])):
                 if self.action >= self.currentSubscene:
-                    print(self.scenes[self.currentScene][self.action])
                     try:
                         eval(self.scenes[self.currentScene][self.action])
                     except:
@@ -160,7 +170,7 @@ class Cutscene:
     def bleckCloneCreate(self):
         if self.timer > 0:
             self.timer -= 1
-        elif self.counter < 50:
+        elif self.counter < 10:
             self.timer = 10
             BleckCloneCutscene(self.game, self.bleck.rect.center, random.randrange(0, 360))
             blek = CountBleckClone()
@@ -269,10 +279,11 @@ class Cutscene:
             self.yDest[id] = -69
             self.sceneEnd()
 
-    def changeSong(self, song, prevCont=False):
+    def changeSong(self, song, prevCont=False, cont=False):
         if prevCont:
             self.game.currentPoint += pg.mixer.music.get_pos()
         self.song = song
+        self.contSong = cont
         self.sceneEnd()
 
     def mcMuffinGet(self, endChapter=True):
@@ -491,9 +502,9 @@ class CountBleckClone(StateMachine):
         self.hasCutscene = False
 
         # Stats
-        self.fakeStats = {"maxHP": 750, "hp": 750, "pow": 95, "def": 90, "exp": 0, "coins": 0, "name": "Count Bleck"}
-        self.stats = {"maxHP": 5, "hp": 5, "pow": 95, "def": 90, "exp": 0, "coins": 0, "name": "Count Bleck"}
-        self.rectHP = self.fakeStats["hp"]
+        self.fakeStats = self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.stats = {"maxHP": 1, "hp": 1, "pow": 45, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.rectHP = self.stats["hp"]
 
         self.description = [
             "That's Count Bleck.",
@@ -594,18 +605,18 @@ class CountBleckClone(StateMachine):
                            sheet.getImageName("fire_15.png")]
 
     def hpMath(self):
-        if self.rectHP > self.fakeStats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = ((self.rectHP - self.fakeStats["hp"]) / 30) * -1
-        elif self.rectHP < self.fakeStats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = (self.fakeStats["hp"] - self.rectHP) / 30
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.fakeStats["hp"] and self.hpSpeed < 0:
+            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.fakeStats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
-                self.rectHP = self.fakeStats["hp"]
+                self.rectHP = self.stats["hp"]
                 self.hpSpeed = 0
 
     def update(self):
@@ -614,8 +625,9 @@ class CountBleckClone(StateMachine):
 
         if self.is_idle:
             chance = random.randrange(0, 100)
-            if chance == 0 and not self.game.player.dead:
+            if chance == 0 and self.cooldown <= 0:
                 choice = random.randrange(0, 3)
+                self.cooldown = fps * 10
                 if choice == 0:
                     self.startWalking()
                 elif choice == 1:
@@ -627,6 +639,8 @@ class CountBleckClone(StateMachine):
                     else:
                         self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
                     self.toSpeed()
+            elif self.cooldown > 0:
+                self.cooldown -= 1
         elif self.is_walking:
             if self.game.leader == "mario":
                 self.angle = get_angle(self.rect.center, self.game.player.rect.center)
@@ -634,19 +648,23 @@ class CountBleckClone(StateMachine):
                 self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
             self.rect.center = project(self.rect.center, self.angle, self.speed)
             chance = random.randrange(0, 250)
-            if chance == 0 or self.game.player.dead:
+            if chance == 0:
                 self.giveUp()
         elif self.is_speed:
             for wall in self.game.walls:
                 if self.rect.colliderect(wall.rect):
                     if self.game.leader == "mario":
-                        self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                        self.angle = get_angle(self.rect.center, (
+                        random.randrange(self.game.player.rect.centerx - 40, self.game.player.rect.centerx + 40),
+                        (random.randrange(self.game.player.rect.centery - 40, self.game.player.rect.centery + 40))))
                     else:
-                        self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+                        self.angle = get_angle(self.rect.center, (
+                        random.randrange(self.game.follower.rect.centerx - 40, self.game.follower.rect.centerx + 40),
+                        (random.randrange(self.game.follower.rect.centery - 40, self.game.follower.rect.centery + 40))))
             self.rect.center = project(self.rect.center, self.angle, self.speed * 3)
             chance = random.randrange(0, 300)
-            if 10 < chance < 15:
-                for i in range(random.randrange(3, 8)):
+            if chance == 11:
+                for i in range(random.randrange(3, 4)):
                     ball = FawfulBullet(self.game, (random.randrange(self.rect.left - 100, self.rect.right + 100),
                                              random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats)
                     ball.speed = 3
@@ -674,21 +692,6 @@ class CountBleckClone(StateMachine):
                             self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
-                        else:
-                            if not self.game.player.hit and self.stats[
-                                "hp"] > 0 and not self.is_hit and self.game.player.canBeHit:
-                                HitNumbers(self.game, self.game.room,
-                                           (self.game.player.rect.left, self.game.player.rect.top - 2),
-                                           (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
-                                self.game.player.stats["hp"] -= (
-                                    max(self.stats["pow"] - self.game.player.stats["def"], 1))
-                                if self.game.player.stats["hp"] <= 0:
-                                    self.game.player.stats["hp"] = 0
-                                    self.game.player.currentFrame = 0
-                                self.game.player.hitTime = pg.time.get_ticks()
-                                self.game.playerHitSound.play()
-                                self.game.player.canBeHit = False
-                                self.game.player.hit = True
 
             if self.game.follower.stats["hp"] != 0 and (self.is_idle or self.is_walking):
                 hits = pg.sprite.collide_rect(self.game.follower, self)
@@ -707,21 +710,6 @@ class CountBleckClone(StateMachine):
                             self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
-                        else:
-                            if not self.game.follower.hit and self.stats[
-                                "hp"] > 0 and not self.is_hit and self.game.follower.canBeHit:
-                                HitNumbers(self.game, self.game.room,
-                                           (self.game.follower.rect.left, self.game.follower.rect.top - 2),
-                                           (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
-                                self.game.follower.stats["hp"] -= (
-                                    max(self.stats["pow"] - self.game.follower.stats["def"], 1))
-                                if self.game.follower.stats["hp"] <= 0:
-                                    self.game.follower.stats["hp"] = 0
-                                    self.game.follower.currentFrame = 0
-                                self.game.follower.hitTime = pg.time.get_ticks()
-                                self.game.playerHitSound.play()
-                                self.game.follower.canBeHit = False
-                                self.game.follower.hit = True
 
             if self.stats["hp"] != 0 and self.game.player.isHammer is not None and (self.is_idle or self.is_walking):
                 hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
@@ -781,41 +769,6 @@ class CountBleckClone(StateMachine):
                             self.getHit()
                             self.cooldown = fps
                             entity.dead = True
-        elif not self.is_hit:
-            if self.game.player.stats["hp"] != 0:
-                hits = self.imgRect.colliderect(self.game.playerCol.rect)
-                if hits:
-                    if self.rect.bottom > self.game.player.rect.centery > self.rect.top:
-                        if not self.game.player.hit and self.stats["hp"] > 0 and self.game.player.canBeHit:
-                            HitNumbers(self.game, self.game.room,
-                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
-                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
-                            self.game.player.stats["hp"] -= (max(self.stats["pow"] - self.game.player.stats["def"], 1))
-                            if self.game.player.stats["hp"] <= 0:
-                                self.game.player.stats["hp"] = 0
-                                self.game.player.currentFrame = 0
-                            self.game.player.hitTime = pg.time.get_ticks()
-                            self.game.playerHitSound.play()
-                            self.game.player.canBeHit = False
-                            self.game.player.hit = True
-
-            if self.game.follower.stats["hp"] != 0:
-                hits = self.imgRect.colliderect(self.game.followerCol.rect)
-                if hits:
-                    if self.rect.bottom > self.game.follower.rect.centery > self.rect.top:
-                        if not self.game.follower.hit and self.stats["hp"] > 0 and self.game.follower.canBeHit:
-                            HitNumbers(self.game, self.game.room,
-                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
-                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
-                            self.game.follower.stats["hp"] -= (
-                                max(self.stats["pow"] - self.game.follower.stats["def"], 1))
-                            if self.game.follower.stats["hp"] <= 0:
-                                self.game.follower.stats["hp"] = 0
-                                self.game.follower.currentFrame = 0
-                            self.game.follower.hitTime = pg.time.get_ticks()
-                            self.game.playerHitSound.play()
-                            self.game.follower.canBeHit = False
-                            self.game.follower.hit = True
 
         if self.stats["hp"] <= 0:
             self.cooldown = 10000
@@ -826,6 +779,9 @@ class CountBleckClone(StateMachine):
             self.game.enemies.remove(self)
             blek = CountBleckClone()
             blek.init(self.game, (random.randrange(0, self.game.map.width), random.randrange(0, self.game.map.height)))
+        elif self.game.bleck not in self.game.enemies:
+            self.game.sprites.remove(self)
+            self.game.enemies.remove(self)
 
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.bottom = self.rect.centery + 5 - self.offset
@@ -853,7 +809,7 @@ class CountBleckClone(StateMachine):
                 else:
                     self.fromFire()
                 if self.currentFrame == 9:
-                    for i in range(random.randrange(5, 10)):
+                    for i in range(random.randrange(1, 2)):
                         FawfulBullet(self.game, (random.randrange(self.rect.left - 100, self.rect.right + 100), random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats)
                 center = self.imgRect.center
                 self.image = self.fireFrames[self.currentFrame]

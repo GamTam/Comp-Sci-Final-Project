@@ -5780,7 +5780,7 @@ class CountBleckFight1(StateMachine):
         self.hasCutscene = False
 
         # Stats
-        self.stats = {"maxHP": 750, "hp": 750, "pow": 95, "def": 90, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.stats = {"maxHP": 500, "hp": 500, "pow": 95, "def": 90, "exp": 0, "coins": 0, "name": "Count Bleck"}
         self.rectHP = self.stats["hp"]
 
         self.description = [
@@ -5900,7 +5900,7 @@ class CountBleckFight1(StateMachine):
         self.animate()
         self.hpMath()
 
-        if self.stats["hp"] != self.stats["maxHP"] and not self.hasCutscene:
+        if self.stats["hp"] < 100 and not self.hasCutscene:
             LoadCutscene(self.game, self.game.player.rect, True, True, [
                 ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
                   "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
@@ -5923,13 +5923,15 @@ class CountBleckFight1(StateMachine):
                 ["self.bleckCloneCreate()"],
                 ["self.wait(1)"]
             ], id="Begin Phase 2")
-            self.hasCutscene = True
 
+            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
+            self.hasCutscene = True
 
         if self.is_idle:
             chance = random.randrange(0, 100)
-            if chance == 0 and not self.game.player.dead:
+            if chance == 0 and self.cooldown <= 0:
                 choice = random.randrange(0, 3)
+                self.cooldown = fps * 9
                 if choice == 0:
                     self.startWalking()
                 elif choice == 1:
@@ -5941,6 +5943,8 @@ class CountBleckFight1(StateMachine):
                     else:
                         self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
                     self.toSpeed()
+            elif self.cooldown > 0:
+                self.cooldown -= 1
         elif self.is_walking:
             if self.game.leader == "mario":
                 self.angle = get_angle(self.rect.center, self.game.player.rect.center)
@@ -5954,9 +5958,9 @@ class CountBleckFight1(StateMachine):
             for wall in self.game.walls:
                 if self.rect.colliderect(wall.rect):
                     if self.game.leader == "mario":
-                        self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                        self.angle = get_angle(self.rect.center, (random.randrange(self.game.player.rect.centerx - 40, self.game.player.rect.centerx + 40), (random.randrange(self.game.player.rect.centery - 40, self.game.player.rect.centery + 40))))
                     else:
-                        self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+                        self.angle = get_angle(self.rect.center, (random.randrange(self.game.follower.rect.centerx - 40, self.game.follower.rect.centerx + 40), (random.randrange(self.game.follower.rect.centery - 40, self.game.follower.rect.centery + 40))))
             self.rect.center = project(self.rect.center, self.angle, self.speed * 3)
             chance = random.randrange(0, 300)
             if 10 < chance < 15:
@@ -6095,7 +6099,7 @@ class CountBleckFight1(StateMachine):
                             self.getHit()
                             self.cooldown = fps
                             entity.dead = True
-        elif not self.is_hit:
+        elif not self.is_hit and not self.is_speed:
             if self.game.player.stats["hp"] != 0:
                 hits = self.imgRect.colliderect(self.game.playerCol.rect)
                 if hits:
