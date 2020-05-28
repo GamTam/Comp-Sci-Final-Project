@@ -97,17 +97,18 @@ class Cutscene:
             self.game.clock.tick(fps)
             self.game.events()
 
-            self.game.fadeout.update()
+            [fad.update() for fad in self.game.fadeout]
             self.game.void.update(self.game.voidSize)
             [text.update() for text in self.game.textboxes]
             [sprite.update() for sprite in self.game.cutsceneSprites]
-            if self.game.cameraRect.cameraShake:
+            [effect.update() for effect in self.game.effects]
+            if self.game.cameraRect.cameraShake != 0:
                 cameraCenter = self.game.cameraRect.rect.center
                 self.game.cameraRect.actualPos = self.game.cameraRect.rect.center
                 self.game.cameraRect.shakePart1()
                 self.game.cameraRect.shakePart2()
             self.game.camera.update(self.game.cameraRect.rect)
-            if self.game.cameraRect.cameraShake:
+            if self.game.cameraRect.cameraShake != 0:
                 self.game.cameraRect.rect.center = cameraCenter
             self.action = 0
             for self.action in range(len(self.scenes[self.currentScene])):
@@ -123,6 +124,11 @@ class Cutscene:
                     drawBackground = False
 
             self.game.screen.fill(black)
+            if self.game.area == "Last Corridor":
+                for sprite in self.game.cutsceneSprites:
+                    if sprite not in self.game.blocks:
+                        sprite.image = sprite.image.copy()
+                        sprite.image.fill((0, 0, 0, 255), special_flags=pg.BLEND_RGBA_MIN)
             if drawBackground:
                 try:
                     self.game.screen.blit(self.game.map.background, self.game.map.rect)
@@ -161,6 +167,11 @@ class Cutscene:
             [self.game.blit_alpha(self.game.screen, sprite.image, sprite.imgRect, sprite.alpha) for sprite in
              self.mcMuffinSprites]
             [text.draw() for text in self.game.textboxes]
+            for fx in self.game.effects:
+                if fx.offset:
+                    self.game.blit_alpha(self.game.screen, fx.image, self.game.camera.offset(fx.rect), fx.alpha)
+                else:
+                    self.game.blit_alpha(self.game.screen, fx.image, fx.rect, fx.alpha)
 
             pg.display.flip()
 
@@ -225,6 +236,19 @@ class Cutscene:
     def textBox(self, target, text, type="dialogue", dir=None, choice=False, sound="default", complete=False, id=0):
         if self.textbox[id] is None:
             self.textbox[id] = TextBox(self.game, target, text, type, dir, choice, sound, complete)
+        elif self.textbox[id].complete:
+            self.textbox[id] = None
+            target.talking = False
+            self.sceneEnd()
+        else:
+            if self.textbox[id].talking:
+                target.talking = True
+            else:
+                target.talking = False
+
+    def undertaleTextBox(self, target, text, type="dialogue", head=None, sound="default", complete=False, font="default", speed=1, id=0):
+        if self.textbox[id] is None:
+            self.textbox[id] = UndertaleTextBox(self.game, target, text, type, head, sound, complete, font, speed)
         elif self.textbox[id].complete:
             self.textbox[id] = None
             target.talking = False
@@ -502,9 +526,9 @@ class CountBleckClone(StateMachine):
         self.hasCutscene = False
 
         # Stats
-        self.fakeStats = self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
-        self.stats = {"maxHP": 1, "hp": 1, "pow": 45, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
-        self.rectHP = self.stats["hp"]
+        self.fakeStats = self.game.bleck.stats
+        self.stats = {"maxHP": self.fakeStats["maxHP"], "hp": 1, "pow": 45, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.rectHP = self.fakeStats["hp"]
 
         self.description = [
             "That's Count Bleck.",
@@ -605,18 +629,18 @@ class CountBleckClone(StateMachine):
                            sheet.getImageName("fire_15.png")]
 
     def hpMath(self):
-        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
-        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+        if self.rectHP > self.fakeStats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.fakeStats["hp"]) / 30) * -1
+        elif self.rectHP < self.fakeStats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.fakeStats["hp"] - self.rectHP) / 30
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP > self.fakeStats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP < self.fakeStats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
-                self.rectHP = self.stats["hp"]
+                self.rectHP = self.fakeStats["hp"]
                 self.hpSpeed = 0
 
     def update(self):
@@ -1345,6 +1369,25 @@ class EmptyObject(pg.sprite.Sprite):
         self.rect.center = shadowPos
         self.imgRect = self.image.get_rect()
         self.imgRect.center = imagePos
+        self.alpha = 255
+
+
+class SansOverworld(pg.sprite.Sprite):
+    def __init__(self, game, x):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.image.load("sprites/sansOverworld.png").convert_alpha()
+        self.shadow = pg.image.load("sprites/sansShadow.png").convert_alpha()
+        self.rect = self.shadow.get_rect()
+        self.imgRect = self.image.get_rect()
+        self.rect.centerx = x
+        if game.leader == "mario":
+            self.rect.centery = game.player.rect.centery
+        else:
+            self.rect.centery = game.follower.rect.centery
+        self.imgRect.bottom = self.rect.bottom - 3
+        self.imgRect.centerx = self.rect.centerx
+        self.game = game
+        self.game.cutsceneSprites.append(self)
         self.alpha = 255
 
 
@@ -4060,7 +4103,7 @@ class McMuffinWarp(pg.sprite.Sprite):
             self.text = ["You are about to go to/nworld {}, {}.".format(world, location),
                      "/CDo you want to proceed?\n\a\n\a                 YES                        NO"]
         else:
-            self.text =  ["/CDo you want to return to Flipside?\n\a\n\a                 YES                        NO"]
+            self.text = ["/CDo you want to return to Flipside?\n\a\n\a                 YES                        NO"]
 
     def update(self):
         self.vy += self.dy

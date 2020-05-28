@@ -25,6 +25,8 @@ title = "Super Mario & Luigi"
 dialogueFont = 'fonts/PMF.otf'
 superMario256 = "fonts/SuperMario256.ttf"
 expNumbers = "fonts/expnumbers.ttf"
+sansFont = "fonts/Comic Sans.ttf"
+undertaleFont = "fonts/determinationMono.otf"
 
 playerSpeed = 5
 jumpHeight = 11
@@ -84,7 +86,8 @@ powSprite = pg.image.load("sprites/item icons/powIcon.png").convert_alpha()
 defSprite = pg.image.load("sprites/item icons/defIcon.png").convert_alpha()
 
 textboxSprites = {"dialogue": pg.image.load("sprites/textbox.png").convert_alpha(),
-                  "board": pg.image.load("sprites/boardTextBox.png").convert_alpha()}
+                  "board": pg.image.load("sprites/boardTextBox.png").convert_alpha(),
+                  "undertale": pg.image.load("sprites/undertaleTextBox.png").convert_alpha()}
 
 voidSprites = [pg.image.load("sprites/the void/1.png").convert_alpha(),
                pg.image.load("sprites/the void/2.png").convert_alpha(),
@@ -521,7 +524,7 @@ def nor(a, b):
 
 
 def luigiLevelFormula(game):
-    exponent = 1.5
+    exponent = 1.499
     baseXp = 8
     return round(baseXp * (game.follower.stats["level"] ** exponent))
 

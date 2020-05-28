@@ -1868,9 +1868,9 @@ class Koopa(StateMachine):
             self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -2364,9 +2364,9 @@ class Sandoon(StateMachine):
             self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -2833,9 +2833,9 @@ class Anuboo(StateMachine):
             self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -3397,9 +3397,9 @@ class SpikySnifit(StateMachine):
             self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -4076,7 +4076,7 @@ class TutorialBowser(StateMachine):
 
         # Stats
         self.stats = {"maxHP": 10, "hp": 10, "pow": 9, "def": 5, "exp": 3, "coins": 0, "name": "Bowser"}
-        self.rectHP = self.stats["hp"]
+        self.rectHP = 0
 
         self.description = []
         self.description.append("It's Bowser!")
@@ -4150,12 +4150,15 @@ class TutorialBowser(StateMachine):
         if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
             self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
         elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            if self.rectHP != 0:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            else:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 180
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -4408,7 +4411,7 @@ class Mammoshka(StateMachine):
 
         # Stats
         self.stats = {"maxHP": 150, "hp": 150, "pow": 25, "def": 15, "exp": 40, "coins": 100, "name": "Mammoshka"}
-        self.rectHP = self.stats["hp"]
+        self.rectHP = 0
 
         self.description = ["That's Mammoshka!",
                             "Mammoshka was sent here by\nFawful in order to beat us.",
@@ -4496,12 +4499,15 @@ class Mammoshka(StateMachine):
         if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
             self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
         elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            if self.rectHP != 0:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            else:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 180
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -4893,7 +4899,7 @@ class DarkFawful(StateMachine):
 
         # Stats
         self.stats = {"maxHP": 400, "hp": 400, "pow": 75, "def": 75, "exp": 200, "coins": 200, "name": "Dark Fawful"}
-        self.rectHP = self.stats["hp"]
+        self.rectHP = 0
 
         self.description = ["Fawful is there!",
                             "After Count Bleck gave him a power\nboost, he wants to take revenge on\nyou guys!",
@@ -5041,12 +5047,15 @@ class DarkFawful(StateMachine):
         if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
             self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
         elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            if self.rectHP != 0:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            else:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 180
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -5231,7 +5240,7 @@ class DarkFawful(StateMachine):
                     hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                     if hitsRound2:
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
-                            itNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
+                            HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                       (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1)))
                             self.stats["hp"] -= (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1))
                             if self.stats["hp"] <= 0:
@@ -5780,8 +5789,8 @@ class CountBleckFight1(StateMachine):
         self.hasCutscene = False
 
         # Stats
-        self.stats = {"maxHP": 500, "hp": 500, "pow": 95, "def": 90, "exp": 0, "coins": 0, "name": "Count Bleck"}
-        self.rectHP = self.stats["hp"]
+        self.stats = {"maxHP": 500, "hp": 500, "pow": 95, "def": 85, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.rectHP = 0
 
         self.description = [
             "That's Count Bleck.",
@@ -5885,12 +5894,15 @@ class CountBleckFight1(StateMachine):
         if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
             self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
         elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            if self.rectHP != 0:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            else:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 180
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.stats["hp"] and self.hpSpeed < 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.stats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
                 self.rectHP = self.stats["hp"]
@@ -5902,9 +5914,7 @@ class CountBleckFight1(StateMachine):
 
         if self.stats["hp"] < 100 and not self.hasCutscene:
             LoadCutscene(self.game, self.game.player.rect, True, True, [
-                ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-                  "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
-                 "self.setVar('self.bleck = BleckCutscene(self.game, self.game.bleck.rect.center)')",
+                ["self.setVar('self.bleck = BleckCutscene(self.game, self.game.bleck.rect.center)')",
                  "self.command('pg.mixer.music.fadeout(5000)')"],
                  ["""self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""],
                 ["self.move(self.bleck, self.game.map.width / 2, self.game.map.height / 2, False, 120)",
@@ -5921,10 +5931,10 @@ class CountBleckFight1(StateMachine):
                  "self.setVar('self.bleck.laughing = True')",
                  "self.setVar('self.bleck.currentFrame = 0')"],
                 ["self.bleckCloneCreate()"],
-                ["self.wait(1)"]
+                ["self.wait(3)"]
             ], id="Begin Phase 2")
 
-            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
+            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 70, "exp": 0, "coins": 0, "name": "Count Bleck"}
             self.hasCutscene = True
 
         if self.is_idle:
@@ -6186,5 +6196,456 @@ class CountBleckFight1(StateMachine):
             self.imgRect.bottom = bottom
             if self.cooldown == 0:
                 self.getUp()
+                choice = random.randrange(0, 3)
+                self.cooldown = fps * 9
+                if choice == 0:
+                    self.startWalking()
+                elif choice == 1:
+                    self.currentFrame = 0
+                    self.toFire()
+                elif choice == 2:
+                    if self.game.leader == "mario":
+                        self.angle = get_angle(self.rect.center, self.game.player.rect.center)
+                    else:
+                        self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
+                    self.toSpeed()
             else:
                 self.cooldown -= 1
+
+
+class Sans(StateMachine):
+    idle = State("Idle", initial=True)
+    notIdle = State("E")
+
+    trans = idle.to(notIdle)
+
+    def init(self, game, pos):
+        self.game = game
+        self.game.enemies.append(self)
+        self.game.sprites.append(self)
+        self.sansGameovers = self.game.sansGameovers
+
+        self.loadImages()
+        self.alpha = 255
+        self.hitRange = 1.3
+        self.speed = 2.5
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.hitTimer = 0
+        self.dead = False
+        self.anim = True
+        self.hit = False
+        self.currentHead = "default"
+        self.currentBody = "default"
+        self.headRect = self.head[self.currentHead].get_rect()
+        self.bodyRect = self.body[self.currentBody].get_rect()
+        self.legRect = self.legs.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.hpSpeed = 0
+        self.rect.center = pos
+        self.legRect.centerx = self.rect.centerx
+        self.legRect.bottom = self.rect.bottom - 2
+        self.bodyRect.centerx = self.legRect.centerx - 2
+        self.bodyRect.bottom = self.legRect.top + 7
+        self.headRect.centerx = self.bodyRect.centerx + 2
+        self.headRect.bottom = self.bodyRect.top + 10
+
+        self.dodge = None
+        self.dodged = False
+        self.dodgeTimer = 0
+        self.dodgeSpeed = 10
+
+        self.bodyMovement = [0, -1, -1, -1, -1, 0, 0, 0, 1, 1, 1, 1]
+        self.bodyMovementY = [0, 0, 1, 0, 0, -1, 0, 0, 0, 1, 0, 0, -1]
+        self.headMovement = [0, 1, 1, 1, 0, -1, -1, 0, 1, 1, 1, 0, -1]
+
+        img = CombineSprites([self.legs, self.body[self.currentBody], self.head[self.currentHead]], [self.legRect, self.bodyRect, self.headRect])
+        self.image = img.image
+        self.imgRect = img.rect
+
+        # Stats
+        self.stats = {"maxHP": 1, "hp": 1, "pow": 1, "def": 0, "exp": 400, "coins": 400, "name": "Sans"}
+        self.rectHP = 0
+
+        self.description = ["IS THAT SANS UNDERTALE???",
+                            "Sans is a funny skeleton with\nan enjoyment of bad puns.",
+                            "He only fights people when they've\ncommitted genocide.../P\nor if you ask him,/p apparently.",
+                            "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+                            self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+                            "Something seems off about his\nstats.",
+                            "No matter what,/p just keep\nattacking him.",
+                            "Even if you're hit by his\npoison attacks."]
+
+        self.hitDialogue = ['''Cutscene(self.game, [
+            ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
+             "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+             """self.undertaleTextBox(self.game.sans, [
+            "*/2 what?",
+            "*/3 you think i'm just/n\a gonna stand there and/n\a take it?"
+            ], sound="sans", font="sans", head="sans")""",
+             """self.setVar('self.game.sans.currentHead = "look left smile"')""",
+             """if self.textbox[0].page == 1: self.setVar('self.game.sans.currentHead = "wink"')""",
+             """if self.textbox[0].page == 1: self.setVar('self.game.sans.currentBody = "shrug"')"""],
+            ["""self.setVar('self.game.player.flySpeedY = 20')""",
+             """self.setVar('self.game.follower.flySpeedY = 20')""",
+             """self.setVar('self.game.sans.currentHead = "default"')""",
+             """self.setVar('self.game.sans.currentBody = "default"')"""]
+            ])''']
+        self.dialogueCounter = 0
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/sansBattle.png", "sprites/sansBattle.xml")
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+        self.head = {"default": sheet.getImageName("head default.png"),
+                     "eyes closed": sheet.getImageName("head eyes closed.png"),
+                     "no eyes": sheet.getImageName("head no eyes.png"),
+                     "wink": sheet.getImageName("head wink.png"),
+                     "look left smile": sheet.getImageName("head look left smile.png"),
+                     "eye glow": [sheet.getImageName("head glow eye 1.png"),sheet.getImageName("head glow eye 2.png")]}
+
+        self.body = {"default": sheet.getImageName("body default.png"),
+                     "shrug": sheet.getImageName("body shrug.png"),
+                     "throw down":[sheet.getImageName("throw_down_1.png"),
+                                   sheet.getImageName("throw_down_2.png"),
+                                   sheet.getImageName("throw_down_3.png"),
+                                   sheet.getImageName("throw_down_4.png"),
+                                   sheet.getImageName("throw_down_5.png")]}
+
+        self.legs = sheet.getImageName("legs.png")
+
+    def hpMath(self):
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            if self.rectHP != 0:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            else:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 180
+
+        if self.hpSpeed != 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
+                self.rectHP += self.hpSpeed
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
+                self.rectHP += self.hpSpeed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.hpSpeed = 0
+
+    def update(self):
+        if self.game.player.stats["hp"] == 0 and self.game.follower.stats["hp"] == 0:
+            self.game.sansGameovers = self.sansGameovers + 1
+
+        self.hpMath()
+        playerRect = self.rect.copy()
+        playerRect.width = playerRect.width * self.hitRange
+
+        LoadCutscene(self.game, self.game.player.rect, True, True, [
+            ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
+             """self.setVar('self.game.sans.currentHead = "eyes closed"')""",
+             """self.setVar('self.game.player.attackPieces[0][1] = 0')""",
+             "self.move(self.game.cameraRect, self.game.sans.rect.centerx, self.game.sans.rect.centery, False, 0)",
+             "self.wait(3)",
+             "self.command('self.game.birdNoise.play(-1)')"],
+            ["""self.undertaleTextBox(self.game.sans, [
+            "*/5 it's a beautiful day/n\a outside...",
+            "* birds are singing.../p/n* flowers are blooming...",
+            "* on days like these.../p/n* kids like you..."
+            ], sound="sans", font="sans", head="sans")"""],
+            ["self.setVar('self.room = self.game.room')",
+             """self.setVar('self.game.room = "clique"')""",
+             "self.command('Fadeout(self.game, 255)')",
+             "self.command('self.game.birdNoise.stop()')",
+             "self.command('self.game.click.play()')"],
+            ["self.wait(0.5)",
+             "self.setVar('self.game.sans.anim = False')",
+             """self.setVar('self.game.sans.currentHead = "no eyes"')"""],
+            ["""self.setVar('self.game.room = self.room')""",
+             "self.command('self.game.click.play()')"],
+            ["self.wait(1)"],
+            ["""self.undertaleTextBox(self.game.sans, [
+            "*/6/p S H O U L D  B E/n\a B U R N I N G  I N/n\a H E L L."
+            ], sound="none", head="sans", speed=3)"""],
+            ["self.setVar('self.game.sans.anim = True')",
+             """self.setVar('self.game.sans.currentHead = "default"')""",
+             """self.setVar('self.game.sans.rectHP = 0')""",
+             """self.setVar('self.game.player.flySpeedY = 20')""",
+             """self.setVar('self.game.follower.flySpeedY = 20')""",
+             '''self.setVar("""self.game.battleSong = 'self.playSong(17.057, 144.041, "megalovania")'""")''']
+        ], id="it's a beautiful day outside...")
+
+        if self.dodge is not None:
+            self.currentBody = "shrug"
+            self.currentHead = "wink"
+
+        if self.dodge == "up":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.y -= self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.y += self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "down":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.y += self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.y -= self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "right":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "left":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "upright":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+                    self.rect.y -= self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
+                    self.rect.y += self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "upleft":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
+                    self.rect.y -= self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+                    self.rect.y += self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "downleft":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
+                    self.rect.y += self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+                    self.rect.y -= self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "downright":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+                    self.rect.y += self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
+                    self.rect.y -= self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+
+        if self.stats["hp"] <= 0:
+            self.cooldown = 10000
+            self.alpha -= 10
+
+        if self.alpha <= 0:
+            self.game.battleXp += self.stats["exp"]
+            self.game.battleCoins += self.stats["coins"]
+            self.game.player.attackPieces[0][1] = 10
+            self.game.sprites.remove(self)
+            self.game.enemies.remove(self)
+
+        if self.game.player.stats["hp"] != 0 and self.dodge is None:
+            hits = pg.sprite.collide_rect(self.game.player, self)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self.game.playerCol, self)
+                if hitsRound2:
+                    if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                        self.cooldown = fps
+                        self.dodge = self.game.player.facing
+                    else:
+                        if not self.game.player.hit and self.stats[
+                            "hp"] > 0 and not self.hit and self.game.player.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.player.rect.left, self.game.player.rect.top - 2),
+                                       (max(self.stats["pow"] - self.game.player.stats["def"], 1)), "mario")
+                            self.game.player.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.player.stats["def"], 1))
+                            self.game.player.KR += 5
+                            if self.game.player.stats["hp"] <= 0:
+                                self.game.player.stats["hp"] = 0
+                                self.game.player.currentFrame = 0
+                                self.game.player.KR = 0
+                            self.game.playerHitSound.play()
+
+        if self.game.follower.stats["hp"] != 0 and self.dodge is None:
+            hits = pg.sprite.collide_rect(self.game.follower, self)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
+                if hitsRound2:
+                    if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
+                        self.cooldown = fps
+                        self.dodge = self.game.follower.facing
+                    else:
+                        if not self.game.follower.hit and self.stats[
+                            "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
+                            HitNumbers(self.game, self.game.room,
+                                       (self.game.follower.rect.left, self.game.follower.rect.top - 2),
+                                       (max(self.stats["pow"] - self.game.follower.stats["def"], 1)), "luigi")
+                            self.game.follower.stats["hp"] -= (
+                                max(self.stats["pow"] - self.game.follower.stats["def"], 1))
+                            self.game.follower.KR += 5
+                            if self.game.follower.stats["hp"] <= 0:
+                                self.game.follower.stats["hp"] = 0
+                                self.game.follower.currentFrame = 0
+                                self.game.follower.KR = 0
+                            self.game.playerHitSound.play()
+
+        self.animate()
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.currentHead == "eye glow":
+            self.headRect = self.head[self.currentHead][self.currentFrame % 2].get_rect()
+        else:
+            self.headRect = self.head[self.currentHead].get_rect()
+        self.bodyRect = self.body[self.currentBody].get_rect()
+        self.legRect = self.legs.get_rect()
+
+        self.legRect.centerx = self.rect.centerx
+        self.legRect.bottom = self.rect.centery + 2
+        self.bodyRect.centerx = self.legRect.centerx - 2
+        self.bodyRect.bottom = self.legRect.top + 7
+        self.headRect.centerx = self.bodyRect.centerx + 2
+        self.headRect.bottom = self.bodyRect.top + 10
+
+        if now - self.lastUpdate > 100 and self.anim:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.bodyMovement):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.bodyMovement))
+            else:
+                self.currentFrame = 0
+
+        self.bodyRect.x += self.bodyMovement[self.currentFrame]
+        self.bodyRect.y += self.bodyMovementY[self.currentFrame]
+        self.headRect.centerx = self.bodyRect.centerx + 2
+        self.headRect.y += self.headMovement[self.currentFrame]
+
+        if self.currentHead == "eye glow":
+            head = self.head[self.currentHead][self.currentFrame % 2]
+        else:
+            head = self.head[self.currentHead]
+
+        if "throw" in self.currentBody:
+            pass
+        else:
+            bod = self.body[self.currentBody]
+
+        img = CombineSprites([self.legs, bod, head], [self.legRect, self.bodyRect, self.headRect])
+        self.image = img.image
+        self.imgRect = img.rect

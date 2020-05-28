@@ -70,12 +70,12 @@ class MarioUI(pg.sprite.Sprite):
             self.image = self.sprites[4]
 
     def draw(self):
-        if self.hp > self.game.player.stats["hp"] and self.speed == 0:
+        if self.hp > self.game.player.stats["hp"] and self.speed == 0 and abs(self.hp - self.game.player.stats["hp"]) > 1:
             self.speed = ((self.hp - self.game.player.stats["hp"]) / 30) * -1
-        elif self.hp < self.game.player.stats["hp"] and self.speed == 0:
+        elif self.hp < self.game.player.stats["hp"] and self.speed == 0 and abs(self.hp - self.game.player.stats["hp"]) > 1:
             self.speed = (self.game.player.stats["hp"] - self.hp) / 30
 
-        if self.speed != 0:
+        if self.speed != 0 and (self.game.player.KR == 0 or self.game.player.KRTimer == 0):
             if self.hp > self.game.player.stats["hp"] + self.speed and self.speed < 0:
                 self.hp += self.speed
             elif self.hp < self.game.player.stats["hp"] - self.speed and self.speed > 0:
@@ -83,6 +83,8 @@ class MarioUI(pg.sprite.Sprite):
             else:
                 self.hp = self.game.player.stats["hp"]
                 self.speed = 0
+        else:
+            self.hp = self.game.player.stats["hp"]
 
         if self.hp < 0:
             hp = [0]
@@ -304,12 +306,12 @@ class LuigiUI(pg.sprite.Sprite):
         self.rect.top = 0
 
     def draw(self):
-        if self.hp > self.game.follower.stats["hp"] and self.speed == 0:
+        if self.hp > self.game.follower.stats["hp"] and self.speed == 0 and abs(self.hp - self.game.follower.stats["hp"]) > 1:
             self.speed = ((self.hp - self.game.follower.stats["hp"]) / 30) * -1
-        elif self.hp < self.game.follower.stats["hp"] and self.speed == 0:
+        elif self.hp < self.game.follower.stats["hp"] and self.speed == 0 and abs(self.hp - self.game.follower.stats["hp"]) > 1:
             self.speed = (self.game.follower.stats["hp"] - self.hp) / 30
 
-        if self.speed != 0:
+        if self.speed != 0 and (self.game.follower.KR == 0 or self.game.follower.KRTimer == 0):
             if self.hp > self.game.follower.stats["hp"] + self.speed and self.speed < 0:
                 self.hp += self.speed
             elif self.hp < self.game.follower.stats["hp"] - self.speed and self.speed > 0:
@@ -317,6 +319,8 @@ class LuigiUI(pg.sprite.Sprite):
             else:
                 self.hp = self.game.follower.stats["hp"]
                 self.speed = 0
+        else:
+            self.hp = self.game.follower.stats["hp"]
 
         if self.hp < 0:
             hp = [0]

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="68" height="12" tilewidth="60" tileheight="60" infinite="0" nextlayerid="5" nextobjectid="21">
+ <tileset firstgid="1" source="sans corridor.tsx"/>
+ <layer id="4" name="Tile Layer 1" width="68" height="12">
+  <data encoding="base64" compression="zlib">
+   eAHt1lUTEFUABWC6u7u7u7u7G0mRBkklpbtB6e7ulG4EpFsJ6TRQQkHxY8YHZh/8BczsN3vPzHk5d/ZhC4cIEaLwB0I6hyI0YQhLOMITgYhEIjJRiEo0ohODmMQiNnGISzzik4CEJCIxSUhKMpKTgpSkIjVpSEs60pOBjGQiM1nISjayk4Oc5CI3echLPvJTgIIU4v3mIv+9P9wfPBfVKUZxSlCSUpSmDGUpR3kqUJFKVKYKValGdWpQk1rUpg51qUd9GtCQRjTmE5rQlGY0pwUt+ZRWfEZr2tCWdrSnAx3pRGc+pwtd6UZ3etCTL/iSXgT3B3NvnT70pR/9+YoBDGQQgxnCUIYxnBGMZBSjGcNYxjGeCUxkEpOZwtd8w1SmMZ0ZzGQWs5nDXOYxnwUsZBGLWcJSlrGcFaxkFatZw1rWsZ4NbGQTmwnuD+YtOlvZxnZ28C072cVu9rCXfeznAAc5xGGOcJRjfMdxTnCS7znFac5wlnOc5wIXucRlrnCVa/zAj1znBje5xU/c5g53ucd9HvCQRzzmCU95xs/8wq8E9wfzbzrP+Z0/eMFLXvGaP/mLN7zlb/7hHSFCeghFaMIQlnCEJwIRiURkohCVaEQnBjGJRWziEJd4xCcBCUlEYpKQlGQkJwUpSUVq0pCWdKQnAxnJRGayENwfzFl1spGdHOQkF7nJQ17ykZ8CFKQQhSlCUYpRnBKUpBSlKUNZylGeClSkEpWpQlWqUZ0a1KQWtalDXepRnwY0pBGN+YQmNKUZzWlBSz6lFZ/Rmja0Jbg/mNvptKcDHelEZz6nC13pRnd60JMv+JJe9KYPfelHf75iAAMZxGCGMJRhDGcEIxnFaMYwlnGMZwITmcRkpvA13zCVaUxnBjOZxWzmMJd5zGcBC1nEYoL7g3mJzlKWsZwVrGQVq1nDWtaxng1sZBOb2cJWtrGdHXzLTnaxmz3sZR/7OcBBDnGYIxzlGN9xnBOc5HtOcZoznOUc57nARS5xmStc5Ro/8CPXucFNbhHcH8w/6dzmDne5x30e8JBHPOYJT3nGz/zCr/zGc37nD17wkle85k/+4g1v+Zt/eMf7H5+QhCI0YQhLOMITgYhEIjJRiEo0ohODmMQiNnGISzzik4CEJCIxSQjuD+akOslITgpSkorUpCEt6UhPBjKSicxkISvZyE4OcpKL3OQhL/nITwEKUojCFKEoxShOCUpSitKUoSzlKE8FKlKJylShKtWoTg1qUova1KEu9ahPA4L7P+aPd/J/38C/JLZB1g==
+  </data>
+ </layer>
+ <objectgroup id="3" name="Object Layer 1">
+  <object id="1" name="Wall" x="480" y="330" width="3120" height="30"/>
+  <object id="2" name="Wall" x="240" y="600" width="3600" height="21"/>
+  <object id="3" name="Wall" x="225" y="360" width="15" height="240"/>
+  <object id="4" name="Wall" x="3840" y="360" width="15" height="240"/>
+  <object id="5" name="Wall" x="3180" y="360" width="180" height="60"/>
+  <object id="6" name="Wall" x="2820" y="360" width="180" height="60"/>
+  <object id="7" name="Wall" x="2460" y="360" width="180" height="60"/>
+  <object id="8" name="Wall" x="2100" y="360" width="180" height="60"/>
+  <object id="9" name="Wall" x="1740" y="360" width="180" height="60"/>
+  <object id="10" name="Wall" x="1380" y="360" width="180" height="60"/>
+  <object id="11" name="Wall" x="1020" y="360" width="180" height="60"/>
+  <object id="12" name="Wall" x="660" y="360" width="180" height="60"/>
+  <object id="13" name="Wall" x="3720" y="330" width="120" height="30"/>
+  <object id="14" name="Wall" x="240" y="330" width="120" height="30"/>
+  <object id="15" name="RoomTransition" x="360" y="315" width="120" height="30">
+   <properties>
+    <property name="playerPosx" type="int" value="5120"/>
+    <property name="playerPosy" type="int" value="1025"/>
+    <property name="room" value="self.game.loadFlipsideShopping()"/>
+   </properties>
+  </object>
+  <object id="17" name="RoomTransition" x="3600" y="315" width="120" height="30">
+   <properties>
+    <property name="playerPosx" type="int" value="5120"/>
+    <property name="playerPosy" type="int" value="1025"/>
+    <property name="room" value="self.game.loadFlipsideShopping()"/>
+   </properties>
+  </object>
+  <object id="18" name="Undertale Save" x="300" y="510"/>
+  <object id="19" x="1650" y="360" width="60" height="240"/>
+  <object id="20" x="2370" y="510"/>
+ </objectgroup>
+</map>

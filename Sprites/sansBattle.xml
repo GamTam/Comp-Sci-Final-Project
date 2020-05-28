@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:617f9dbaf08cebb9d343a2df61c51c3c:0f7f9ae7860f7ea5204a58da5642b6ef:6e8cbfc3f27506699799b29243a3808b$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="sansBattle.png" width="250" height="570">
+    <sprite n="body default.png" x="0" y="46" w="104" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="body shrug.png" x="104" y="46" w="146" h="50" pX="0.5" pY="0.5"/>
+    <sprite n="head default.png" x="0" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head eyes closed.png" x="64" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head glow eye 1.png" x="0" y="216" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head glow eye 2.png" x="64" y="216" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head look left smile.png" x="128" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head no eyes.png" x="64" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head wink.png" x="128" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="legs.png" x="92" y="0" w="88" h="46" pX="0.5" pY="0.5"/>
+    <sprite n="look left smile.png" x="0" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="shadow.png" x="0" y="0" w="92" h="12" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_1.png" x="0" y="434" w="114" h="132" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_2.png" x="114" y="434" w="114" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_3.png" x="118" y="308" w="120" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_4.png" x="128" y="216" w="118" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_5.png" x="0" y="308" w="118" h="92" pX="0.5" pY="0.5"/>
+</TextureAtlas>

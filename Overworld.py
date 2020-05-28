@@ -1,4 +1,5 @@
 import collections as Q
+import time
 import pytweening as pt
 from BlockContents import *
 from UI import *
@@ -535,6 +536,10 @@ class Mario(pg.sprite.Sprite):
         self.ability = 0
         self.prevAbility = 12
         self.abilities = ["jump", "interact", "talk"]
+        self.flySpeedX = 0
+        self.flySpeedY = 0
+        self.KR = 0
+        self.KRTimer = 0
         self.alpha = 255
         self.stepSound = self.game.stoneSound
         self.walking = False
@@ -566,13 +571,18 @@ class Mario(pg.sprite.Sprite):
         self.stats = {"level": 1, "maxHP": 20, "maxBP": 10, "pow": 7, "def": 6, "hp": 20, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(5), "maxBP": randomNumber(4), "pow": randomNumber(7),
                            "def": randomNumber(3)}
-        self.attackPieces = [["Cavi Cape", 10], ["Teehee Valley", 0], ["Somnom Woods", 0],
+        self.attackPieces = [["Cavi Cape", 0], ["Teehee Valley", 0], ["Somnom Woods", 0],
                              ["Toad Town", 0]]
         self.brosAttacks = [["Red Shell", "self.redShell(enemies, song)",
                              pg.image.load("sprites/bros attacks/icons/redShellIcon.png").convert_alpha(), 100, 4]]
 
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
+
+        self.throwFrames = {"up": sheet.getImageName("mario_sans_throw_up.png"),
+                            "down": sheet.getImageName("mario_sans_throw_down.png"),
+                            "left": sheet.getImageName("mario_sans_throw_left.png"),
+                            "right": sheet.getImageName("mario_sans_throw_right.png")}
 
         self.standingFrames = [sheet.getImageName("mario_standing_up.png"),
                                sheet.getImageName("mario_standing_down.png"),
@@ -859,25 +869,36 @@ class Mario(pg.sprite.Sprite):
                              "dead horizontal": sheet.getImageName("dead_shadow_horizontal.png"),
                              "dead vertical": sheet.getImageName("dead_shadow_vertical.png")}
 
-    def wallCollisions(self, group, vx=0, vy=0):
-        for wall in group:
-            if pg.sprite.collide_rect(self, wall):
-                if vx > 0:
-                    self.rect.right = wall.rect.left
-                    self.vx = 0
-                    self.walking = False
-                if vx < 0:
-                    self.rect.left = wall.rect.right
-                    self.vx = 0
-                    self.walking = False
-                if vy < 0:
-                    self.rect.top = wall.rect.bottom
-                    self.vy = 0
-                    self.walking = False
-                if vy > 0:
-                    self.rect.bottom = wall.rect.top
-                    self.vy = 0
-                    self.walking = False
+    def wallCollisions(self, group, vx=0, vy=0, flySpeed=False):
+        if not flySpeed:
+            for wall in group:
+                if pg.sprite.collide_rect(self, wall):
+                    if vx > 0:
+                        self.rect.right = wall.rect.left
+                        self.vx = 0
+                        self.walking = False
+                    if vx < 0:
+                        self.rect.left = wall.rect.right
+                        self.vx = 0
+                        self.walking = False
+                    if vy < 0:
+                        self.rect.top = wall.rect.bottom
+                        self.vy = 0
+                        self.walking = False
+                    if vy > 0:
+                        self.rect.bottom = wall.rect.top
+                        self.vy = 0
+                        self.walking = False
+        else:
+            for wall in group:
+                if pg.sprite.collide_rect(self, wall):
+                    self.rect.x -= self.flySpeedX
+                    self.rect.y -= self.flySpeedY
+                    if self.flySpeedX != 0 or self.flySpeedY != 0:
+                        self.game.cameraRect.cameraShake = 20
+                        self.game.sansHitOnWallSound.play()
+                    self.flySpeedX = 0
+                    self.flySpeedY = 0
 
     def jump(self):
         if self.jumpTimer < jumpHeight and self.airTimer == 0:
@@ -932,6 +953,7 @@ class Mario(pg.sprite.Sprite):
         if self.stats["hp"] < 0:
             self.stats["hp"] = 0
         if self.stats["hp"] == 0:
+            self.KR = 0
             self.dead = True
             self.game.leader = "luigi"
 
@@ -939,21 +961,10 @@ class Mario(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         self.vx, self.vy = 0, 0
 
-        hits = pg.sprite.spritecollideany(self, self.game.npcs, pg.sprite.collide_rect_ratio(1.1))
-
         if self.game.leader == "mario":
-            if not self.dead and self.canMove and not self.hammering:
-                if not self.hit and not self.game.follower.hit and not self.game.follower.hammering and not self.firing:
-                    if self.jumping and not hits:
-                        if keys[pg.K_w]:
-                            self.vy = -playerSpeed
-                        if keys[pg.K_a]:
-                            self.vx = -playerSpeed
-                        if keys[pg.K_s]:
-                            self.vy = playerSpeed
-                        if keys[pg.K_d]:
-                            self.vx = playerSpeed
-                    elif not self.jumping:
+            if not self.hammering:
+                if not self.game.follower.hit and not self.game.follower.hammering and not self.firing and self.flySpeedY == 0 and self.flySpeedX == 0:
+                    if not self.hit and self.canMove:
                         if keys[pg.K_w]:
                             self.vy = -playerSpeed
                         if keys[pg.K_a]:
@@ -967,12 +978,10 @@ class Mario(pg.sprite.Sprite):
 
                     self.rect.x += self.vx
                     self.wallCollisions(self.game.walls, self.vx)
-                    if not self.jumping:
-                        self.wallCollisions(self.game.npcs, self.vx)
+                    self.wallCollisions(self.game.npcs, self.vx)
                     self.rect.y += self.vy
                     self.wallCollisions(self.game.walls, 0, self.vy)
-                    if not self.jumping:
-                        self.wallCollisions(self.game.npcs, 0, self.vy)
+                    self.wallCollisions(self.game.npcs, 0, self.vy)
 
                     if self.rect.x > self.game.map.width + 60:
                         self.rect.x = -60
@@ -1084,6 +1093,27 @@ class Mario(pg.sprite.Sprite):
 
         if self.game.follower.hammering:
             self.walking = False
+
+        if self.KR > 0 and not self.dead:
+            if self.KRTimer >= 15:
+                self.KR -= 1
+                self.stats["hp"] -= 1
+                if self.stats["hp"] <= 0:
+                    self.stats["hp"] = 1
+                    self.KR = 0
+                self.KRTimer = 0
+            else:
+                self.KRTimer += 1
+
+        self.wallCollisions(self.game.walls, flySpeed=True)
+
+        self.rect.x += self.flySpeedX
+        self.rect.y += self.flySpeedY
+
+        self.image = self.image.copy()
+
+        if self.KR > 0:
+            self.image.fill((91, 0, 155, 155), special_flags=pg.BLEND_RGB_MAX)
 
     def animate(self):
         now = pg.time.get_ticks()
@@ -2372,6 +2402,32 @@ class Mario(pg.sprite.Sprite):
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
 
+        if self.flySpeedX != 0 or self.flySpeedY != 0:
+            if self.flySpeedX < 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["left"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "right"
+            elif self.flySpeedX > 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["right"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "left"
+            elif self.flySpeedY > 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["down"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "up"
+            elif self.flySpeedY < 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["up"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "down"
+
         if (self.walking or self.game.player.vx != 0 or self.game.player.vy != 0) and (
                 self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
             self.stepSound.stop()
@@ -2389,8 +2445,12 @@ class Luigi(pg.sprite.Sprite):
         self.canMove = True
         self.hammering = False
         self.isHammer = None
+        self.flySpeedX = 0
+        self.flySpeedY = 0
         self.hitTime = 0
         self.alpha = 255
+        self.KR = 0
+        self.KRTimer = 0
         self.ability = 0
         self.prevAbility = 12
         self.abilities = ["jump", "interact", "talk"]
@@ -2420,7 +2480,7 @@ class Luigi(pg.sprite.Sprite):
         self.stats = {"level": 1, "maxHP": 23, "maxBP": 10, "pow": 6, "def": 8, "hp": 23, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
                            "def": randomNumber(5)}
-        self.attackPieces = [["Cavi Cave", 10],
+        self.attackPieces = [["Cavi Cave", 0],
                              ["Guffawha Ruins", 0],
                              ["Somnom Ruins", 0],
                              ["Fawful's Castle", 0]]
@@ -2473,30 +2533,42 @@ class Luigi(pg.sprite.Sprite):
         jumpOffset = self.jumpTimer * jumpHeight
         self.imgRect.bottom = (self.rect.bottom - 5) - jumpOffset
 
-    def wallCollisions(self, group, vx=0, vy=0):
-        for wall in group:
-            if pg.sprite.collide_rect(self, wall):
-                if vx > 0:
-                    self.rect.right = wall.rect.left
-                    self.vx = 0
-                    self.walking = False
-                if vx < 0:
-                    self.rect.left = wall.rect.right
-                    self.vx = 0
-                    self.walking = False
-                if vy < 0:
-                    self.rect.top = wall.rect.bottom
-                    self.vy = 0
-                    self.walking = False
-                if vy > 0:
-                    self.rect.bottom = wall.rect.top
-                    self.vy = 0
-                    self.walking = False
+    def wallCollisions(self, group, vx=0, vy=0, flySpeed=False):
+        if not flySpeed:
+            for wall in group:
+                if pg.sprite.collide_rect(self, wall):
+                    if vx > 0:
+                        self.rect.right = wall.rect.left
+                        self.vx = 0
+                        self.walking = False
+                    if vx < 0:
+                        self.rect.left = wall.rect.right
+                        self.vx = 0
+                        self.walking = False
+                    if vy < 0:
+                        self.rect.top = wall.rect.bottom
+                        self.vy = 0
+                        self.walking = False
+                    if vy > 0:
+                        self.rect.bottom = wall.rect.top
+                        self.vy = 0
+                        self.walking = False
+        else:
+            for wall in group:
+                if pg.sprite.collide_rect(self, wall):
+                    self.rect.x -= self.flySpeedX
+                    self.rect.y -= self.flySpeedY
+                    if self.flySpeedX != 0 or self.flySpeedY != 0:
+                        self.game.cameraRect.cameraShake = 20
+                        self.game.sansHitOnWallSound.play()
+                    self.flySpeedX = 0
+                    self.flySpeedY = 0
 
     def update(self):
         if self.stats["hp"] < 0:
             self.stats["hp"] = 0
         if self.stats["hp"] == 0:
+            self.KR = 0
             self.dead = True
             self.game.leader = "mario"
         self.animate()
@@ -2516,7 +2588,7 @@ class Luigi(pg.sprite.Sprite):
                         self.rect.x = self.moveQueue.popleft()
                         self.rect.y = self.moveQueue.popleft()
                         self.facing = self.moveQueue.popleft()
-        elif self.game.leader == "luigi" and self.canMove and not self.hammering and not self.game.player.hammering and not self.lightninging:
+        elif self.game.leader == "luigi" and self.canMove and not self.hammering and not self.game.player.hammering and not self.lightninging and self.flySpeedY == 0 and self.flySpeedX == 0:
             if not self.hit and self.canMove:
                 if keys[pg.K_w]:
                     self.vy = -playerSpeed
@@ -2526,6 +2598,8 @@ class Luigi(pg.sprite.Sprite):
                     self.vy = playerSpeed
                 if keys[pg.K_d]:
                     self.vx = playerSpeed
+            else:
+                self.walking = False
 
             self.rect.x += self.vx
             self.wallCollisions(self.game.walls, self.vx)
@@ -2632,8 +2706,37 @@ class Luigi(pg.sprite.Sprite):
         elif self.lightninging:
             self.lightningFire()
 
+        if self.game.player.hammering:
+            self.walking = False
+
+        if self.KR > 0 and not self.dead:
+            if self.KRTimer >= 15:
+                self.KR -= 1
+                self.stats["hp"] -= 1
+                if self.stats["hp"] <= 0:
+                    self.stats["hp"] = 1
+                    self.KR = 0
+                self.KRTimer = 0
+            else:
+                self.KRTimer += 1
+
+        self.wallCollisions(self.game.walls, flySpeed=True)
+
+        self.rect.x += self.flySpeedX
+        self.rect.y += self.flySpeedY
+
+        self.image = self.image.copy()
+
+        if self.KR > 0:
+            self.image.fill((91, 0, 155, 155), special_flags=pg.BLEND_RGB_MAX)
+
     def loadImages(self):
         sheet = spritesheet("sprites/mario-luigi.png", "sprites/mario-luigi.xml")
+
+        self.throwFrames = {"up": sheet.getImageName("luigi_sans_throw_up.png"),
+                            "down": sheet.getImageName("luigi_sans_throw_down.png"),
+                            "left": sheet.getImageName("luigi_sans_throw_left.png"),
+                            "right": sheet.getImageName("luigi_sans_throw_right.png")}
 
         self.shadowFrames = {"normal": sheet.getImageName("shadow.png"),
                              "dead horizontal": sheet.getImageName("dead_shadow_horizontal.png"),
@@ -4215,6 +4318,32 @@ class Luigi(pg.sprite.Sprite):
                 self.imgRect = self.image.get_rect()
                 self.imgRect.center = center
 
+        if self.flySpeedX != 0 or self.flySpeedY != 0:
+            if self.flySpeedX < 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["left"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "right"
+            elif self.flySpeedX > 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["right"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "left"
+            elif self.flySpeedY > 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["down"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "up"
+            elif self.flySpeedY < 0:
+                center = self.imgRect.center
+                self.image = self.throwFrames["up"]
+                self.imgRect = self.image.get_rect()
+                self.imgRect.center = center
+                self.facing = "down"
+
         if (self.walking or self.game.player.vx != 0 or self.game.player.vy != 0) and (
                 self.currentFrame == 0 or self.currentFrame == 6) and now == self.lastUpdate:
             self.stepSound.stop()
@@ -4580,6 +4709,82 @@ class SaveBlock(pg.sprite.Sprite):
                 self.up = True
                 self.hit = True
                 self.game.blockHitSound.play()
+
+
+class UndertaleSaveBlock(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        pg.sprite.Sprite.__init__(self, game.npcs, game.blocks)
+        self.game = game
+        self.game.sprites.append(self)
+        self.ID = -17
+        self.newID = False
+        self.alpha = 255
+        self.vy = 0
+        self.dy = 0.065
+        self.type = "interact"
+        self.loadImages()
+        self.image = self.images[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.shadow = self.image
+        self.imgRect = self.rect
+        self.currentFrame = 0
+        self.lastUpdate = 0
+        self.textbox = None
+        self.canTalk = True
+        self.dead = False
+        self.text = ["* (The fact that this place\n\a seems like its from\n\a somewhere else...)",
+                     "* (It fills you with\n\a DETERMINATION.)"]
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
+
+        self.images = [sheet.getImageName("undertale_save_1.png"),
+                        sheet.getImageName("undertale_save_2.png")]
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 200:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.images):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.images))
+            else:
+                self.currentFrame = 0
+            center = self.imgRect.center
+            self.image = self.images[self.currentFrame]
+            self.imgRect = self.image.get_rect()
+            self.imgRect.center = center
+
+            self.shadow = self.images[1]
+            center = self.rect.center
+            self.rect = self.shadow.get_rect()
+            self.rect.center = center
+            if self.currentFrame == 1:
+                self.shadow.set_alpha(255)
+            else:
+                self.shadow.set_alpha(0)
+
+        if self.textbox is None:
+            keys = pg.key.get_pressed()
+            if self.game.leader == "mario":
+                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.player) and keys[pg.K_m]:
+                    if not self.game.player.jumping:
+                        pg.mixer.music.fadeout(200)
+                        self.game.playsong = False
+                        self.game.firstLoop = True
+                        self.textbox = UndertaleTextBox(self.game, self, self.text)
+                        self.game.currentPoint += pg.mixer.music.get_pos()
+            elif self.game.leader == "luigi":
+                if pg.sprite.collide_rect_ratio(1.1)(self, self.game.follower) and keys[pg.K_l]:
+                    if not self.game.follower.jumping:
+                        pg.mixer.music.fadeout(200)
+                        self.game.playsong = False
+                        self.game.firstLoop = True
+                        self.textbox = UndertaleTextBox(self.game, self, self.text)
+                        self.game.currentPoint += pg.mixer.music.get_pos()
+        elif self.textbox == "complete":
+            self.textbox = None
+            self.game.save = True
 
 
 class MarioBlock(pg.sprite.Sprite):
@@ -5122,6 +5327,218 @@ class TextBox(pg.sprite.Sprite):
                 self.pause -= 1
 
 
+class UndertaleTextBox(pg.sprite.Sprite):
+    def __init__(self, game, parent, text, type="dialogue", head=None, sound="default", complete=False, font="default", speed=1):
+        pg.sprite.Sprite.__init__(self, game.ui, game.textboxes)
+        self.speed = speed
+        self.game = game
+        self.font = font
+        self.head = head
+        self.choosing = False
+        self.talking = False
+        self.game.player.hammering = False
+        self.game.follower.hammering = False
+        self.game.player.canMove = False
+        self.game.follower.canMove = False
+        self.parent = parent
+        self.parent.textbox = self
+        self.offset = False
+        self.closing = False
+        self.advancing = False
+        self.big = False
+        self.sound = sound
+        self.type = type
+        self.text = text.copy()
+        if font == "default":
+            self.font = undertaleFont
+            self.fontsize = 37
+            self.fontSpace = 1.2
+        elif font == "sans":
+            self.font = sansFont
+            self.fontsize = 50
+            self.fontSpace = 1
+        for i in range(len(self.text)):
+            self.text[i] = self.text[i].replace("/n", "\n")
+            self.text[i] = self.text[i] + "\n\a"
+        self.page = 0
+        self.playSound = 10
+        if complete:
+            self.counter = self.speed - 1
+            self.alpha = 255
+            self.scale = 1
+            self.currentCharacter = len(self.text[0])
+        else:
+            self.alpha = 0
+            self.scale = 1
+            self.currentCharacter = 1
+        self.pause = 0
+        self.deathTimer = int(0)
+        self.angleDir = True
+        self.complete = False
+        self.image = textboxSprites["undertale"]
+        self.rect = self.image.get_rect()
+        self.rect.center = self.game.camera.offset(parent.imgRect).center
+        if self.rect.centery >= height / 2:
+            self.rect.center = (width / 2, (self.rect.height / 2) + 20)
+        else:
+            self.rect.center = (width / 2, height - (self.rect.height / 2) - 20)
+        if self.type == "dialogue":
+            self.textx = self.rect.left + 40
+            self.texty = self.rect.top + 30
+        if self.head == "sans":
+            self.headSprites = [pg.image.load("sprites/sans heads/normal.png"),
+                                pg.image.load("sprites/sans heads/look left.png"),
+                                pg.image.load("sprites/sans heads/look left smile.png"),
+                                pg.image.load("sprites/sans heads/wink.png"),
+                                pg.image.load("sprites/sans heads/eyes half closed.png"),
+                                pg.image.load("sprites/sans heads/eyes closed.png"),
+                                pg.image.load("sprites/sans heads/no eyes.png")]
+
+            self.headRect = self.headSprites[0].get_rect()
+            self.headRect.left = self.rect.left + 40
+            self.headRect.centery = self.rect.centery
+
+        self.currentHead = 0
+
+    def update(self):
+        if self.alpha == 0:
+            self.alpha = 255
+        if not self.advancing:
+            if self.head is None:
+                self.textx = self.rect.left + 30
+                self.texty = self.rect.top + 30
+            else:
+                self.textx = self.rect.left + 176
+                self.texty = self.rect.top + 30
+        else:
+            self.page += 1
+            self.currentCharacter = 1
+            self.advancing = False
+
+        if self.text[self.page][0:2] == "/B":
+            self.big = True
+        else:
+            self.big = False
+
+        if self.text[self.page][-4:-2] == "/S" and self.currentCharacter >= len(
+                self.text[self.page]) - 4 and not self.pause:
+            self.game.player.canMove = True
+            self.game.follower.canMove = True
+            self.parent.textbox = "complete"
+            self.complete = True
+            self.kill()
+
+    def draw(self):
+        self.startAdvance = False
+        keys = pg.key.get_pressed()
+        character = self.text[self.page]
+
+        if character[self.currentCharacter - 1] == "\n":
+            self.currentCharacter += 1
+        if character[self.currentCharacter - 1:self.currentCharacter + 1] == "<<":
+            self.currentCharacter += 3
+        if character[self.currentCharacter - 1:self.currentCharacter + 1] == ">>":
+            self.currentCharacter += 2
+        if character[self.currentCharacter - 1: self.currentCharacter + 1] == "/C":
+            self.currentCharacter += 3
+        if character[self.currentCharacter - 1: self.currentCharacter + 1] == "/B":
+            self.currentCharacter += 3
+
+        character = character[:self.currentCharacter]
+
+        if self.currentCharacter < len(self.text[self.page]):
+            if self.text[self.page][self.currentCharacter] == "/":
+                if self.text[self.page][self.currentCharacter + 1] == "p":
+                    self.pause = fps / 2
+                if self.text[self.page][self.currentCharacter + 1] == "P":
+                    self.pause = 60
+                try:
+                    if int(self.text[self.page][self.currentCharacter + 1]) % 1 == 0:
+                        self.currentHead = int(self.text[self.page][self.currentCharacter + 1])
+                except:
+                    pass
+                self.currentCharacter += 2
+
+        character = character.replace("/p", "")
+        character = character.replace("/P", "")
+        character = character.replace("/0", "")
+        character = character.replace("/1", "")
+        character = character.replace("/2", "")
+        character = character.replace("/3", "")
+        character = character.replace("/4", "")
+        character = character.replace("/5", "")
+        character = character.replace("/6", "")
+        character = character.replace("/7", "")
+        character = character.replace("/8", "")
+        character = character.replace("/9", "")
+
+        completeText = False
+        self.game.blit_alpha(self.game.screen, self.image, self.rect, self.alpha)
+        if self.scale >= 1 and self.alpha >= 255:
+            if not self.big:
+                self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
+                ptext.draw(character, (self.textx, self.texty), surf=self.game.screen,
+                           fontname=self.font, fontsize=self.fontsize, color=white, lineheight=self.fontSpace, background=(0, 0, 0), antialias=False)
+            else:
+                self.game.screen.set_clip((self.rect.left, self.rect.top + 30, 1000, 160))
+                ptext.draw(character, (self.rect.centerx - 2, self.texty + 20), lineheight=self.fontSpace,
+                           surf=self.game.screen,
+                           fontname=self.font, fontsize=90, color=white, background=(0, 0, 0),
+                           anchor=(0.5, 0), antialias=False)
+            self.game.screen.set_clip(0, 0, width, height)
+            if self.currentCharacter < len(self.text[self.page]) and not self.advancing:
+                for event in self.game.event:
+                    if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+                        pg.quit()
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                            completeText = True
+                            self.pause = 0
+                if completeText:
+                    self.currentCharacter = len(self.text[self.page])
+            else:
+                for event in self.game.event:
+                    if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+                        pg.quit()
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                            if self.page < len(self.text) - 1:
+                                self.advancing = True
+                            else:
+                                self.counter = 0
+                                self.game.player.canMove = True
+                                self.game.follower.canMove = True
+                                self.parent.textbox = "complete"
+                                self.complete = True
+                                self.kill()
+            if self.pause <= 0:
+                if self.currentCharacter < len(self.text[self.page]) and not completeText:
+                    if character[-1] != " " and self.sound == "default":
+                        self.game.undertaleTalkSound.play()
+                        self.playSound = 0
+                    if self.playSound >= 1 and self.sound == "sans":
+                        self.game.sansTalkSound.play()
+                        self.playSound = 0
+                    else:
+                        self.playSound += 1
+                    self.currentCharacter += 1
+                    self.pause = self.speed
+                    self.talking = True
+
+                    if self.currentCharacter >= len(self.text[self.page]) - 1:
+                        self.startAdvance = True
+                else:
+                    self.talking = False
+                    if not self.advancing:
+                        self.playSound = 10
+            else:
+                if self.pause > 1:
+                    self.playSound = 10
+                self.pause -= 1
+        if self.head is not None:
+            self.game.blit_alpha(self.game.screen, self.headSprites[self.currentHead], self.headRect, self.alpha)
+
+
 class MiniTextbox(pg.sprite.Sprite):
     def __init__(self, game, parent, text, pos):
         pg.sprite.Sprite.__init__(self, game.ui)
@@ -5240,6 +5657,11 @@ class RoomTransition:
                 self.game.storeData["move"] = Q.deque()
                 self.game.player.canMove = True
                 self.game.follower.canMove = True
+                for sprite in self.game.sprites:
+                    try:
+                        sprite.loadImages()
+                    except:
+                        pass
                 eval(self.room)
 
         if self.initialRoom != self.game.room:
@@ -5569,6 +5991,146 @@ class BroqueMonsieurShop(pg.sprite.Sprite):
                     self.imgRect = self.image.get_rect()
                     self.imgRect.bottom = bottom
                     self.imgRect.centerx = centerx
+
+
+class FlipsideToSansRoom(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        pg.sprite.Sprite.__init__(self, game.npcs)
+        self.game = game
+        self.canTalk = True
+        self.textbox = None
+        self.game.sprites.append(self)
+        self.loadImages()
+        self.facing = "down"
+        self.talking = False
+        self.image = self.images[0]
+        self.shadow = self.image
+        self.rect = self.image.get_rect()
+        self.imgRect = self.image.get_rect()
+        self.rect.center = pos
+        self.imgRect.bottom = self.rect.bottom
+        self.imgRect.centerx = self.rect.centerx
+        self.fade = None
+        self.type = "interact"
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.select = 0
+        self.alpha = 255
+        self.options = [pg.rect.Rect(389, 390, 0, 0), pg.rect.Rect(773, 390, 0, 0)]
+        self.cursor = None
+        self.text = ["/CDo you want to go to another world?\n\a\n\a                 YES                        NO"]
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
+
+        self.images = [sheet.getImageName("undertale_save_1.png"),
+                       sheet.getImageName("undertale_save_2.png")]
+
+    def update(self):
+        self.animate()
+        if self.textbox is None:
+            for event in self.game.event:
+                if event.type == pg.KEYDOWN:
+                    if self.game.leader == "mario":
+                        if pg.sprite.collide_rect_ratio(1.1)(self,
+                                                             self.game.player) and event.key == pg.K_m and self.game.player.canMove and self.game.follower.canMove:
+                            if not self.game.player.jumping:
+                                if self.game.player.rect.top >= self.rect.bottom:
+                                    self.facing = "down"
+                                elif self.game.player.rect.bottom <= self.rect.top:
+                                    self.facing = "up"
+                                elif self.rect.right + self.game.player.rect.width > self.game.player.rect.right >= self.rect.left:
+                                    self.facing = "left"
+                                elif self.game.player.rect.left <= self.rect.right:
+                                    self.facing = "right"
+                                self.textbox = TextBox(self.game, self, self.text, type="board", dir="None", choice=True)
+                    elif self.game.leader == "luigi":
+                        if pg.sprite.collide_rect_ratio(1.1)(self,
+                                                             self.game.follower) and event.key == pg.K_l and self.game.player.canMove and self.game.follower.canMove:
+                            if not self.game.follower.jumping:
+                                if self.game.follower.rect.top >= self.rect.bottom:
+                                    self.facing = "down"
+                                elif self.game.follower.rect.bottom <= self.rect.top:
+                                    self.facing = "up"
+                                elif self.rect.right + self.game.player.rect.width > self.game.follower.rect.right >= self.rect.left:
+                                    self.facing = "left"
+                                elif self.game.follower.rect.left <= self.rect.right:
+                                    self.facing = "right"
+                                self.textbox = TextBox(self.game, self, self.text, type="board", dir="None", choice=True)
+        elif self.textbox != "complete":
+            if self.textbox.talking:
+                self.talking = True
+            else:
+                self.talking = False
+            if self.textbox.choosing:
+                if self.cursor is None:
+                    self.cursor = Cursor(self.game, self.options[0])
+                self.cursor.update(self.options[self.select], 60)
+
+                for event in self.game.event:
+                    if event.type == pg.KEYDOWN:
+                        if (event.key == pg.K_a or event.key == pg.K_d) and self.cursor in self.game.cursors:
+                            if self.select == 1:
+                                self.select = 0
+                            elif self.select == 0:
+                                self.select = 1
+                            self.game.abilityAdvanceSound.play()
+                        if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                            self.cursor.kill()
+                            self.game.menuChooseSound.play()
+        else:
+            self.facing = "down"
+            self.textbox = None
+            self.cursor = None
+            if self.select == 0:
+                self.fade = Fadeout(self.game, 5)
+                pg.mixer.music.fadeout(3000)
+                self.game.player.canMove = False
+                self.game.follower.canMove = False
+
+        if self.fade is not None:
+            if self.fade.alpha >= 255:
+                time.sleep(2)
+                self.game.playtime += fps * 2
+                self.game.storeData["mario facing"] = self.game.player.facing
+                self.game.storeData["luigi facing"] = self.game.follower.facing
+                self.game.storeData["mario pos"] = "beef"
+                self.game.storeData["luigi pos"] = "beef"
+                self.game.storeData["mario stats"] = self.game.player.stats
+                self.game.storeData["luigi stats"] = self.game.follower.stats
+                self.game.storeData["mario abilities"] = self.game.player.abilities
+                self.game.storeData["luigi abilities"] = self.game.follower.abilities
+                self.game.storeData["mario current ability"] = self.game.player.ability
+                self.game.storeData["luigi current ability"] = self.game.follower.ability
+                self.game.storeData["mario attack pieces"] = self.game.player.attackPieces
+                self.game.storeData["luigi attack pieces"] = self.game.follower.attackPieces
+                self.game.storeData["move"] = Q.deque()
+                self.game.currentPoint = 0
+                self.game.player.canMove = True
+                self.game.follower.canMove = True
+                self.game.loadSansRoom()
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.lastUpdate > 200:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.images):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.images))
+            else:
+                self.currentFrame = 0
+            center = self.imgRect.center
+            self.image = self.images[self.currentFrame]
+            self.imgRect = self.image.get_rect()
+            self.imgRect.center = center
+
+            self.shadow = self.images[1]
+            center = self.rect.center
+            self.rect = self.shadow.get_rect()
+            self.rect.center = center
+            if self.currentFrame == 1:
+                self.shadow.set_alpha(255)
+            else:
+                self.shadow.set_alpha(0)
 
 
 class ToadleyOverworld(pg.sprite.Sprite):
