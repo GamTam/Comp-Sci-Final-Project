@@ -247,6 +247,7 @@ class Game:
         self.titleScreen()
 
     def playSong(self, introLength, loopLength, song, cont=False, fadein=False, fadeinSpeed=0.05):
+        return 7
         if self.songPlaying != song:
             pg.mixer.music.load("music/" + song + ".ogg")
             self.loops = 0
@@ -3048,6 +3049,7 @@ class Game:
         self.map = PngMap("bowser's castle")
 
         self.player.stats["hp"] = self.player.stats["maxHP"]
+        self.player.stats["exp"] = 3
         self.follower.stats["hp"] = self.follower.stats["maxHP"]
 
         sheet = spritesheet("sprites/bowser.png", "sprites/bowser.xml")
@@ -8913,6 +8915,7 @@ class Game:
                  "self.setVar('self.game.luigi = luigiCutscene(self.game, (-100, -100))')",
                  "self.setVar('self.game.starlow = starlowCutscene(self.game, (-100, -100))')",
                  "self.setVar('self.game.toadley = toadleyCutscene(self.game, (-100, -100))')"],
+                ["""self.setVar('self.game.player.stats["exp"] = 3')"""],
                 ['''self.setVar('self.game.mario.facing = "up"')''',
                  '''self.setVar('self.game.luigi.facing = "up"')''',
                  '''self.setVar('self.game.starlow.facing = "upright"')''',
@@ -9026,15 +9029,16 @@ class Game:
                 ["self.setVar('self.game.player.rect.center = self.game.mario.rect.center')",
                  """self.setVar('self.game.follower.facing = "left"')""",
                  """self.setVar('self.game.player.facing = "left"')""",
-                 "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id=1)
+                 "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id="First Flipside")
         else:
-            LoadCutscene(self, self.player.rect, True, True,
-                         [["self.changeSong([0, 95.997, 'flipside'])",
+            LoadCutscene(self, self.player.rect, True, True, [
+                         ["self.changeSong([0, 95.997, 'flipside'])",
                            "self.move(self.game.void, width / 2, height / 2, False, 0)"],
                           ["self.setVar('self.game.mario = marioCutscene(self.game, (-100, -100))')",
                            "self.setVar('self.game.luigi = luigiCutscene(self.game, (-100, -100))')",
                            "self.setVar('self.game.starlow = starlowCutscene(self.game, (-100, -100))')",
                            "self.setVar('self.game.toadley = toadleyCutscene(self.game, (-100, -100))')"],
+                          ["""self.setVar('self.game.player.stats["exp"] = 3')"""],
                           ['''self.setVar('self.game.mario.facing = "up"')''',
                            '''self.setVar('self.game.luigi.facing = "up"')''',
                            '''self.setVar('self.game.starlow.facing = "upright"')''',
@@ -9152,7 +9156,7 @@ class Game:
                           ["self.setVar('self.game.player.rect.center = self.game.mario.rect.center')",
                            """self.setVar('self.game.follower.facing = "left"')""",
                            """self.setVar('self.game.player.facing = "left"')""",
-                           "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id=1)
+                           "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id="First Flipside")
 
         if self.mcMuffins == 2:
             LoadCutscene(self, self.player.rect, True, True, [
@@ -9206,6 +9210,7 @@ class Game:
                     "Also, I heard that Broque/nMonsieur has opened his/nshop!",
                     "So,/p you know,/p check it out."])"""],
                 ["self.command('self.game.earthquakeSound.play()')",
+                 "self.setVar('self.game.cameraRect.cameraShake = -1')",
                  """self.setVar('self.game.mario.facing = "up"')""",
                  """self.setVar('self.game.luigi.facing = "up"')""",
                  "self.move(self.game.cameraRect, 0, -800, True, 300)",
@@ -9213,7 +9218,8 @@ class Game:
                 ["self.setVar('self.game.voidSize = 0.5')", "self.wait(5)"],
                 ["""self.textBox(self.game.toadley, [
                     "The void is expanding...",
-                    "We're running out of time..."])"""],
+                    "We're running out of time..."])""",
+                 "self.setVar('self.game.cameraRect.cameraShake = 0')",],
                 ["self.move(self.game.cameraRect, 0, 800, True, 300)",
                  "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, 1)"],
                 ["""self.setVar('self.game.mario.facing = "down"')""",
@@ -9277,6 +9283,7 @@ class Game:
                 "I can see that you've/nretrieved all Egg McMuffins!",
                 "Now you have all you/nneed in order to defeat/nCount Bleck!"])"""],
                 ["self.command('self.game.earthquakeSound.play()')",
+                 "self.setVar('self.game.cameraRect.cameraShake = -1')",
                  """self.setVar('self.game.mario.facing = "up"')""",
                  """self.setVar('self.game.luigi.facing = "up"')""",
                  "self.move(self.game.cameraRect, 0, -800, True, 300)",
@@ -9284,7 +9291,8 @@ class Game:
                 ["self.setVar('self.game.voidSize = 2')", "self.wait(5)"],
                 ["""self.textBox(self.game.toadley, [
                     "And not a moment too soon!",
-                    "The void is about to swallow/nus all!"])"""],
+                    "The void is about to swallow/nus all!"])""",
+                 "self.setVar('self.game.cameraRect.cameraShake = 0')"],
                 ["self.move(self.game.cameraRect, 0, 800, True, 300)"],
                 ["""self.setVar('self.game.mario.facing = "down"')""",
                  """self.setVar('self.game.luigi.facing = "down"')"""],
@@ -13025,9 +13033,6 @@ class Game:
         self.cameraRect = CameraRect()
         textboxd = False
         textbox = None
-        if song is None:
-            pg.mixer.music.load("music/battle.ogg")
-            pg.mixer.music.play(-1)
         while len(self.enemies) > 0:
             self.calculatePlayTime()
             if song is not None:
@@ -15289,13 +15294,13 @@ class Game:
         self.follower.abilities = self.storeData["luigi abilities"]
         self.cameraRect = CameraRect()
         self.battleSong = song
-        if self.battleSong is None:
-            self.songPlaying = "battle"
-            pg.mixer.music.set_volume(1)
-            pg.mixer.music.load("music/battle.ogg")
-            pg.mixer.music.play(-1)
-        elif self.battleSong == "none":
-            self.battleSong = None
+        # if self.battleSong is None:
+        #     self.songPlaying = "battle"
+        #     pg.mixer.music.set_volume(1)
+        #     pg.mixer.music.load("music/battle.ogg")
+        #     pg.mixer.music.play(-1)
+        # elif self.battleSong == "none":
+        self.battleSong = None
         while self.playing:
             self.calculatePlayTime()
             if self.battleSong is not None:
@@ -17628,7 +17633,7 @@ class Game:
         [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
     def sortByYPos(self, element):
-        return element.rect.centery
+        return element.rect.bottom
 
     def sortByXPos(self, element):
         return element.rect.left

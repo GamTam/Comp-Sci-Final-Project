@@ -6380,7 +6380,7 @@ class Sans(StateMachine):
             self.currentBody = "shrug"
             self.currentHead = "wink"
 
-        if self.dodge == "up":
+        if self.dodge == "left":
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
@@ -6389,26 +6389,6 @@ class Sans(StateMachine):
                 self.dodged = True
                 if self.dodgeTimer < 15:
                     self.rect.y += self.dodgeSpeed
-                self.dodgeTimer -= 1
-            else:
-                self.dodged = False
-                self.dodge = None
-                self.currentBody = "default"
-                self.currentHead = "default"
-                try:
-                    eval(self.hitDialogue[self.dialogueCounter])
-                except:
-                    pass
-                self.dialogueCounter += 1
-        elif self.dodge == "down":
-            if self.dodgeTimer < 30 and not self.dodged:
-                self.dodgeTimer += 1
-                if self.dodgeTimer < 15:
-                    self.rect.y += self.dodgeSpeed
-            elif self.dodgeTimer > 0:
-                self.dodged = True
-                if self.dodgeTimer < 15:
-                    self.rect.y -= self.dodgeSpeed
                 self.dodgeTimer -= 1
             else:
                 self.dodged = False
@@ -6424,53 +6404,11 @@ class Sans(StateMachine):
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
-                    self.rect.x += self.dodgeSpeed
-            elif self.dodgeTimer > 0:
-                self.dodged = True
-                if self.dodgeTimer < 15:
-                    self.rect.x -= self.dodgeSpeed
-                self.dodgeTimer -= 1
-            else:
-                self.dodged = False
-                self.dodge = None
-                self.currentBody = "default"
-                self.currentHead = "default"
-                try:
-                    eval(self.hitDialogue[self.dialogueCounter])
-                except:
-                    pass
-                self.dialogueCounter += 1
-        elif self.dodge == "left":
-            if self.dodgeTimer < 30 and not self.dodged:
-                self.dodgeTimer += 1
-                if self.dodgeTimer < 15:
-                    self.rect.x -= self.dodgeSpeed
-            elif self.dodgeTimer > 0:
-                self.dodged = True
-                if self.dodgeTimer < 15:
-                    self.rect.x += self.dodgeSpeed
-                self.dodgeTimer -= 1
-            else:
-                self.dodged = False
-                self.dodge = None
-                self.currentBody = "default"
-                self.currentHead = "default"
-                try:
-                    eval(self.hitDialogue[self.dialogueCounter])
-                except:
-                    pass
-                self.dialogueCounter += 1
-        elif self.dodge == "upright":
-            if self.dodgeTimer < 30 and not self.dodged:
-                self.dodgeTimer += 1
-                if self.dodgeTimer < 15:
-                    self.rect.x += self.dodgeSpeed
-                    self.rect.y -= self.dodgeSpeed
-            elif self.dodgeTimer > 0:
-                self.dodged = True
-                if self.dodgeTimer < 15:
-                    self.rect.x -= self.dodgeSpeed
                     self.rect.y += self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.y -= self.dodgeSpeed
                 self.dodgeTimer -= 1
             else:
                 self.dodged = False
@@ -6482,16 +6420,56 @@ class Sans(StateMachine):
                 except:
                     pass
                 self.dialogueCounter += 1
-        elif self.dodge == "upleft":
+        elif self.dodge == "up":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "down":
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
                     self.rect.x -= self.dodgeSpeed
-                    self.rect.y -= self.dodgeSpeed
             elif self.dodgeTimer > 0:
                 self.dodged = True
                 if self.dodgeTimer < 15:
                     self.rect.x += self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "downright":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+                    self.rect.y -= self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
                     self.rect.y += self.dodgeSpeed
                 self.dodgeTimer -= 1
             else:
@@ -6509,6 +6487,28 @@ class Sans(StateMachine):
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
                     self.rect.x -= self.dodgeSpeed
+                    self.rect.y -= self.dodgeSpeed
+            elif self.dodgeTimer > 0:
+                self.dodged = True
+                if self.dodgeTimer < 15:
+                    self.rect.x += self.dodgeSpeed
+                    self.rect.y += self.dodgeSpeed
+                self.dodgeTimer -= 1
+            else:
+                self.dodged = False
+                self.dodge = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+                try:
+                    eval(self.hitDialogue[self.dialogueCounter])
+                except:
+                    pass
+                self.dialogueCounter += 1
+        elif self.dodge == "upleft":
+            if self.dodgeTimer < 30 and not self.dodged:
+                self.dodgeTimer += 1
+                if self.dodgeTimer < 15:
+                    self.rect.x -= self.dodgeSpeed
                     self.rect.y += self.dodgeSpeed
             elif self.dodgeTimer > 0:
                 self.dodged = True
@@ -6526,7 +6526,7 @@ class Sans(StateMachine):
                 except:
                     pass
                 self.dialogueCounter += 1
-        elif self.dodge == "downright":
+        elif self.dodge == "upright":
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
