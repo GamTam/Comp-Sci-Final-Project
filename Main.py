@@ -247,7 +247,6 @@ class Game:
         self.titleScreen()
 
     def playSong(self, introLength, loopLength, song, cont=False, fadein=False, fadeinSpeed=0.05):
-        return 7
         if self.songPlaying != song:
             pg.mixer.music.load("music/" + song + ".ogg")
             self.loops = 0
@@ -9301,7 +9300,7 @@ class Game:
                     "Oh yes!/p That reminds me.",
                     "Broque Monsieur has updated his/nshop!",
                     "Also, something weird showed up/non the right side of downtown.",
-                    "You might want to check it out."
+                    "You might want to check it out.",
                     "Now, good luck!"])"""],
                 [
                     "self.move(self.game.toadley, self.game.toadley.rect.centerx, self.game.map.rect.bottom + 75, False, 150)",
@@ -15294,13 +15293,13 @@ class Game:
         self.follower.abilities = self.storeData["luigi abilities"]
         self.cameraRect = CameraRect()
         self.battleSong = song
-        # if self.battleSong is None:
-        #     self.songPlaying = "battle"
-        #     pg.mixer.music.set_volume(1)
-        #     pg.mixer.music.load("music/battle.ogg")
-        #     pg.mixer.music.play(-1)
-        # elif self.battleSong == "none":
-        self.battleSong = None
+        if self.battleSong is None:
+            self.songPlaying = "battle"
+            pg.mixer.music.set_volume(1)
+            pg.mixer.music.load("music/battle.ogg")
+            pg.mixer.music.play(-1)
+        elif self.battleSong == "none":
+            self.battleSong = None
         while self.playing:
             self.calculatePlayTime()
             if self.battleSong is not None:
@@ -16959,7 +16958,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.set_clip(0, expClipAmount, width, height)
@@ -17024,7 +17023,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17066,7 +17065,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17176,7 +17175,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             if not marioBefore:
@@ -17247,7 +17246,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17287,7 +17286,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17373,7 +17372,7 @@ class Game:
 
     def updateBattle(self):
         self.fadeout.update()
-        if self.area != "Castle Bleck":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor":
             self.void.update(self.voidSize)
         self.effects.update()
         [sprite.update() for sprite in self.sprites]
@@ -17387,7 +17386,7 @@ class Game:
         [cutscene.update() for cutscene in self.cutscenes]
 
     def updateOverworld(self):
-        if self.area != "Castle Bleck":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor":
             self.void.update(self.voidSize)
         [ui.update() for ui in self.battleEndUI]
         self.fadeout.update()
@@ -17421,7 +17420,7 @@ class Game:
             self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
         except:
             pass
-        if self.area != "Castle Bleck":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         for sprite in self.sprites:
@@ -17458,7 +17457,7 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        if self.area != "Castle Bleck":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor":
             self.screen.blit(self.void.image, self.void.rect)
 
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
@@ -17525,7 +17524,7 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        if self.area != "Castle Bleck":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
@@ -17565,7 +17564,7 @@ class Game:
         except:
             pass
 
-        if self.area != "Castle Bleck":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
@@ -17606,7 +17605,7 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        if self.area != "Castle Bleck":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)

@@ -134,7 +134,7 @@ class Cutscene:
                     self.game.screen.blit(self.game.map.background, self.game.map.rect)
                 except:
                     pass
-                if self.game.area != "Castle Bleck":
+                if self.game.area != "Castle Bleck" and self.game.area != "Last Corridor":
                     self.game.screen.blit(self.game.void.image, self.game.void.rect)
                 self.game.screen.blit(self.game.map.image, self.game.camera.offset(self.game.map.rect))
                 self.game.cutsceneSprites.sort(key=self.game.sortByYPos)
@@ -527,7 +527,7 @@ class CountBleckClone(StateMachine):
 
         # Stats
         self.fakeStats = self.game.bleck.stats
-        self.stats = {"maxHP": self.fakeStats["maxHP"], "hp": 1, "pow": 45, "def": 60, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.stats = self.fakeStats
         self.rectHP = self.fakeStats["hp"]
 
         self.description = [
@@ -629,18 +629,18 @@ class CountBleckClone(StateMachine):
                            sheet.getImageName("fire_15.png")]
 
     def hpMath(self):
-        if self.rectHP > self.fakeStats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = ((self.rectHP - self.fakeStats["hp"]) / 30) * -1
-        elif self.rectHP < self.fakeStats["hp"] and self.hpSpeed == 0:
-            self.hpSpeed = (self.fakeStats["hp"] - self.rectHP) / 30
+        if self.rectHP > self.game.bleck.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.game.bleck.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.game.bleck.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = (self.game.bleck.stats["hp"] - self.rectHP) / 30
 
         if self.hpSpeed != 0:
-            if self.rectHP > self.fakeStats["hp"] and self.hpSpeed < 0:
+            if self.rectHP > self.game.bleck.stats["hp"] and self.hpSpeed < 0:
                 self.rectHP += self.hpSpeed
-            elif self.rectHP < self.fakeStats["hp"] and self.hpSpeed > 0:
+            elif self.rectHP < self.game.bleck.stats["hp"] and self.hpSpeed > 0:
                 self.rectHP += self.hpSpeed
             else:
-                self.rectHP = self.fakeStats["hp"]
+                self.rectHP = self.game.bleck.stats["hp"]
                 self.hpSpeed = 0
 
     def update(self):
@@ -707,7 +707,7 @@ class CountBleckClone(StateMachine):
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1)))
-                            self.stats["hp"] -= (max(2 * (self.game.player.stats["pow"] - self.stats["def"]), 1))
+                            self.stats["hp"] = 0
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
@@ -725,7 +725,7 @@ class CountBleckClone(StateMachine):
                         if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                       (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1)))
-                            self.stats["hp"] -= (max(2 * (self.game.follower.stats["pow"] - self.stats["def"]), 1))
+                            self.stats["hp"] = 0
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()
@@ -742,7 +742,7 @@ class CountBleckClone(StateMachine):
                     if hammerHitsRound2 and not self.is_hit and self.stats["hp"] > 0:
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                    max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0))
-                        self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 0)
+                        self.stats["hp"] = 0
                         if self.stats["hp"] <= 0:
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
@@ -758,7 +758,7 @@ class CountBleckClone(StateMachine):
                     if hammerHitsRound2 and not self.is_hit and self.stats["hp"] > 0:
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                    max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1))
-                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                        self.stats["hp"] = 0
                         if self.stats["hp"] <= 0:
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
@@ -772,7 +772,7 @@ class CountBleckClone(StateMachine):
                     if type(entity).__name__ == "Lightning":
                         HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                    max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1))
-                        self.stats["hp"] -= max(round((self.game.follower.stats["pow"] - self.stats["def"]) * 2), 1)
+                        self.stats["hp"] = 0
                         if self.stats["hp"] <= 0:
                             self.game.enemyDieSound.play()
                         self.game.enemyHitSound.play()
@@ -784,7 +784,7 @@ class CountBleckClone(StateMachine):
                         if type(entity).__name__ == "Fireball":
                             HitNumbers(self.game, self.game.room, (self.rect.centerx, self.imgRect.top),
                                        max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1))
-                            self.stats["hp"] -= max(round((self.game.player.stats["pow"] - self.stats["def"]) * 1.5), 1)
+                            self.stats["hp"] = 0
                             if self.stats["hp"] <= 0:
                                 self.game.enemyDieSound.play()
                             self.game.enemyHitSound.play()

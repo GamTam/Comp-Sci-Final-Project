@@ -5682,7 +5682,6 @@ class FawfulBullet(pg.sprite.Sprite):
         self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.bottom - 10
         self.alpha = 255
         self.speed = 4.9
-        self.counter = fps * 3
         self.dead = False
         self.stats = stats
         if self.game.leader == "mario":
@@ -5691,14 +5690,6 @@ class FawfulBullet(pg.sprite.Sprite):
             self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
 
     def update(self):
-        self.counter -= 1
-
-        if self.counter > 0:
-            if self.game.leader == "mario":
-                self.angle = get_angle(self.rect.center, self.game.player.rect.center)
-            else:
-                self.angle = get_angle(self.rect.center, self.game.follower.rect.center)
-
         self.rect.center = project(self.rect.center, self.angle, self.speed)
         self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.bottom - 10
 
@@ -5934,7 +5925,7 @@ class CountBleckFight1(StateMachine):
                 ["self.wait(3)"]
             ], id="Begin Phase 2")
 
-            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 70, "exp": 0, "coins": 0, "name": "Count Bleck"}
+            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 70, "exp": 100, "coins": 100, "name": "Count Bleck"}
             self.hasCutscene = True
 
         if self.is_idle:
@@ -6337,6 +6328,8 @@ class Sans(StateMachine):
     def update(self):
         if self.game.player.stats["hp"] == 0 and self.game.follower.stats["hp"] == 0:
             self.game.sansGameovers = self.sansGameovers + 1
+            self.game.follower.attackPieces[0][1] = 10
+            self.game.player.attackPieces[0][1] = 10
 
         self.hpMath()
         playerRect = self.rect.copy()
