@@ -8261,7 +8261,7 @@ class Game:
         self.loadFlipsideTower()
 
     def gameOver(self, mario=True, luigi=True):
-        pg.mixer.stop()
+        pg.mixer.music.stop()
         sheet = spritesheet("sprites/ui.png", "sprites/ui.xml")
         gameOver = sheet.getImageName("Game Over.png")
         gameOverRect = gameOver.get_rect()
@@ -8565,6 +8565,7 @@ class Game:
 
     def loadData(self):
         self.sansHitOnWallSound = pg.mixer.Sound("sounds/sansHitOnWallSound.ogg")
+        self.sansMagicSound = pg.mixer.Sound("sounds/sansTelekinesis.ogg")
         self.castleBleckIntroduction = pg.mixer.Sound("sounds/castleBleckIntroduction.ogg")
         self.click = pg.mixer.Sound("sounds/click.ogg")
         self.birdNoise = pg.mixer.Sound("sounds/birdnoise.ogg")
@@ -8584,7 +8585,7 @@ class Game:
         self.stoneSound = pg.mixer.Sound("sounds/stone footsteps.ogg")
         self.grassSound = pg.mixer.Sound("sounds/grass footsteps.ogg")
         self.jumpSound = pg.mixer.Sound("sounds/jump.ogg")
-        self.battleSound = pg.mixer.Sound("sounds/startbattle.ogg")
+        self.battleSound = pg.mixer.Sound("sounds/startBattle 2.ogg")
         self.marioBattleSound = pg.mixer.Sound("sounds/startBattle_mario.ogg")
         self.undertaleTalkSound = pg.mixer.Sound("sounds/undertaleTalkSound.ogg")
         self.sansTalkSound = pg.mixer.Sound("sounds/sansTalkSound.ogg")
@@ -14086,16 +14087,16 @@ class Game:
         self.playsong = True
         self.map = Map(self, "sans fight room")
 
-        self.sans = Sans()
-        self.sans.init(self, (self.map.width / 2, 690))
-
-
-        self.cameraRect.rect.center = (self.map.width / 2, 690)
+        self.sans = Sans(self, (self.map.width / 2, 690))
 
         self.camera = Camera(self, self.map.width, self.map.height)
-        self.player.rect.center = (self.map.width / 2, 720)
+        self.cameraRect.rect.center = (self.map.width / 2, 690)
+        self.camera.update(self.cameraRect.rect)
+        self.player.rect.center = (self.map.width / 2 + 20, 720)
         self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (self.map.width / 2, 720)
+        self.follower.rect.center = (self.map.width / 2 - 20, 720)
+        self.player.facing = "up"
+        self.follower.facing = "up"
         self.follower.moveQueue.clear()
         self.player.moveQueue.clear()
         self.followerCol = LuigiCollision(self)
@@ -14108,7 +14109,7 @@ class Game:
             self.follower.stats = self.storeData["luigi stats"]
         except:
             pass
-        self.battle("""none""", boss=True)
+        self.battle("none", boss=True)
 
     def loadTeeheeValleyBattle1S(self):
         self.room = "battle"

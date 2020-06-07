@@ -6100,6 +6100,7 @@ class CountBleckFight1(StateMachine):
                             self.getHit()
                             self.cooldown = fps
                             entity.dead = True
+
         elif not self.is_hit and not self.is_speed:
             if self.game.player.stats["hp"] != 0:
                 hits = self.imgRect.colliderect(self.game.playerCol.rect)
@@ -6204,13 +6205,8 @@ class CountBleckFight1(StateMachine):
                 self.cooldown -= 1
 
 
-class Sans(StateMachine):
-    idle = State("Idle", initial=True)
-    notIdle = State("E")
-
-    trans = idle.to(notIdle)
-
-    def init(self, game, pos):
+class Sans:
+    def __init__(self, game, pos):
         self.game = game
         self.game.enemies.append(self)
         self.game.sprites.append(self)
@@ -6246,6 +6242,13 @@ class Sans(StateMachine):
         self.dodgeTimer = 0
         self.dodgeSpeed = 10
 
+        self.eyeTimer = 0
+        self.eyeLastUpdate = 0
+        self.throwDir = None
+        self.hasPlayedMagicSound = False
+        self.throwPower = 20
+        self.defaultThrowPower = 20
+
         self.bodyMovement = [0, -1, -1, -1, -1, 0, 0, 0, 1, 1, 1, 1]
         self.bodyMovementY = [0, 0, 1, 0, 0, -1, 0, 0, 0, 1, 0, 0, -1]
         self.headMovement = [0, 1, 1, 1, 0, -1, -1, 0, 1, 1, 1, 0, -1]
@@ -6267,22 +6270,54 @@ class Sans(StateMachine):
                             "No matter what,/p just keep\nattacking him.",
                             "Even if you're hit by his\npoison attacks."]
 
-        self.hitDialogue = ['''Cutscene(self.game, [
+        self.hitDialogue = [
+            '''Cutscene(self.game, [
             ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
+            "self.changeSong([17.057, 144.041, 'megalovania'])",
              "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
-             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
-             """self.undertaleTextBox(self.game.sans, [
+             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')", 
+             "self.move(self.game.cameraRect, self.game.sans.rect.centerx, self.game.sans.rect.centery, False, 60)"],
+             ["""self.undertaleTextBox(self.game.sans, [
             "*/2 what?",
             "*/3 you think i'm just/n\a gonna stand there and/n\a take it?"
             ], sound="sans", font="sans", head="sans")""",
              """self.setVar('self.game.sans.currentHead = "look left smile"')""",
              """if self.textbox[0].page == 1: self.setVar('self.game.sans.currentHead = "wink"')""",
              """if self.textbox[0].page == 1: self.setVar('self.game.sans.currentBody = "shrug"')"""],
-            ["""self.setVar('self.game.player.flySpeedY = 20')""",
-             """self.setVar('self.game.follower.flySpeedY = 20')""",
+            ["""self.setVar('self.game.sans.currentFrame = 0')""",
+             """self.setVar('self.game.sans.throwDir = "left"')""",
              """self.setVar('self.game.sans.currentHead = "default"')""",
              """self.setVar('self.game.sans.currentBody = "default"')"""]
-            ])''']
+            ])''',
+            '''Cutscene(self.game, [
+            ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
+            "self.changeSong([17.057, 144.041, 'megalovania'])",
+             "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+             """self.undertaleTextBox(self.game.sans, [
+            "* i like bananas."
+            ], sound="sans", font="sans", head="sans")"""],
+            ["""self.setVar('self.game.sans.currentFrame = 0')""",
+             """self.setVar('self.game.sans.throwDir = "up"')""",
+             """self.setVar('self.game.sans.currentHead = "default"')""",
+             """self.setVar('self.game.sans.currentBody = "default"')"""]
+            ])''',
+            '''Cutscene(self.game, [
+            ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
+            "self.changeSong([17.057, 144.041, 'megalovania'])",
+             "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+             """self.undertaleTextBox(self.game.sans, [
+            "*/5 wait...",
+            "*/6 you don't?"
+            ], sound="sans", font="sans", head="sans")"""],
+            ["""self.setVar('self.game.sans.currentFrame = 0')""",
+             """self.setVar('self.game.sans.throwDir = "right"')""",
+             """self.setVar('self.game.sans.currentHead = "default"')""",
+             """self.setVar('self.game.sans.currentBody = "default"')"""]
+            ])'''
+            ]
+
         self.dialogueCounter = 0
 
     def loadImages(self):
@@ -6299,7 +6334,7 @@ class Sans(StateMachine):
 
         self.body = {"default": sheet.getImageName("body default.png"),
                      "shrug": sheet.getImageName("body shrug.png"),
-                     "throw down":[sheet.getImageName("throw_down_1.png"),
+                     "throw down": [sheet.getImageName("throw_down_1.png"),
                                    sheet.getImageName("throw_down_2.png"),
                                    sheet.getImageName("throw_down_3.png"),
                                    sheet.getImageName("throw_down_4.png"),
@@ -6332,8 +6367,6 @@ class Sans(StateMachine):
             self.game.player.attackPieces[0][1] = 10
 
         self.hpMath()
-        playerRect = self.rect.copy()
-        playerRect.width = playerRect.width * self.hitRange
 
         LoadCutscene(self.game, self.game.player.rect, True, True, [
             ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
@@ -6362,10 +6395,9 @@ class Sans(StateMachine):
             "*/6/p S H O U L D  B E/n\a B U R N I N G  I N/n\a H E L L."
             ], sound="none", head="sans", speed=3)"""],
             ["self.setVar('self.game.sans.anim = True')",
-             """self.setVar('self.game.sans.currentHead = "default"')""",
+             """self.setVar('self.game.sans.currentFrame = 0')""",
+             """self.setVar('self.game.sans.throwDir = "down"')""",
              """self.setVar('self.game.sans.rectHP = 0')""",
-             """self.setVar('self.game.player.flySpeedY = 20')""",
-             """self.setVar('self.game.follower.flySpeedY = 20')""",
              '''self.setVar("""self.game.battleSong = 'self.playSong(17.057, 144.041, "megalovania")'""")''']
         ], id="it's a beautiful day outside...")
 
@@ -6373,7 +6405,33 @@ class Sans(StateMachine):
             self.currentBody = "shrug"
             self.currentHead = "wink"
 
-        if self.dodge == "left":
+        if self.throwDir is not None:
+            self.currentHead = "eye glow"
+            # if self.throwDir == "down":
+            self.currentBody = "throw down"
+            if self.currentFrame == 0 and not self.hasPlayedMagicSound:
+                self.game.sansMagicSound.play()
+                self.hasPlayedMagicSound = True
+            if self.currentFrame == len(self.body[self.currentBody]) - 1:
+                if self.throwDir == "down":
+                    self.game.player.flySpeedY = self.throwPower
+                    self.game.follower.flySpeedY = self.throwPower
+                elif self.throwDir == "up":
+                    self.game.player.flySpeedY = -self.throwPower
+                    self.game.follower.flySpeedY = -self.throwPower
+                elif self.throwDir == "left":
+                    self.game.player.flySpeedX = -self.throwPower
+                    self.game.follower.flySpeedX = -self.throwPower
+                elif self.throwDir == "right":
+                    self.game.player.flySpeedX = self.throwPower
+                    self.game.follower.flySpeedX = self.throwPower
+                self.throwDir = None
+                self.currentBody = "default"
+                self.currentHead = "default"
+        else:
+            self.hasPlayedMagicSound = False
+
+        if self.dodge == "right":
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
@@ -6393,7 +6451,7 @@ class Sans(StateMachine):
                 except:
                     pass
                 self.dialogueCounter += 1
-        elif self.dodge == "right":
+        elif self.dodge == "left":
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
@@ -6413,7 +6471,7 @@ class Sans(StateMachine):
                 except:
                     pass
                 self.dialogueCounter += 1
-        elif self.dodge == "up":
+        elif self.dodge == "down":
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
@@ -6433,7 +6491,7 @@ class Sans(StateMachine):
                 except:
                     pass
                 self.dialogueCounter += 1
-        elif self.dodge == "down":
+        elif self.dodge == "up":
             if self.dodgeTimer < 30 and not self.dodged:
                 self.dodgeTimer += 1
                 if self.dodgeTimer < 15:
@@ -6599,6 +6657,28 @@ class Sans(StateMachine):
                                 self.game.follower.KR = 0
                             self.game.playerHitSound.play()
 
+        if self.stats["hp"] != 0 and self.game.player.isHammer is not None and self.dodge is None:
+            hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+            if hammerHits:
+                hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                if hammerHitsRound2 and self.stats["hp"] > 0:
+                    self.cooldown = fps
+                    self.dodge = self.game.player.facing
+
+        if self.stats["hp"] != 0 and self.game.follower.isHammer is not None and self.dodge is None:
+            hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+            if hammerHits:
+                hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                if hammerHitsRound2 and self.stats["hp"] > 0:
+                    self.cooldown = fps
+                    self.dodge = self.game.follower.facing
+
+        for entity in self.game.entities:
+            if self.rect.colliderect(entity.rect) and self.stats["hp"] > 0:
+                if self.imgRect.colliderect(entity.imgRect):
+                    if type(entity).__name__ == "Fireball":
+                        entity.dead = True
+
         self.animate()
 
     def animate(self):
@@ -6607,7 +6687,12 @@ class Sans(StateMachine):
             self.headRect = self.head[self.currentHead][self.currentFrame % 2].get_rect()
         else:
             self.headRect = self.head[self.currentHead].get_rect()
-        self.bodyRect = self.body[self.currentBody].get_rect()
+
+        if "throw" in self.currentBody:
+            self.bodyRect = self.body[self.currentBody][self.currentFrame].get_rect()
+        else:
+            self.bodyRect = self.body[self.currentBody].get_rect()
+
         self.legRect = self.legs.get_rect()
 
         self.legRect.centerx = self.rect.centerx
@@ -6617,7 +6702,15 @@ class Sans(StateMachine):
         self.headRect.centerx = self.bodyRect.centerx + 2
         self.headRect.bottom = self.bodyRect.top + 10
 
-        if now - self.lastUpdate > 100 and self.anim:
+        if now - self.eyeLastUpdate > 40:
+            self.eyeLastUpdate = now
+            self.eyeTimer += 1
+
+        if now - self.lastUpdate > 50 and "throw" in self.currentBody:
+            self.lastUpdate = now
+            if self.currentFrame < len(self.currentBody) - 1:
+                self.currentFrame += 1
+        elif now - self.lastUpdate > 100 and self.anim:
             self.lastUpdate = now
             if self.currentFrame < len(self.bodyMovement):
                 self.currentFrame = (self.currentFrame + 1) % (len(self.bodyMovement))
@@ -6630,12 +6723,17 @@ class Sans(StateMachine):
         self.headRect.y += self.headMovement[self.currentFrame]
 
         if self.currentHead == "eye glow":
-            head = self.head[self.currentHead][self.currentFrame % 2]
+            head = self.head[self.currentHead][self.eyeTimer % 2]
         else:
             head = self.head[self.currentHead]
 
         if "throw" in self.currentBody:
-            pass
+            bod = self.body[self.currentBody][self.currentFrame]
+            self.bodyRect = self.body[self.currentBody][self.currentFrame].get_rect()
+            self.bodyRect.bottom = self.legRect.bottom
+            self.bodyRect.centerx = self.legRect.centerx
+            self.headRect.bottom = self.bodyRect.bottom - 80
+            self.headRect.centerx = self.bodyRect.centerx - 2
         else:
             bod = self.body[self.currentBody]
 
