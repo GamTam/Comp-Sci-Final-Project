@@ -1,8 +1,0 @@
-  5/8/2020 1:18:04 AM: Starting composition “idle”.
-
-  Output To: C:\Users\DaCambra Family\Desktop\GitHib\Comp-Sci-Final-Project\Sprites\Final Project Sprites\Count Bleck\hit_[#].png    5/8/2020 1:18:05 AM: Finished composition “idle”.
-
-
-  Total Time Elapsed: 1 Seconds
-Log closed on 5/8/2020 at 1:18:05 AM
-
