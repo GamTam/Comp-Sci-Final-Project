@@ -18,6 +18,7 @@ def get_angle(origin, destination):
 class Cutscene:
     def __init__(self, game, scenes, parent=None, currentScene=0, currentSubscene=0):
         self.over = False
+        self.flash = None
         self.game = game
         self.game.cutsceneSprites = []
         self.parent = parent
@@ -125,7 +126,7 @@ class Cutscene:
                     drawBackground = False
 
             self.game.screen.fill(black)
-            if self.game.area == "Last Corridor":
+            if self.game.area == "Last Corridor" and self.game.room != "battle":
                 for sprite in self.game.cutsceneSprites:
                     if sprite not in self.game.blocks:
                         sprite.image = sprite.image.copy()
@@ -178,6 +179,15 @@ class Cutscene:
 
         self.game.updateOverworld()
         self.game.playtime -= 1
+
+    def screenFlash(self):
+        if self.flash is None:
+            self.game.flashSound.play()
+            self.flash = Flash(self.game)
+
+        if self.flash.done:
+            self.flash = None
+            self.sceneEnd()
 
     def bleckCloneCreate(self):
         if self.timer > 0:
@@ -523,11 +533,10 @@ class CountBleckClone(StateMachine):
         self.offset = 0
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.bottom = self.rect.centery + 5 - self.offset
-        self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.hasCutscene = False
 
         # Stats
-        self.fakeStats = self.game.bleck.stats
+        self.fakeStats = self.game.bleck.stats.copy()
         self.stats = self.fakeStats
         self.rectHP = self.fakeStats["hp"]
 
@@ -538,96 +547,18 @@ class CountBleckClone(StateMachine):
                 self.fakeStats["pow"]) + ",/p\nDefence is " + str(self.fakeStats["def"]) + ".",
             "He's going to throw everything\nhe can at you.",
             "But you can beat him if you\ngive it your all!",
-            "And you have to, or else we\nall will be snatched by the Void..."]
+            "And you have to, or else\neverything we know will be\ngone..."]
 
     def loadImages(self):
-        sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
+        self.shadow = self.game.bleck.shadow
 
-        self.shadow = sheet.getImageName("shadow.png")
+        self.hitFrame = self.game.bleck.hitFrame
 
-        self.hitFrame = sheet.getImageName("hit.png")
+        self.idleImages = self.game.bleck.idleImages
 
-        self.idleImages = [sheet.getImageName("idle_1.png"),
-                           sheet.getImageName("idle_2.png"),
-                           sheet.getImageName("idle_3.png"),
-                           sheet.getImageName("idle_4.png"),
-                           sheet.getImageName("idle_5.png"),
-                           sheet.getImageName("idle_6.png"),
-                           sheet.getImageName("idle_7.png"),
-                           sheet.getImageName("idle_8.png"),
-                           sheet.getImageName("idle_9.png"),
-                           sheet.getImageName("idle_10.png"),
-                           sheet.getImageName("idle_11.png"),
-                           sheet.getImageName("idle_12.png"),
-                           sheet.getImageName("idle_13.png"),
-                           sheet.getImageName("idle_14.png"),
-                           sheet.getImageName("idle_15.png"),
-                           sheet.getImageName("idle_16.png"),
-                           sheet.getImageName("idle_17.png"),
-                           sheet.getImageName("idle_18.png"),
-                           sheet.getImageName("idle_19.png"),
-                           sheet.getImageName("idle_20.png"),
-                           sheet.getImageName("idle_21.png"),
-                           sheet.getImageName("idle_22.png"),
-                           sheet.getImageName("idle_23.png"),
-                           sheet.getImageName("idle_24.png"),
-                           sheet.getImageName("idle_25.png"),
-                           sheet.getImageName("idle_26.png"),
-                           sheet.getImageName("idle_27.png"),
-                           sheet.getImageName("idle_28.png"),
-                           sheet.getImageName("idle_29.png"),
-                           sheet.getImageName("idle_30.png"),
-                           sheet.getImageName("idle_31.png"),
-                           sheet.getImageName("idle_32.png"),
-                           sheet.getImageName("idle_33.png"),
-                           sheet.getImageName("idle_34.png"),
-                           sheet.getImageName("idle_35.png"),
-                           sheet.getImageName("idle_36.png"),
-                           sheet.getImageName("idle_37.png"),
-                           sheet.getImageName("idle_38.png"),
-                           sheet.getImageName("idle_39.png"),
-                           sheet.getImageName("idle_40.png"),
-                           sheet.getImageName("idle_41.png"),
-                           sheet.getImageName("idle_42.png"),
-                           sheet.getImageName("idle_43.png"),
-                           sheet.getImageName("idle_44.png"),
-                           sheet.getImageName("idle_45.png"),
-                           sheet.getImageName("idle_46.png"),
-                           sheet.getImageName("idle_47.png"),
-                           sheet.getImageName("idle_48.png"),
-                           sheet.getImageName("idle_49.png"),
-                           sheet.getImageName("idle_50.png"),
-                           sheet.getImageName("idle_51.png")]
+        self.laughingFrames = self.game.bleck.laughingFrames
 
-        self.laughingFrames = [sheet.getImageName("to_laugh_1.png"),
-                               sheet.getImageName("to_laugh_2.png"),
-                               sheet.getImageName("to_laugh_3.png"),
-                               sheet.getImageName("to_laugh_4.png"),
-                               sheet.getImageName("to_laugh_5.png"),
-                               sheet.getImageName("to_laugh_6.png"),
-                               sheet.getImageName("laugh_1.png"),
-                               sheet.getImageName("laugh_2.png"),
-                               sheet.getImageName("laugh_3.png"),
-                               sheet.getImageName("laugh_4.png"),
-                               sheet.getImageName("laugh_5.png"),
-                               sheet.getImageName("laugh_6.png"),
-                               sheet.getImageName("laugh_7.png")]
-
-        self.fireFrames = [sheet.getImageName("fire_1.png"),
-                           sheet.getImageName("fire_2.png"),
-                           sheet.getImageName("fire_3.png"),
-                           sheet.getImageName("fire_4.png"),
-                           sheet.getImageName("fire_5.png"),
-                           sheet.getImageName("fire_6.png"),
-                           sheet.getImageName("fire_7.png"),
-                           sheet.getImageName("fire_8.png"),
-                           sheet.getImageName("fire_9.png"),
-                           sheet.getImageName("fire_10.png"),
-                           sheet.getImageName("fire_11.png"),
-                           sheet.getImageName("fire_12.png"),
-                           sheet.getImageName("fire_13.png"),
-                           sheet.getImageName("fire_14.png"),
-                           sheet.getImageName("fire_15.png")]
+        self.fireFrames = self.game.bleck.fireFrames
 
     def hpMath(self):
         if self.rectHP > self.game.bleck.stats["hp"] and self.hpSpeed == 0:
@@ -647,6 +578,8 @@ class CountBleckClone(StateMachine):
     def update(self):
         self.animate()
         self.hpMath()
+        if self.stats["hp"] != 0:
+            self.stats["hp"] = self.game.bleck.stats["hp"]
 
         if self.is_idle:
             chance = random.randrange(0, 100)
@@ -3095,85 +3028,11 @@ class BleckCloneCutscene(pg.sprite.Sprite):
         self.speed = 20
         self.laughing = True
         self.talking = False
-        self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
 
     def loadImages(self):
-        sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
+        self.laughingFrames = self.game.bleck.laughingFrames
 
-        self.idleFrames = [sheet.getImageName("idle_1.png"),
-                        sheet.getImageName("idle_2.png"),
-                        sheet.getImageName("idle_3.png"),
-                        sheet.getImageName("idle_4.png"),
-                        sheet.getImageName("idle_5.png"),
-                        sheet.getImageName("idle_6.png"),
-                        sheet.getImageName("idle_7.png"),
-                        sheet.getImageName("idle_8.png"),
-                        sheet.getImageName("idle_9.png"),
-                        sheet.getImageName("idle_10.png"),
-                        sheet.getImageName("idle_11.png"),
-                        sheet.getImageName("idle_12.png"),
-                        sheet.getImageName("idle_13.png"),
-                        sheet.getImageName("idle_14.png"),
-                        sheet.getImageName("idle_15.png"),
-                        sheet.getImageName("idle_16.png"),
-                        sheet.getImageName("idle_17.png"),
-                        sheet.getImageName("idle_18.png"),
-                        sheet.getImageName("idle_19.png"),
-                        sheet.getImageName("idle_20.png"),
-                        sheet.getImageName("idle_21.png"),
-                        sheet.getImageName("idle_22.png"),
-                        sheet.getImageName("idle_23.png"),
-                        sheet.getImageName("idle_24.png"),
-                        sheet.getImageName("idle_25.png"),
-                        sheet.getImageName("idle_26.png"),
-                        sheet.getImageName("idle_27.png"),
-                        sheet.getImageName("idle_28.png"),
-                        sheet.getImageName("idle_29.png"),
-                        sheet.getImageName("idle_30.png"),
-                        sheet.getImageName("idle_31.png"),
-                        sheet.getImageName("idle_32.png"),
-                        sheet.getImageName("idle_33.png"),
-                        sheet.getImageName("idle_34.png"),
-                        sheet.getImageName("idle_35.png"),
-                        sheet.getImageName("idle_36.png"),
-                        sheet.getImageName("idle_37.png"),
-                        sheet.getImageName("idle_38.png"),
-                        sheet.getImageName("idle_39.png"),
-                        sheet.getImageName("idle_40.png"),
-                        sheet.getImageName("idle_41.png"),
-                        sheet.getImageName("idle_42.png"),
-                        sheet.getImageName("idle_43.png"),
-                        sheet.getImageName("idle_44.png"),
-                        sheet.getImageName("idle_45.png"),
-                        sheet.getImageName("idle_46.png"),
-                        sheet.getImageName("idle_47.png"),
-                        sheet.getImageName("idle_48.png"),
-                        sheet.getImageName("idle_49.png"),
-                        sheet.getImageName("idle_50.png"),
-                        sheet.getImageName("idle_51.png")]
-
-        self.talkingFrames = [sheet.getImageName("talking_1.png"),
-                        sheet.getImageName("talking_2.png"),
-                        sheet.getImageName("talking_3.png"),
-                        sheet.getImageName("talking_4.png"),
-                        sheet.getImageName("talking_5.png"),
-                        sheet.getImageName("talking_6.png")]
-
-        self.laughingFrames = [sheet.getImageName("to_laugh_1.png"),
-                        sheet.getImageName("to_laugh_2.png"),
-                        sheet.getImageName("to_laugh_3.png"),
-                        sheet.getImageName("to_laugh_4.png"),
-                        sheet.getImageName("to_laugh_5.png"),
-                        sheet.getImageName("to_laugh_6.png"),
-                            sheet.getImageName("laugh_1.png"),
-                     sheet.getImageName("laugh_2.png"),
-                     sheet.getImageName("laugh_3.png"),
-                     sheet.getImageName("laugh_4.png"),
-                     sheet.getImageName("laugh_5.png"),
-                     sheet.getImageName("laugh_6.png"),
-                     sheet.getImageName("laugh_7.png")]
-
-        self.shadow = sheet.getImageName("shadow.png")
+        self.shadow = self.game.bleck.shadow
 
     def update(self):
         now = pg.time.get_ticks()
@@ -3187,32 +3046,6 @@ class BleckCloneCutscene(pg.sprite.Sprite):
                 bottom = self.imgRect.bottom
                 left = self.imgRect.left
                 self.image = self.laughingFrames[self.currentFrame]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.bottom = bottom
-                self.imgRect.left = left
-        elif self.talking:
-            if now - self.lastUpdate > 30:
-                self.lastUpdate = now
-                if self.currentFrame < len(self.talkingFrames):
-                    self.currentFrame = (self.currentFrame + 1) % (len(self.talkingFrames))
-                else:
-                    self.currentFrame = 0
-                bottom = self.imgRect.bottom
-                left = self.imgRect.left
-                self.image = self.talkingFrames[self.currentFrame]
-                self.imgRect = self.image.get_rect()
-                self.imgRect.bottom = bottom
-                self.imgRect.left = left
-        else:
-            if now - self.lastUpdate > 30:
-                self.lastUpdate = now
-                if self.currentFrame < len(self.idleFrames):
-                    self.currentFrame = (self.currentFrame + 1) % (len(self.idleFrames))
-                else:
-                    self.currentFrame = 0
-                bottom = self.imgRect.bottom
-                left = self.imgRect.left
-                self.image = self.idleFrames[self.currentFrame]
                 self.imgRect = self.image.get_rect()
                 self.imgRect.bottom = bottom
                 self.imgRect.left = left

@@ -872,6 +872,39 @@ class Fadeout(pg.sprite.Sprite):
         self.image.set_alpha(self.alpha)
 
 
+class Flash(pg.sprite.Sprite):
+    def __init__(self, game, speed=40):
+        pg.sprite.Sprite.__init__(self, game.fadeout)
+        self.game = game
+        self.speed = speed
+        self.image = pg.Surface((self.game.screen.get_width(), self.game.screen.get_height()))
+        self.rect = self.image.get_rect()
+        self.imgRect = self.rect
+        self.image.fill(white)
+        self.alpha = 1
+        self.image.set_alpha(self.alpha)
+        self.up = True
+        self.done = False
+
+    def update(self):
+        self.image.set_alpha(self.alpha)
+        if self.up:
+            self.alpha += self.speed
+        elif not self.up:
+            self.alpha -= self.speed
+
+        if self.alpha >= 250:
+            self.alpha = 250
+            self.up = False
+        print(self.alpha)
+
+        if self.alpha <= 0:
+            self.done = True
+            self.kill()
+
+        self.image.set_alpha(self.alpha)
+
+
 class SaveSelection(pg.sprite.Sprite):
     def __init__(self, game, save):
         pg.sprite.Sprite.__init__(self)

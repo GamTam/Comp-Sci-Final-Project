@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:2dd3f34044e70c27872f5cbb5515b98f:c6adc0077dc4ddc8e4a6306932d31558:6e8cbfc3f27506699799b29243a3808b$ -->
+<!-- $TexturePacker:SmartUpdate:c1c65aba09afe6763d133ca78db8ac87:875bb2ea12ec61c52fd95f77ccdeaa3d:6e8cbfc3f27506699799b29243a3808b$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -19,22 +19,27 @@ vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
 verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
 triangles  => sprite triangulation, 3 vertex indices per triangle
 -->
-<TextureAtlas imagePath="sansBattle.png" width="252" height="570">
+<TextureAtlas imagePath="sansBattle.png" width="256" height="794">
     <sprite n="body default.png" x="0" y="46" w="104" h="50" pX="0.5" pY="0.5"/>
     <sprite n="body shrug.png" x="104" y="46" w="146" h="50" pX="0.5" pY="0.5"/>
-    <sprite n="head default.png" x="0" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
-    <sprite n="head eyes closed.png" x="64" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
-    <sprite n="head glow eye 1.png" x="0" y="216" w="64" h="60" pX="0.5" pY="0.5"/>
-    <sprite n="head glow eye 2.png" x="64" y="216" w="64" h="60" pX="0.5" pY="0.5"/>
-    <sprite n="head look left smile.png" x="128" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
-    <sprite n="head no eyes.png" x="64" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
-    <sprite n="head wink.png" x="128" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head default.png" x="0" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head eyes closed.png" x="64" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head glow eye 1.png" x="128" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head glow eye 2.png" x="192" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head look left smile.png" x="0" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head no eyes.png" x="64" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="head wink.png" x="128" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
     <sprite n="legs.png" x="92" y="0" w="88" h="46" pX="0.5" pY="0.5"/>
-    <sprite n="look left smile.png" x="0" y="96" w="64" h="60" pX="0.5" pY="0.5"/>
+    <sprite n="look left smile.png" x="192" y="156" w="64" h="60" pX="0.5" pY="0.5"/>
     <sprite n="shadow.png" x="0" y="0" w="92" h="12" pX="0.5" pY="0.5"/>
-    <sprite n="throw_down_1.png" x="0" y="434" w="116" h="132" pX="0.5" pY="0.5"/>
-    <sprite n="throw_down_2.png" x="116" y="434" w="116" h="136" pX="0.5" pY="0.5"/>
-    <sprite n="throw_down_3.png" x="124" y="308" w="128" h="126" pX="0.5" pY="0.5"/>
-    <sprite n="throw_down_4.png" x="128" y="216" w="124" h="92" pX="0.5" pY="0.5"/>
-    <sprite n="throw_down_5.png" x="0" y="308" w="124" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_1.png" x="0" y="526" w="116" h="132" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_2.png" x="0" y="658" w="116" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_3.png" x="0" y="400" w="128" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_4.png" x="0" y="216" w="124" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="throw_down_5.png" x="124" y="216" w="124" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="throw_up_1.png" x="0" y="308" w="124" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="throw_up_2.png" x="124" y="308" w="124" h="92" pX="0.5" pY="0.5"/>
+    <sprite n="throw_up_3.png" x="128" y="400" w="128" h="126" pX="0.5" pY="0.5"/>
+    <sprite n="throw_up_4.png" x="116" y="658" w="116" h="136" pX="0.5" pY="0.5"/>
+    <sprite n="throw_up_5.png" x="116" y="526" w="116" h="132" pX="0.5" pY="0.5"/>
 </TextureAtlas>

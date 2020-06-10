@@ -1302,23 +1302,23 @@ class CountBleckBrosAttack(pg.sprite.Sprite):
 
     def animate(self):
         now = pg.time.get_ticks()
-        if now - self.lastUpdate > 45:
+        if now - self.lastUpdate > 30:
             if not self.hit:
                 self.lastUpdate = now
                 if self.currentFrame < len(self.standingFrames):
                     self.currentFrame = (self.currentFrame + 1) % (len(self.standingFrames))
                 else:
                     self.currentFrame = 0
-                centerx = self.rect.centerx
                 bottom = self.rect.bottom
+                left = self.rect.left
                 self.image = self.standingFrames[self.currentFrame]
                 self.rect = self.image.get_rect()
-                self.rect.centerx = centerx
                 self.rect.bottom = bottom
+                self.rect.left = left
             else:
-                centerx = self.rect.centerx
                 bottom = self.rect.bottom
+                left = self.rect.left
                 self.image = self.hitFrame
                 self.rect = self.image.get_rect()
-                self.rect.centerx = centerx
                 self.rect.bottom = bottom
+                self.rect.left = left

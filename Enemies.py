@@ -5738,7 +5738,7 @@ class FawfulBullet(pg.sprite.Sprite):
             self.game.sprites.remove(self)
 
 
-class CountBleckFight1(StateMachine):
+class CountBleckFight(StateMachine):
     idle = State("Idle", initial=True)
     walking = State("Towards Player")
     hit = State("hit")
@@ -5780,7 +5780,7 @@ class CountBleckFight1(StateMachine):
         self.hasCutscene = False
 
         # Stats
-        self.stats = {"maxHP": 500, "hp": 500, "pow": 95, "def": 85, "exp": 0, "coins": 0, "name": "Count Bleck"}
+        self.stats = {"maxHP": 500, "hp": 500, "pow": 95, "def": 90, "exp": 0, "coins": 0, "name": "Count Bleck"}
         self.rectHP = 0
 
         self.description = [
@@ -5790,7 +5790,7 @@ class CountBleckFight1(StateMachine):
                 self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
             "He's going to throw everything\nhe can at you.",
             "But you can beat him if you\ngive it your all!",
-            "And you have to, or else we\nall will be snatched by the Void..."]
+            "And you have to, or else\neverything we know will be\ngone..."]
 
     def loadImages(self):
         sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
@@ -5925,7 +5925,7 @@ class CountBleckFight1(StateMachine):
                 ["self.wait(3)"]
             ], id="Begin Phase 2")
 
-            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 70, "exp": 100, "coins": 100, "name": "Count Bleck"}
+            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 80, "exp": 100, "coins": 100, "name": "Count Bleck"}
             self.hasCutscene = True
 
         if self.is_idle:
@@ -6267,8 +6267,7 @@ class Sans:
                             "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
                             self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
                             "Something seems off about his\nstats.",
-                            "No matter what,/p just keep\nattacking him.",
-                            "Even if you're hit by his\npoison attacks."]
+                            "No matter what,/p just keep\nattacking him."]
 
         self.hitDialogue = [
             '''Cutscene(self.game, [
@@ -6285,34 +6284,7 @@ class Sans:
              """if self.textbox[0].page == 1: self.setVar('self.game.sans.currentHead = "wink"')""",
              """if self.textbox[0].page == 1: self.setVar('self.game.sans.currentBody = "shrug"')"""],
             ["""self.setVar('self.game.sans.currentFrame = 0')""",
-             """self.setVar('self.game.sans.throwDir = "left"')""",
-             """self.setVar('self.game.sans.currentHead = "default"')""",
-             """self.setVar('self.game.sans.currentBody = "default"')"""]
-            ])''',
-            '''Cutscene(self.game, [
-            ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
-            "self.changeSong([17.057, 144.041, 'megalovania'])",
-             "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
-             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
-             """self.undertaleTextBox(self.game.sans, [
-            "* i like bananas."
-            ], sound="sans", font="sans", head="sans")"""],
-            ["""self.setVar('self.game.sans.currentFrame = 0')""",
-             """self.setVar('self.game.sans.throwDir = "up"')""",
-             """self.setVar('self.game.sans.currentHead = "default"')""",
-             """self.setVar('self.game.sans.currentBody = "default"')"""]
-            ])''',
-            '''Cutscene(self.game, [
-            ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
-            "self.changeSong([17.057, 144.041, 'megalovania'])",
-             "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
-             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
-             """self.undertaleTextBox(self.game.sans, [
-            "*/5 wait...",
-            "*/6 you don't?"
-            ], sound="sans", font="sans", head="sans")"""],
-            ["""self.setVar('self.game.sans.currentFrame = 0')""",
-             """self.setVar('self.game.sans.throwDir = "right"')""",
+             """self.setVar('self.game.sans.throwDir = "down"')""",
              """self.setVar('self.game.sans.currentHead = "default"')""",
              """self.setVar('self.game.sans.currentBody = "default"')"""]
             ])'''
@@ -6330,7 +6302,8 @@ class Sans:
                      "no eyes": sheet.getImageName("head no eyes.png"),
                      "wink": sheet.getImageName("head wink.png"),
                      "look left smile": sheet.getImageName("head look left smile.png"),
-                     "eye glow": [sheet.getImageName("head glow eye 1.png"),sheet.getImageName("head glow eye 2.png")]}
+                     "eye glow": [sheet.getImageName("head glow eye 1.png"),
+                                  sheet.getImageName("head glow eye 2.png")]}
 
         self.body = {"default": sheet.getImageName("body default.png"),
                      "shrug": sheet.getImageName("body shrug.png"),
@@ -6338,7 +6311,13 @@ class Sans:
                                    sheet.getImageName("throw_down_2.png"),
                                    sheet.getImageName("throw_down_3.png"),
                                    sheet.getImageName("throw_down_4.png"),
-                                   sheet.getImageName("throw_down_5.png")]}
+                                   sheet.getImageName("throw_down_5.png")],
+                     "throw up": [sheet.getImageName("throw_up_1.png"),
+                                    sheet.getImageName("throw_up_2.png"),
+                                    sheet.getImageName("throw_up_3.png"),
+                                    sheet.getImageName("throw_up_4.png"),
+                                    sheet.getImageName("throw_up_5.png")]
+                     }
 
         self.legs = sheet.getImageName("legs.png")
 
