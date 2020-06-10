@@ -1,8 +1,8 @@
-import pygame as pg
 import random
+
+import pygame as pg
+
 from Libraries import ptext
-import math
-from moviepy.editor import *
 
 ptext.DEFAULT_COLOR = "black"
 ptext.DEFAULT_COLOR_TAG = {
@@ -49,6 +49,8 @@ pg.mixer.pre_init(44100, -16, 2, 2048)
 pg.init()
 pg.display.set_caption(title)
 screen = pg.display.set_mode((width, height))
+
+print("a")
 
 battleTransitionSprites = [pg.image.load("sprites/battle intro/battle_transition_1.png").convert_alpha(),
                            pg.image.load("sprites/battle intro/battle_transition_2.png").convert_alpha(),

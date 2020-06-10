@@ -1,4 +1,6 @@
 from Overworld import *
+from Libraries.moviepy.video.io.VideoFileClip import VideoFileClip
+from Libraries.moviepy.video.io.preview import preview
 import random
 from statemachine import StateMachine, State
 from math import sin, cos, pi, atan2
@@ -224,9 +226,9 @@ class Cutscene:
         pg.event.clear()
         mp4 = VideoFileClip("movies/" + movie + ".mp4")
         if self.game.fullscreen:
-            mp4.preview(fps=30, fullscreen=True)
+            mp4.preview(mp4, fps=30, fullscreen=True)
         else:
-            mp4.preview(fps=30)
+            mp4.preview(mp4, fps=30)
         self.sceneEnd()
 
     def wait(self, seconds):

@@ -873,7 +873,7 @@ class Fadeout(pg.sprite.Sprite):
 
 
 class Flash(pg.sprite.Sprite):
-    def __init__(self, game, speed=40):
+    def __init__(self, game, speed=35):
         pg.sprite.Sprite.__init__(self, game.fadeout)
         self.game = game
         self.speed = speed
@@ -893,8 +893,8 @@ class Flash(pg.sprite.Sprite):
         elif not self.up:
             self.alpha -= self.speed
 
-        if self.alpha >= 250:
-            self.alpha = 250
+        if self.alpha >= 245:
+            self.alpha = 245
             self.up = False
         print(self.alpha)
 
