@@ -9144,7 +9144,7 @@ class Game:
                                                "Luigi, you press <<GL>> to jump like mario.",
                                                "And, you can use the menu while/nyou're not in battle!",
                                                "Also, if you press <<REnter>>, you can/nswitch which of you is in front!",
-                                               "And if you're ever confused, press/n<<RT>> to look at the controls."
+                                               "And if you're ever confused, press/n<<RT>> to look at the controls.",
                                                "Ok, now we can get to it!"], sound='starlow')"""],
                           [
                               "self.move(self.game.cameraRect, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60)",
@@ -11966,61 +11966,61 @@ class Game:
         pg.mixer.music.fadeout(1000)
         self.songPlaying = "Banana Music"
 
-        # LoadCutscene(self, pg.rect.Rect(720, 1520, 80, 320), True, False, [
-        #     ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-        #      "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')"],
-        #     ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
-        #      """self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""
-        #      ],
-        #     ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
-        #      "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 120)"],
-        #
-        #     [ """self.textBox(self.bleck, ["I see you've come at last!",
-        #     "So you really are the heroes of/nthe Light Prognosticus!"])"""],
-        #     ["""self.setVar('self.mario.facing = "upright"')""",
-        #      """self.setVar('self.luigi.facing = "upright"')""",
-        #      """self.setVar('self.mario.walking = True')""",
-        #      """self.setVar('self.luigi.walking = True')""",
-        #      "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
-        #      """self.setVar('self.starlow.facing = "upright"')""",
-        #      "self.command('self.game.starlowTwinkle.play()')"
-        #      ],
-        #     ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 600, 1)",
-        #      "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 600, 2)",
-        #      "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 600, 3)"],
-        #     ["""self.setVar('self.mario.facing = "up"')""",
-        #      """self.setVar('self.luigi.facing = "up"')""",
-        #      """self.setVar('self.mario.walking = False')""",
-        #      """self.setVar('self.luigi.walking = False')""",
-        #      """self.setVar('self.starlow.facing = "up"')"""
-        #      ],
-        #     ["""self.textBox(self.starlow, [
-        #         "Count Bleck!",
-        #         "We have you cornered!",
-        #         "Give up now!"], sound="starlow")"""],
-        #     ["""self.textBox(self.bleck, [
-        #     "Bleh heh heh heh heh...",
-        #     "You REALLY think I care whether or/nnot I survive?",
-        #     "If my game ends, the Void will/ncontinue as it is for a little longer.",
-        #     "And, right now, that time/nis long enough for the Void/nto consume all worlds!",
-        #     "I will duel you only because/nyou have the Egg McMuffins, which/ncan put a stop to this.",
-        #     "But... Now is not the time/nto talk!",
-        #     "COUNT BLECK IS THE DELETER/nOF WORLDS!/p MY FATE IS WRITTEN/nIN THE DARK PROGNOSTICUS!",
-        #     "DO NOT THINK FOR A MOMENT/nTHAT I WILL NOT HESITATE/nTO STRIKE YOU DOWN!",
-        #     "SO,/p ARE YOU PREPARED, HEROES?",
-        #     "OUR DUEL WILL BE WORTHY OF/nTHE LAST CLASH THE WORLDS WILL/nEVER SEE!",
-        #     "/BALL NOW ENDS!"])""",
-        #      "if self.textbox[0].page == 6: self.setVar('self.bleck.currentFrame = 0')",
-        #      "if self.textbox[0].page == 6: self.setVar('self.bleck.laughing = True')"],
-        #     ["self.command('pg.mixer.music.fadeout(1000)')",
-        #      "self.command('self.game.sprites.append(self.mario)')",
-        #      "self.command('self.game.sprites.append(self.luigi)')",
-        #      "self.command('self.game.sprites.append(self.starlow)')",
-        #      "self.command('self.game.sprites.append(self.bleck)')",
-        #      "self.setVar('self.game.player.rect.center = self.mario.rect.center')",
-        #      "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')",
-        #      """self.command('self.game.loadBattle("self.loadFinalBoss()", currentPoint=False)')"""]
-        # ], id="Final Boss Cutscene")
+        LoadCutscene(self, pg.rect.Rect(720, 1520, 80, 320), True, False, [
+            ["self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')"],
+            ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
+             """self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""
+             ],
+            ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
+             "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 120)"],
+
+            [ """self.textBox(self.bleck, ["I see you've come at last!",
+            "So you really are the heroes of/nthe Light Prognosticus!"])"""],
+            ["""self.setVar('self.mario.facing = "upright"')""",
+             """self.setVar('self.luigi.facing = "upright"')""",
+             """self.setVar('self.mario.walking = True')""",
+             """self.setVar('self.luigi.walking = True')""",
+             "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
+             """self.setVar('self.starlow.facing = "upright"')""",
+             "self.command('self.game.starlowTwinkle.play()')"
+             ],
+            ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 600, 1)",
+             "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 600, 2)",
+             "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 600, 3)"],
+            ["""self.setVar('self.mario.facing = "up"')""",
+             """self.setVar('self.luigi.facing = "up"')""",
+             """self.setVar('self.mario.walking = False')""",
+             """self.setVar('self.luigi.walking = False')""",
+             """self.setVar('self.starlow.facing = "up"')"""
+             ],
+            ["""self.textBox(self.starlow, [
+                "Count Bleck!",
+                "We have you cornered!",
+                "Give up now!"], sound="starlow")"""],
+            ["""self.textBox(self.bleck, [
+            "Bleh heh heh heh heh...",
+            "You REALLY think I care whether or/nnot I survive?",
+            "If my game ends, the Void will/ncontinue as it is for a little longer.",
+            "And, right now, that time/nis long enough for the Void/nto consume all worlds!",
+            "I will duel you only because/nyou have the Egg McMuffins, which/ncan put a stop to this.",
+            "But... Now is not the time/nto talk!",
+            "COUNT BLECK IS THE DELETER/nOF WORLDS!/p MY FATE IS WRITTEN/nIN THE DARK PROGNOSTICUS!",
+            "DO NOT THINK FOR A MOMENT/nTHAT I WILL NOT HESITATE/nTO STRIKE YOU DOWN!",
+            "SO,/p ARE YOU PREPARED, HEROES?",
+            "OUR DUEL WILL BE WORTHY OF/nTHE LAST CLASH THE WORLDS WILL/nEVER SEE!",
+            "/BALL NOW ENDS!"])""",
+             "if self.textbox[0].page == 6: self.setVar('self.bleck.currentFrame = 0')",
+             "if self.textbox[0].page == 6: self.setVar('self.bleck.laughing = True')"],
+            ["self.command('pg.mixer.music.fadeout(1000)')",
+             "self.command('self.game.sprites.append(self.mario)')",
+             "self.command('self.game.sprites.append(self.luigi)')",
+             "self.command('self.game.sprites.append(self.starlow)')",
+             "self.command('self.game.sprites.append(self.bleck)')",
+             "self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+             "self.setVar('self.game.follower.rect.center = self.luigi.rect.center')",
+             """self.command('self.game.loadBattle("self.loadFinalBoss()", currentPoint=False)')"""]
+        ], id="Final Boss Cutscene")
 
         LoadCutscene(self, pg.rect.Rect(820, 980, 2780, 1420), True, False, [
             ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
