@@ -5904,6 +5904,16 @@ class CountBleckFight(StateMachine):
         self.hpMath()
 
         if self.stats["hp"] < 100 and not self.hasCutscene:
+            self.description = [
+                "Woah!",
+                "There are so many copies of\nhim!",
+                "But which one's the real\none...",
+                "Only one way to find out!",
+                "And you'd better hurry!/P\nWe're running out of time..."]
+
+            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 80, "exp": 100, "coins": 100,
+                          "name": "Count Bleck"}
+
             LoadCutscene(self.game, self.game.player.rect, True, True, [
                 ["self.setVar('self.bleck = BleckCutscene(self.game, self.game.bleck.rect.center)')",
                  "self.command('pg.mixer.music.fadeout(5000)')"],
@@ -5924,8 +5934,6 @@ class CountBleckFight(StateMachine):
                 ["self.bleckCloneCreate()"],
                 ["self.wait(3)"]
             ], id="Begin Phase 2")
-
-            self.stats = {"maxHP": 500, "hp": 500, "pow": 50, "def": 80, "exp": 100, "coins": 100, "name": "Count Bleck"}
             self.hasCutscene = True
 
         if self.is_idle:
@@ -5957,7 +5965,7 @@ class CountBleckFight(StateMachine):
                 self.giveUp()
         elif self.is_speed:
             for wall in self.game.walls:
-                if self.rect.colliderect(wall.rect):
+                if self.rect.colliderect(wall.rect) and type(wall).__name__ == "Wall":
                     if self.game.leader == "mario":
                         self.angle = get_angle(self.rect.center, (random.randrange(self.game.player.rect.centerx - 40, self.game.player.rect.centerx + 40), (random.randrange(self.game.player.rect.centery - 40, self.game.player.rect.centery + 40))))
                     else:
@@ -6261,13 +6269,17 @@ class Sans:
         self.stats = {"maxHP": 1, "hp": 1, "pow": 1, "def": 0, "exp": 400, "coins": 400, "name": "Sans"}
         self.rectHP = 0
 
-        self.description = ["IS THAT SANS UNDERTALE???",
+        self.description = ["That's Sans./P\nFrom Undertale.",
                             "Sans is a funny skeleton with\nan enjoyment of bad puns.",
                             "He only fights people when they've\ncommitted genocide.../P\nor if you ask him,/p apparently.",
                             "Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
                             self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
                             "Something seems off about his\nstats.",
-                            "No matter what,/p just keep\nattacking him."]
+                            "No matter what,/p just keep\nattacking him.",
+                            "...",
+                            "Wait a minute...",
+                            "It looks like he's disabled\nyour <<RBros. Attacks>>!",
+                            "How'd he even do that?"]
 
         self.hitDialogue = [
             '''Cutscene(self.game, [

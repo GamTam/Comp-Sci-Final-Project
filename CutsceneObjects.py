@@ -542,14 +542,7 @@ class CountBleckClone(StateMachine):
         self.stats = self.fakeStats
         self.rectHP = self.fakeStats["hp"]
 
-        self.description = [
-            "That's Count Bleck.",
-            "As you know, his main goal\nis to destroy all worlds\nwith the Void.",
-            "Max HP is " + str(self.fakeStats["maxHP"]) + ",/p\nAttack is " + str(
-                self.fakeStats["pow"]) + ",/p\nDefence is " + str(self.fakeStats["def"]) + ".",
-            "He's going to throw everything\nhe can at you.",
-            "But you can beat him if you\ngive it your all!",
-            "And you have to, or else\neverything we know will be\ngone..."]
+        self.description = self.game.bleck.description
 
     def loadImages(self):
         self.shadow = self.game.bleck.shadow
@@ -612,7 +605,7 @@ class CountBleckClone(StateMachine):
                 self.giveUp()
         elif self.is_speed:
             for wall in self.game.walls:
-                if self.rect.colliderect(wall.rect):
+                if self.rect.colliderect(wall.rect) and type(wall).__name__ == "Wall":
                     if self.game.leader == "mario":
                         self.angle = get_angle(self.rect.center, (
                         random.randrange(self.game.player.rect.centerx - 40, self.game.player.rect.centerx + 40),

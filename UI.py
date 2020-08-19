@@ -75,7 +75,7 @@ class MarioUI(pg.sprite.Sprite):
         elif self.hp < self.game.player.stats["hp"] and self.speed == 0 and abs(self.hp - self.game.player.stats["hp"]) > 1:
             self.speed = (self.game.player.stats["hp"] - self.hp) / 30
 
-        if self.speed != 0 and (self.game.player.KR == 0 or self.game.player.KRTimer == 0):
+        if self.speed != 0 and ((self.game.player.KR == 0 or self.game.player.KRTimer == 0) or self.hp < self.game.player.stats["hp"] - self.speed):
             if self.hp > self.game.player.stats["hp"] + self.speed and self.speed < 0:
                 self.hp += self.speed
             elif self.hp < self.game.player.stats["hp"] - self.speed and self.speed > 0:
@@ -311,7 +311,8 @@ class LuigiUI(pg.sprite.Sprite):
         elif self.hp < self.game.follower.stats["hp"] and self.speed == 0 and abs(self.hp - self.game.follower.stats["hp"]) > 1:
             self.speed = (self.game.follower.stats["hp"] - self.hp) / 30
 
-        if self.speed != 0 and (self.game.follower.KR == 0 or self.game.follower.KRTimer == 0):
+        if self.speed != 0 and (
+                (self.game.follower.KR == 0 or self.game.follower.KRTimer == 0) or self.hp < self.game.follower.stats["hp"] - self.speed):
             if self.hp > self.game.follower.stats["hp"] + self.speed and self.speed < 0:
                 self.hp += self.speed
             elif self.hp < self.game.follower.stats["hp"] - self.speed and self.speed > 0:

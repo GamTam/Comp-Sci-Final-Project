@@ -4987,6 +4987,20 @@ class Wall(pg.sprite.Sprite):
         self.rect.y = y
 
 
+class Hole(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h):
+        self.groups = game.walls
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((w, h))
+        self.image.fill(sansEye)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+
+
 class BattleTransition(pg.sprite.Sprite):
     def __init__(self, game):
         self.groups = game.effects

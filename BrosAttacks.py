@@ -1290,12 +1290,14 @@ class CountBleckBrosAttack(pg.sprite.Sprite):
             self.counter = 0
             self.hit = False
 
-        if self.enemy.stats["hp"] <= 0:
+        if self.enemy.stats["hp"] <= 0 and self.game.songPlaying == "Count Bleck Battle Phase 2":
             if self.enemy in self.game.enemies:
                 self.game.battleCoins += self.enemy.stats["coins"]
                 self.game.battleXp += self.enemy.stats["exp"]
                 self.game.sprites.remove(self.enemy)
                 self.game.enemies.remove(self.enemy)
+        elif self.enemy.stats["hp"] <= 0 and self.game.songPlaying != "Count Bleck Battle Phase 2":
+            self.enemy.stats["hp"] = 1
 
         if self.enemy not in self.game.enemies:
             self.alpha -= 10

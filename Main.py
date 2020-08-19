@@ -109,6 +109,8 @@ class Map:
         for object in self.tiledData.objects:
             if object.name == "Wall":
                 Wall(self.game, object.x, object.y, object.width, object.height)
+            elif object.name == "Hole":
+                Hole(self.game, object.x, object.y, object.width, object.height)
             elif object.name == "RoomTransition":
                 RoomTransition(self.game, self.game.room, object.room, 0, (object.x, object.y),
                                (object.playerPosx, object.playerPosy),
@@ -9408,7 +9410,7 @@ class Game:
             todd.text = ["There's only one McMuffin/nleft!",
                          "Go get it!"]
         elif self.mcMuffins == 3:
-            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["Ultra Mushroom", 50],["1-UP Mushroom", 100],
+            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["Ultra Mushroom", 50], ["1-UP Mushroom", 100],
                                  ["Syrup", 7], ["Super Syrup", 25], ["Ultra Syrup", 67], ["1-UP Deluxe", 200]]
             broq.text = ["Bonjour, monsieur Red and Green!",
                          "I have expanded zee Shop!",
@@ -9417,7 +9419,7 @@ class Game:
             todd.text = ["Hurry!",
                          "On to Castle Bleck!"]
 
-            # FlipsideToSansRoom(self, (5695, 1345))
+            FlipsideToSansRoom(self, (5695, 1345))
 
         Wall(self, 3585, 512, 64, 1086)
         Wall(self, 2752, 512, 64, 1086)
@@ -12010,6 +12012,8 @@ class Game:
             "SO,/p ARE YOU PREPARED, HEROES?",
             "OUR DUEL WILL BE WORTHY OF/nTHE LAST CLASH THE WORLDS WILL/nEVER SEE!",
             "/BALL NOW ENDS!"])""",
+             """self.setVar('self.game.follower.attackPieces[0][1] = 10')""",
+             """self.setVar('self.game.player.attackPieces[0][1] = 10')""",
              "if self.textbox[0].page == 6: self.setVar('self.bleck.currentFrame = 0')",
              "if self.textbox[0].page == 6: self.setVar('self.bleck.laughing = True')"],
             ["self.command('pg.mixer.music.fadeout(1000)')",
@@ -14062,9 +14066,9 @@ class Game:
 
         self.map = Map(self, "Castle Bleck Boss", background="Castle Bleck")
         self.camera = Camera(self, self.map.width, self.map.height)
-        self.player.rect.center = (self.map.width / 2, 1280)
+        self.player.rect.center = (self.map.width / 2, 2040)
         self.playerCol = MarioCollision(self)
-        self.follower.rect.center = (self.map.width / 2, 1280)
+        self.follower.rect.center = (self.map.width / 2, 2040)
         self.follower.moveQueue.clear()
         self.player.moveQueue.clear()
         self.followerCol = LuigiCollision(self)
