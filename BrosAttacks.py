@@ -1219,7 +1219,7 @@ class CountBleckBrosAttack(pg.sprite.Sprite):
         self.currentFrame = random.randrange(0, len(self.standingFrames))
         self.image = self.standingFrames[0]
         self.rect = self.image.get_rect()
-        self.rect.center = (random.randrange(width / 2, width - 100), random.randrange(420, height - 50))
+        self.rect.midbottom = (random.randrange(width / 2, width - 100), random.randrange(420, height - 50))
         self.barRect = self.rect
 
     def loadImages(self):

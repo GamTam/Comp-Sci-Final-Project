@@ -1,5 +1,7 @@
 import pickle
 import time
+from os.path import exists
+import sys
 import pytmx
 from Libraries.moviepy.video.io.VideoFileClip import VideoFileClip
 from Libraries.moviepy.video.io.preview import preview
@@ -172,6 +174,8 @@ class Map:
 
 class Game:
     def __init__(self, fullscreen=False, blankSong=True):
+        pg.display.set_icon(icon)
+        pg.display.set_caption(title)
         self.playing = False
         self.tutorials = False
         self.voidSize = 0.1
@@ -765,7 +769,7 @@ class Game:
                 self.screen.fill(black)
                 self.screen.blit(background, bRect)
                 ptext.draw("Least\nDamage Taken", (width / 2, 60), lineheight=0.8, surf=self.screen, color=white,
-                    fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=40, owidth=0.5)
+                           fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=40, owidth=0.5)
                 ptext.draw("Least\nDamage Given", (1075, 60), lineheight=0.8, surf=self.screen, color=white,
                            fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=40, owidth=0.5)
                 ptext.draw("Fastest Times", (200, 60), lineheight=0.8, surf=self.screen, color=white,
@@ -773,19 +777,22 @@ class Game:
 
                 yPos = 150
                 for i in range(min(len(self.fastTimeRecord), 5)):
-                    ptext.draw(str(self.fastTimeRecord[i][1]), (200, yPos), lineheight=0.8, surf=self.screen, color=white,
+                    ptext.draw(str(self.fastTimeRecord[i][1]), (200, yPos), lineheight=0.8, surf=self.screen,
+                               color=white,
                                fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=30, owidth=0.5)
                     yPos += 100
 
                 yPos = 150
                 for i in range(min(len(self.minHitRecord), 5)):
-                    ptext.draw(str(self.minHitRecord[i]), (width / 2, yPos), lineheight=0.8, surf=self.screen, color=white,
+                    ptext.draw(str(self.minHitRecord[i]), (width / 2, yPos), lineheight=0.8, surf=self.screen,
+                               color=white,
                                fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=30, owidth=0.5)
                     yPos += 100
 
                 yPos = 150
                 for i in range(min(len(self.minDamageGivenRecord), 5)):
-                    ptext.draw(str(self.minDamageGivenRecord[i]), (1075, yPos), lineheight=0.8, surf=self.screen, color=white,
+                    ptext.draw(str(self.minDamageGivenRecord[i]), (1075, yPos), lineheight=0.8, surf=self.screen,
+                               color=white,
                                fontname=dialogueFont, anchor=(0.5, 0.5), fontsize=30, owidth=0.5)
                     yPos += 100
 
@@ -940,6 +947,9 @@ class Game:
         iAmount = 20
         jAmount = 100
         currentNumber = 0
+
+        angle = 0
+        angledir = True
 
         for j in range(jAmount):
             for i in range(iAmount):
@@ -1133,10 +1143,19 @@ class Game:
 
                 self.screen.fill(black)
 
-                pg.draw.rect(self.screen, darkGray, pg.rect.Rect(40, 80, width - 80, 40))
-                pg.draw.rect(self.screen, red,
-                             pg.rect.Rect(40, 80, (width - 80) * (currentNumber / (iAmount * jAmount)), 40))
-                pg.draw.rect(self.screen, darkGray, pg.rect.Rect(40, 80, width - 80, 40), 5)
+                if abs(angle) >= 30:
+                    angledir = not angledir
+
+                if angledir:
+                    angle += 2
+                else:
+                    angle -= 2
+
+                star = pg.transform.rotate(talkAdvanceSprite, angle)
+                starRect = star.get_rect()
+                starRect.center = (width - 50, height - 50)
+
+                self.screen.blit(star, starRect)
 
                 pg.display.flip()
 
@@ -8460,7 +8479,7 @@ class Game:
 
     def loadGame(self, file=1):
         save = file
-        try:
+        if exists("saves/File " + str(file) + ".ini"):
             with open("saves/File " + str(file) + ".ini", "rb") as file:
                 area = pickle.load(file)
                 self.storeData = pickle.load(file)
@@ -8488,9 +8507,9 @@ class Game:
             self.currentPoint = 0
             self.area = "title screen"
             self.file = save
-            print(self.sansGameovers)
             eval(self.room)
-        except:
+            return
+        else:
             self.items = [["Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 30 HP to one Bro.", 30],
                           ["Super Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 60 HP to one Bro.", 60],
                           ["Ultra Mushroom", -1, mushroomSprite, "hp", "maxHP", "Restores 120 HP to one Bro.", 120],
@@ -8746,39 +8765,41 @@ class Game:
 
         if "Final Cutscene" in self.usedCutscenes:
             Cutscene(self, [
-                ["self.setVar('self.mario = marioCutscene(self.game, (self.game.map.width / 2 - 50, self.game.map.rect.bottom - 220))')",
-                 "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.map.width / 2 + 50, self.game.map.rect.bottom - 220))')",
-                 "self.setVar('self.starlow = starlowCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom - 220))')",
-                 "self.move(self.game.cameraRect, self.starlow.rect.centerx, self.starlow.rect.centery, False, 0)",
-                 "self.setVar('self.greenMuff = EggMcMuffin((3200, 1410), green, self.game)')",
-                 "self.setVar('self.redMuff = EggMcMuffin((2430, 1410), red, self.game)')",
-                 "self.setVar('self.muff = EggMcMuffin((1665, 1410), black, self.game)')",
-                 "self.setVar('self.game.cameraRect.cameraShake = -1')",
-                 "self.command('self.game.cutsceneSprites.remove(self.mario)')",
-                 "self.command('self.game.cutsceneSprites.remove(self.luigi)')",
-                 "self.command('self.game.cutsceneSprites.remove(self.starlow)')",
-                 "self.command('self.game.cutsceneSprites.append(self.muff)')",
-                 "self.command('self.game.cutsceneSprites.append(self.redMuff)')",
-                 "self.command('self.game.cutsceneSprites.append(self.greenMuff)')",
-                 """self.changeSong([15.549, 49.752, "end of the world"], cont=True)"""],
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.map.width / 2 - 50, self.game.map.rect.bottom - 220))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.map.width / 2 + 50, self.game.map.rect.bottom - 220))')",
+                    "self.setVar('self.starlow = starlowCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom - 220))')",
+                    "self.move(self.game.cameraRect, self.starlow.rect.centerx, self.starlow.rect.centery, False, 0)",
+                    "self.setVar('self.greenMuff = EggMcMuffin((3200, 1410), green, self.game)')",
+                    "self.setVar('self.redMuff = EggMcMuffin((2430, 1410), red, self.game)')",
+                    "self.setVar('self.muff = EggMcMuffin((1665, 1410), black, self.game)')",
+                    "self.setVar('self.game.cameraRect.cameraShake = -1')",
+                    "self.command('self.game.cutsceneSprites.remove(self.mario)')",
+                    "self.command('self.game.cutsceneSprites.remove(self.luigi)')",
+                    "self.command('self.game.cutsceneSprites.remove(self.starlow)')",
+                    "self.command('self.game.cutsceneSprites.append(self.muff)')",
+                    "self.command('self.game.cutsceneSprites.append(self.redMuff)')",
+                    "self.command('self.game.cutsceneSprites.append(self.greenMuff)')",
+                    """self.changeSong([15.549, 49.752, "end of the world"], cont=True)"""],
                 ["""self.setVar('self.mario.facing = "up"')""",
                  """self.setVar('self.luigi.facing = "up"')""",
                  """self.setVar('self.starlow.facing = "up"')""",
-                 "self.command('self.starlow.update()')",],
+                 "self.command('self.starlow.update()')", ],
                 ["self.wait(3)"],
                 [
                     "self.flipIn([[self.mario.shadow, self.mario.image], [self.mario.rect, self.mario.imgRect]], (self.mario.imgRect.centerx, self.mario.imgRect.centery + 2))"],
-                    ["self.command('self.game.cutsceneSprites.append(self.mario)')"],
+                ["self.command('self.game.cutsceneSprites.append(self.mario)')"],
                 [
                     "self.flipIn([[self.luigi.shadow, self.luigi.image], [self.luigi.rect, self.luigi.imgRect]], (self.luigi.imgRect.centerx, self.luigi.imgRect.centery + 2))"],
-                    ["self.command('self.game.cutsceneSprites.append(self.luigi)')"],
+                ["self.command('self.game.cutsceneSprites.append(self.luigi)')"],
                 [
                     "self.flipIn([[self.starlow.shadow, self.starlow.image], [self.starlow.rect, self.starlow.imgRect]], (self.starlow.imgRect.centerx, self.starlow.imgRect.centery + 2))",
                     "self.setVar('self.flip[0].maxRect.bottom = self.starlow.rect.bottom')",
                     "self.command('self.flip[0].update()')"],
-                    ["self.command('self.game.cutsceneSprites.append(self.starlow)')"],
+                ["self.command('self.game.cutsceneSprites.append(self.starlow)')"],
                 ["self.wait(0.5)"],
-                ["self.setVar('self.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom + 100))')",
+                [
+                    "self.setVar('self.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.rect.bottom + 100))')",
                     """self.setVar('self.toadley.facing = "up"')"""],
                 ["""self.textBox(self.toadley, [
                  "Finally!",
@@ -8811,9 +8832,10 @@ class Game:
                  """self.setVar('self.starlow.facing = "up"')""",
                  "self.move(self.game.cameraRect, 0, -1000, True, 300)",
                  "self.move(self.game.void, width / 2, height / 2, False, 300, 1)"],
-                ["self.move(self.muff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery + 60, False, 60, 1)",
-                 "self.move(self.redMuff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery + 60, False, 60, 2)",
-                 "self.move(self.greenMuff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery + 60, False, 60, 3)"],
+                [
+                    "self.move(self.muff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery + 60, False, 60, 1)",
+                    "self.move(self.redMuff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery + 60, False, 60, 2)",
+                    "self.move(self.greenMuff, self.game.cameraRect.rect.centerx, self.game.cameraRect.rect.centery + 60, False, 60, 3)"],
                 ["self.screenFlash()",
                  "self.command('self.game.cutsceneSprites.remove(self.muff)')",
                  "self.command('self.game.cutsceneSprites.remove(self.redMuff)')",
@@ -8822,11 +8844,12 @@ class Game:
                 ["self.wait(0.3)"],
                 ["self.screenFlash()"],
                 ["self.wait(1)"],
-                ["self.screenFlash()", "self.setVar('self.game.voidSize = 0')", "self.wait(5)", "self.changeSong(None)"],
+                ["self.screenFlash()", "self.setVar('self.game.voidSize = 0')", "self.wait(5)",
+                 "self.changeSong(None)"],
                 ["self.screenFlash()",
                  "self.command('pg.mixer.music.fadeout(200)')"],
                 ["self.setVar('self.game.cameraRect.cameraShake = 0')", "self.wait(1)"],
-                 ["self.move(self.game.cameraRect, 0, 800, True, 300)"],
+                ["self.move(self.game.cameraRect, 0, 800, True, 300)"],
                 ["""self.setVar('self.mario.facing = "down"')""",
                  """self.setVar('self.luigi.facing = "down"')""",
                  """self.setVar('self.starlow.facing = "down"')"""
@@ -8864,7 +8887,7 @@ class Game:
                  "self.command('pg.mixer.music.play()')",
                  "self.playMovie('credits')"],
                 ["self.wait(5)",
-                 "self.command('pg.mixer.music.stop()')",],
+                 "self.command('pg.mixer.music.stop()')", ],
                 ["self.command('self.game.__init__()')"]
             ])
 
@@ -9031,51 +9054,51 @@ class Game:
                  "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id="First Flipside")
         else:
             LoadCutscene(self, self.player.rect, True, True, [
-                         ["self.changeSong([0, 95.997, 'flipside'])",
-                           "self.move(self.game.void, width / 2, height / 2, False, 0)"],
-                          ["self.setVar('self.game.mario = marioCutscene(self.game, (-100, -100))')",
-                           "self.setVar('self.game.luigi = luigiCutscene(self.game, (-100, -100))')",
-                           "self.setVar('self.game.starlow = starlowCutscene(self.game, (-100, -100))')",
-                           "self.setVar('self.game.toadley = toadleyCutscene(self.game, (-100, -100))')"],
-                          ["""self.setVar('self.game.player.stats["exp"] = 3')"""],
-                          ['''self.setVar('self.game.mario.facing = "up"')''',
-                           '''self.setVar('self.game.luigi.facing = "up"')''',
-                           '''self.setVar('self.game.starlow.facing = "upright"')''',
-                           '''self.setVar('self.game.toadley.facing = "down"')'''],
-                          ["self.move(self.game.cameraRect, self.game.map.width / 2, 0, False, 2)"],
-                          ["self.wait(5)"],
-                          ["self.move(self.game.cameraRect, 0, self.game.map.rect.bottom - 200, True, 300)",
-                           "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, id=1)"],
-                          [
-                              "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], ((self.game.map.width / 2) + 75, self.game.cameraRect.rect.y + 20))",
-                              "if self.currentSubscene > 0: self.setVar('self.game.luigi.rect.bottom, self.game.luigi.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
-                          [
-                              "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], ((self.game.map.width / 2) - 75, self.game.cameraRect.rect.y + 20))",
-                              "if self.currentSubscene > 0: self.setVar('self.game.mario.rect.bottom, self.game.mario.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
-                          [
-                              "self.flipIn([[self.game.starlow.shadow, self.game.starlow.image], [self.game.starlow.rect, self.game.starlow.imgRect]], ((self.game.map.width / 2) - 200, self.game.cameraRect.rect.y))",
-                              "if self.currentSubscene > 0: self.setVar('self.game.starlow.rect.bottom, self.game.starlow.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
-                          [
-                              "self.flipIn([[self.game.toadley.shadow, self.game.toadley.image], [self.game.toadley.rect, self.game.toadley.imgRect]], ((self.game.map.width / 2), self.game.cameraRect.rect.y - 100))",
-                              "if self.currentSubscene > 0: self.setVar('self.game.toadley.rect.bottom, self.game.toadley.rect.centerx = 1664, 2432')"],
-                          ["self.wait(1)"],
-                          ["self.textBox(self.game.toadley, ['Have we arrived in <<RFlipside>>?/p/nWe have.'])"],
-                          [
-                              "self.textBox(self.game.starlow, ['Can you PLEASE stop asking these/nrhetorical questions?'], sound='starlow')"],
-                          ['''self.setVar('self.game.toadley.facing = "downleft"')'''],
-                          ["self.textBox(self.game.toadley, ['My apologies./p I thought it was cool.'])"],
-                          [
-                              """self.textBox(self.game.starlow, ["It was starting to get old around/nwhen you took us from/nBowser's Castle."], sound='starlow')"""],
-                          ["""self.textBox(self.game.toadley,
+                ["self.changeSong([0, 95.997, 'flipside'])",
+                 "self.move(self.game.void, width / 2, height / 2, False, 0)"],
+                ["self.setVar('self.game.mario = marioCutscene(self.game, (-100, -100))')",
+                 "self.setVar('self.game.luigi = luigiCutscene(self.game, (-100, -100))')",
+                 "self.setVar('self.game.starlow = starlowCutscene(self.game, (-100, -100))')",
+                 "self.setVar('self.game.toadley = toadleyCutscene(self.game, (-100, -100))')"],
+                ["""self.setVar('self.game.player.stats["exp"] = 3')"""],
+                ['''self.setVar('self.game.mario.facing = "up"')''',
+                 '''self.setVar('self.game.luigi.facing = "up"')''',
+                 '''self.setVar('self.game.starlow.facing = "upright"')''',
+                 '''self.setVar('self.game.toadley.facing = "down"')'''],
+                ["self.move(self.game.cameraRect, self.game.map.width / 2, 0, False, 2)"],
+                ["self.wait(5)"],
+                ["self.move(self.game.cameraRect, 0, self.game.map.rect.bottom - 200, True, 300)",
+                 "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, id=1)"],
+                [
+                    "self.flipIn([[self.game.luigi.shadow, self.game.luigi.image], [self.game.luigi.rect, self.game.luigi.imgRect]], ((self.game.map.width / 2) + 75, self.game.cameraRect.rect.y + 20))",
+                    "if self.currentSubscene > 0: self.setVar('self.game.luigi.rect.bottom, self.game.luigi.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
+                [
+                    "self.flipIn([[self.game.mario.shadow, self.game.mario.image], [self.game.mario.rect, self.game.mario.imgRect]], ((self.game.map.width / 2) - 75, self.game.cameraRect.rect.y + 20))",
+                    "if self.currentSubscene > 0: self.setVar('self.game.mario.rect.bottom, self.game.mario.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
+                [
+                    "self.flipIn([[self.game.starlow.shadow, self.game.starlow.image], [self.game.starlow.rect, self.game.starlow.imgRect]], ((self.game.map.width / 2) - 200, self.game.cameraRect.rect.y))",
+                    "if self.currentSubscene > 0: self.setVar('self.game.starlow.rect.bottom, self.game.starlow.rect.centerx = self.game.cutsceneSprites[-1].maxRect.bottom, self.game.cutsceneSprites[-1].maxRect.centerx')"],
+                [
+                    "self.flipIn([[self.game.toadley.shadow, self.game.toadley.image], [self.game.toadley.rect, self.game.toadley.imgRect]], ((self.game.map.width / 2), self.game.cameraRect.rect.y - 100))",
+                    "if self.currentSubscene > 0: self.setVar('self.game.toadley.rect.bottom, self.game.toadley.rect.centerx = 1664, 2432')"],
+                ["self.wait(1)"],
+                ["self.textBox(self.game.toadley, ['Have we arrived in <<RFlipside>>?/p/nWe have.'])"],
+                [
+                    "self.textBox(self.game.starlow, ['Can you PLEASE stop asking these/nrhetorical questions?'], sound='starlow')"],
+                ['''self.setVar('self.game.toadley.facing = "downleft"')'''],
+                ["self.textBox(self.game.toadley, ['My apologies./p I thought it was cool.'])"],
+                [
+                    """self.textBox(self.game.starlow, ["It was starting to get old around/nwhen you took us from/nBowser's Castle."], sound='starlow')"""],
+                ["""self.textBox(self.game.toadley,
                                                   ["Oh.", "Anyways, welcome to the town/nof <<RFlipside>>!",
                                                   "This place is very far away from/nyour dimension, the <<RMushroom/nKingdom>>.",
                                                   "In fact, this place isn't even/na dimension!/p It's a place BETWEEN/ndimensions!",
                                                   "But, enough about Flipside./nYou probably want to know why I/nbrought you here.",
                                                   "For the answer, you only need/nto look up."])""",
-                           '''if self.textbox[0].page > 0: self.setVar('self.game.toadley.facing = "down"')'''],
-                          ["self.move(self.game.cameraRect, 0, -800, True, 300)",
-                           "self.move(self.game.void, width / 2, height / 2, False, 300, 1)"],
-                          ["""self.textBox(self.game.toadley,
+                 '''if self.textbox[0].page > 0: self.setVar('self.game.toadley.facing = "down"')'''],
+                ["self.move(self.game.cameraRect, 0, -800, True, 300)",
+                 "self.move(self.game.void, width / 2, height / 2, False, 300, 1)"],
+                ["""self.textBox(self.game.toadley,
                                                   ["Do you see the gathering darkness/nin the sky?",
                                                   "It is a hole in the dimensional/nfabric of space.",
                                                   "It is a strange phenomenon...",
@@ -9083,64 +9106,64 @@ class Game:
                                                   "It may appear small know, but it/nwill only grow,/p and in the end,/p/nit will swallow all existence...",
                                                   "All worlds,/p All dimensions...",
                                                   "This void was created by Count/nBleck,/p who wields the/n<<RDark Prognosticus>>."])"""],
-                          ["self.move(self.game.cameraRect, 0, 800, True, 300)",
-                           "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, 1)"],
-                          ["""self.textBox(self.game.toadley,
+                ["self.move(self.game.cameraRect, 0, 800, True, 300)",
+                 "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, 1)"],
+                ["""self.textBox(self.game.toadley,
                                                   ["I have been spending all my/nefforts looking over the <<RLight/nPrognosticus>>.",
                                                   "It is the book of prophesies/nwhich was written against the/ndark one, and says the following:",
                                                   '''"The Void will swallow all.../nNaught can stop it..."''',
                                                   '''"Unless the one protected by the/ndark power is destroyed."''',
                                                   '''"The heroes with the power of the/nthree Egg McMuffins will rise to the/ntask."''',
                                                   "...So it is written."])"""],
-                          [
-                              "self.setVar('self.game.mcMuffin = EggMcMuffin((self.game.toadley.rect.centerx, self.game.toadley.rect.bottom + 35), black, self.game)')",
-                              "self.command('self.game.cutsceneSprites.append(self.game.mcMuffin)')"],
-                          ["self.wait(1)"],
-                          ["""self.textBox(self.game.toadley,
+                [
+                    "self.setVar('self.game.mcMuffin = EggMcMuffin((self.game.toadley.rect.centerx, self.game.toadley.rect.bottom + 35), black, self.game)')",
+                    "self.command('self.game.cutsceneSprites.append(self.game.mcMuffin)')"],
+                ["self.wait(1)"],
+                ["""self.textBox(self.game.toadley,
                                                   ["This is one of the three Egg/nMcMuffins.",
                                                   "You are surely the heroes spoken of/nin the pages of the Light/nPrognosticus.",
                                                   "You are the only one who can defeat/nCount Bleck and save all worlds!",
                                                   "<<RMario>>!/p <<GLuigi>>!/p Take/9/6./9/6./9/6./p THIS!"])"""],
-                          ["self.mcMuffinGet(False)"],
-                          ["self.move(self.game.mario, -105, -325, True, 0)",
-                           "self.move(self.game.luigi, 65, -330, True, 0, 1)",
-                           "self.move(self.game.mcMuffin, 0, -59, True, 0, 2)"],
-                          ["self.move(self.game.mario, 2357, 1782, False, 30)",
-                           "self.move(self.game.luigi, 2507, 1782, False, 30, 1)",
-                           "self.move(self.game.mcMuffin, self.game.toadley.rect.centerx, self.game.toadley.rect.bottom + 35, False, 30, 2)"],
-                          ["self.wait(1)"],
-                          ["self.move(self.game.mcMuffin, 1665, 1405, False, 300)",
-                           """self.setVar('self.game.mario.facing = "upleft"')""",
-                           """self.setVar('self.game.luigi.facing = "upleft"')""",
-                           """self.setVar('self.game.starlow.facing = "upleft"')""",
-                           """self.setVar('self.game.toadley.facing = "upleft"')"""],
-                          ["""self.textBox(self.game.starlow, ["Where's the Egg McMuffin going?"], sound='starlow')"""],
-                          ["""self.textBox(self.game.toadley, [
+                ["self.mcMuffinGet(False)"],
+                ["self.move(self.game.mario, -105, -325, True, 0)",
+                 "self.move(self.game.luigi, 65, -330, True, 0, 1)",
+                 "self.move(self.game.mcMuffin, 0, -59, True, 0, 2)"],
+                ["self.move(self.game.mario, 2357, 1782, False, 30)",
+                 "self.move(self.game.luigi, 2507, 1782, False, 30, 1)",
+                 "self.move(self.game.mcMuffin, self.game.toadley.rect.centerx, self.game.toadley.rect.bottom + 35, False, 30, 2)"],
+                ["self.wait(1)"],
+                ["self.move(self.game.mcMuffin, 1665, 1405, False, 300)",
+                 """self.setVar('self.game.mario.facing = "upleft"')""",
+                 """self.setVar('self.game.luigi.facing = "upleft"')""",
+                 """self.setVar('self.game.starlow.facing = "upleft"')""",
+                 """self.setVar('self.game.toadley.facing = "upleft"')"""],
+                ["""self.textBox(self.game.starlow, ["Where's the Egg McMuffin going?"], sound='starlow')"""],
+                ["""self.textBox(self.game.toadley, [
                                                   "The Egg McMuffin is going to its <<RWarp/nZone>>."])"""],
-                          ["""self.setVar('self.game.starlow.facing = "upright"')"""],
-                          ["""self.textBox(self.game.starlow, ["It's what?"], sound='starlow')"""],
-                          ["""self.setVar('self.game.toadley.facing = "downleft"')"""],
-                          ["""self.textBox(self.game.toadley, [
+                ["""self.setVar('self.game.starlow.facing = "upright"')"""],
+                ["""self.textBox(self.game.starlow, ["It's what?"], sound='starlow')"""],
+                ["""self.setVar('self.game.toadley.facing = "downleft"')"""],
+                ["""self.textBox(self.game.toadley, [
                                                    "Each Egg McMuffin has a certain/nspot here at the top of Flipside/nwhere its power is the strongest.",
                                                    "If you touch it, it will take you to/nthe location of the next/nEgg McMuffin.",
                                                    "And once you collect them all,/p/nyou will be prepared to face/nCount Bleck.",
                                                    "But, that's enough excitement/nfor me.",
                                                    "I shall return to looking over/nthe Light Prognosticus for/nclues.",
                                                    "I would suggest looking around/nbefore you go on your quest."])""",
-                           """if self.textbox[0].page >= 3: self.setVar('self.game.toadley.facing = "down"')""",
-                           """if self.textbox[0].page >= 3: self.setVar('self.game.mario.facing = "up"')""",
-                           """if self.textbox[0].page >= 3: self.setVar('self.game.luigi.facing = "up"')"""],
-                          [
-                              "self.move(self.game.toadley, self.game.toadley.rect.centerx, self.game.map.rect.bottom + 75, False, 300)",
-                              """self.setVar('self.game.toadley.talking = True')""",
-                              """if self.game.toadley.rect.centery >= self.game.mario.rect.centery: self.setVar('self.game.mario.facing = "down"')""",
-                              """if self.game.toadley.rect.centery >= self.game.mario.rect.centery: self.setVar('self.game.luigi.facing = "down"')""",
-                              """if self.game.toadley.rect.centery >= self.game.mario.rect.centery: self.setVar('self.game.starlow.facing = "downright"')"""],
-                          ["self.wait(2)"],
-                          ["""self.setVar('self.game.mario.facing = "left"')""",
-                           """self.setVar('self.game.luigi.facing = "left"')""",
-                           """self.setVar('self.game.starlow.facing = "right"')"""],
-                          ["""self.textBox(self.game.starlow,
+                 """if self.textbox[0].page >= 3: self.setVar('self.game.toadley.facing = "down"')""",
+                 """if self.textbox[0].page >= 3: self.setVar('self.game.mario.facing = "up"')""",
+                 """if self.textbox[0].page >= 3: self.setVar('self.game.luigi.facing = "up"')"""],
+                [
+                    "self.move(self.game.toadley, self.game.toadley.rect.centerx, self.game.map.rect.bottom + 75, False, 300)",
+                    """self.setVar('self.game.toadley.talking = True')""",
+                    """if self.game.toadley.rect.centery >= self.game.mario.rect.centery: self.setVar('self.game.mario.facing = "down"')""",
+                    """if self.game.toadley.rect.centery >= self.game.mario.rect.centery: self.setVar('self.game.luigi.facing = "down"')""",
+                    """if self.game.toadley.rect.centery >= self.game.mario.rect.centery: self.setVar('self.game.starlow.facing = "downright"')"""],
+                ["self.wait(2)"],
+                ["""self.setVar('self.game.mario.facing = "left"')""",
+                 """self.setVar('self.game.luigi.facing = "left"')""",
+                 """self.setVar('self.game.starlow.facing = "right"')"""],
+                ["""self.textBox(self.game.starlow,
                                                ["Well, I guess we have to collect/nall three <<REgg McMuffins>> in order/nto beat Count Bleck.",
                                                "Let's get to it then!",
                                                "Luigi, you press <<GL>> to jump like mario.",
@@ -9148,15 +9171,15 @@ class Game:
                                                "Also, if you press <<REnter>>, you can/nswitch which of you is in front!",
                                                "And if you're ever confused, press/n<<RT>> to look at the controls.",
                                                "Ok, now we can get to it!"], sound='starlow')"""],
-                          [
-                              "self.move(self.game.cameraRect, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60)",
-                              "self.setVar('self.game.luigi.walking = True')",
-                              "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)",
-                              "self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 2)"],
-                          ["self.setVar('self.game.player.rect.center = self.game.mario.rect.center')",
-                           """self.setVar('self.game.follower.facing = "left"')""",
-                           """self.setVar('self.game.player.facing = "left"')""",
-                           "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id="First Flipside")
+                [
+                    "self.move(self.game.cameraRect, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60)",
+                    "self.setVar('self.game.luigi.walking = True')",
+                    "self.move(self.game.luigi, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 1)",
+                    "self.move(self.game.starlow, self.game.mario.rect.centerx, self.game.mario.rect.centery, False, 60, 2)"],
+                ["self.setVar('self.game.player.rect.center = self.game.mario.rect.center')",
+                 """self.setVar('self.game.follower.facing = "left"')""",
+                 """self.setVar('self.game.player.facing = "left"')""",
+                 "self.setVar('self.game.follower.rect.center = self.game.luigi.rect.center')"]], id="First Flipside")
 
         if self.mcMuffins == 2:
             LoadCutscene(self, self.player.rect, True, True, [
@@ -9219,7 +9242,7 @@ class Game:
                 ["""self.textBox(self.game.toadley, [
                     "The void is expanding...",
                     "We're running out of time..."])""",
-                 "self.setVar('self.game.cameraRect.cameraShake = 0')",],
+                 "self.setVar('self.game.cameraRect.cameraShake = 0')", ],
                 ["self.move(self.game.cameraRect, 0, 800, True, 300)",
                  "self.move(self.game.void, voidSpot[0], voidSpot[1], False, 300, 1)"],
                 ["""self.setVar('self.game.mario.facing = "down"')""",
@@ -9243,9 +9266,9 @@ class Game:
             LoadCutscene(self, self.player.rect, True, True, [
                 ["self.changeSong([0, 95.997, 'flipside'])"],
                 ["self.setVar('self.game.otherMuff = EggMcMuffin((2430, 1410), red, self.game)')",
-                "self.command('self.game.cutsceneSprites.append(self.game.otherMuff)')",
-                "self.setVar('self.game.player.rect.center = (self.game.map.width / 2 - 50, self.game.map.rect.bottom - 220)')",
-                "self.setVar('self.game.follower.rect.center = (self.game.map.width / 2 + 50, self.game.map.rect.bottom - 220)')"],
+                 "self.command('self.game.cutsceneSprites.append(self.game.otherMuff)')",
+                 "self.setVar('self.game.player.rect.center = (self.game.map.width / 2 - 50, self.game.map.rect.bottom - 220)')",
+                 "self.setVar('self.game.follower.rect.center = (self.game.map.width / 2 + 50, self.game.map.rect.bottom - 220)')"],
                 ["self.wait(5)"],
                 ["self.setVar('self.game.mario = marioCutscene(self.game, self.game.player.rect.center)')",
                  "self.command('self.game.cutsceneSprites.remove(self.game.mario)')",
@@ -9410,7 +9433,8 @@ class Game:
             todd.text = ["There's only one McMuffin/nleft!",
                          "Go get it!"]
         elif self.mcMuffins == 3:
-            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["Ultra Mushroom", 50], ["1-UP Mushroom", 100],
+            broq.shopContents = [["Mushroom", 5], ["Super Mushroom", 20], ["Ultra Mushroom", 50],
+                                 ["1-UP Mushroom", 100],
                                  ["Syrup", 7], ["Super Syrup", 25], ["Ultra Syrup", 67], ["1-UP Deluxe", 200]]
             broq.text = ["Bonjour, monsieur Red and Green!",
                          "I have expanded zee Shop!",
@@ -10608,13 +10632,14 @@ class Game:
              "self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
              "self.command('self.game.fawfulcopterSound.fadeout(5000)')",
              "self.move(self.fawful, -200, -100, True, 300)"],
-            ["self.setVar('self.bleck = BleckCutscene(self.game, (self.game.map.width / 2, self.game.map.height / 2))')",
-             "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
-             """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
+            [
+                "self.setVar('self.bleck = BleckCutscene(self.game, (self.game.map.width / 2, self.game.map.height / 2))')",
+                "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
+                """self.flipIn([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.rect.bottom - 154), sound="bleck")"""],
             ["self.command('self.game.cutsceneSprites.append(self.bleck)')"],
             ["self.wait(0.3)"],
             [
-             """self.textBox(self.bleck, ["/BBLECK!",
+                """self.textBox(self.bleck, ["/BBLECK!",
              "You foolish heroes are being/naprehended.../p by Count Bleck!"])"""],
             ["""self.textBox(self.starlow, [
             "You!",
@@ -10655,12 +10680,13 @@ class Game:
                 "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
             ["self.command('pg.mixer.music.fadeout(3000)')",
              "self.wait(3)"],
-            ["self.setVar('self.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.height / 2))')",
-             "self.command('self.game.cutsceneSprites.remove(self.toadley)')",
-             """self.flipIn([[self.toadley.shadow, self.toadley.image], [self.toadley.rect, self.toadley.imgRect]], (self.toadley.imgRect.centerx, self.toadley.rect.bottom - 154))""",
-             "self.setVar('self.flip[0].maxRect.bottom = self.toadley.rect.bottom')",
-             "self.command('self.flip[0].update()')",
-             ],
+            [
+                "self.setVar('self.toadley = toadleyCutscene(self.game, (self.game.map.width / 2, self.game.map.height / 2))')",
+                "self.command('self.game.cutsceneSprites.remove(self.toadley)')",
+                """self.flipIn([[self.toadley.shadow, self.toadley.image], [self.toadley.rect, self.toadley.imgRect]], (self.toadley.imgRect.centerx, self.toadley.rect.bottom - 154))""",
+                "self.setVar('self.flip[0].maxRect.bottom = self.toadley.rect.bottom')",
+                "self.command('self.flip[0].update()')",
+                ],
             ["self.command('self.game.cutsceneSprites.append(self.toadley)')"],
             ["""self.textBox(self.toadley, [
             "Where is Count Bleck?",
@@ -10703,7 +10729,7 @@ class Game:
             ["self.move(self.luigi, self.mario.rect.centerx, self.mario.rect.centery, False, 60, 0)",
              "self.move(self.starlow, self.mario.rect.centerx, self.mario.rect.centery, False, 60, 1)"],
             ["self.setVar('self.game.follower.rect.center = self.luigi.rect.center')",
-            "self.setVar('self.game.player.rect.center = self.mario.rect.center')",
+             "self.setVar('self.game.player.rect.center = self.mario.rect.center')",
              "self.setVar('self.game.currentPoint = 0')",
              "self.setVar('self.game.voidSize = 1')"]
         ])
@@ -10968,10 +10994,11 @@ class Game:
             "\a/nBLEH HEH HEH HEH HEH! BLECK!"])""",
              "if self.textbox[0].page == 2: self.setVar('self.bleck.laughing = True')",
              "if self.textbox[0].page == 2: self.setVar('self.bleck.currentFrame = 0')"],
-            ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
-            "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
-            "self.command('self.flip[0].update()')",
-            "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
+            [
+                "self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
+                "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
+                "self.command('self.flip[0].update()')",
+                "self.command('self.game.cutsceneSprites.remove(self.bleck)')"],
             ["self.wait(0.5)"],
             ["""self.textBox(self.fawful, [
             "You have gotten in Count Bleck's/nway at each of the turns...",
@@ -10993,13 +11020,13 @@ class Game:
              """self.setVar('self.game.player.stats["bp"] = self.game.player.stats["maxBP"]')""",
              """self.setVar('self.game.follower.stats["bp"] = self.game.follower.stats["maxBP"]')""",
              "self.setVar('self.mario = marioCutscene(self.game, self.game.player.rect.center)')",
-              "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
-              "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')",
+             "self.setVar('self.luigi = luigiCutscene(self.game, self.game.follower.rect.center)')",
+             "self.setVar('self.mcMuffin = EggMcMuffin((1280, 880), green, self.game)')",
              "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
-                  """self.setVar('self.starlow.facing = "up"')""",
+             """self.setVar('self.starlow.facing = "up"')""",
              "self.move(self.mario, 1200, 1150, False, 0, 1)",
-               "self.move(self.luigi, 1360, 1150, False, 0, 2)",
-               "self.move(self.starlow, 1280, 1150, False, 0, 3)",
+             "self.move(self.luigi, 1360, 1150, False, 0, 2)",
+             "self.move(self.starlow, 1280, 1150, False, 0, 3)",
              """self.setVar('self.mario.facing = "upright"')""",
              """self.setVar('self.luigi.facing = "upleft"')""",
              "self.setVar('self.fawful = DarkFawfulDisappear(self.game, (1280, 925))')",
@@ -11096,31 +11123,30 @@ class Game:
         self.follower.stepSound = self.stoneSound
         self.player.stepSound = self.stoneSound
 
-
         McMuffinWarp(self, (840, 1300), green, "self.game.loadFlipsideTower()", 0, "Flipside", goBack=True)
 
         self.area = e
 
         if "Final Cutscene" in self.usedCutscenes:
             Cutscene(self, [
-             ["self.setVar('self.mario = marioCutscene(self.game, (self.game.map.width + 50, 1300))')",
-             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.map.width + 150, 1300))')",
-             "self.setVar('self.starlow = starlowCutscene(self.game, (self.game.map.width + 250, 1300))')",
-             "self.move(self.game.cameraRect, self.mario.rect.centerx, self.mario.rect.centery, False, 0)",
-              "self.setVar('self.muff = EggMcMuffin((840, 1300), green, self.game)')",
-              "self.command('self.game.cutsceneSprites.append(self.muff)')",
-             "self.setVar('self.game.cameraRect.cameraShake = -1')",
-             """self.changeSong([15.549, 49.752, "end of the world"], cont=True)"""],
-             ["""self.setVar('self.mario.facing = "left"')""",
-             """self.setVar('self.luigi.facing = "left"')""",
-             """self.setVar('self.mario.walking = True')""",
-             """self.setVar('self.luigi.walking = True')""",
-             """self.setVar('self.starlow.facing = "left"')"""],
-             ["self.wait(3)"],
-             ["self.move(self.mario, 950, 1300, False, 300, 1)",
-             "self.move(self.luigi, 1050, 1300, False, 300, 2)",
-             "self.move(self.starlow, 1150, 1300, False, 300, 3)",
-             "self.move(self.game.cameraRect, 950, 1300, False, 300, 4)"],
+                ["self.setVar('self.mario = marioCutscene(self.game, (self.game.map.width + 50, 1300))')",
+                 "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.map.width + 150, 1300))')",
+                 "self.setVar('self.starlow = starlowCutscene(self.game, (self.game.map.width + 250, 1300))')",
+                 "self.move(self.game.cameraRect, self.mario.rect.centerx, self.mario.rect.centery, False, 0)",
+                 "self.setVar('self.muff = EggMcMuffin((840, 1300), green, self.game)')",
+                 "self.command('self.game.cutsceneSprites.append(self.muff)')",
+                 "self.setVar('self.game.cameraRect.cameraShake = -1')",
+                 """self.changeSong([15.549, 49.752, "end of the world"], cont=True)"""],
+                ["""self.setVar('self.mario.facing = "left"')""",
+                 """self.setVar('self.luigi.facing = "left"')""",
+                 """self.setVar('self.mario.walking = True')""",
+                 """self.setVar('self.luigi.walking = True')""",
+                 """self.setVar('self.starlow.facing = "left"')"""],
+                ["self.wait(3)"],
+                ["self.move(self.mario, 950, 1300, False, 300, 1)",
+                 "self.move(self.luigi, 1050, 1300, False, 300, 2)",
+                 "self.move(self.starlow, 1150, 1300, False, 300, 3)",
+                 "self.move(self.game.cameraRect, 950, 1300, False, 300, 4)"],
                 ["""self.textBox(self.muff, ["Do you want to return to Flipside-/S"], type="board", dir="None")""",
                  """self.setVar('self.mario.walking = False')""",
                  """self.setVar('self.luigi.walking = False')""",
@@ -11144,7 +11170,7 @@ class Game:
                 ["self.command('Fadeout(self.game, 5)')"],
                 ["self.wait(3)"],
                 ["self.command('self.game.loadFlipsideTower()')"]
-              ])
+            ])
 
         try:
             self.player.attackPieces = self.storeData["mario attack pieces"]
@@ -11977,7 +12003,7 @@ class Game:
             ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
              "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 120)"],
 
-            [ """self.textBox(self.bleck, ["I see you've come at last!",
+            ["""self.textBox(self.bleck, ["I see you've come at last!",
             "So you really are the heroes of/nthe Light Prognosticus!"])"""],
             ["""self.setVar('self.mario.facing = "upright"')""",
              """self.setVar('self.luigi.facing = "upright"')""",
@@ -11987,9 +12013,12 @@ class Game:
              """self.setVar('self.starlow.facing = "upright"')""",
              "self.command('self.game.starlowTwinkle.play()')"
              ],
-            ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 600, 1)",
-             "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 600, 2)",
-             "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 600, 3)"],
+            ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 400, False, 0, 1)",
+             "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 400, False, 0, 2)",
+             "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 400, False, 0, 3)"],
+            ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 180, 1)",
+             "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 180, 2)",
+             "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 180, 3)"],
             ["""self.setVar('self.mario.facing = "up"')""",
              """self.setVar('self.luigi.facing = "up"')""",
              """self.setVar('self.mario.walking = False')""",
@@ -12058,11 +12087,12 @@ class Game:
             ["self.setVar('self.game.currentPoint = 11111')",
              "self.command('pg.mixer.music.set_pos(11.111)')"],
             ["self.wait(4)"],
-            ["self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
-            "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
-            "self.command('self.flip[0].update()')",
-            "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
-            ],
+            [
+                "self.flipOut([[self.bleck.shadow, self.bleck.image], [self.bleck.rect, self.bleck.imgRect]], (self.bleck.imgRect.centerx, self.bleck.imgRect.centery + 2), sound='bleck')",
+                "self.setVar('self.flip[0].maxRect.bottom = self.bleck.rect.bottom')",
+                "self.command('self.flip[0].update()')",
+                "self.command('self.game.cutsceneSprites.remove(self.bleck)')",
+                ],
             ["""self.textBox(self.starlow, [
                 "Where'd he go?"], sound="starlow")"""],
             ["self.screenFlash()"],
@@ -12072,13 +12102,13 @@ class Game:
                 "That doesn't seem good!",
                 "Let's get out of here!"], sound="starlow")"""],
             ["""self.setVar('self.mario.facing = "downleft"')""",
-              """self.setVar('self.luigi.facing = "downleft"')""",
-              """self.setVar('self.mario.walking = True')""",
-              """self.setVar('self.luigi.walking = True')""",
+             """self.setVar('self.luigi.facing = "downleft"')""",
+             """self.setVar('self.mario.walking = True')""",
+             """self.setVar('self.luigi.walking = True')""",
              """self.setVar('self.starlow.facing = "downleft"')"""],
             ["self.move(self.mario, -500, 400, True, 180, 1)",
-              "self.move(self.luigi, -500, 400, True, 180, 2)",
-              "self.move(self.starlow, -500, 400, True, 180, 3)"],
+             "self.move(self.luigi, -500, 400, True, 180, 2)",
+             "self.move(self.starlow, -500, 400, True, 180, 3)"],
             ["self.command('Fadeout(self.game, 5)')",
              "self.wait(3)"],
             ["self.command('self.game.loadCastleBleckEntrance()')"]
@@ -12137,41 +12167,42 @@ class Game:
 
         if self.sansGameovers == 0:
             LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
-            ["self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
-             "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
-             "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
-             """self.setVar('self.mario.facing = "right"')""",
-             """self.setVar('self.luigi.facing = "right"')""",
-             """self.setVar('self.game.player.facing = "right"')""",
-             """self.setVar('self.game.follower.facing = "right"')""",
-             ],
-            ["self.wait(1)"],
-            ["self.move(self.game.cameraRect, 360, 0, True, 60)",
-             "self.command('self.game.player.update()')",
-             "self.command('self.game.follower.update()')"],
-            ["self.wait(1)"],
-            ["""self.undertaleTextBox(self.sans, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')""",
+                    ],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
             "* hey.",
             "*/1 i guess you weren't/n\a expecting me,/p huh?",
             "*/0 well, here i am.",
             "*/5 let me guess.../p/n* you wanna fight me."
             ], sound="sans", font="sans", head="sans")"""],
-            ["self.wait(2)"],
-            ["""self.undertaleTextBox(self.sans, [
+                ["self.wait(2)"],
+                ["""self.undertaleTextBox(self.sans, [
             "* i'm gonna take your/n\a silence as a yes.",
             "*/1 well, too bad.",
             "*/2 i don't wanna fight/n\a you.",
             ], sound="sans", font="sans", head="sans")"""],
-            ["self.wait(3)"],
-            ["""self.undertaleTextBox(self.sans, [
+                ["self.wait(3)"],
+                ["""self.undertaleTextBox(self.sans, [
             "*/5 well,/p now this is/n\a awkward.",
             "*/1 if you were expecting/n\a some kind of big fight...",
             "* that was really hard...",
             "*/2 and would take you a/n\a long time to beat...",
             "*/0 that sucks for you."
             ], sound="sans", font="sans", head="sans")"""],
-            ["self.wait(3)"],
-            ["""self.undertaleTextBox(self.sans, [
+                ["self.wait(3)"],
+                ["""self.undertaleTextBox(self.sans, [
             "* and besides,/p even if i/n\a wanted to, you would/n\a win.",
             "*/1 easily.",
             "*/0 if you look at my stats,/p/n\a i'm the weakest enemy/n\a by far.",
@@ -12180,19 +12211,19 @@ class Game:
             "*/0 i have a fight in that/n\a game.",
             "* and i'm the weakest/n\a enemy there, too."
             ], sound="sans", font="sans", head="sans")"""],
-            ["self.wait(3)"],
-            ["""self.undertaleTextBox(self.sans, [
+                ["self.wait(3)"],
+                ["""self.undertaleTextBox(self.sans, [
             "*/1 well, judging by the fact/n\a that you haven't left...",
             "*/0 you're not gonna take no/n\a for an answer.",
             "*/2 well, ok.",
             "*/3 let's pretend that this/n\a didn't happen then.",
             "* just go with what i say."
             ], sound="sans", font="sans", head="sans")"""],
-            ["self.move(self.game.cameraRect, -360, 0, True, 60)"],
-            ["self.wait(5)"],
-            ["self.move(self.game.cameraRect, 360, 0, True, 60)"],
-            ["self.wait(1)"],
-            ["""self.undertaleTextBox(self.sans, [
+                ["self.move(self.game.cameraRect, -360, 0, True, 60)"],
+                ["self.wait(5)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
             "* heya.",
             "*/1 you've been busy,/p huh?",
             "* ...",
@@ -12207,8 +12238,8 @@ class Game:
             "*/5 'cause if you take/n\a another step/n\a forward...",
             "*/6 you are REALLY not/n\a going to like what/n\a happens next."
             ], sound="sans", font="sans", head="sans")"""],
-            ["self.wait(1)"],
-            ["""self.undertaleTextBox(self.sans, [
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
             "*/6 ...",
             "*/0 ...",
             "* now's the part where/n\a you step forward?",
@@ -12222,22 +12253,23 @@ class Game:
             "* ...",
             "*/0 that last line makes/n\a more sense in undertale."
             ], sound="sans", font="sans", head="sans")"""],
-            ["self.command('self.game.sprites.append(self.sans)')",
-             "self.command('self.game.sprites.append(self.mario)')",
-             "self.command('self.game.sprites.append(self.luigi)')",
-             "self.command('self.game.sprites.remove(self.game.player)')",
-             "self.command('self.game.sprites.remove(self.game.follower)')",
-             """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
-        ], id="sans fight")
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
         elif self.sansGameovers == 1:
             LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
-                ["self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
-                 "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
-                 "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
-                 """self.setVar('self.mario.facing = "right"')""",
-                 """self.setVar('self.luigi.facing = "right"')""",
-                 """self.setVar('self.game.player.facing = "right"')""",
-                 """self.setVar('self.game.follower.facing = "right"')"""],
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
                 ["self.wait(1)"],
                 ["self.move(self.game.cameraRect, 360, 0, True, 60)",
                  "self.command('self.game.player.update()')",
@@ -12257,13 +12289,14 @@ class Game:
             ], id="sans fight")
         elif self.sansGameovers == 2:
             LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
-                ["self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
-                 "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
-                 "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
-                 """self.setVar('self.mario.facing = "right"')""",
-                 """self.setVar('self.luigi.facing = "right"')""",
-                 """self.setVar('self.game.player.facing = "right"')""",
-                 """self.setVar('self.game.follower.facing = "right"')"""],
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
                 ["self.wait(1)"],
                 ["self.move(self.game.cameraRect, 360, 0, True, 60)",
                  "self.command('self.game.player.update()')",
@@ -12285,13 +12318,14 @@ class Game:
             ], id="sans fight")
         elif self.sansGameovers == 3:
             LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
-                ["self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
-                 "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
-                 "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
-                 """self.setVar('self.mario.facing = "right"')""",
-                 """self.setVar('self.luigi.facing = "right"')""",
-                 """self.setVar('self.game.player.facing = "right"')""",
-                 """self.setVar('self.game.follower.facing = "right"')"""],
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
                 ["self.wait(1)"],
                 ["self.move(self.game.cameraRect, 360, 0, True, 60)",
                  "self.command('self.game.player.update()')",
@@ -12362,6 +12396,150 @@ class Game:
         self.cameraRect.update(self.player.rect, 0)
         self.overworld("Last Corridor", None)
 
+    def loadAsgoreHallway(self):
+        self.room = "self.loadAsgoreHallway()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "ASGORE's Castle")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (420, 480)
+        self.player.facing = "right"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (420, 480)
+        self.follower.facing = "right"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+        self.overworld("Throne Entrance", None)
+
+    def loadAsgoreStairs(self):
+        self.room = "self.loadAsgoreStairs()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "ASGORE Stairs")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (420, 480)
+        self.player.facing = "right"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (420, 480)
+        self.follower.facing = "right"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+        self.overworld("Throne Entrance", None)
+
+    def loadCoffinRoom(self):
+        self.room = "self.loadCoffinRoom()"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.enemies = []
+        self.blocks = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.map = Map(self, "Coffin Room")
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.cameraRect = CameraRect()
+        self.player.rect.center = (420, 480)
+        self.player.facing = "right"
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (420, 480)
+        self.follower.facing = "right"
+        self.followerCol = LuigiCollision(self)
+        self.playerHammer = HammerCollisionMario(self)
+        self.followerHammer = HammerCollisionLuigi(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+
+        try:
+            self.player.attackPieces = self.storeData["mario attack pieces"]
+            self.follower.attackPieces = self.storeData["luigi attack pieces"]
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+            self.player.abilities = self.storeData["mario abilities"]
+            self.follower.abilities = self.storeData["luigi abilities"]
+            self.player.rect.center = self.storeData["mario pos"]
+            self.follower.rect.center = self.storeData["luigi pos"]
+            self.player.facing = self.storeData["mario facing"]
+            self.follower.facing = self.storeData["luigi facing"]
+            if self.leader == "mario":
+                self.follower.moveQueue = self.storeData["move"]
+            elif self.leader == "luigi":
+                self.player.moveQueue = self.storeData["move"]
+        except:
+
+            self.player.moveQueue = Q.deque()
+
+            self.follower.moveQueue = Q.deque()
+
+        self.cameraRect.update(self.player.rect, 0)
+        self.overworld("Throne Entrance", None)
+
     def overworld(self, area, songData):
         menud = False
         self.blockContents = pg.sprite.Group()
@@ -12380,6 +12558,7 @@ class Game:
             self.currentPos = 0
             self.playSong(songData[0], songData[1], songData[2])
         self.area = area
+        self.songData = songData
         while self.playing:
             if self.save:
                 self.saveGame(songData)
@@ -12388,6 +12567,21 @@ class Game:
             if self.playsong and songData is not None:
                 self.playSong(songData[0], songData[1], songData[2], cont=True, fadein=True)
             self.clock.tick(fps)
+
+            if len(self.fadeout) != 0:
+                self.updateOverworld()
+                self.pause = False
+            elif not self.pause:
+                self.updateOverworld()
+            self.screen.fill(black)
+            self.drawOverworld()
+
+            if menud or self.saved:
+                self.player.canMove = True
+                self.follower.canMove = True
+                menud = False
+                self.saved = False
+
             self.events()
             for event in self.event:
                 if event.type == pg.KEYDOWN:
@@ -12403,19 +12597,6 @@ class Game:
                         menud = True
                         self.pause = True
                         self.controlView(songData)
-            if len(self.fadeout) != 0:
-                self.updateOverworld()
-                self.pause = False
-            elif not self.pause:
-                self.updateOverworld()
-            self.screen.fill(black)
-            self.drawOverworld()
-
-            if menud or self.saved:
-                self.player.canMove = True
-                self.follower.canMove = True
-                menud = False
-                self.saved = False
 
     def overworldMenu(self, song):
         self.menuOpenSound.play()
@@ -12474,8 +12655,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_a or event.key == pg.K_d:
                         if select == 0:
@@ -12624,8 +12804,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_w or event.key == pg.K_a:
                         if len(menuIcons) != 1:
@@ -12754,8 +12933,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_a or event.key == pg.K_d:
                         if select == "Mario":
@@ -12794,14 +12972,15 @@ class Game:
             else:
                 break
 
-    def loadBattle(self, function, currentPoint=True, mario=True, luigi=True):
+    def loadBattle(self, function, currentPoint=True, mario=True, luigi=True, stopMusic=True):
         self.player.isHammer = None
         self.follower.isHammer = None
         self.battleXp = 0
         self.battleCoins = 0
-        if currentPoint:
+        if currentPoint and stopMusic:
             self.currentPoint += pg.mixer.music.get_pos()
-        pg.mixer.music.stop()
+        if stopMusic:
+            pg.mixer.music.stop()
         if mario and luigi:
             self.battleSound.play()
         elif mario:
@@ -15290,7 +15469,7 @@ class Game:
             pass
         self.battle()
 
-    def battle(self, song=None, boss=False):
+    def battle(self, song=None, boss=False, victorySong=True):
         self.cutscenes = []
         menud = False
         self.countdown = 0
@@ -15313,17 +15492,7 @@ class Game:
             if self.battleSong is not None:
                 eval(self.battleSong)
             self.clock.tick(fps)
-            self.events()
-            for event in self.event:
-                if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_TAB:
-                        if self.countdown == 0:
-                            self.player.canMove = False
-                            self.follower.canMove = False
-                            menud = True
-                            self.battleMenu(self.battleSong)
-                        else:
-                            self.wrongSound.play()
+
             self.updateBattle()
             self.screen.fill(black)
             if boss:
@@ -15339,7 +15508,19 @@ class Game:
                 self.follower.canMove = True
                 menud = False
             if len(self.enemies) == 0:
-                self.battleOver()
+                self.battleOver(victorySong)
+
+            self.events()
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_TAB:
+                        if self.countdown == 0:
+                            self.player.canMove = False
+                            self.follower.canMove = False
+                            menud = True
+                            self.battleMenu(self.battleSong)
+                        else:
+                            self.wrongSound.play()
 
     def battleMenu(self, song=None):
         self.menuOpenSound.play()
@@ -15375,8 +15556,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_a or event.key == pg.K_d:
                         if self.player.attackPieces[0][1] >= 10:
@@ -15493,8 +15673,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_a or event.key == pg.K_d:
                         if select == 0:
@@ -15614,8 +15793,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_w or event.key == pg.K_a:
                         if len(menuIcons) != 1:
@@ -15739,8 +15917,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_a or event.key == pg.K_d:
                         if select == 0:
@@ -15790,7 +15967,8 @@ class Game:
                                 else:
                                     dont = True
                             else:
-                                if not self.follower.dead and self.follower.stats[info[3]] != self.follower.stats[info[4]]:
+                                if not self.follower.dead and self.follower.stats[info[3]] != self.follower.stats[
+                                    info[4]]:
                                     self.follower.stats[info[3]] += info[-1]
                                 else:
                                     dont = True
@@ -15957,8 +16135,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_w or event.key == pg.K_a:
                         if len(menuIcons) != 1:
@@ -16059,8 +16236,7 @@ class Game:
             keys = pg.key.get_pressed()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_w or event.key == pg.K_a:
                         if len(menuIcons) != 1:
@@ -16169,8 +16345,7 @@ class Game:
             self.ui.update()
             self.events()
             for event in self.event:
-                if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_d:
                         if number < len(self.enemies):
@@ -16192,9 +16367,6 @@ class Game:
                         else:
                             going = False
                             enemies = [self.enemies[number]]
-                            for enemy in self.enemies:
-                                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
-                                    enemies.append(enemy)
                             eval(command)
                     if event.key == pg.K_TAB:
                         if bro == "mario":
@@ -16252,9 +16424,6 @@ class Game:
                     up = not up
             fad = Fadeout(self)
             enemies = [self.enemies[number]]
-            for enemy in self.enemies:
-                if colRect.colliderect(enemy.imgRect) and colRect.center != enemy.rect.center:
-                    enemies.append(enemy)
             while True:
                 self.calculatePlayTime()
                 self.clock.tick(fps)
@@ -16276,9 +16445,6 @@ class Game:
                     eval(command)
                     break
                 self.events()
-                for event in self.event:
-                    if event == pg.QUIT or keys[pg.K_ESCAPE]:
-                        pg.quit()
                 self.drawBattleMenu()
                 self.blit_alpha(self.screen, self.enemies[number].image,
                                 self.camera.offset(self.enemies[number].imgRect),
@@ -16396,6 +16562,7 @@ class Game:
             for event in self.event:
                 if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
+                    sys.exit(174)
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_m and started:
                         if not mario.kicking and not mario.onShell and not mario.lookAtLuigi and not mario.winPose:
@@ -16618,6 +16785,7 @@ class Game:
             for event in self.event:
                 if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                     pg.quit()
+                    sys.exit(174)
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_m and started:
                         if not mario.kicking and not mario.onShell and not mario.lookAtLuigi and not mario.winPose:
@@ -16799,7 +16967,7 @@ class Game:
         self.camera.update(self.player.rect)
         self.room = "battle"
 
-    def battleOver(self, mario=True, luigi=True, tutorial=False):
+    def battleOver(self, victorySong, mario=True, luigi=True, tutorial=False):
         self.player.KR = 0
         self.follower.KR = 0
         self.cursors = pg.sprite.Group()
@@ -16811,7 +16979,8 @@ class Game:
 
         self.player.isHammer = None
         self.follower.isHammer = None
-        pg.mixer.music.stop()
+        if victorySong:
+            pg.mixer.music.stop()
         self.battleEndUI = []
         self.storeData["mario abilities"] = self.player.abilities
         if self.player.prevAbility == 12:
@@ -16856,7 +17025,10 @@ class Game:
 
         while True:
             self.calculatePlayTime()
-            self.playSong(5.44, 36.708, "battle victory")
+            if victorySong:
+                self.playSong(5.44, 36.708, "battle victory")
+            else:
+                eval(self.battleSong)
             self.clock.tick(fps)
             self.events()
             if tutorial and self.tutorials:
@@ -16892,12 +17064,13 @@ class Game:
         self.coins += round(self.battleCoins)
         if self.player.stats["exp"] >= marioLevelFormula(self) and self.player.stats[
             "level"] < 100:
-            self.marioLevelUp()
+            self.marioLevelUp(victorySong)
         elif self.follower.stats["exp"] >= luigiLevelFormula(self) and \
                 self.follower.stats["level"] < 100:
-            self.luigiLevelUp()
+            self.luigiLevelUp(victorySong)
         fade = Fadeout(self)
-        pg.mixer.music.fadeout(1000)
+        if victorySong:
+            pg.mixer.music.fadeout(1000)
         while True:
             self.calculatePlayTime()
             self.clock.tick(fps)
@@ -16935,7 +17108,7 @@ class Game:
         except:
             pass
 
-    def marioLevelUp(self, allReadyLeveled=False, currentFrame=0):
+    def marioLevelUp(self, victorySong, allReadyLeveled=False, currentFrame=0):
         levelUpChannel = pg.mixer.Channel(0)
         playedLevelUpSound = False
         self.player.statGrowth = {"maxHP": randomNumber(10), "maxBP": randomNumber(4), "pow": randomNumber(4, 3),
@@ -16962,7 +17135,10 @@ class Game:
             luigi.counter = len(luigi.points) - 1
         while going:
             self.calculatePlayTime()
-            self.playSong(5.44, 36.708, "battle victory")
+            if victorySong:
+                self.playSong(5.44, 36.708, "battle victory")
+            else:
+                eval(self.battleSong)
             self.clock.tick(fps)
             self.events()
 
@@ -17001,7 +17177,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck" and self.area != "Last Corridor":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.set_clip(0, expClipAmount, width, height)
@@ -17041,7 +17217,10 @@ class Game:
 
         while going:
             self.calculatePlayTime()
-            self.playSong(5.44, 36.708, "battle victory")
+            if victorySong:
+                self.playSong(5.44, 36.708, "battle victory")
+            else:
+                eval(self.battleSong)
             self.clock.tick(fps)
             self.events()
 
@@ -17066,7 +17245,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck" and self.area != "Last Corridor":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17087,13 +17266,14 @@ class Game:
 
         if self.player.stats["exp"] >= marioLevelFormula(self) and self.player.stats[
             "level"] < 100:
-            self.marioLevelUp(True, mario.currentFrame)
+            self.marioLevelUp(victorySong, True, mario.currentFrame)
         if self.follower.stats["exp"] >= luigiLevelFormula(self) and \
                 self.follower.stats["level"] < 100:
             self.luigiLevelUp(False, True)
 
         fade = Fadeout(self)
-        pg.mixer.music.fadeout(1000)
+        if victorySong:
+            pg.mixer.music.fadeout(1000)
         while True:
             self.calculatePlayTime()
             self.clock.tick(fps)
@@ -17108,7 +17288,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck" and self.area != "Last Corridor":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17147,7 +17327,7 @@ class Game:
         self.storeData["luigi stats"] = self.follower.stats
         eval(self.prevRoom)
 
-    def luigiLevelUp(self, allReadyLeveled=False, marioBefore=False, currentFrame=0):
+    def luigiLevelUp(self, victorySong, allReadyLeveled=False, marioBefore=False, currentFrame=0):
         levelUpChannel = pg.mixer.Channel(0)
         playedLevelUpSound = False
         self.follower.statGrowth = {"maxHP": randomNumber(13), "maxBP": randomNumber(5), "pow": randomNumber(4, 3),
@@ -17178,7 +17358,10 @@ class Game:
             luigi = LuigiLevelUp(True)
         while going:
             self.calculatePlayTime()
-            self.playSong(5.44, 36.708, "battle victory")
+            if victorySong:
+                self.playSong(5.44, 36.708, "battle victory")
+            else:
+                eval(self.battleSong)
             self.clock.tick(fps)
             self.events()
 
@@ -17218,7 +17401,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck" and self.area != "Last Corridor":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             if not marioBefore:
@@ -17264,7 +17447,10 @@ class Game:
 
         while going:
             self.calculatePlayTime()
-            self.playSong(5.44, 36.708, "battle victory")
+            if victorySong:
+                self.playSong(5.44, 36.708, "battle victory")
+            else:
+                eval(self.battleSong)
             self.clock.tick(fps)
             self.events()
 
@@ -17289,7 +17475,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck" and self.area != "Last Corridor":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17311,10 +17497,11 @@ class Game:
 
         if self.follower.stats["exp"] >= luigiLevelFormula(self) and \
                 self.follower.stats["level"] < 100:
-            self.luigiLevelUp(True, False, luigi.currentFrame)
+            self.luigiLevelUp(victorySong, True, False, luigi.currentFrame)
 
         fade = Fadeout(self)
-        pg.mixer.music.fadeout(1000)
+        if victorySong:
+            pg.mixer.music.fadeout(1000)
         while True:
             self.calculatePlayTime()
             self.clock.tick(fps)
@@ -17329,7 +17516,7 @@ class Game:
                 self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
             except:
                 pass
-            if self.area != "Castle Bleck" and self.area != "Last Corridor":
+            if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
                 self.screen.blit(self.void.image, self.void.rect)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
             self.screen.blit(s, sRect)
@@ -17374,6 +17561,7 @@ class Game:
             keys = pg.key.get_pressed()
             if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                 pg.quit()
+                sys.exit(174)
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_F4:
                     self.fullscreen = not self.fullscreen
@@ -17415,7 +17603,7 @@ class Game:
 
     def updateBattle(self):
         self.fadeout.update()
-        if self.area != "Castle Bleck" and self.area != "Last Corridor":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.void.update(self.voidSize)
         self.effects.update()
         [sprite.update() for sprite in self.sprites]
@@ -17429,7 +17617,7 @@ class Game:
         [cutscene.update() for cutscene in self.cutscenes]
 
     def updateOverworld(self):
-        if self.area != "Castle Bleck" and self.area != "Last Corridor":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.void.update(self.voidSize)
         [ui.update() for ui in self.battleEndUI]
         self.fadeout.update()
@@ -17463,7 +17651,7 @@ class Game:
             self.screen.blit(self.map.background, pg.rect.Rect(0, 0, 0, 0))
         except:
             pass
-        if self.area != "Castle Bleck" and self.area != "Last Corridor":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         for sprite in self.sprites:
@@ -17500,7 +17688,7 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        if self.area != "Castle Bleck" and self.area != "Last Corridor":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.screen.blit(self.void.image, self.void.rect)
 
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
@@ -17567,7 +17755,7 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        if self.area != "Castle Bleck" and self.area != "Last Corridor":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
@@ -17607,7 +17795,7 @@ class Game:
         except:
             pass
 
-        if self.area != "Castle Bleck" and self.area != "Last Corridor":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
@@ -17648,7 +17836,7 @@ class Game:
             self.screen.blit(self.map.background, self.map.rect)
         except:
             pass
-        if self.area != "Castle Bleck" and self.area != "Last Corridor":
+        if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.screen.blit(self.void.image, self.void.rect)
         self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
         self.sprites.sort(key=self.sortByYPos)
@@ -17683,8 +17871,8 @@ class Game:
     def sortByHp(self, element):
         return element.stats["maxHP"]
 
-
 game = Game()
 
+print("E")
+
 # game.loadDebugLevel()
-game.titleScreen()

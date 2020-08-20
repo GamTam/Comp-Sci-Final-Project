@@ -4735,6 +4735,9 @@ class UndertaleSaveBlock(pg.sprite.Sprite):
         self.dead = False
         self.text = ["* (The fact that this place\n\a seems like its from\n\a somewhere else...)",
                      "* (It fills you with\n\a DETERMINATION.)"]
+        if self.game.room == "self.loadAsgoreHallway()":
+            self.text = ["* (Knowing that <<RASGORE>> is just\n\a beyond this door...)",
+                         "* (It fills you with\n\a DETERMINATION.)"]
 
     def loadImages(self):
         sheet = spritesheet("sprites/blocks.png", "sprites/blocks.xml")
@@ -5530,7 +5533,7 @@ class UndertaleTextBox(pg.sprite.Sprite):
                     if character[-1] != " " and self.sound == "default":
                         self.game.undertaleTalkSound.play()
                         self.playSound = 0
-                    if self.playSound >= 1 and self.sound == "sans":
+                    elif self.playSound >= 1 and self.sound == "sans":
                         self.game.sansTalkSound.play()
                         self.playSound = 0
                     else:

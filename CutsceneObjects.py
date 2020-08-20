@@ -1,4 +1,5 @@
 from Overworld import *
+import pygame as pg
 from Libraries.moviepy.video.io.VideoFileClip import VideoFileClip
 from Libraries.moviepy.video.io.preview import preview
 import random
@@ -138,7 +139,7 @@ class Cutscene:
                     self.game.screen.blit(self.game.map.background, self.game.map.rect)
                 except:
                     pass
-                if self.game.area != "Castle Bleck" and self.game.area != "Last Corridor":
+                if self.game.area != "Castle Bleck" and self.game.area != "Last Corridor" and self.game.area != "Throne Entrance":
                     self.game.screen.blit(self.game.void.image, self.game.void.rect)
                 self.game.screen.blit(self.game.map.image, self.game.camera.offset(self.game.map.rect))
                 self.game.cutsceneSprites.sort(key=self.game.sortByYPos)

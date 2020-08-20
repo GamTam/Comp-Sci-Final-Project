@@ -1,0 +1,8 @@
+  2/22/2020 8:15:20 PM: Starting composition “Idle”.
+
+  Output To: C:\Users\DaCambra Family\Desktop\Me\Idle\Idle\count bleck_Idle_[##].png    2/22/2020 8:15:26 PM: Finished composition “Idle”.
+
+
+  Total Time Elapsed: 6 Seconds
+Log closed on 2/22/2020 at 8:15:26 PM
+

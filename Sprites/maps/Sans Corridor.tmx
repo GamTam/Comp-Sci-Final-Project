@@ -30,9 +30,9 @@
   </object>
   <object id="17" name="RoomTransition" x="3600" y="315" width="120" height="30">
    <properties>
-    <property name="playerPosx" type="int" value="5120"/>
-    <property name="playerPosy" type="int" value="1025"/>
-    <property name="room" value="self.game.loadFlipsideShopping()"/>
+    <property name="playerPosx" type="int" value="990"/>
+    <property name="playerPosy" type="int" value="2880"/>
+    <property name="room" value="self.game.loadAsgoreHallway()"/>
    </properties>
   </object>
   <object id="18" name="Undertale Save" x="300" y="510"/>

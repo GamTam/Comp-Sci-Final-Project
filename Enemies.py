@@ -6353,7 +6353,8 @@ class Sans:
 
     def update(self):
         if self.game.player.stats["hp"] == 0 and self.game.follower.stats["hp"] == 0:
-            self.game.sansGameovers = self.sansGameovers + 1
+            self.game.sansGameovers = 1
+            # self.game.sansGameovers = self.sansGameovers + 1
             self.game.follower.attackPieces[0][1] = 10
             self.game.player.attackPieces[0][1] = 10
 
@@ -6389,7 +6390,7 @@ class Sans:
              """self.setVar('self.game.sans.currentFrame = 0')""",
              """self.setVar('self.game.sans.throwDir = "down"')""",
              """self.setVar('self.game.sans.rectHP = 0')""",
-             '''self.setVar("""self.game.battleSong = 'self.playSong(17.057, 144.041, "megalovania")'""")''']
+             '''self.setVar("""self.game.battleSong = 'self.playSong(17.057, 143.969, "megalovania")'""")''']
         ], id="it's a beautiful day outside...")
 
         if self.dodge is not None:
@@ -6398,7 +6399,6 @@ class Sans:
 
         if self.throwDir is not None:
             self.currentHead = "eye glow"
-            # if self.throwDir == "down":
             self.currentBody = "throw down"
             if self.currentFrame == 0 and not self.hasPlayedMagicSound:
                 self.game.sansMagicSound.play()
