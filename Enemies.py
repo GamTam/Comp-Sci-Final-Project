@@ -1,3 +1,5 @@
+from pygame.rect import RectType
+
 from Overworld import *
 from CutsceneObjects import *
 from UI import *
@@ -6282,9 +6284,10 @@ class Sans:
                             "How'd he even do that?"]
 
         self.hitDialogue = [
-            '''Cutscene(self.game, [
+            [
             ["self.command('self.game.cutsceneSprites.append(self.game.sans)')",
-            "self.changeSong([17.057, 144.041, 'megalovania'])",
+             '''self.setVar("""self.game.battleSong = 'self.playSong(17.057, 143.969, "megalovania")'""")''',
+            "self.changeSong([17.057, 143.969, 'megalovania'])",
              "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
              "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')", 
              "self.move(self.game.cameraRect, self.game.sans.rect.centerx, self.game.sans.rect.centery, False, 60)"],
@@ -6299,7 +6302,7 @@ class Sans:
              """self.setVar('self.game.sans.throwDir = "down"')""",
              """self.setVar('self.game.sans.currentHead = "default"')""",
              """self.setVar('self.game.sans.currentBody = "default"')"""]
-            ])'''
+            ]
             ]
 
         self.dialogueCounter = 0
@@ -6333,6 +6336,13 @@ class Sans:
 
         self.legs = sheet.getImageName("legs.png")
 
+        self.gasterBlasterSprites = [sheet.getImageName("GB_1.png"),
+                                     sheet.getImageName("GB_2.png"),
+                                     sheet.getImageName("GB_3.png"),
+                                     sheet.getImageName("GB_4.png"),
+                                     sheet.getImageName("GB_5.png"),
+                                     sheet.getImageName("GB_6.png")]
+
     def hpMath(self):
         if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
             self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
@@ -6353,8 +6363,7 @@ class Sans:
 
     def update(self):
         if self.game.player.stats["hp"] == 0 and self.game.follower.stats["hp"] == 0:
-            self.game.sansGameovers = 1
-            # self.game.sansGameovers = self.sansGameovers + 1
+            self.game.sansGameovers = self.sansGameovers + 1
             self.game.follower.attackPieces[0][1] = 10
             self.game.player.attackPieces[0][1] = 10
 
@@ -6438,7 +6447,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6458,7 +6467,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6478,7 +6487,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6498,7 +6507,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6520,7 +6529,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6542,7 +6551,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6564,7 +6573,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6586,7 +6595,7 @@ class Sans:
                 self.currentBody = "default"
                 self.currentHead = "default"
                 try:
-                    eval(self.hitDialogue[self.dialogueCounter])
+                    Cutscene(self.game, self.hitDialogue[self.dialogueCounter])
                 except:
                     pass
                 self.dialogueCounter += 1
@@ -6609,7 +6618,11 @@ class Sans:
                 if hitsRound2:
                     if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
                         self.cooldown = fps
-                        self.dodge = self.game.player.facing
+                        if self.dialogueCounter >= len(self.hitDialogue):
+                            self.stats["hp"] -= 9999999999999
+                            HitNumbers(self.game, self.game.room, (self.imgRect.centerx, self.imgRect.top), 9999999999999)
+                        else:
+                            self.dodge = self.game.player.facing
                     else:
                         if not self.game.player.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.player.canBeHit:
@@ -6630,9 +6643,13 @@ class Sans:
             if hits:
                 hitsRound2 = pg.sprite.collide_rect(self.game.followerCol, self)
                 if hitsRound2:
-                    if self.game.player.going == "down" and self.game.player.jumping and self.stats["hp"] > 0:
-                        self.cooldown = fps
-                        self.dodge = self.game.follower.facing
+                    if self.game.follower.going == "down" and self.game.follower.jumping and self.stats["hp"] > 0:
+                        if self.dialogueCounter >= len(self.hitDialogue):
+                            self.stats["hp"] -= 9999999999999
+                            HitNumbers(self.game, self.game.room, (self.imgRect.centerx, self.imgRect.top),
+                                       9999999999999)
+                        else:
+                            self.dodge = self.game.follower.facing
                     else:
                         if not self.game.follower.hit and self.stats[
                             "hp"] > 0 and not self.hit and self.game.follower.canBeHit:
@@ -6653,16 +6670,22 @@ class Sans:
             if hammerHits:
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
                 if hammerHitsRound2 and self.stats["hp"] > 0:
-                    self.cooldown = fps
-                    self.dodge = self.game.player.facing
+                    if self.dialogueCounter >= len(self.hitDialogue):
+                        self.stats["hp"] -= 9999999999999
+                        HitNumbers(self.game, self.game.room, (self.imgRect.centerx, self.imgRect.top), 9999999999999)
+                    else:
+                        self.dodge = self.game.player.facing
 
         if self.stats["hp"] != 0 and self.game.follower.isHammer is not None and self.dodge is None:
             hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
             if hammerHits:
                 hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
                 if hammerHitsRound2 and self.stats["hp"] > 0:
-                    self.cooldown = fps
-                    self.dodge = self.game.follower.facing
+                    if self.dialogueCounter >= len(self.hitDialogue):
+                        self.stats["hp"] -= 1
+                        HitNumbers(self.game, self.game.room, (self.imgRect.centerx, self.imgRect.top), 99999999999999999999999999)
+                    else:
+                        self.dodge = self.game.follower.facing
 
         for entity in self.game.entities:
             if self.rect.colliderect(entity.rect) and self.stats["hp"] > 0:
@@ -6731,3 +6754,213 @@ class Sans:
         img = CombineSprites([self.legs, bod, head], [self.legRect, self.bodyRect, self.headRect])
         self.image = img.image
         self.imgRect = img.rect
+
+
+class GasterBlaster(pg.sprite.Sprite):
+
+    def __init__(self, game, pos, target, images, size, facing, speed=30, turnSpeed=30):
+        self.points = []
+        self.lastUpdate = 0
+        self.pointCounter = 0
+        self.laserDelay = 0
+        self.game = game
+        self.game.gasterBlasterArriveSound.play()
+        self.dead = False
+        self.laser = None
+        self.offset = True
+        self.manualDraw = True
+        self.targetPos = target
+        self.scale = size
+        self.facing = facing.lower()
+        self.pow = 1
+        self.game.sprites.append(self)
+
+        self.vel = 0
+        self.speed = 2
+        self.laserAlpha = 255
+        self.sizeIncrease = True
+        self.sizeIncreaseSpeed = 6
+
+        self.sprites = images
+        self.currentFrame = 0
+        if self.facing == "down":
+            self.angle = -90
+            self.targetAngle = 0
+        elif self.facing == "up":
+            self.angle = 90
+            self.targetAngle = 180
+        elif self.facing == "left":
+            self.angle = 180
+            self.targetAngle = 270
+        elif self.facing == "right":
+            self.angle = 0
+            self.targetAngle = 90
+        self.rect = pg.rect.Rect(0, 0, 0, 0)
+        self.rotate(self.angle)
+        self.rect.center = pos
+        self.alpha = 255
+
+        self.turnSpeed = (self.targetAngle - self.angle) / turnSpeed
+
+        for i in range(speed):
+            self.points.append(
+                pt.getPointOnLine(self.rect.centerx, self.rect.centery, target[0], target[1],
+                                  (i / speed)))
+
+    def rotate(self, angle):
+        center = self.rect.center
+        self.image = self.sprites[self.currentFrame]
+        self.rect = self.image.get_rect()
+        if self.scale < 1:
+            self.image = pg.transform.scale(self.image,
+                                        (round(self.rect.width * self.scale), self.rect.height))
+        elif self.scale > 1:
+            self.image = pg.transform.scale(self.image,
+                                        (round(self.rect.width * self.scale), round(self.rect.height * self.scale)))
+        self.rect = self.image.get_rect()
+        self.image = pg.transform.rotate(self.image, angle)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if self.pointCounter < len(self.points) - 1:
+            self.pointCounter += 1
+        elif self.currentFrame < len(self.sprites) - 1 and self.laser is None:
+            if self.laserDelay >= 15:
+                if self.facing == "up" or self.facing == "down":
+                    self.maxWidth = round(self.rect.width * 0.55)
+                    self.laser = pg.rect.Rect(0, 0, 0, self.game.map.height * 2)
+                elif self.facing == "left" or self.facing == "right":
+                    self.maxWidth = round(self.rect.height * 0.55)
+                    self.laser = pg.rect.Rect(0, 0, self.game.map.width * 2, 0)
+                self.sizeIncreaseSpeed = round(self.maxWidth / self.sizeIncreaseSpeed)
+            else:
+                self.laserDelay += 1
+        elif self.currentFrame < len(self.sprites) - 1 and self.laser is not None:
+            if now - self.lastUpdate > 25:
+                self.currentFrame += 1
+                self.lastUpdate = now
+                if self.currentFrame == 3:
+                    self.game.gasterBlasterFireSound.play()
+        else:
+            if now - self.lastUpdate > 25:
+                if self.currentFrame == 5:
+                    self.currentFrame = 4
+                else:
+                    self.currentFrame = 5
+                self.lastUpdate = now
+
+        if self.angle < self.targetAngle:
+            self.angle += self.turnSpeed
+        else:
+            self.angle = self.targetAngle
+
+        self.rotate(self.angle)
+
+        if self.laser is not None and self.currentFrame > len(self.sprites) - 3:
+            self.vel += self.speed
+            if not self.sizeIncrease: self.laserAlpha -= 2
+            if self.facing == "up":
+                self.rect.y += self.vel
+                if self.sizeIncrease:
+                    self.laser.width += self.sizeIncreaseSpeed
+                    if self.laser.width >= self.maxWidth:
+                        self.sizeIncrease = False
+                elif self.laser.width >= 0:
+                    self.laser.width -= round(self.sizeIncreaseSpeed * 0.2)
+
+                if self.laser.width < 0:
+                    self.game.sprites.remove(self)
+                    self.laser.width = 0
+
+                self.laser.midbottom = (self.rect.left, self.rect.top)
+                self.laser.centerx += round(self.rect.width / 2)
+                self.laser.bottom += round(self.rect.height * 0.45)
+            elif self.facing == "down":
+                self.rect.y -= self.vel
+
+                if self.sizeIncrease:
+                    self.laser.width += self.sizeIncreaseSpeed
+                    if self.laser.width >= self.maxWidth:
+                        self.sizeIncrease = False
+                elif self.laser.width >= 0:
+                    self.laser.width -= round(self.sizeIncreaseSpeed * 0.2)
+
+                if self.laser.width < 0:
+                    self.game.sprites.remove(self)
+                    self.laser.width = 0
+
+                self.laser.midtop = (self.rect.left, self.rect.bottom)
+                self.laser.centerx += round(self.rect.width / 2)
+                self.laser.top -= round(self.rect.height * 0.45)
+            elif self.facing == "left":
+                self.rect.x -= self.vel
+
+                if self.sizeIncrease:
+                    self.laser.height += self.sizeIncreaseSpeed
+                    if self.laser.height >= self.maxWidth:
+                        self.sizeIncrease = False
+                elif self.laser.height >= 0:
+                    self.laser.height -= round(self.sizeIncreaseSpeed * 0.2)
+
+                if self.laser.height < 0:
+                    self.game.sprites.remove(self)
+                    self.laser.height = 0
+
+                self.laser.right = self.rect.left + round(self.rect.width * 0.45)
+                self.laser.centery = self.rect.top + round(self.rect.height / 2)
+            elif self.facing == "right":
+                self.rect.x += self.vel
+
+                if self.sizeIncrease:
+                    self.laser.height += self.sizeIncreaseSpeed
+                    if self.laser.height >= self.maxWidth:
+                        self.sizeIncrease = False
+                elif self.laser.height >= 0:
+                    self.laser.height -= round(self.sizeIncreaseSpeed * 0.2)
+
+                if self.laser.height < 0:
+                    self.game.sprites.remove(self)
+                    self.laser.height = 0
+
+                self.laser.left = self.rect.right - round(self.rect.width * 0.45)
+                self.laser.centery = self.rect.top + round(self.rect.height / 2)
+
+            self.laserSurf = pg.Surface((self.laser.width, self.laser.height))
+            pg.draw.rect(self.laserSurf, white, pg.rect.Rect(0, 0, self.laser.width, self.laser.height))
+
+            if self.game.player.stats["hp"] != 0 and self.laser.colliderect(self.game.player.rect) and self.laser.colliderect(self.game.player.imgRect):
+                if not self.game.player.hit and self.game.player.canBeHit:
+                    HitNumbers(self.game, self.game.room,
+                               (self.game.player.rect.left, self.game.player.rect.top - 2),
+                               (max(self.pow - self.game.player.stats["def"], 1)), "mario")
+                    self.game.player.stats["hp"] -= (
+                        max(self.pow - self.game.player.stats["def"], 1))
+                    self.game.player.KR += 5
+                    if self.game.player.stats["hp"] <= 0:
+                        self.game.player.stats["hp"] = 0
+                        self.game.player.currentFrame = 0
+                        self.game.player.KR = 0
+                    self.game.playerHitSound.play()
+
+            if self.game.follower.stats["hp"] != 0 and self.laser.colliderect(self.game.follower.rect) and self.laser.colliderect(self.game.follower.imgRect):
+                if not self.game.player.hit and self.game.follower.canBeHit:
+                    HitNumbers(self.game, self.game.room,
+                               (self.game.follower.rect.left, self.game.follower.rect.top - 2),
+                               (max(self.pow - self.game.follower.stats["def"], 1)), "luigi")
+                    self.game.follower.stats["hp"] -= (
+                        max(self.pow - self.game.follower.stats["def"], 1))
+                    self.game.follower.KR += 5
+                    if self.game.follower.stats["hp"] <= 0:
+                        self.game.follower.stats["hp"] = 0
+                        self.game.follower.currentFrame = 0
+                        self.game.follower.KR = 0
+                    self.game.playerHitSound.play()
+        else:
+            self.rect.center = self.points[self.pointCounter]
+
+    def draw(self):
+        if self.laser is not None and self.currentFrame > len(self.sprites) - 3:
+            self.game.blit_alpha(self.game.screen, self.laserSurf, self.game.camera.offset(self.laser), self.laserAlpha)
+        self.game.blit_alpha(self.game.screen, self.image, self.game.camera.offset(self.rect), self.alpha)

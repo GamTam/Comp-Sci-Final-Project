@@ -1,5 +1,6 @@
 import pickle
 import time
+import math
 from os.path import exists
 import sys
 import pytmx
@@ -191,9 +192,9 @@ class Game:
         self.damageTaken = 0
         self.void = Void(self, self.voidSize)
         if not fullscreen:
-            self.screen = pg.display.set_mode((width, height))
+            self.screen = pg.display.set_mode((width, height), pg.DOUBLEBUF)
         else:
-            self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
+            self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN, pg.DOUBLEBUF)
         self.camera = Camera(self, width, height)
         self.imgRect = pg.rect.Rect(width / 2, height / 2, 0, 0)
         self.clock = pg.time.Clock()
@@ -8576,6 +8577,8 @@ class Game:
 
     def loadData(self):
         self.flashSound = pg.mixer.Sound("sounds/flash.ogg")
+        self.gasterBlasterArriveSound = pg.mixer.Sound("sounds/GasterBlasterArrive.ogg")
+        self.gasterBlasterFireSound = pg.mixer.Sound("sounds/GasterBlasterFire.ogg")
         self.sansHitOnWallSound = pg.mixer.Sound("sounds/sansHitOnWallSound.ogg")
         self.sansMagicSound = pg.mixer.Sound("sounds/sansTelekinesis.ogg")
         self.castleBleckIntroduction = pg.mixer.Sound("sounds/castleBleckIntroduction.ogg")
@@ -12249,9 +12252,7 @@ class Game:
             "* um,/p i'm just gonna/n\a pretend that you did.",
             "*/5 welp.",
             "* sorry,/p old lady.",
-            "* this is why i never/n\a make promises.",
-            "* ...",
-            "*/0 that last line makes/n\a more sense in undertale."
+            "* this is why i never/n\a make promises."
             ], sound="sans", font="sans", head="sans")"""],
                 ["self.command('self.game.sprites.append(self.sans)')",
                  "self.command('self.game.sprites.append(self.mario)')",
@@ -12334,8 +12335,247 @@ class Game:
                 ["""self.undertaleTextBox(self.sans, [
                  "* hmm./p/n* that expression...",
                  "*/1 that's the expression/n\a of someone who's died/n\a thrice in a row.",
-                 "*/0 that must be hard.",
-                 "* especially since i've been/n\a quoting "
+                 "*/5 ...",
+                 '*/2 hey, what comes after/n\a "thrice,"/p anyway?',
+                 "*/6 wanna help me find out?"
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 4:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a quice in a row.",
+                 "*/1 quice?/p/n* frice?",
+                 "*/6 welp,/p won't have to/n\a use it again anyways."
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 5:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a five times in a row.",
+                 "*/3 convenient, huh?/p/n* that's one for each/n\a finger.",
+                 "*/5 but soon...",
+                 "*/6 you'll need a cool mutant/n\a hand to count all/n\a all of your deaths."
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 6:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a six times in a row.",
+                 "*/3 that's the number of/n\a fingers on a mutant/n\a hand.",
+                 "*/5 but soon...",
+                 "*/6 you'll need a mutant/n\a hand with even more/n\a fingers."
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 7:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a seven times in a row.",
+                 "*/0 hey, that's good./p/n* seven's supposed to be/n\a a lucky number.",
+                 "*/4 who knows, maybe/n\a you'll hit the/n\a jackpot...",
+                 "*/6 and that number will/n\a multiply tenfold."
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 8:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a eight times in a row.",
+                 "*/3 that's the number of/n\a fingers on a spider.",
+                 "*/5 but soon...",
+                 "*/2 wait, don't spiders/n\a have legs?"
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 9:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a seven times in a row.",
+                 "*/1 ...",
+                 "*/3 nope,/p wait,/p that's/n\a definitely nine,/p sorry.",
+                 "*/6 or was it ten?"
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 10:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a ten times in a row.",
+                 "*/3 hey, congrats!/P/n* the big one-oh!",
+                 "*/1 let's invite all your/n\a friends over for a/n\a big shindig.",
+                 "*/3 we can have pie,/p and/n\a hot dogs,/p and...",
+                 "*/5 hmmm... wait./p/n* something's not right.",
+                 "*/6 the void's gotten all/n\a your friends.",
+                 "*/6 ...",
+                 "*/2 i'm just messing with/n\a you.",
+                 "*/6 but we're running out/n\a of time."
+                 ], sound="sans", font="sans", head="sans")"""],
+                ["self.command('self.game.sprites.append(self.sans)')",
+                 "self.command('self.game.sprites.append(self.mario)')",
+                 "self.command('self.game.sprites.append(self.luigi)')",
+                 "self.command('self.game.sprites.remove(self.game.player)')",
+                 "self.command('self.game.sprites.remove(self.game.follower)')",
+                 """self.command('self.game.loadBattle("self.loadSansFight()", currentPoint=False)')"""]
+            ], id="sans fight")
+        elif self.sansGameovers == 11:
+            LoadCutscene(self, pg.rect.Rect(1670, 360, 60, 240), True, False, [
+                [
+                    "self.setVar('self.mario = marioCutscene(self.game, (self.game.player.rect.centerx, self.game.player.rect.centery))')",
+                    "self.setVar('self.luigi = luigiCutscene(self.game, (self.game.follower.rect.centerx, self.game.follower.rect.centery))')",
+                    "self.setVar('self.sans = SansOverworld(self.game, 2370)')",
+                    """self.setVar('self.mario.facing = "right"')""",
+                    """self.setVar('self.luigi.facing = "right"')""",
+                    """self.setVar('self.game.player.facing = "right"')""",
+                    """self.setVar('self.game.follower.facing = "right"')"""],
+                ["self.wait(1)"],
+                ["self.move(self.game.cameraRect, 360, 0, True, 60)",
+                 "self.command('self.game.player.update()')",
+                 "self.command('self.game.follower.update()')"],
+                ["self.wait(1)"],
+                ["""self.undertaleTextBox(self.sans, [
+                 "* hmm./p/n* that expression...",
+                 "*/1 that's the expression/n\a of someone who's died/n\a eleven times in a row.",
+                 "*/3 well,/p give or take.",
+                 "*/2 there's nuance to/n\a this stuff.",
+                 "*/3 don't think i'll be/n\a able to count very/n\a well from here.",
+                 "*/2 count for me, ok?",
+                 "*/6 we'll start from 12."
                  ], sound="sans", font="sans", head="sans")"""],
                 ["self.command('self.game.sprites.append(self.sans)')",
                  "self.command('self.game.sprites.append(self.mario)')",
@@ -13020,6 +13260,7 @@ class Game:
                 self.pause = False
                 eval(function)
                 going = False
+                break
 
     def loadMultiEnemyDebug(self):
         self.room = "battle"
@@ -16345,7 +16586,6 @@ class Game:
             self.ui.update()
             self.events()
             for event in self.event:
-                
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_d:
                         if number < len(self.enemies):
@@ -17563,6 +17803,11 @@ class Game:
                 pg.quit()
                 sys.exit(174)
             if event.type == pg.KEYDOWN:
+                if event.key == pg.K_r:
+                    self.player.stats["hp"] = 0
+                    self.player.currentFrame = 0
+                    self.follower.currentFrame = 0
+                    self.follower.stats["hp"] = 0
                 if event.key == pg.K_F4:
                     self.fullscreen = not self.fullscreen
                     if not self.fullscreen:
@@ -17570,13 +17815,13 @@ class Game:
                         pg.display.init()
                         pg.display.set_icon(icon)
                         pg.display.set_caption(title)
-                        self.screen = pg.display.set_mode((width, height))
+                        self.screen = pg.display.set_mode((width, height), pg.DOUBLEBUF)
                     else:
                         pg.display.quit()
                         pg.display.init()
                         pg.display.set_icon(icon)
                         pg.display.set_caption(title)
-                        self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN)
+                        self.screen = pg.display.set_mode((width, height), pg.FULLSCREEN, pg.DOUBLEBUF)
                 if event.key == pg.K_RETURN and not self.player.dead and not self.follower.dead:
                     if self.leader == "mario":
                         self.leader = "luigi"
@@ -17705,7 +17950,10 @@ class Game:
 
         for sprite in self.sprites:
             if not sprite.dead:
-                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+                try:
+                    self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+                except:
+                    sprite.draw()
 
         try:
             self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
@@ -17714,17 +17962,7 @@ class Game:
 
         self.enemies.sort(key=self.sortByHp)
         for enemy in self.enemies:
-            if boss:
-                if self.enemies.index(enemy) == len(self.enemies) - 1:
-                    pg.draw.rect(self.screen, darkGray, pg.rect.Rect(40, height - 80, width - 80, 40, ))
-                    if enemy.rectHP >= 0:
-                        pg.draw.rect(self.screen, red, pg.Rect(40, height - 80,
-                                                               ((width - 80) * (enemy.rectHP / enemy.stats["maxHP"])),
-                                                               40))
-                    pg.draw.rect(self.screen, black,
-                                 pg.Rect(40, height - 80, width - 80, 40),
-                                 5)
-            else:
+            if not boss:
                 if enemy.stats["hp"] != enemy.stats["maxHP"]:
                     pg.draw.rect(self.screen, darkGray,
                                  self.camera.offset(
@@ -17738,8 +17976,20 @@ class Game:
                                      pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
                                  1)
 
-        [ui.draw() for ui in self.ui]
+        [ui.draw() for ui in self.ui if "UI" not in type(ui).__name__]
+        [ui.draw() for ui in self.ui if "UI" in type(ui).__name__]
 
+        for enemy in self.enemies:
+            if boss:
+                if self.enemies.index(enemy) == len(self.enemies) - 1:
+                    pg.draw.rect(self.screen, darkGray, pg.rect.Rect(40, height - 80, width - 80, 40, ))
+                    if enemy.rectHP >= 0:
+                        pg.draw.rect(self.screen, red, pg.Rect(40, height - 80,
+                                                               ((width - 80) * (enemy.rectHP / enemy.stats["maxHP"])),
+                                                               40))
+                    pg.draw.rect(self.screen, black,
+                                 pg.Rect(40, height - 80, width - 80, 40),
+                                 5)
         for fx in self.effects:
             if fx.offset:
                 self.blit_alpha(self.screen, fx.image, self.camera.offset(fx.rect), fx.alpha)
@@ -17771,7 +18021,10 @@ class Game:
 
         for sprite in self.sprites:
             if not sprite.dead:
-                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+                try:
+                    self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+                except:
+                    sprite.draw()
 
         try:
             self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
@@ -17806,7 +18059,10 @@ class Game:
                 pass
 
         for sprite in self.sprites:
-            self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+            try:
+                self.blit_alpha(self.screen, sprite.image, self.camera.offset(sprite.imgRect), sprite.alpha)
+            except:
+                sprite.draw()
 
         try:
             self.screen.blit(self.map.foreground, self.camera.offset(self.map.rect))
@@ -17863,7 +18119,10 @@ class Game:
         [self.screen.blit(fad.image, (0, 0)) for fad in self.fadeout]
 
     def sortByYPos(self, element):
-        return element.rect.bottom
+        if type(element).__name__ != "GasterBlaster":
+            return element.rect.bottom
+        else:
+            return math.inf
 
     def sortByXPos(self, element):
         return element.rect.left

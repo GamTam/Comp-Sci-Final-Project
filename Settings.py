@@ -48,7 +48,7 @@ pg.display.set_icon(icon)
 pg.mixer.pre_init(44100, -16, 2, 2048)
 pg.init()
 pg.display.set_caption(title)
-screen = pg.display.set_mode((width, height))
+screen = pg.display.set_mode((width, height), pg.DOUBLEBUF)
 
 battleTransitionSprites = [pg.image.load("sprites/battle intro/battle_transition_1.png").convert_alpha(),
                            pg.image.load("sprites/battle intro/battle_transition_2.png").convert_alpha(),
@@ -95,6 +95,10 @@ angle = 0
 angledir = True
 clock = pg.time.Clock()
 
+updateRects = [pg.rect.Rect(0, 0, round(width / 2), round(height / 2)),
+               pg.rect.Rect(round(width / 2), 0, round(width / 2), round(height / 2))
+              ]
+
 for i in range(len(os.listdir("sprites/the void/")) - 1):
     clock.tick(fps)
     voidSprites.append(pg.image.load("sprites/the void/{}.png".format(i + 1)).convert_alpha())
@@ -121,8 +125,6 @@ for i in range(len(os.listdir("sprites/the void/")) - 1):
     screen.blit(star, starRect)
 
     pg.display.flip()
-
-
 
 voidSpot = (width / 2, 100)
 

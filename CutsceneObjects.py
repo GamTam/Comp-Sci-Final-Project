@@ -100,6 +100,7 @@ class Cutscene:
                 self.game.playSong(self.song[0], self.song[1], self.song[2], cont=self.contSong)
             self.game.calculatePlayTime()
             self.game.clock.tick(fps)
+            print(self.game.clock.get_fps())
             self.game.events()
 
             [fad.update() for fad in self.game.fadeout]
@@ -178,7 +179,7 @@ class Cutscene:
                 else:
                     self.game.blit_alpha(self.game.screen, fx.image, fx.rect, fx.alpha)
 
-            pg.display.flip()
+            pg.display.update(updateRects)
 
         self.game.updateOverworld()
         self.game.playtime -= 1
@@ -4134,5 +4135,3 @@ class CombineSprites(pg.sprite.Sprite):
         for i in range(len(sprites)):
             self.image.blit(sprites[i], (rects[i].x - self.rect.left,
                                          rects[i].y - self.rect.top))
-
-        # pg.display.flip()
