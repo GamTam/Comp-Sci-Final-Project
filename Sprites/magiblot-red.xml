@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:b85e6dd8da2a1531bb490f95541d190d:55f8823658840aa422cb413f627ba8db:d7846ef471a9de55d45d667c9caf4493$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="magiblot-red.png" width="945" height="672">
+    <sprite n="idle_1.png" x="0" y="0" w="105" h="96"/>
+    <sprite n="idle_2.png" x="105" y="0" w="105" h="96"/>
+    <sprite n="idle_3.png" x="210" y="0" w="105" h="96"/>
+    <sprite n="idle_4.png" x="315" y="0" w="105" h="96"/>
+    <sprite n="idle_5.png" x="420" y="0" w="105" h="96"/>
+    <sprite n="idle_6.png" x="525" y="0" w="105" h="96"/>
+    <sprite n="idle_7.png" x="630" y="0" w="105" h="96"/>
+    <sprite n="idle_8.png" x="735" y="0" w="105" h="96"/>
+    <sprite n="idle_9.png" x="840" y="0" w="105" h="96"/>
+    <sprite n="idle_10.png" x="0" y="96" w="105" h="96"/>
+    <sprite n="idle_11.png" x="105" y="96" w="105" h="96"/>
+    <sprite n="idle_12.png" x="210" y="96" w="105" h="96"/>
+    <sprite n="idle_13.png" x="315" y="96" w="105" h="96"/>
+    <sprite n="idle_14.png" x="420" y="96" w="105" h="96"/>
+    <sprite n="idle_15.png" x="525" y="96" w="105" h="96"/>
+    <sprite n="idle_16.png" x="630" y="96" w="105" h="96"/>
+    <sprite n="idle_17.png" x="735" y="96" w="105" h="96"/>
+    <sprite n="idle_18.png" x="840" y="96" w="105" h="96"/>
+    <sprite n="idle_19.png" x="0" y="192" w="105" h="96"/>
+    <sprite n="idle_20.png" x="105" y="192" w="105" h="96"/>
+    <sprite n="idle_21.png" x="210" y="192" w="105" h="96"/>
+    <sprite n="idle_22.png" x="315" y="192" w="105" h="96"/>
+    <sprite n="idle_23.png" x="420" y="192" w="105" h="96"/>
+    <sprite n="idle_24.png" x="525" y="192" w="105" h="96"/>
+    <sprite n="idle_25.png" x="630" y="192" w="105" h="96"/>
+    <sprite n="idle_26.png" x="735" y="192" w="105" h="96"/>
+    <sprite n="idle_27.png" x="840" y="192" w="105" h="96"/>
+    <sprite n="idle_28.png" x="0" y="288" w="105" h="96"/>
+    <sprite n="idle_29.png" x="105" y="288" w="105" h="96"/>
+    <sprite n="idle_30.png" x="210" y="288" w="105" h="96"/>
+    <sprite n="idle_31.png" x="315" y="288" w="105" h="96"/>
+    <sprite n="idle_32.png" x="420" y="288" w="105" h="96"/>
+    <sprite n="idle_33.png" x="525" y="288" w="105" h="96"/>
+    <sprite n="idle_34.png" x="630" y="288" w="105" h="96"/>
+    <sprite n="idle_35.png" x="735" y="288" w="105" h="96"/>
+    <sprite n="idle_36.png" x="840" y="288" w="105" h="96"/>
+    <sprite n="idle_37.png" x="0" y="384" w="105" h="96"/>
+    <sprite n="idle_38.png" x="105" y="384" w="105" h="96"/>
+    <sprite n="idle_39.png" x="210" y="384" w="105" h="96"/>
+    <sprite n="idle_40.png" x="315" y="384" w="105" h="96"/>
+    <sprite n="idle_41.png" x="420" y="384" w="105" h="96"/>
+    <sprite n="idle_42.png" x="525" y="384" w="105" h="96"/>
+    <sprite n="idle_43.png" x="630" y="384" w="105" h="96"/>
+    <sprite n="idle_44.png" x="735" y="384" w="105" h="96"/>
+    <sprite n="idle_45.png" x="840" y="384" w="105" h="96"/>
+    <sprite n="idle_46.png" x="0" y="480" w="105" h="96"/>
+    <sprite n="idle_47.png" x="105" y="480" w="105" h="96"/>
+    <sprite n="idle_48.png" x="210" y="480" w="105" h="96"/>
+    <sprite n="idle_49.png" x="315" y="480" w="105" h="96"/>
+    <sprite n="idle_50.png" x="420" y="480" w="105" h="96"/>
+    <sprite n="idle_51.png" x="525" y="480" w="105" h="96"/>
+    <sprite n="idle_52.png" x="630" y="480" w="105" h="96"/>
+    <sprite n="idle_53.png" x="735" y="480" w="105" h="96"/>
+    <sprite n="idle_54.png" x="840" y="480" w="105" h="96"/>
+    <sprite n="idle_55.png" x="0" y="576" w="105" h="96"/>
+    <sprite n="idle_56.png" x="105" y="576" w="105" h="96"/>
+    <sprite n="idle_57.png" x="210" y="576" w="105" h="96"/>
+    <sprite n="idle_58.png" x="315" y="576" w="105" h="96"/>
+    <sprite n="idle_59.png" x="420" y="576" w="105" h="96"/>
+    <sprite n="idle_60.png" x="525" y="576" w="105" h="96"/>
+    <sprite n="idle_61.png" x="630" y="576" w="105" h="96"/>
+    <sprite n="shadow.png" x="735" y="576" w="64" h="16"/>
+</TextureAtlas>

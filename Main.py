@@ -131,6 +131,9 @@ class Map:
                 elif object.type == "Anuboo":
                     goom = AnubooOverworld()
                     goom.init(self.game, object.x, object.y, object.battle)
+                elif object.type == "Red Magiblot":
+                    goom = MagiblotOverworldR()
+                    goom.init(self.game, object.x, object.y, object.battle)
             elif object.name == "Block":
                 if object.type == "Normal":
                     Block(self.game, (object.x, object.y), [object.contents0, object.contents1, object.contents2,
@@ -14472,6 +14475,37 @@ class Game:
             pass
         self.battle("""self.playSong(29.432, 71.033, "dark fawful battle")""", boss=True)
 
+    def loadCastleBleckBattle1RM(self):
+        self.room = "battle"
+        self.sprites = []
+        self.collision = []
+        self.walls = pg.sprite.Group()
+        self.npcs = pg.sprite.Group()
+        self.enemies = []
+        self.playsong = True
+        self.map = Map(self, "Castle Bleck Battle", background="Castle Bleck")
+
+        m = MagiblotR()
+        m.init(self, (self.map.width / 2, 1840))
+
+        self.camera = Camera(self, self.map.width, self.map.height)
+        self.player.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.playerCol = MarioCollision(self)
+        self.follower.rect.center = (self.map.width / 2, self.map.height / 2)
+        self.follower.moveQueue.clear()
+        self.player.moveQueue.clear()
+        self.followerCol = LuigiCollision(self)
+        self.sprites.append(self.follower)
+        self.sprites.append(self.player)
+        self.follower.stepSound = self.stoneSound
+        self.player.stepSound = self.stoneSound
+        try:
+            self.player.stats = self.storeData["mario stats"]
+            self.follower.stats = self.storeData["luigi stats"]
+        except:
+            pass
+        self.battle(self.songData, victorySong=False)
+
     def loadFinalBoss(self):
         self.room = "battle"
         self.sprites = []
@@ -15728,6 +15762,8 @@ class Game:
             pg.mixer.music.play(-1)
         elif self.battleSong == "none":
             self.battleSong = None
+        elif type(self.battleSong) is list:
+            self.battleSong = "self.playSong({}, {}, '{}')".format(self.songData[0], self.songData[1], self.songData[2])
         while self.playing:
             self.calculatePlayTime()
             if self.battleSong is not None:
@@ -16801,7 +16837,8 @@ class Game:
             keys = pg.key.get_pressed()
             for event in self.event:
                 if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                    pg.display.quit()
+                    # pg.quit()
                     sys.exit(174)
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_m and started:
@@ -17024,7 +17061,8 @@ class Game:
             keys = pg.key.get_pressed()
             for event in self.event:
                 if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
-                    pg.quit()
+                    pg.display.quit()
+                    # pg.quit()
                     sys.exit(174)
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_m and started:
@@ -17800,7 +17838,8 @@ class Game:
         for event in self.event:
             keys = pg.key.get_pressed()
             if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
-                pg.quit()
+                pg.display.quit()
+                # pg.quit()
                 sys.exit(174)
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_r:

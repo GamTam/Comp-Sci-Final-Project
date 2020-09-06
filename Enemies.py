@@ -1384,6 +1384,171 @@ class AnubooLazerOverworld(pg.sprite.Sprite):
                 self.game.loadBattle(self.battle)
 
 
+class MagiblotOverworldR(StateMachine):
+    idle = State("Idle", initial=True)
+    other = State("other")
+
+    trans = idle.to(other)
+
+    def init(self, game, x, y, battle):
+        self.game = game
+        self.game.enemies.append(self)
+        self.game.sprites.append(self)
+
+        self.loadImages()
+        self.alpha = 255
+        self.speed = 4
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.image = self.idleImages[0]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.image.get_rect()
+        self.hpSpeed = 0
+        self.rect.center = (x, y)
+        self.battle = battle
+        self.newID = False
+        self.id = -12
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/magiblot-red.png", "sprites/magiblot-red.xml")
+
+        self.idleImages = [sheet.getImageName("idle_1.png"),
+                           sheet.getImageName("idle_2.png"),
+                           sheet.getImageName("idle_3.png"),
+                           sheet.getImageName("idle_4.png"),
+                           sheet.getImageName("idle_5.png"),
+                           sheet.getImageName("idle_6.png"),
+                           sheet.getImageName("idle_7.png"),
+                           sheet.getImageName("idle_8.png"),
+                           sheet.getImageName("idle_9.png"),
+                           sheet.getImageName("idle_10.png"),
+                           sheet.getImageName("idle_11.png"),
+                           sheet.getImageName("idle_12.png"),
+                           sheet.getImageName("idle_13.png"),
+                           sheet.getImageName("idle_14.png"),
+                           sheet.getImageName("idle_15.png"),
+                           sheet.getImageName("idle_16.png"),
+                           sheet.getImageName("idle_17.png"),
+                           sheet.getImageName("idle_18.png"),
+                           sheet.getImageName("idle_19.png"),
+                           sheet.getImageName("idle_20.png"),
+                           sheet.getImageName("idle_21.png"),
+                           sheet.getImageName("idle_22.png"),
+                           sheet.getImageName("idle_23.png"),
+                           sheet.getImageName("idle_24.png"),
+                           sheet.getImageName("idle_25.png"),
+                           sheet.getImageName("idle_26.png"),
+                           sheet.getImageName("idle_27.png"),
+                           sheet.getImageName("idle_28.png"),
+                           sheet.getImageName("idle_29.png"),
+                           sheet.getImageName("idle_30.png"),
+                           sheet.getImageName("idle_31.png"),
+                           sheet.getImageName("idle_32.png"),
+                           sheet.getImageName("idle_33.png"),
+                           sheet.getImageName("idle_34.png"),
+                           sheet.getImageName("idle_35.png"),
+                           sheet.getImageName("idle_36.png"),
+                           sheet.getImageName("idle_37.png"),
+                           sheet.getImageName("idle_38.png"),
+                           sheet.getImageName("idle_39.png"),
+                           sheet.getImageName("idle_40.png"),
+                           sheet.getImageName("idle_41.png"),
+                           sheet.getImageName("idle_42.png"),
+                           sheet.getImageName("idle_43.png"),
+                           sheet.getImageName("idle_44.png"),
+                           sheet.getImageName("idle_45.png"),
+                           sheet.getImageName("idle_46.png"),
+                           sheet.getImageName("idle_47.png"),
+                           sheet.getImageName("idle_48.png"),
+                           sheet.getImageName("idle_49.png"),
+                           sheet.getImageName("idle_50.png"),
+                           sheet.getImageName("idle_51.png"),
+                           sheet.getImageName("idle_52.png"),
+                           sheet.getImageName("idle_53.png"),
+                           sheet.getImageName("idle_54.png"),
+                           sheet.getImageName("idle_55.png"),
+                           sheet.getImageName("idle_56.png"),
+                           sheet.getImageName("idle_57.png"),
+                           sheet.getImageName("idle_58.png"),
+                           sheet.getImageName("idle_59.png"),
+                           sheet.getImageName("idle_60.png"),
+                           sheet.getImageName("idle_61.png")]
+
+    def update(self):
+        self.animate()
+        self.imgRect = self.rect
+
+        if not self.newID:
+            if self.ID in self.game.despawnList:
+                self.game.sprites.remove(self)
+            self.newID = True
+        if self in self.game.sprites:
+            hits = pg.sprite.collide_rect(self, self.game.player)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.playerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    self.game.loadBattle(self.battle, stopMusic=False)
+
+            hits = pg.sprite.collide_rect(self, self.game.follower)
+            if hits:
+                hitsRound2 = pg.sprite.collide_rect(self, self.game.followerCol)
+                if hitsRound2:
+                    self.game.despawnList.append(self.ID)
+                    if len(self.game.despawnList) > 13:
+                        self.game.despawnList.remove(self.game.despawnList[0])
+                    self.game.loadBattle(self.battle, stopMusic=False)
+
+            if self.game.player.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.player.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.playerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle, stopMusic=False)
+
+            if self.game.follower.isHammer is not None:
+                hammerHits = pg.sprite.collide_rect(self, self.game.follower.isHammer)
+                if hammerHits:
+                    hammerHitsRound2 = pg.sprite.collide_rect(self, self.game.followerHammer)
+                    if hammerHitsRound2:
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle, stopMusic=False)
+
+            for entity in self.game.entities:
+                if self.rect.colliderect(entity.rect):
+                    if type(entity).__name__ == "Lightning":
+                        self.game.despawnList.append(self.ID)
+                        if len(self.game.despawnList) > 13:
+                            self.game.despawnList.remove(self.game.despawnList[0])
+                        self.game.loadBattle(self.battle, stopMusic=False)
+                    if self.imgRect.colliderect(entity.imgRect):
+                        if type(entity).__name__ == "Fireball":
+                            self.game.despawnList.append(self.ID)
+                            if len(self.game.despawnList) > 13:
+                                self.game.despawnList.remove(self.game.despawnList[0])
+                            self.game.loadBattle(self.battle, stopMusic=False)
+
+    def animate(self):
+        if self.is_idle:
+            if self.currentFrame < len(self.idleImages):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.idleImages))
+            else:
+                self.currentFrame = 0
+            bottom = self.rect.bottom
+            left = self.rect.left
+            self.image = self.idleImages[self.currentFrame]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+            self.rect.left = left
+
+
 class Goomba(pg.sprite.Sprite):
     def __init__(self, game, x, y, vx, vy, facing="down"):
         pg.sprite.Sprite.__init__(self)
@@ -5217,7 +5382,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            self.getHit()
+                            if not self.hit: self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
                         else:
@@ -5253,7 +5418,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            self.getHit()
+                            if not self.hit: self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
                         else:
@@ -5288,7 +5453,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        self.getHit()
+                        if not self.hit: self.getHit()
                         self.cooldown = fps
 
             if self.stats["hp"] != 0 and self.game.follower.isHammer is not None:
@@ -5307,7 +5472,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        self.getHit()
+                        if not self.hit: self.getHit()
                         self.cooldown = fps
 
             for entity in self.game.entities:
@@ -5324,7 +5489,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        self.getHit()
+                        if not self.hit: self.getHit()
                         self.cooldown = fps
                     if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
@@ -5339,7 +5504,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            self.getHit()
+                            if not self.hit: self.getHit()
                             self.cooldown = fps
                             entity.dead = True
         elif not self.is_hit:
@@ -5740,6 +5905,149 @@ class FawfulBullet(pg.sprite.Sprite):
             self.game.sprites.remove(self)
 
 
+class MagiblotR(StateMachine):
+    idle = State("Idle", initial=True)
+    other = State("other")
+
+    trans = idle.to(other)
+
+    def init(self, game, pos):
+        self.game = game
+        self.game.enemies.append(self)
+        self.game.sprites.append(self)
+
+        self.loadImages()
+        self.cooldown = 0
+        self.alpha = 255
+        self.hitRange = 1.3
+        self.speed = 4
+        self.lastUpdate = 0
+        self.currentFrame = 0
+        self.hitTimer = 0
+        self.dead = False
+        self.image = self.idleImages[0]
+        self.imgRect = self.image.get_rect()
+        self.rect = self.shadow.get_rect()
+        self.hpSpeed = 0
+        self.rect.center = pos
+        self.imgRect.centerx = self.rect.centerx + 3
+        self.imgRect.bottom = self.rect.centery
+        self.offset = 0
+
+        # Stats
+        self.stats = {"maxHP": 100, "hp": 100, "pow": 75, "def": 70, "exp": 100, "coins": 50, "name": "Red Magiblot"}
+        self.rectHP = 0
+
+        self.description = [
+            "That's a Red Magiblot.",
+            "I don't know how you managed to\nread this,/p this enemy isn't\nin the game.",
+            "Are you hacking?",
+            "Anyways, Max HP is " + str(self.stats["maxHP"]) + ",/p\nAttack is " + str(
+                                self.stats["pow"]) + ",/p\nDefence is " + str(self.stats["def"]) + ".",
+            "Um.../P it doesn't do anything.",
+            "The devs weren't able to finish it in\ntime."]
+
+    def hpMath(self):
+        if self.rectHP > self.stats["hp"] and self.hpSpeed == 0:
+            self.hpSpeed = ((self.rectHP - self.stats["hp"]) / 30) * -1
+        elif self.rectHP < self.stats["hp"] and self.hpSpeed == 0:
+            if self.rectHP != 0:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 30
+            else:
+                self.hpSpeed = (self.stats["hp"] - self.rectHP) / 180
+
+        if self.hpSpeed != 0:
+            if self.rectHP + self.hpSpeed > self.stats["hp"] and self.hpSpeed < 0:
+                self.rectHP += self.hpSpeed
+            elif self.rectHP + self.hpSpeed < self.stats["hp"] and self.hpSpeed > 0:
+                self.rectHP += self.hpSpeed
+            else:
+                self.rectHP = self.stats["hp"]
+                self.hpSpeed = 0
+
+    def loadImages(self):
+        sheet = spritesheet("sprites/magiblot-red.png", "sprites/magiblot-red.xml")
+
+        self.idleImages = [sheet.getImageName("idle_1.png"),
+                           sheet.getImageName("idle_2.png"),
+                           sheet.getImageName("idle_3.png"),
+                           sheet.getImageName("idle_4.png"),
+                           sheet.getImageName("idle_5.png"),
+                           sheet.getImageName("idle_6.png"),
+                           sheet.getImageName("idle_7.png"),
+                           sheet.getImageName("idle_8.png"),
+                           sheet.getImageName("idle_9.png"),
+                           sheet.getImageName("idle_10.png"),
+                           sheet.getImageName("idle_11.png"),
+                           sheet.getImageName("idle_12.png"),
+                           sheet.getImageName("idle_13.png"),
+                           sheet.getImageName("idle_14.png"),
+                           sheet.getImageName("idle_15.png"),
+                           sheet.getImageName("idle_16.png"),
+                           sheet.getImageName("idle_17.png"),
+                           sheet.getImageName("idle_18.png"),
+                           sheet.getImageName("idle_19.png"),
+                           sheet.getImageName("idle_20.png"),
+                           sheet.getImageName("idle_21.png"),
+                           sheet.getImageName("idle_22.png"),
+                           sheet.getImageName("idle_23.png"),
+                           sheet.getImageName("idle_24.png"),
+                           sheet.getImageName("idle_25.png"),
+                           sheet.getImageName("idle_26.png"),
+                           sheet.getImageName("idle_27.png"),
+                           sheet.getImageName("idle_28.png"),
+                           sheet.getImageName("idle_29.png"),
+                           sheet.getImageName("idle_30.png"),
+                           sheet.getImageName("idle_31.png"),
+                           sheet.getImageName("idle_32.png"),
+                           sheet.getImageName("idle_33.png"),
+                           sheet.getImageName("idle_34.png"),
+                           sheet.getImageName("idle_35.png"),
+                           sheet.getImageName("idle_36.png"),
+                           sheet.getImageName("idle_37.png"),
+                           sheet.getImageName("idle_38.png"),
+                           sheet.getImageName("idle_39.png"),
+                           sheet.getImageName("idle_40.png"),
+                           sheet.getImageName("idle_41.png"),
+                           sheet.getImageName("idle_42.png"),
+                           sheet.getImageName("idle_43.png"),
+                           sheet.getImageName("idle_44.png"),
+                           sheet.getImageName("idle_45.png"),
+                           sheet.getImageName("idle_46.png"),
+                           sheet.getImageName("idle_47.png"),
+                           sheet.getImageName("idle_48.png"),
+                           sheet.getImageName("idle_49.png"),
+                           sheet.getImageName("idle_50.png"),
+                           sheet.getImageName("idle_51.png"),
+                           sheet.getImageName("idle_52.png"),
+                           sheet.getImageName("idle_53.png"),
+                           sheet.getImageName("idle_54.png"),
+                           sheet.getImageName("idle_55.png"),
+                           sheet.getImageName("idle_56.png"),
+                           sheet.getImageName("idle_57.png"),
+                           sheet.getImageName("idle_58.png"),
+                           sheet.getImageName("idle_59.png"),
+                           sheet.getImageName("idle_60.png"),
+                           sheet.getImageName("idle_61.png")]
+
+        self.shadow = sheet.getImageName("shadow.png")
+
+    def update(self):
+        self.animate()
+
+    def animate(self):
+        if self.is_idle:
+            if self.currentFrame < len(self.idleImages):
+                self.currentFrame = (self.currentFrame + 1) % (len(self.idleImages))
+            else:
+                self.currentFrame = 0
+            self.image = self.idleImages[self.currentFrame]
+            self.imgRect = self.image.get_rect()
+
+        self.imgRect.centerx = self.rect.centerx + 3
+        self.imgRect.bottom = self.rect.centery
+
+
 class CountBleckFight(StateMachine):
     idle = State("Idle", initial=True)
     walking = State("Towards Player")
@@ -6000,7 +6308,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            self.getHit()
+                            if not self.hit: self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
                         else:
@@ -6033,7 +6341,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            self.getHit()
+                            if not self.hit: self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
                         else:
@@ -6065,7 +6373,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        self.getHit()
+                        if not self.hit: self.getHit()
                         self.cooldown = fps
 
             if self.stats["hp"] != 0 and self.game.follower.isHammer is not None and (self.is_idle or self.is_walking):
@@ -6081,7 +6389,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        self.getHit()
+                        if not self.hit: self.getHit()
                         self.cooldown = fps
 
             for entity in self.game.entities:
@@ -6095,7 +6403,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        self.getHit()
+                        if not self.hit: self.getHit()
                         self.cooldown = fps
                     if self.imgRect.colliderect(entity.imgRect) and (self.is_idle or self.is_walking):
                         if type(entity).__name__ == "Fireball":
@@ -6107,7 +6415,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            self.getHit()
+                            if not self.hit: self.getHit()
                             self.cooldown = fps
                             entity.dead = True
 
@@ -6757,7 +7065,6 @@ class Sans:
 
 
 class GasterBlaster(pg.sprite.Sprite):
-
     def __init__(self, game, pos, target, images, size, facing, speed=30, turnSpeed=30):
         self.points = []
         self.lastUpdate = 0
