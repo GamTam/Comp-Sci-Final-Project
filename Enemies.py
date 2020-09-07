@@ -5382,7 +5382,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            if not self.hit: self.getHit()
+                            self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
                         else:
@@ -5418,7 +5418,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            if not self.hit: self.getHit()
+                            self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
                         else:
@@ -5453,7 +5453,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        if not self.hit: self.getHit()
+                        self.getHit()
                         self.cooldown = fps
 
             if self.stats["hp"] != 0 and self.game.follower.isHammer is not None:
@@ -5472,7 +5472,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        if not self.hit: self.getHit()
+                        self.getHit()
                         self.cooldown = fps
 
             for entity in self.game.entities:
@@ -5489,7 +5489,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        if not self.hit: self.getHit()
+                        self.getHit()
                         self.cooldown = fps
                     if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
@@ -5504,7 +5504,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            if not self.hit: self.getHit()
+                            self.getHit()
                             self.cooldown = fps
                             entity.dead = True
         elif not self.is_hit:
@@ -6308,7 +6308,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            if not self.hit: self.getHit()
+                            self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
                         else:
@@ -6341,7 +6341,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            if not self.hit: self.getHit()
+                            self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
                         else:
@@ -6373,7 +6373,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        if not self.hit: self.getHit()
+                        self.getHit()
                         self.cooldown = fps
 
             if self.stats["hp"] != 0 and self.game.follower.isHammer is not None and (self.is_idle or self.is_walking):
@@ -6389,7 +6389,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        if not self.hit: self.getHit()
+                        self.getHit()
                         self.cooldown = fps
 
             for entity in self.game.entities:
@@ -6403,7 +6403,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        if not self.hit: self.getHit()
+                        self.getHit()
                         self.cooldown = fps
                     if self.imgRect.colliderect(entity.imgRect) and (self.is_idle or self.is_walking):
                         if type(entity).__name__ == "Fireball":
@@ -6415,7 +6415,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            if not self.hit: self.getHit()
+                            self.getHit()
                             self.cooldown = fps
                             entity.dead = True
 

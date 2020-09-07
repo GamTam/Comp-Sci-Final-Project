@@ -9449,7 +9449,7 @@ class Game:
             todd.text = ["Hurry!",
                          "On to Castle Bleck!"]
 
-            FlipsideToSansRoom(self, (5695, 1345))
+            # FlipsideToSansRoom(self, (5695, 1345))
 
         Wall(self, 3585, 512, 64, 1086)
         Wall(self, 2752, 512, 64, 1086)
@@ -12011,12 +12011,12 @@ class Game:
 
             ["""self.textBox(self.bleck, ["I see you've come at last!",
             "So you really are the heroes of/nthe Light Prognosticus!"])"""],
-            ["""self.setVar('self.mario.facing = "upright"')""",
-             """self.setVar('self.luigi.facing = "upright"')""",
+            ["""self.setVar('self.mario.facing = "up"')""",
+             """self.setVar('self.luigi.facing = "up"')""",
              """self.setVar('self.mario.walking = True')""",
              """self.setVar('self.luigi.walking = True')""",
              "self.setVar('self.starlow = starlowCutscene(self.game, self.mario.rect.center)')",
-             """self.setVar('self.starlow.facing = "upright"')""",
+             """self.setVar('self.starlow.facing = "up"')""",
              "self.command('self.game.starlowTwinkle.play()')"
              ],
             ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 400, False, 0, 1)",
@@ -17842,11 +17842,6 @@ class Game:
                 # pg.quit()
                 sys.exit(174)
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_r:
-                    self.player.stats["hp"] = 0
-                    self.player.currentFrame = 0
-                    self.follower.currentFrame = 0
-                    self.follower.stats["hp"] = 0
                 if event.key == pg.K_F4:
                     self.fullscreen = not self.fullscreen
                     if not self.fullscreen:
