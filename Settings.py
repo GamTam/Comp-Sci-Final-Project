@@ -45,7 +45,7 @@ lightBlue = (0, 155, 155)
 sansEye = (132, 255, 242)
 
 pg.display.set_icon(icon)
-pg.mixer.pre_init(44100, -16, 2, 2048)
+pg.mixer.init(44100, -16, 2, 64)
 pg.init()
 pg.display.set_caption(title)
 screen = pg.display.set_mode((width, height), pg.DOUBLEBUF)
@@ -96,7 +96,9 @@ angledir = True
 clock = pg.time.Clock()
 
 updateRects = [pg.rect.Rect(0, 0, round(width / 2), round(height / 2)),
-               pg.rect.Rect(round(width / 2), 0, round(width / 2), round(height / 2))
+               pg.rect.Rect(round(width / 2), 0, round(width / 2), round(height / 2)),
+               pg.rect.Rect(0, round(height / 2), round(width / 2), round(height / 2)),
+               pg.rect.Rect(round(width / 2), round(height / 2), round(width / 2), round(height / 2)),
               ]
 
 for i in range(len(os.listdir("sprites/the void/")) - 1):

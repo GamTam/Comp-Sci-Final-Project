@@ -95,12 +95,12 @@ class Cutscene:
         for sprite in self.game.blocks:
             self.game.cutsceneSprites.append(sprite)
 
+        self.game.cutscene = True
         while not self.over:
             if self.song is not None:
                 self.game.playSong(self.song[0], self.song[1], self.song[2], cont=self.contSong)
             self.game.calculatePlayTime()
             self.game.clock.tick(fps)
-            print(self.game.clock.get_fps())
             self.game.events()
 
             [fad.update() for fad in self.game.fadeout]
@@ -147,7 +147,12 @@ class Cutscene:
                 for sprite in self.game.cutsceneSprites:
                     try:
                         if sprite not in self.mcMuffinSprites:
-                            self.game.screen.blit(sprite.shadow, self.game.camera.offset(sprite.rect))
+                            if self.game.area == "Castle Bleck":
+                                shadow = sprite.shadow.copy()
+                                shadow.fill(gray, special_flags=pg.BLEND_ADD)
+                                self.game.screen.blit(shadow, self.game.camera.offset(sprite.rect))
+                            else:
+                                self.game.screen.blit(sprite.shadow, self.game.camera.offset(sprite.rect))
                     except:
                         pass
 
@@ -181,6 +186,7 @@ class Cutscene:
 
             pg.display.update(updateRects)
 
+        self.game.cutscene = False
         self.game.updateOverworld()
         self.game.playtime -= 1
 
@@ -484,6 +490,10 @@ class LoadCutscene:
         self.id = id
 
     def update(self):
+        if self.room != self.game.room:
+            self.game.cutscenes.remove(self)
+            return
+
         if self.id not in self.game.usedCutscenes:
             if self.auto:
                 if self.delete:
@@ -492,11 +502,9 @@ class LoadCutscene:
             else:
                 if (self.game.leader == "mario" and pg.sprite.collide_rect(self.game.player, self)) or (
                         self.game.leader == "luigi" and pg.sprite.collide_rect(self.game.follower, self)):
+                    Cutscene(self.game, self.scenes)
                     if self.delete:
                         self.game.usedCutscenes.append(self.id)
-                    Cutscene(self.game, self.scenes)
-        if self.room != self.game.room:
-            self.game.cutscenes.remove(self)
 
 
 class CountBleckClone(StateMachine):
@@ -2286,8 +2294,6 @@ class starlowCutscene(pg.sprite.Sprite):
         self.alpha = 255
         self.talking = False
         self.facing = "down"
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
 
     def loadImages(self):
         sheet = spritesheet("sprites/starlow.png", "sprites/starlow.xml")
@@ -2875,8 +2881,6 @@ class BleckCutscene(pg.sprite.Sprite):
         self.alpha = 255
         self.laughing = False
         self.talking = False
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
 
     def loadImages(self):
         sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
@@ -3756,8 +3760,6 @@ class EggMcMuffin(pg.sprite.Sprite):
         self.alpha = 255
         self.vy = 0
         self.dy = 0.05
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
 
     def update(self):
         self.vy += self.dy
@@ -3928,8 +3930,6 @@ class McMuffinWarp(pg.sprite.Sprite):
         self.canTalk = True
         self.select = 0
         self.goBack = goBack
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         if not goBack:
             self.text = ["You are about to go to/nworld {}, {}.".format(world, location),
                      "/CDo you want to proceed?\n\a\n\a                 YES                        NO"]

@@ -5079,6 +5079,10 @@ class DarkFawful(StateMachine):
     def loadImages(self):
         sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
 
+        self.ballImage = sheet.getImageName("ball.png")
+
+        self.ballShadow = sheet.getImageName("ballShadow.png")
+
         self.shadow = sheet.getImageName("shadow.png")
 
         self.hitFrame = sheet.getImageName("hit.png")
@@ -5382,7 +5386,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            self.getHit()
+                            if not self.is_hit: self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
                         else:
@@ -5418,7 +5422,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            self.getHit()
+                            if not self.is_hit: self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
                         else:
@@ -5453,7 +5457,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        self.getHit()
+                        if not self.is_hit: self.getHit()
                         self.cooldown = fps
 
             if self.stats["hp"] != 0 and self.game.follower.isHammer is not None:
@@ -5472,7 +5476,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        self.getHit()
+                        if not self.is_hit: self.getHit()
                         self.cooldown = fps
 
             for entity in self.game.entities:
@@ -5489,7 +5493,7 @@ class DarkFawful(StateMachine):
                         if self.is_fire:
                             self.exitGun()
                             self.asYouWere()
-                        self.getHit()
+                        if not self.is_hit: self.getHit()
                         self.cooldown = fps
                     if self.imgRect.colliderect(entity.imgRect):
                         if type(entity).__name__ == "Fireball":
@@ -5504,7 +5508,7 @@ class DarkFawful(StateMachine):
                             if self.is_fire:
                                 self.exitGun()
                                 self.asYouWere()
-                            self.getHit()
+                            if not self.is_hit: self.getHit()
                             self.cooldown = fps
                             entity.dead = True
         elif not self.is_hit:
@@ -5719,7 +5723,7 @@ class DarkFawful(StateMachine):
                     self.imgRect.centerx = centerx
                     self.imgRect.bottom = bottom
                 if self.currentFrame == 1:
-                    FawfulBullet(self.game, self.rect.center, self.stats)
+                    FawfulBullet(self.game, self.rect.center, self.stats, self.ballImage, self.ballShadow)
         elif self.is_makePortalA:
             if now - self.lastUpdate > 60:
                 self.lastUpdate = now
@@ -5837,13 +5841,12 @@ class FawfulPortal(pg.sprite.Sprite):
 
 
 class FawfulBullet(pg.sprite.Sprite):
-    def __init__(self, game, pos, stats):
+    def __init__(self, game, pos, stats, image, shadow):
         self.game = game
         self.game.sprites.append(self)
-        sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
-        self.image = sheet.getImageName("ball.png")
+        self.image = image
         self.imgRect = self.image.get_rect()
-        self.shadow = sheet.getImageName("ballShadow.png")
+        self.shadow = shadow
         self.rect = self.shadow.get_rect()
         self.rect.center = pos
         self.imgRect.centerx, self.imgRect.bottom = self.rect.centerx, self.rect.bottom - 10
@@ -6086,7 +6089,6 @@ class CountBleckFight(StateMachine):
         self.offset = 0
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.bottom = self.rect.centery + 5 - self.offset
-        self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.hasCutscene = False
 
         # Stats
@@ -6103,6 +6105,12 @@ class CountBleckFight(StateMachine):
             "And you have to, or else\neverything we know will be\ngone..."]
 
     def loadImages(self):
+        sheet = spritesheet("sprites/dark fawful.png", "sprites/dark fawful.xml")
+
+        self.ballImage = sheet.getImageName("ball.png")
+
+        self.ballShadow = sheet.getImageName("ballShadow.png")
+
         sheet = spritesheet("sprites/count bleck.png", "sprites/count bleck.xml")
 
         self.shadow = sheet.getImageName("shadow.png")
@@ -6285,7 +6293,7 @@ class CountBleckFight(StateMachine):
             if 10 < chance < 15:
                 for i in range(random.randrange(3, 8)):
                     ball = FawfulBullet(self.game, (random.randrange(self.rect.left - 100, self.rect.right + 100),
-                                             random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats)
+                                             random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats, self.ballImage, self.ballShadow)
                     ball.speed = 3
             if chance == 0 or self.game.player.dead:
                 self.fromSpeed()
@@ -6308,7 +6316,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            self.getHit()
+                            if not self.is_hit: self.getHit()
                             self.cooldown = fps
                             self.game.player.airTimer = 0
                         else:
@@ -6341,7 +6349,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            self.getHit()
+                            if not self.is_hit: self.getHit()
                             self.cooldown = fps
                             self.game.follower.airTimer = 0
                         else:
@@ -6373,7 +6381,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        self.getHit()
+                        if not self.is_hit: self.getHit()
                         self.cooldown = fps
 
             if self.stats["hp"] != 0 and self.game.follower.isHammer is not None and (self.is_idle or self.is_walking):
@@ -6389,7 +6397,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        self.getHit()
+                        if not self.is_hit: self.getHit()
                         self.cooldown = fps
 
             for entity in self.game.entities:
@@ -6403,7 +6411,7 @@ class CountBleckFight(StateMachine):
                         self.game.enemyHitSound.play()
                         if self.is_walking:
                             self.giveUp()
-                        self.getHit()
+                        if not self.is_hit: self.getHit()
                         self.cooldown = fps
                     if self.imgRect.colliderect(entity.imgRect) and (self.is_idle or self.is_walking):
                         if type(entity).__name__ == "Fireball":
@@ -6415,7 +6423,7 @@ class CountBleckFight(StateMachine):
                             self.game.enemyHitSound.play()
                             if self.is_walking:
                                 self.giveUp()
-                            self.getHit()
+                            if not self.is_hit: self.getHit()
                             self.cooldown = fps
                             entity.dead = True
 
@@ -6491,7 +6499,7 @@ class CountBleckFight(StateMachine):
                     self.fromFire()
                 if self.currentFrame == 9:
                     for i in range(random.randrange(5, 10)):
-                        FawfulBullet(self.game, (random.randrange(self.rect.left - 100, self.rect.right + 100), random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats)
+                        FawfulBullet(self.game, (random.randrange(self.rect.left - 100, self.rect.right + 100), random.randrange(self.rect.top - 100, self.rect.bottom + 100)), self.stats, self.ballImage, self.ballShadow)
                 center = self.imgRect.center
                 self.image = self.fireFrames[self.currentFrame]
                 self.imgRect = self.image.get_rect()

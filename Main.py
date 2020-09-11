@@ -185,7 +185,6 @@ class Game:
         self.voidSize = 0.1
         self.mcMuffins = 1
         self.sansGameovers = 0
-        self.file = 0
         self.maxHitRecord = []
         self.minHitRecord = []
         self.fastTimeRecord = []
@@ -193,6 +192,7 @@ class Game:
         self.maxDamageGivenRecord = []
         self.damageGiven = 0
         self.damageTaken = 0
+        self.autoSave = True
         self.void = Void(self, self.voidSize)
         if not fullscreen:
             self.screen = pg.display.set_mode((width, height), pg.DOUBLEBUF)
@@ -213,6 +213,7 @@ class Game:
         self.battleEndUI = []
         self.cutsceneSprites = []
         self.transistors = []
+        self.displayTime = "0:00"
         self.loadData()
         self.playtime = 0
         self.goombaHasTexted = False
@@ -222,7 +223,7 @@ class Game:
         self.follower = Luigi(self, 0, 0)
         MarioUI(self)
         LuigiUI(self)
-        self.file = 1
+        self.file = -1
         if blankSong:
             self.songPlaying = ""
         self.storeData = {}
@@ -235,6 +236,7 @@ class Game:
         self.loops = 0
         self.running = True
         self.pause = False
+        self.cutscene = False
         self.fullscreen = fullscreen
         self.leader = "mario"
         self.coins = 0
@@ -255,7 +257,54 @@ class Game:
                       ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.", "maxHP"]]
 
         self.screen.set_clip(0, 0, width, height)
-        self.titleScreen()
+        try:
+            self.titleScreen()
+        except:
+            if self.autoSave and self.file > 0 and self.room != "battle" and not self.cutscene and exists("saves/File " + str(self.file) + ".ini"):
+                self.storeData["mario stats"] = self.player.stats
+                self.storeData["mario pos"] = self.player.rect.center
+                self.storeData["mario facing"] = self.player.facing
+                self.storeData["mario abilities"] = self.player.abilities
+                if self.player.prevAbility == 12:
+                    self.storeData["mario current ability"] = self.player.ability
+                else:
+                    self.storeData["mario current ability"] = self.player.prevAbility
+                self.storeData["luigi stats"] = self.follower.stats
+                self.storeData["luigi pos"] = self.follower.rect.center
+                if self.leader == "mario":
+                    self.storeData["move"] = self.follower.moveQueue.copy()
+                elif self.leader == "luigi":
+                    self.storeData["move"] = self.player.moveQueue.copy()
+                self.storeData["luigi facing"] = self.follower.facing
+                self.storeData["luigi abilities"] = self.follower.abilities
+                if self.follower.prevAbility == 12:
+                    self.storeData["luigi current ability"] = self.follower.ability
+                else:
+                    self.storeData["luigi current ability"] = self.follower.prevAbility
+
+                with open("saves/File " + str(self.file) + ".ini", "wb") as file:
+                    pickle.dump(self.area, file)
+                    pickle.dump(self.storeData, file)
+                    pickle.dump(self.displayTime, file)
+                    pickle.dump(self.player.attackPieces, file)
+                    pickle.dump(self.follower.attackPieces, file)
+                    pickle.dump(self.playtime, file)
+                    pickle.dump(self.despawnList, file)
+                    pickle.dump(self.hitBlockList, file)
+                    pickle.dump(self.coins, file)
+                    for item in self.items:
+                        pickle.dump(item[1], file)
+                    pickle.dump(self.room, file)
+                    pickle.dump(self.usedCutscenes, file)
+                    pickle.dump(self.leader, file)
+                    pickle.dump(self.voidSize, file)
+                    pickle.dump(self.tutorials, file)
+                    pickle.dump(self.mcMuffins, file)
+                    pickle.dump(self.damageGiven, file)
+                    pickle.dump(self.damageTaken, file)
+                    pickle.dump(self.sansGameovers, file)
+                    pickle.dump(self.autoSave, file)
+            sys.exit(558793)
 
     def playSong(self, introLength, loopLength, song, cont=False, fadein=False, fadeinSpeed=0.05):
         if self.songPlaying != song:
@@ -887,6 +936,31 @@ class Game:
                 pg.display.flip()
 
     def newGame(self):
+        if exists("saves/File " + str(1) + ".ini"):
+            if exists("saves/File " + str(2) + ".ini"):
+                if exists("saves/File " + str(3) + ".ini"):
+                    text = ["All three save slots are in use at the moment.",
+                            "In order to start a new game, you must pick\none to delete."]
+                    textbox = TextBox(self, self, text, type="board", choice=True, dir="None")
+                    while not textbox.complete:
+                        self.clock.tick(fps)
+
+                        self.events()
+
+                        textbox.update()
+
+                        self.screen.fill(black)
+                        textbox.draw()
+
+                        pg.display.flip()
+                    self.deleteGame()
+                    self.newGame()
+                else:
+                    self.file = 3
+            else:
+                self.file = 2
+        else:
+            self.file = 1
         self.player = Mario(self, 0, 0)
         self.follower = Luigi(self, 0, 0)
         self.leader = "mario"
@@ -897,7 +971,6 @@ class Game:
                            "more\nannoying than helpful.")
         openingText.append("/CDo you wish to have tutorials on?\n\a\n\a                 YES                        NO")
         openingText.append("Recording your choice.../P/P/P Done!")
-        openingText.append("Enjoy!")
         while pg.mixer.music.get_busy():
             pass
 
@@ -940,6 +1013,54 @@ class Game:
             self.tutorials = True
         else:
             self.tutorials = False
+
+        time.sleep(1)
+
+        openingText = ["Also, this game features autosaving.",
+                       "If enabled,/p the game will save after every\nroom transition,/p when the game closes,/p as well\n as out of battle.",
+                       "/CDo you wish to have autosave on?\n\a\n\a                 YES                        NO"]
+        while pg.mixer.music.get_busy():
+            pass
+
+        textbox = TextBox(self, self, openingText, type="board", choice=True, dir="None")
+        options = [pg.rect.Rect(389, 390, 0, 0), pg.rect.Rect(773, 390, 0, 0)]
+        cursor = Cursor(self, options[1])
+        select = 0
+        cursorDraw = True
+
+        while not textbox.complete:
+            self.clock.tick(fps)
+
+            self.events()
+
+            textbox.update()
+
+            if textbox.choosing and cursorDraw:
+                for event in self.event:
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_a or event.key == pg.K_d:
+                            if select == 1:
+                                select = 0
+                            elif select == 0:
+                                select = 1
+                            self.abilityAdvanceSound.play()
+                        if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                            self.menuChooseSound.play()
+                            cursor.kill()
+                            cursorDraw = False
+                cursor.update(options[select], 60)
+
+            self.screen.fill(black)
+            textbox.draw()
+            if textbox.choosing and cursorDraw:
+                self.screen.blit(cursor.image, cursor.rect)
+
+            pg.display.flip()
+
+        if select == 0:
+            self.autosave = True
+        else:
+            self.autosave = False
 
         self.map = PngMap("Bowser's Castle Floor")
         enemies = []
@@ -8445,6 +8566,7 @@ class Game:
                             pickle.dump(self.damageGiven, file)
                             pickle.dump(self.damageTaken, file)
                             pickle.dump(self.sansGameovers, file)
+                            pickle.dump(self.autoSave, file)
                         saves = [SaveSelection(self, 1), SaveSelection(self, 2), SaveSelection(self, 3)]
                     if event.key == pg.K_TAB:
                         cursor.kill()
@@ -8473,7 +8595,64 @@ class Game:
 
         self.menuCloseSound.play()
 
-        self.file = select + 1
+        self.player.canMove = False
+        self.follower.canMove = False
+
+        self.saved = True
+        self.pause = False
+
+    def deleteGame(self):
+        self.menuOpenSound.play()
+        saves = [SaveSelection(self, 1), SaveSelection(self, 2), SaveSelection(self, 3)]
+        cursor = Cursor(self, saves[0].rect)
+        select = 0
+        going = True
+        while going:
+            self.clock.tick(fps)
+
+            self.events()
+            for event in self.event:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_a:
+                        if select == 0:
+                            select = 2
+                        else:
+                            select -= 1
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_d:
+                        if select == 2:
+                            select = 0
+                        else:
+                            select += 1
+                        self.abilityAdvanceSound.play()
+                    if event.key == pg.K_m or event.key == pg.K_l or event.key == pg.K_SPACE:
+                        self.menuChooseSound.play()
+                        try:
+                            os.remove("saves/File " + str(select + 1) + ".ini")
+                        except:
+                            pass
+                        saves = [SaveSelection(self, 1), SaveSelection(self, 2), SaveSelection(self, 3)]
+                        going = False
+                    if event.key == pg.K_TAB:
+                        cursor.kill()
+                        going = False
+
+            if select == 0:
+                cursor.update(saves[0].rect, 60)
+            elif select == 1:
+                cursor.update(saves[1].rect, 60)
+            elif select == 2:
+                cursor.update(saves[2].rect, 60)
+
+            self.screen.fill(black)
+            [save.draw() for save in saves]
+            ptext.draw("[TAB] | Close", (40, height - 30), anchor=(0, 1), fontname=dialogueFont, fontsize=35,
+                       surf=self.screen, color=white)
+            self.screen.blit(cursor.image, cursor.rect)
+
+            pg.display.flip()
+
+        self.menuCloseSound.play()
 
         self.player.canMove = False
         self.follower.canMove = False
@@ -8484,27 +8663,31 @@ class Game:
     def loadGame(self, file=1):
         save = file
         if exists("saves/File " + str(file) + ".ini"):
-            with open("saves/File " + str(file) + ".ini", "rb") as file:
-                area = pickle.load(file)
-                self.storeData = pickle.load(file)
-                self.displayTime = pickle.load(file)
-                self.storeData["mario attack pieces"] = pickle.load(file)
-                self.storeData["luigi attack pieces"] = pickle.load(file)
-                self.playtime = pickle.load(file)
-                self.despawnList = pickle.load(file)
-                self.hitBlockList = pickle.load(file)
-                self.coins = pickle.load(file)
-                for item in self.items:
-                    item[1] = pickle.load(file)
-                self.room = pickle.load(file)
-                self.usedCutscenes = pickle.load(file)
-                self.leader = pickle.load(file)
-                self.voidSize = pickle.load(file)
-                self.tutorials = pickle.load(file)
-                self.mcMuffins = pickle.load(file)
-                self.damageGiven = pickle.load(file)
-                self.damageTaken = pickle.load(file)
-                self.sansGameovers = pickle.load(file)
+            try:
+                with open("saves/File " + str(file) + ".ini", "rb") as file:
+                    area = pickle.load(file)
+                    self.storeData = pickle.load(file)
+                    self.displayTime = pickle.load(file)
+                    self.storeData["mario attack pieces"] = pickle.load(file)
+                    self.storeData["luigi attack pieces"] = pickle.load(file)
+                    self.playtime = pickle.load(file)
+                    self.despawnList = pickle.load(file)
+                    self.hitBlockList = pickle.load(file)
+                    self.coins = pickle.load(file)
+                    for item in self.items:
+                        item[1] = pickle.load(file)
+                    self.room = pickle.load(file)
+                    self.usedCutscenes = pickle.load(file)
+                    self.leader = pickle.load(file)
+                    self.voidSize = pickle.load(file)
+                    self.tutorials = pickle.load(file)
+                    self.mcMuffins = pickle.load(file)
+                    self.damageGiven = pickle.load(file)
+                    self.damageTaken = pickle.load(file)
+                    self.sansGameovers = pickle.load(file)
+                    self.autoSave = pickle.load(file)
+            except:
+                pass
             self.storeData["mario current ability"] = 0
             self.storeData["luigi current ability"] = 0
             self.void = Void(self, self.voidSize)
@@ -8533,6 +8716,7 @@ class Game:
             self.despawnList = []
             self.hitBlockList = []
             self.coins = 0
+            self.file = save
             self.newGame()
 
     def updateRecords(self):
@@ -12006,7 +12190,7 @@ class Game:
             ["self.setVar('self.bleck = BleckCutscene(self.game, (2240, 1120))')",
              """self.textBox(self.bleck, ["Bleh heh heh heh heh..."])"""
              ],
-            ["self.changeSong([9.038, 62.003, 'Champion of Destruction'])",
+            ["self.changeSong([10.314, 32.016, 'The Evil Count Bleck'])",
              "self.move(self.game.cameraRect, self.bleck.rect.centerx, self.bleck.rect.centery + 50, False, 120)"],
 
             ["""self.textBox(self.bleck, ["I see you've come at last!",
@@ -12019,9 +12203,9 @@ class Game:
              """self.setVar('self.starlow.facing = "up"')""",
              "self.command('self.game.starlowTwinkle.play()')"
              ],
-            ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 400, False, 0, 1)",
-             "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 400, False, 0, 2)",
-             "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 400, False, 0, 3)"],
+            ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 500, False, 0, 1)",
+             "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 500, False, 0, 2)",
+             "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 500, False, 0, 3)"],
             ["self.move(self.mario, self.bleck.rect.centerx - 50, self.bleck.rect.centery + 200, False, 180, 1)",
              "self.move(self.luigi, self.bleck.rect.centerx + 50, self.bleck.rect.centery + 200, False, 180, 2)",
              "self.move(self.starlow, self.bleck.rect.centerx, self.bleck.rect.centery + 200, False, 180, 3)"],
@@ -12800,6 +12984,28 @@ class Game:
         if self.area != area and songData is not None:
             self.currentPos = 0
             self.playSong(songData[0], songData[1], songData[2])
+            with open("saves/File " + str(self.file) + ".ini", "wb") as file:
+                pickle.dump(area, file)
+                pickle.dump(self.storeData, file)
+                pickle.dump(self.displayTime, file)
+                pickle.dump(self.player.attackPieces, file)
+                pickle.dump(self.follower.attackPieces, file)
+                pickle.dump(self.playtime, file)
+                pickle.dump(self.despawnList, file)
+                pickle.dump(self.hitBlockList, file)
+                pickle.dump(self.coins, file)
+                for item in self.items:
+                    pickle.dump(item[1], file)
+                pickle.dump(self.room, file)
+                pickle.dump(self.usedCutscenes, file)
+                pickle.dump(self.leader, file)
+                pickle.dump(self.voidSize, file)
+                pickle.dump(self.tutorials, file)
+                pickle.dump(self.mcMuffins, file)
+                pickle.dump(self.damageGiven, file)
+                pickle.dump(self.damageTaken, file)
+                pickle.dump(self.sansGameovers, file)
+                pickle.dump(self.autoSave, file)
         self.area = area
         self.songData = songData
         while self.playing:
@@ -13502,7 +13708,7 @@ class Game:
                 self.follower.canMove = True
                 menud = False
 
-        self.battleOver(luigi=False, tutorial=True)
+        self.battleOver(True, luigi=False, tutorial=True)
 
     def loadCaviCapeBattle1G(self):
         self.room = "battle"
@@ -17245,7 +17451,7 @@ class Game:
         self.camera.update(self.player.rect)
         self.room = "battle"
 
-    def battleOver(self, victorySong, mario=True, luigi=True, tutorial=False):
+    def battleOver(self, victorySong=True, mario=True, luigi=True, tutorial=False):
         self.player.KR = 0
         self.follower.KR = 0
         self.cursors = pg.sprite.Group()
@@ -17896,6 +18102,7 @@ class Game:
         [cutscene.update() for cutscene in self.cutscenes]
 
     def updateOverworld(self):
+        [cutscene.update() for cutscene in self.cutscenes]
         if self.area != "Castle Bleck" and self.area != "Last Corridor" and self.area != "Throne Entrance":
             self.void.update(self.voidSize)
         [ui.update() for ui in self.battleEndUI]
@@ -17910,7 +18117,6 @@ class Game:
             self.cameraRect.update(self.follower.rect, 600)
         self.camera.update(self.cameraRect.rect)
         [room.update() for room in self.transistors]
-        [cutscene.update() for cutscene in self.cutscenes]
 
     def blit_alpha(self, target, source, location, opacity):
         x = location[0]
@@ -17974,7 +18180,12 @@ class Game:
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
             try:
-                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+                if self.area == "Castle Bleck":
+                    shadow = sprite.shadow.copy()
+                    shadow.fill(gray, special_flags=pg.BLEND_ADD)
+                    self.screen.blit(shadow, self.camera.offset(sprite.rect))
+                else:
+                    self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
             except:
                 pass
 
@@ -18010,9 +18221,6 @@ class Game:
                                      pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
                                  1)
 
-        [ui.draw() for ui in self.ui if "UI" not in type(ui).__name__]
-        [ui.draw() for ui in self.ui if "UI" in type(ui).__name__]
-
         for enemy in self.enemies:
             if boss:
                 if self.enemies.index(enemy) == len(self.enemies) - 1:
@@ -18024,6 +18232,11 @@ class Game:
                     pg.draw.rect(self.screen, black,
                                  pg.Rect(40, height - 80, width - 80, 40),
                                  5)
+
+        [ui.draw() for ui in self.ui if "TextBox" not in type(ui).__name__]
+        [ui.draw() for ui in self.ui if "UI" in type(ui).__name__]
+
+
         for fx in self.effects:
             if fx.offset:
                 self.blit_alpha(self.screen, fx.image, self.camera.offset(fx.rect), fx.alpha)
@@ -18045,7 +18258,12 @@ class Game:
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
             try:
-                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+                if self.area == "Castle Bleck":
+                    shadow = sprite.shadow.copy()
+                    shadow.fill(gray, special_flags=pg.BLEND_ADD)
+                    self.screen.blit(shadow, self.camera.offset(sprite.rect))
+                else:
+                    self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
             except:
                 pass
 
@@ -18088,7 +18306,12 @@ class Game:
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
             try:
-                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+                if self.area == "Castle Bleck":
+                    shadow = sprite.shadow.copy()
+                    shadow.fill(gray, special_flags=pg.BLEND_ADD)
+                    self.screen.blit(shadow, self.camera.offset(sprite.rect))
+                else:
+                    self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
             except:
                 pass
 
@@ -18132,7 +18355,12 @@ class Game:
         self.sprites.sort(key=self.sortByYPos)
         for sprite in self.sprites:
             try:
-                self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
+                if self.area == "Castle Bleck":
+                    shadow = sprite.shadow.copy()
+                    shadow.fill(gray, special_flags=pg.BLEND_ADD)
+                    self.screen.blit(shadow, self.camera.offset(sprite.rect))
+                else:
+                    self.screen.blit(sprite.shadow, self.camera.offset(sprite.rect))
             except:
                 pass
 

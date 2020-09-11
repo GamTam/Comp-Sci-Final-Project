@@ -553,8 +553,6 @@ class Mario(pg.sprite.Sprite):
         self.loadImages()
         self.image = self.standingFrames[0]
         self.shadow = self.shadowFrames["normal"]
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.lastUpdate = 0
         self.currentFrame = 0
         self.fireCounter = 0
@@ -2474,8 +2472,6 @@ class Luigi(pg.sprite.Sprite):
         self.going = "irrelevent"
         self.area = self.game.area
         self.vx, self.vy = 0, 0
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
 
         self.stats = {"level": 1, "maxHP": 23, "maxBP": 10, "pow": 6, "def": 8, "hp": 23, "bp": 10, "exp": 0}
         self.statGrowth = {"maxHP": randomNumber(9), "maxBP": randomNumber(7), "pow": randomNumber(3),
@@ -4544,8 +4540,6 @@ class Block(pg.sprite.Sprite):
         self.dy = 0.065
         self.loadImages()
         self.rect = self.shadow.get_rect()
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
@@ -4640,8 +4634,6 @@ class SaveBlock(pg.sprite.Sprite):
         self.dy = 0.065
         self.loadImages()
         self.rect = self.shadow.get_rect()
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
@@ -4811,8 +4803,6 @@ class MarioBlock(pg.sprite.Sprite):
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.centery = self.rect.centery - 200
         self.contents = [content for content in self.contents if content != ""]
@@ -4904,8 +4894,6 @@ class LuigiBlock(pg.sprite.Sprite):
         self.rect.center = pos
         self.image = self.blockSprite
         self.imgRect = self.image.get_rect()
-        if self.game.area == "Castle Bleck":
-            self.shadow.fill(gray, special_flags=pg.BLEND_ADD)
         self.imgRect.centerx = self.rect.centerx
         self.imgRect.centery = self.rect.centery - 200
         self.contents = [content for content in self.contents if content != ""]
@@ -5679,6 +5667,29 @@ class RoomTransition:
                         sprite.loadImages()
                     except:
                         pass
+                with open("saves/File " + str(self.game.file) + ".ini", "wb") as file:
+                    pickle.dump(self.game.area, file)
+                    pickle.dump(self.game.storeData, file)
+                    pickle.dump(self.game.displayTime, file)
+                    pickle.dump(self.game.player.attackPieces, file)
+                    pickle.dump(self.game.follower.attackPieces, file)
+                    pickle.dump(self.game.playtime, file)
+                    pickle.dump(self.game.despawnList, file)
+                    pickle.dump(self.game.hitBlockList, file)
+                    pickle.dump(self.game.coins, file)
+                    for item in self.game.items:
+                        pickle.dump(item[1], file)
+                    room = self.room.replace(".game", "")
+                    pickle.dump(room, file)
+                    pickle.dump(self.game.usedCutscenes, file)
+                    pickle.dump(self.game.leader, file)
+                    pickle.dump(self.game.voidSize, file)
+                    pickle.dump(self.game.tutorials, file)
+                    pickle.dump(self.game.mcMuffins, file)
+                    pickle.dump(self.game.damageGiven, file)
+                    pickle.dump(self.game.damageTaken, file)
+                    pickle.dump(self.game.sansGameovers, file)
+                    pickle.dump(self.game.autoSave, file)
                 eval(self.room)
 
         if self.initialRoom != self.game.room:
