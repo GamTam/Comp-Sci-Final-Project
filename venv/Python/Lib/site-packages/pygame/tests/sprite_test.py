@@ -122,6 +122,48 @@ class SpriteCollideTest(unittest.TestCase):
 
         self.assertListEqual(expected_sprites, collided_sprites)
 
+    def test_collide_circle__radius_set_by_collide_circle_ratio(self):
+        # Call collide_circle_ratio with no radius set, at a 20.0 ratio.
+        # That should return group ag2 AND set the radius attribute of the
+        # sprites in such a way that collide_circle would give same result as
+        # if it had been called without the radius being set.
+        collided_func = sprite.collide_circle_ratio(20.0)
+
+        sprite.spritecollide(
+            self.s1, self.ag2, dokill=False, collided=collided_func
+        )
+
+        self.assertEqual(
+            sprite.spritecollide(
+                self.s1, self.ag2, dokill=False, collided=sprite.collide_circle
+            ),
+            [self.s2],
+        )
+
+    def test_collide_circle_ratio__no_radius_and_ratio_of_two_twice(self):
+        # collide_circle_ratio with no radius set, at a 2.0 ratio,
+        # called twice to check if the bug where the calculated radius
+        # is not stored correctly in the radius attribute of each sprite.
+        collided_func = sprite.collide_circle_ratio(2.0)
+
+        # Calling collide_circle_ratio will set the radius attribute of the
+        # sprites. If an incorrect value is stored then we will not get the
+        # same result next time it is called:
+        expected_sprites = sorted(
+            sprite.spritecollide(
+                self.s1, self.ag2, dokill=False, collided=collided_func
+            ),
+            key=id,
+        )
+        collided_sprites = sorted(
+            sprite.spritecollide(
+                self.s1, self.ag2, dokill=False, collided=collided_func
+            ),
+            key=id,
+        )
+
+        self.assertListEqual(expected_sprites, collided_sprites)
+
     def test_collide_circle__with_radii_set(self):
         # collide_circle with a radius set.
         self.s1.radius = 50
@@ -542,6 +584,9 @@ class AbstractGroupTypeTest(unittest.TestCase):
         self.assertEqual((255, 0, 0, 255), self.scr.get_at((5, 5)))
         self.assertEqual((0, 255, 0, 255), self.scr.get_at((15, 5)))
 
+        self.assertEqual(self.ag.spritedict[self.s1], pygame.Rect(0, 0, 10, 10))
+        self.assertEqual(self.ag.spritedict[self.s2], pygame.Rect(10, 0, 10, 10))
+
     def test_empty(self):
 
         self.ag.empty()
@@ -869,6 +914,20 @@ class LayeredGroupBase:
         self.LG.change_layer(spr2, expected_layer)
 
         self.assertEqual(spr2.layer, expected_layer)
+
+    def test_get_sprites_at(self):
+        sprites = []
+        expected_sprites = []
+        for i in range(3):
+            spr = self.sprite()
+            spr.rect = pygame.Rect(i * 50, i * 50, 100, 100)
+            sprites.append(spr)
+            if i < 2:
+                expected_sprites.append(spr)
+        self.LG.add(sprites)
+        result = self.LG.get_sprites_at((50, 50))
+        self.assertEqual(result, expected_sprites)
+
 
     def test_get_top_layer(self):
         layers = [1, 5, 2, 8, 4, 5, 3, 88, 23, 0]

@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/venv/Python" />
       <excludeFolder url="file://$MODULE_DIR$/venv/bin/python" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7 (Comp-Sci-Final-Project)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

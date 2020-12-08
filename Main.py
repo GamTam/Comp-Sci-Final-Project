@@ -257,54 +257,54 @@ class Game:
                       ["Star Cand", -1, candySprite, "hp", "maxHP", "Fully restores HP and BP for one Bro.", "maxHP"]]
 
         self.screen.set_clip(0, 0, width, height)
-        try:
-            self.titleScreen()
-        except:
-            if self.autoSave and self.file > 0 and self.room != "battle" and not self.cutscene and exists("saves/File " + str(self.file) + ".ini"):
-                self.storeData["mario stats"] = self.player.stats
-                self.storeData["mario pos"] = self.player.rect.center
-                self.storeData["mario facing"] = self.player.facing
-                self.storeData["mario abilities"] = self.player.abilities
-                if self.player.prevAbility == 12:
-                    self.storeData["mario current ability"] = self.player.ability
-                else:
-                    self.storeData["mario current ability"] = self.player.prevAbility
-                self.storeData["luigi stats"] = self.follower.stats
-                self.storeData["luigi pos"] = self.follower.rect.center
-                if self.leader == "mario":
-                    self.storeData["move"] = self.follower.moveQueue.copy()
-                elif self.leader == "luigi":
-                    self.storeData["move"] = self.player.moveQueue.copy()
-                self.storeData["luigi facing"] = self.follower.facing
-                self.storeData["luigi abilities"] = self.follower.abilities
-                if self.follower.prevAbility == 12:
-                    self.storeData["luigi current ability"] = self.follower.ability
-                else:
-                    self.storeData["luigi current ability"] = self.follower.prevAbility
-
-                with open("saves/File " + str(self.file) + ".ini", "wb") as file:
-                    pickle.dump(self.area, file)
-                    pickle.dump(self.storeData, file)
-                    pickle.dump(self.displayTime, file)
-                    pickle.dump(self.player.attackPieces, file)
-                    pickle.dump(self.follower.attackPieces, file)
-                    pickle.dump(self.playtime, file)
-                    pickle.dump(self.despawnList, file)
-                    pickle.dump(self.hitBlockList, file)
-                    pickle.dump(self.coins, file)
-                    for item in self.items:
-                        pickle.dump(item[1], file)
-                    pickle.dump(self.room, file)
-                    pickle.dump(self.usedCutscenes, file)
-                    pickle.dump(self.leader, file)
-                    pickle.dump(self.voidSize, file)
-                    pickle.dump(self.tutorials, file)
-                    pickle.dump(self.mcMuffins, file)
-                    pickle.dump(self.damageGiven, file)
-                    pickle.dump(self.damageTaken, file)
-                    pickle.dump(self.sansGameovers, file)
-                    pickle.dump(self.autoSave, file)
-            sys.exit(558793)
+        #try:
+        self.titleScreen()
+        #except:
+            # if self.autoSave and self.file > 0 and self.room != "battle" and not self.cutscene and exists("saves/File " + str(self.file) + ".ini"):
+            #     self.storeData["mario stats"] = self.player.stats
+            #     self.storeData["mario pos"] = self.player.rect.center
+            #     self.storeData["mario facing"] = self.player.facing
+            #     self.storeData["mario abilities"] = self.player.abilities
+            #     if self.player.prevAbility == 12:
+            #         self.storeData["mario current ability"] = self.player.ability
+            #     else:
+            #         self.storeData["mario current ability"] = self.player.prevAbility
+            #     self.storeData["luigi stats"] = self.follower.stats
+            #     self.storeData["luigi pos"] = self.follower.rect.center
+            #     if self.leader == "mario":
+            #         self.storeData["move"] = self.follower.moveQueue.copy()
+            #     elif self.leader == "luigi":
+            #         self.storeData["move"] = self.player.moveQueue.copy()
+            #     self.storeData["luigi facing"] = self.follower.facing
+            #     self.storeData["luigi abilities"] = self.follower.abilities
+            #     if self.follower.prevAbility == 12:
+            #         self.storeData["luigi current ability"] = self.follower.ability
+            #     else:
+            #         self.storeData["luigi current ability"] = self.follower.prevAbility
+            #
+            #     with open("saves/File " + str(self.file) + ".ini", "wb") as file:
+            #         pickle.dump(self.area, file)
+            #         pickle.dump(self.storeData, file)
+            #         pickle.dump(self.displayTime, file)
+            #         pickle.dump(self.player.attackPieces, file)
+            #         pickle.dump(self.follower.attackPieces, file)
+            #         pickle.dump(self.playtime, file)
+            #         pickle.dump(self.despawnList, file)
+            #         pickle.dump(self.hitBlockList, file)
+            #         pickle.dump(self.coins, file)
+            #         for item in self.items:
+            #             pickle.dump(item[1], file)
+            #         pickle.dump(self.room, file)
+            #         pickle.dump(self.usedCutscenes, file)
+            #         pickle.dump(self.leader, file)
+            #         pickle.dump(self.voidSize, file)
+            #         pickle.dump(self.tutorials, file)
+            #         pickle.dump(self.mcMuffins, file)
+            #         pickle.dump(self.damageGiven, file)
+            #         pickle.dump(self.damageTaken, file)
+            #         pickle.dump(self.sansGameovers, file)
+            #         pickle.dump(self.autoSave, file)
+        #    sys.exit(558793)
 
     def playSong(self, introLength, loopLength, song, cont=False, fadein=False, fadeinSpeed=0.05):
         if self.songPlaying != song:
@@ -1017,14 +1017,14 @@ class Game:
         time.sleep(1)
 
         openingText = ["Also, this game features autosaving.",
-                       "If enabled,/p the game will save after every\nroom transition,/p when the game closes,/p as well\n as out of battle.",
+                       "If enabled,/p the game will save after every\nroom transition,/p when the game closes,/p as \nwell as out of battle.",
                        "/CDo you wish to have autosave on?\n\a\n\a                 YES                        NO"]
         while pg.mixer.music.get_busy():
             pass
 
         textbox = TextBox(self, self, openingText, type="board", choice=True, dir="None")
         options = [pg.rect.Rect(389, 390, 0, 0), pg.rect.Rect(773, 390, 0, 0)]
-        cursor = Cursor(self, options[1])
+        cursor = Cursor(self, options[0])
         select = 0
         cursorDraw = True
 
@@ -1061,6 +1061,8 @@ class Game:
             self.autosave = True
         else:
             self.autosave = False
+
+        self.effects = pg.sprite.Group()
 
         self.map = PngMap("Bowser's Castle Floor")
         enemies = []
@@ -1760,6 +1762,9 @@ class Game:
             if mCounter == fps * 2:
                 for i in range(len(toadSprites)):
                     toadSprites[i] = pg.transform.flip(toadSprites[i], True, False)
+                toadRect.centerx = toadShadowRect.centerx - 5
+            elif mCounter >= fps * 2:
+                toadRect.centerx = toadShadowRect.centerx - 5
 
             self.screen.fill(black)
             self.screen.blit(self.map.image, self.camera.offset(self.map.rect))
@@ -1797,7 +1802,7 @@ class Game:
             self.clock.tick(fps)
             self.events()
 
-            toadRect.centerx = toadShadowRect.centerx + 5
+            toadRect.centerx = toadShadowRect.centerx - 5
             toadRect.bottom = toadShadowRect.bottom - 5
             cameraRect.update(toadShadowRect, 60)
             self.camera.update(cameraRect.rect)
@@ -4124,7 +4129,7 @@ class Game:
             pg.display.flip()
 
         text = ["Wait, so if YOU didn't take Peach,\nand I didn't take peach, then who\ndid?",
-                "Because someone would have to\ntake her for Mario to show up-/p/S"]
+                "Because someone would have to\ntake her for Mario to show up-/9/6/S"]
         self.imgRect = bowserRect
         textbox = TextBox(self, self, text)
 
@@ -13008,6 +13013,7 @@ class Game:
                 pickle.dump(self.autoSave, file)
         self.area = area
         self.songData = songData
+
         while self.playing:
             if self.save:
                 self.saveGame(songData)
@@ -13022,8 +13028,6 @@ class Game:
                 self.pause = False
             elif not self.pause:
                 self.updateOverworld()
-            self.screen.fill(black)
-            self.drawOverworld()
 
             if menud or self.saved:
                 self.player.canMove = True
@@ -13046,6 +13050,9 @@ class Game:
                         menud = True
                         self.pause = True
                         self.controlView(songData)
+
+            self.screen.fill(black)
+            self.drawOverworld()
 
     def overworldMenu(self, song):
         self.menuOpenSound.play()
@@ -13708,7 +13715,7 @@ class Game:
                 self.follower.canMove = True
                 menud = False
 
-        self.battleOver(True, luigi=False, tutorial=True)
+        self.battleOver(victorySong=True, luigi=False, tutorial=True)
 
     def loadCaviCapeBattle1G(self):
         self.room = "battle"
@@ -18205,37 +18212,40 @@ class Game:
         except:
             pass
 
-        self.enemies.sort(key=self.sortByHp)
-        for enemy in self.enemies:
-            if not boss:
-                if enemy.stats["hp"] != enemy.stats["maxHP"]:
-                    pg.draw.rect(self.screen, darkGray,
-                                 self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)))
-                    if enemy.rectHP >= 0:
-                        pg.draw.rect(self.screen, red, self.camera.offset(
-                            pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
-                                    (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
-                    pg.draw.rect(self.screen, black,
-                                 self.camera.offset(
-                                     pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
-                                 1)
+        if len(self.textboxes) != 0:
+            for tex in self.textboxes:
+                tex.draw()
+        else:
+            self.enemies.sort(key=self.sortByHp)
+            for enemy in self.enemies:
+                if not boss:
+                    if enemy.stats["hp"] != enemy.stats["maxHP"]:
+                        pg.draw.rect(self.screen, darkGray,
+                                     self.camera.offset(
+                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)))
+                        if enemy.rectHP >= 0:
+                            pg.draw.rect(self.screen, red, self.camera.offset(
+                                pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12,
+                                        (enemy.rect.width * (enemy.rectHP / enemy.stats["maxHP"])), 10)))
+                        pg.draw.rect(self.screen, black,
+                                     self.camera.offset(
+                                         pg.Rect(enemy.rect.left, enemy.imgRect.bottom + 12, enemy.rect.width, 10)),
+                                     1)
 
-        for enemy in self.enemies:
-            if boss:
-                if self.enemies.index(enemy) == len(self.enemies) - 1:
-                    pg.draw.rect(self.screen, darkGray, pg.rect.Rect(40, height - 80, width - 80, 40, ))
-                    if enemy.rectHP >= 0:
-                        pg.draw.rect(self.screen, red, pg.Rect(40, height - 80,
-                                                               ((width - 80) * (enemy.rectHP / enemy.stats["maxHP"])),
-                                                               40))
-                    pg.draw.rect(self.screen, black,
-                                 pg.Rect(40, height - 80, width - 80, 40),
-                                 5)
+            for enemy in self.enemies:
+                if boss:
+                    if self.enemies.index(enemy) == len(self.enemies) - 1:
+                        pg.draw.rect(self.screen, darkGray, pg.rect.Rect(40, height - 80, width - 80, 40, ))
+                        if enemy.rectHP >= 0:
+                            pg.draw.rect(self.screen, red, pg.Rect(40, height - 80,
+                                                                   ((width - 80) * (enemy.rectHP / enemy.stats["maxHP"])),
+                                                                   40))
+                        pg.draw.rect(self.screen, black,
+                                     pg.Rect(40, height - 80, width - 80, 40),
+                                     5)
 
         [ui.draw() for ui in self.ui if "TextBox" not in type(ui).__name__]
         [ui.draw() for ui in self.ui if "UI" in type(ui).__name__]
-
 
         for fx in self.effects:
             if fx.offset:

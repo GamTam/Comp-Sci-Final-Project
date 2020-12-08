@@ -27,6 +27,11 @@
 #define _PYGAME_INTERNAL_H
 
 #include "pgplatform.h"
+/*
+    If PY_SSIZE_T_CLEAN is defined before including Python.h, length is a
+    Py_ssize_t rather than an int for all # variants of formats (s#, y#, etc.)
+*/
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <SDL.h>
 
@@ -132,6 +137,7 @@ typedef enum {
     PGS_PREALLOC = 0x01000000
 } PygameSurfaceFlags;
 #else /* ~SDL_VERSION_ATLEAST(2, 0, 0) */
+
 /* To maintain SDL 1.2 build support. */
 #define PGE_USEREVENT SDL_USEREVENT
 #define PG_NUMEVENTS SDL_NUMEVENTS
@@ -142,7 +148,27 @@ typedef enum {
 #define PGE_MIDIOUT PGE_USEREVENT + 11
 #endif /* ~SDL_VERSION_ATLEAST(2, 0, 0) */
 
+//TODO Implement check below in a way that does not break CI
+/* New buffer protocol (PEP 3118) implemented on all supported Py versions.
+#if !defined(Py_TPFLAGS_HAVE_NEWBUFFER)
+#error No support for PEP 3118/Py_TPFLAGS_HAVE_NEWBUFFER. Please use a supported Python version.
+#endif */
+
 #define RAISE(x, y) (PyErr_SetString((x), (y)), (PyObject *)NULL)
+#define DEL_ATTR_NOT_SUPPORTED_CHECK(name, value)           \
+    do {                                                    \
+       if (!value) {                                        \
+           if (name) {                                      \
+               PyErr_Format(PyExc_AttributeError,           \
+                            "Cannot delete attribute %s",   \
+                            name);                          \
+           } else {                                         \
+               PyErr_SetString(PyExc_AttributeError,        \
+                               "Cannot delete attribute");  \
+           }                                                \
+           return -1;                                       \
+       }                                                    \
+    } while (0)
 
 /*
  * Initialization checks
@@ -217,14 +243,14 @@ struct pgColorObject {
  * Remember to keep these constants up to date.
  */
 
-#define PYGAMEAPI_RECT_NUMSLOTS 4
+#define PYGAMEAPI_RECT_NUMSLOTS 5
 #define PYGAMEAPI_JOYSTICK_NUMSLOTS 2
 #define PYGAMEAPI_DISPLAY_NUMSLOTS 2
 #define PYGAMEAPI_SURFACE_NUMSLOTS 4
 #define PYGAMEAPI_SURFLOCK_NUMSLOTS 8
 #define PYGAMEAPI_RWOBJECT_NUMSLOTS 6
 #define PYGAMEAPI_PIXELARRAY_NUMSLOTS 2
-#define PYGAMEAPI_COLOR_NUMSLOTS 4
+#define PYGAMEAPI_COLOR_NUMSLOTS 5
 #define PYGAMEAPI_MATH_NUMSLOTS 2
 #define PYGAMEAPI_CDROM_NUMSLOTS 2
 
@@ -232,7 +258,7 @@ struct pgColorObject {
 #define PYGAMEAPI_BASE_NUMSLOTS 19
 #define PYGAMEAPI_EVENT_NUMSLOTS 4
 #else /* PG_API_VERSION == 2 */
-#define PYGAMEAPI_BASE_NUMSLOTS 23
+#define PYGAMEAPI_BASE_NUMSLOTS 24
 #define PYGAMEAPI_EVENT_NUMSLOTS 6
 #endif /* PG_API_VERSION == 2 */
 

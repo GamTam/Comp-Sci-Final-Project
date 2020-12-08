@@ -1,7 +1,213 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="14e438be-ee2a-4817-8749-db5d981d89df" name="Default Changelist" comment="" />
+    <list default="true" id="14e438be-ee2a-4817-8749-db5d981d89df" name="Default Changelist" comment="Fixed">
+      <change afterPath="$PROJECT_DIR$/Final Project Sprites/Sans/head look left default.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Final Project Sprites/Sans/head look right default.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Final Project Sprites/Sans/surprised.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/_pygame.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/bitmask.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pgcompat.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pgimport.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pgplatform.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pygame.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pygame_bufferproxy.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pygame_font.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pygame_freetype.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pygame_mask.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/pygame_mixer.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/include/sse2neon.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dist-info/INSTALLER" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dist-info/METADATA" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dist-info/RECORD" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dist-info/REQUESTED" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dist-info/WHEEL" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dist-info/entry_points.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dist-info/top_level.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/__init__.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/__pyinstaller/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/__pyinstaller/hook-pygame.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/__init__.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/touch.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/bufferproxy.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/camera.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/color.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/constants.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/cursors.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/display.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/draw.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/event.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/data/BGR.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/data/laplacian.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/resizing_new.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/fastevent.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/font.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/freetype.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/gfxdraw.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/image.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/joystick.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/key.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mask.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/math.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/midi.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mixer.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mouse.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/music.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pixelarray.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pixelcopy.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/py.typed" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/rect.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/scrap.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sndarray.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sprite.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surface.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surfarray.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/video_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/time.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/transform.pyi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/version.pyi" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Comp-Sci-Final-Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Comp-Sci-Final-Project.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/luigi_levelup_13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Final Project Sprites/mario-luigi/mario_levelup_9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Saves/File 1.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Saves/File 1.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Saves/File 2.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Saves/File 3.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Saves/File 3.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sprites/maps/Castle Bleck Room 1.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/Sprites/maps/Castle Bleck Room 1.tmx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/_pygame.h" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/_pygame.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/camera.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/freetype.h" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/freetype.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/pgcompat.h" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/pgcompat.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/surface.h" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Include/site/python3.7/pygame/surface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dev6.dist-info/INSTALLER" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dev6.dist-info/METADATA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dev6.dist-info/RECORD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dev6.dist-info/REQUESTED" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dev6.dist-info/WHEEL" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame-2.0.0.dev6.dist-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/SDL2.dll" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/SDL2.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/SDL2_ttf.dll" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/SDL2_ttf.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_camera_opencv_highgui.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_camera_opencv_highgui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_camera_vidcapture.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_camera_vidcapture.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_dummybackend.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_dummybackend.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_freetype.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_freetype.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_numpysndarray.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_numpysndarray.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_numpysurfarray.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_numpysurfarray.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/audio.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/audio.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/controller.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/controller.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/mixer.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/mixer.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/sdl2.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/sdl2.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/touch.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/touch.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/video.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sdl2/video.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sprite.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/_sprite.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/base.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/base.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/bufferproxy.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/bufferproxy.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/color.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/color.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/colordict.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/colordict.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/compat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/constants.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/constants.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/cursors.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/cursors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/display.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/display.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/docs/ref/docscomments.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/draw.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/draw.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/draw_py.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/draw_py.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/event.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/event.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/aliens.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/aliens.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/glcube.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/glcube.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/mask.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/mask.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/midi.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/midi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/overlay.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/overlay.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/playmus.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/playmus.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/readme.rst" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/readme.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/scrap_clipboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/scrap_clipboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/setmodescale.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/setmodescale.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/sound_array_demos.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/sound_array_demos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/testsprite.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/testsprite.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/vgrade.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/examples/vgrade.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/fastevent.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/fastevent.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/font.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/font.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/freetype.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/freetype.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/ftfont.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/ftfont.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/gfxdraw.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/gfxdraw.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/image.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/image.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/imageext.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/imageext.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/joystick.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/joystick.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/key.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/key.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/libfreetype-6.dll" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/libfreetype-6.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/locals.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/locals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/macosx.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/macosx.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mask.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mask.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/math.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/math.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/midi.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/midi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mixer.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mixer.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mixer_music.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mixer_music.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mouse.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/mouse.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/newbuffer.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/newbuffer.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pixelarray.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pixelarray.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pixelcopy.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pixelcopy.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pkgdata.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pkgdata.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pypm.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/pypm.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/rect.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/rect.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/rwobject.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/rwobject.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/scrap.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/scrap.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sndarray.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sndarray.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sprite.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sprite.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surface.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surface.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surfarray.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surfarray.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surflock.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/surflock.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sysfont.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/sysfont.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/base_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/base_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/color_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/color_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/cursors_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/cursors_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/display_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/display_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/draw_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/draw_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/event_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/event_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/font_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/font_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/freetype_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/freetype_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/gfxdraw_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/gfxdraw_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/image_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/image_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/imageext_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/imageext_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/joystick_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/joystick_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/key_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/key_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mask_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mask_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/math_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/math_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/midi_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/midi_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mixer_music_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mixer_music_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mixer_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mixer_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mouse_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/mouse_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/pixelarray_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/pixelarray_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/pixelcopy_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/pixelcopy_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/rect_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/rect_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/sprite_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/sprite_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/surface_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/surface_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/surfarray_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/surfarray_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/sysfont_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/sysfont_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/test_utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/test_utils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/test_utils/png.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/test_utils/png.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/threads_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/threads_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/time_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/time_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/transform_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/transform_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/version_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/tests/version_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/threads/Py25Queue.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/threads/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/threads/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/time.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/time.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/transform.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/transform.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Python/Lib/site-packages/pygame/version.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,24 +220,33 @@
       </list>
     </option>
   </component>
+  <component name="Git.Pull.Settings">
+    <option name="BRANCH" value="master" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1WfAEOlDYSnYFk5dHW3Xt259sKw" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="TEXT" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Luigi-s-Adventure" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Fonts" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\DaCambra Family\Desktop\GitHib\Comp-Sci-Final-Project\Fonts" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\DaCambra Family\Desktop\GitHib\Comp-Sci-Final-Project\Sprites\Decorations" />
       <recent name="$PROJECT_DIR$/Movies" />
@@ -62,6 +277,7 @@
       <method v="2" />
     </configuration>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -78,82 +294,42 @@
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.bat" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="906" y="378" key="#Inspections" timestamp="1598459196906">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="906" y="378" key="#Inspections/0.0.2560.1400@0.0.2560.1400" timestamp="1598459196906" />
     <state x="742" y="354" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599846808308">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="742" y="354" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1599846808308" />
-    <state x="812" y="380" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1591753721518">
+    <state x="899" y="268" key="CommitChangelistDialog2" timestamp="1607389303277">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="812" y="380" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1591753721518" />
-    <state x="814" y="285" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1591756188157">
+    <state x="899" y="268" key="CommitChangelistDialog2/0.0.2560.1400/-2560.0.2560.1400@0.0.2560.1400" timestamp="1607389303277" />
+    <state width="2539" height="292" key="GridCell.Tab.0.bottom" timestamp="1607400446572">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="814" y="285" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1591756188157" />
-    <state x="1060" y="455" key="FileChooserDialogImpl" timestamp="1598561725425">
+    <state width="2539" height="292" key="GridCell.Tab.0.bottom/0.0.2560.1400/-2560.0.2560.1400@0.0.2560.1400" timestamp="1607400446572" />
+    <state width="2539" height="292" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1604425872466" />
+    <state width="2539" height="292" key="GridCell.Tab.0.center" timestamp="1607400446571">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1060" y="455" key="FileChooserDialogImpl/0.0.2560.1400@0.0.2560.1400" timestamp="1598561725425" />
-    <state width="2539" height="292" key="GridCell.Tab.0.bottom" timestamp="1599847398243">
+    <state width="2539" height="292" key="GridCell.Tab.0.center/0.0.2560.1400/-2560.0.2560.1400@0.0.2560.1400" timestamp="1607400446571" />
+    <state width="2539" height="292" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1604425872466" />
+    <state width="2539" height="292" key="GridCell.Tab.0.left" timestamp="1607400446571">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2539" height="292" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1599847398243" />
-    <state width="1419" height="183" key="GridCell.Tab.0.bottom/0.23.1440.830@0.23.1440.830" timestamp="1598238507165" />
-    <state width="2539" height="292" key="GridCell.Tab.0.center" timestamp="1599847398243">
+    <state width="2539" height="292" key="GridCell.Tab.0.left/0.0.2560.1400/-2560.0.2560.1400@0.0.2560.1400" timestamp="1607400446571" />
+    <state width="2539" height="292" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1604425872466" />
+    <state width="2539" height="292" key="GridCell.Tab.0.right" timestamp="1607400446572">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2539" height="292" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1599847398243" />
-    <state width="1419" height="183" key="GridCell.Tab.0.center/0.23.1440.830@0.23.1440.830" timestamp="1598238507164" />
-    <state width="2539" height="292" key="GridCell.Tab.0.left" timestamp="1599847398243">
+    <state width="2539" height="292" key="GridCell.Tab.0.right/0.0.2560.1400/-2560.0.2560.1400@0.0.2560.1400" timestamp="1607400446572" />
+    <state width="2539" height="292" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1604425872466" />
+    <state x="1290" y="306" key="SettingsEditor" timestamp="1607384210996">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2539" height="292" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1599847398243" />
-    <state width="1419" height="183" key="GridCell.Tab.0.left/0.23.1440.830@0.23.1440.830" timestamp="1598238507164" />
-    <state width="2539" height="292" key="GridCell.Tab.0.right" timestamp="1599847398243">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="292" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1599847398243" />
-    <state width="1419" height="183" key="GridCell.Tab.0.right/0.23.1440.830@0.23.1440.830" timestamp="1598238507164" />
-    <state width="2539" height="492" key="GridCell.Tab.1.bottom" timestamp="1598575762616">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="492" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1598575762616" />
-    <state width="2539" height="492" key="GridCell.Tab.1.center" timestamp="1598575762616">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="492" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1598575762616" />
-    <state width="2539" height="492" key="GridCell.Tab.1.left" timestamp="1598575762615">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="492" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1598575762615" />
-    <state width="2539" height="492" key="GridCell.Tab.1.right" timestamp="1598575762616">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2539" height="492" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1598575762616" />
-    <state x="1290" y="306" key="SettingsEditor" timestamp="1599846088567">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="1290" y="306" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1599846088567" />
-    <state x="92" y="92" width="2376" height="1216" key="dock-window-1" timestamp="1598535750656">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="92" y="92" width="2376" height="1216" key="dock-window-1/0.0.2560.1400@0.0.2560.1400" timestamp="1598535750656" />
-    <state x="174" y="73" width="2376" height="1216" key="dock-window-2" timestamp="1598535750657">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="174" y="73" width="2376" height="1216" key="dock-window-2/0.0.2560.1400@0.0.2560.1400" timestamp="1598535750657" />
-    <state x="92" y="92" width="2376" height="1216" key="dock-window-3" timestamp="1598536058927">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="92" y="92" width="2376" height="1216" key="dock-window-3/0.0.2560.1400@0.0.2560.1400" timestamp="1598536058927" />
-    <state x="987" y="435" width="585" height="530" key="find.popup" timestamp="1598472549961">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="987" y="435" width="585" height="530" key="find.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1598472549961" />
+    <state x="1290" y="306" key="SettingsEditor/0.0.2560.1400/-2560.0.2560.1400@0.0.2560.1400" timestamp="1607384210996" />
+    <state x="1290" y="306" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1604417214960" />
   </component>
 </project>

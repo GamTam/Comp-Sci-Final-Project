@@ -22,6 +22,8 @@
 #define PyInt_AsUnsignedLongLongMask PyLong_AsUnsignedLongLongMask
 #define PyInt_AS_LONG PyLong_AS_LONG
 #define PyNumber_Int PyNumber_Long
+/* Int and Long are identical in Py3 so only check one */
+#define INT_CHECK(op) PyLong_Check(op)
 
 /* Weakrefs flags changed in 3.x */
 #define Py_TPFLAGS_HAVE_WEAKREFS 0
@@ -83,6 +85,9 @@
 #else /* #if PY_MAJOR_VERSION >= 3 */
 
 #define PY3 0
+
+/* Check both Int and Long in PY2 */
+#define INT_CHECK(op) (PyInt_Check(op) || PyLong_Check(op))
 
 /* Module init function returns nothing. */
 #define MODINIT_RETURN(x) return
@@ -184,18 +189,8 @@
                          start, stop, step, slicelength)
 #endif
 
-/* Support new buffer protocol? */
-#if !defined(PG_ENABLE_NEWBUF)  /* allow for command line override */
-#if !defined(PYPY_VERSION)
-#define PG_ENABLE_NEWBUF 1
-#else
-#define PG_ENABLE_NEWBUF 0
-#endif
-#endif /* !defined(PG_ENABLE_NEWBUF) */
-
-
 #if defined(SDL_VERSION_ATLEAST)
-#if !(SDL_VERSION_ATLEAST(2, 0, 5))
+#if (SDL_VERSION_ATLEAST(2, 0, 0)) && !(SDL_VERSION_ATLEAST(2, 0, 5))
 /* These functions require SDL 2.0.5 or greater.
 
   https://wiki.libsdl.org/SDL_SetWindowResizable
@@ -210,5 +205,12 @@ SDL_Surface * SDL_CreateRGBSurfaceWithFormat(Uint32 flags, int width, int height
 #endif
 #endif /* defined(SDL_VERSION_ATLEAST) */
 
+// Currently needed to build scrap.c, event.c, display.c
+// with Windows SDK 10.0.18362.0 and SDL1 build
+#ifdef _MSC_VER
+    #ifndef WINDOWS_IGNORE_PACKING_MISMATCH
+        #define WINDOWS_IGNORE_PACKING_MISMATCH
+    #endif
+#endif
 
 #endif /* ~PGCOMPAT_INTERNAL_H */
